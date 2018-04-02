@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1647061283768652}
+  m_IsPrefabParent: 1
+--- !u!1 &1647061283768652
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4539929886600122}
+  - component: {fileID: 114820726843276862}
+  m_Layer: 0
+  m_Name: YeXIngBiaoJi
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4539929886600122
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1647061283768652}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 184.51376, y: 928.2188, z: -3.4349313}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114820726843276862
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1647061283768652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21bb37d591c7a472ea210b80f53eef7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillName: "\u91CE\u6027\u6807\u8BB0"
+  sfxName: 
+  skillId: 30
+  skillDescription: "\u654C\u4EBA\u7684\u62A4\u7532\u964D\u4F4E\uFF08\u7B49\u7EA7x2\uFF09\u70B9"
+  skillIconName: 30_yeXingBiaoJi
+  selfEffectAnimName: 
+  enemyEffectAnimName: 
+  skillType: 2
+  canOverlay: 0
+  beforeFightTrigger: 1
+  attackTrigger: 0
+  hitTrigger: 0
+  beAttackTrigger: 0
+  beHitTrigger: 0
+  fightEndTrigger: 0
+  statusName: 
+  skillSourceValue: 2
