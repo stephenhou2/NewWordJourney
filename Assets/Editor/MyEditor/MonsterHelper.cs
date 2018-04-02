@@ -32,9 +32,9 @@ namespace WordJourney
 					continue;
 				}
 
-				monster.gameObject.layer = 9;
+				monster.gameObject.layer = 11;
 
-				monster.GetComponent<UnityArmatureComponent>().sortingLayerName = "ItemAndRoles";
+				monster.GetComponent<UnityArmatureComponent>().sortingLayerName = "roleAndEvent";
 
 				Monster monsterScript = monster.gameObject.GetComponent<Monster> ();
 				if (monsterScript == null) {
@@ -62,9 +62,13 @@ namespace WordJourney
 					mmScript = monster.gameObject.AddComponent<MapMonster> ();
 				}
 
-				Transform newOther = monster.Find ("Other");
-				if (newOther == null) {
-					newOther = GameObject.Instantiate (other.gameObject).transform;
+				Transform mynewOther = monster.Find ("Other");
+				if (mynewOther != null) {
+					GameObject.DestroyImmediate(mynewOther.gameObject);
+				}
+
+//				if (newOther == null) {
+					Transform newOther = GameObject.Instantiate (other.gameObject).transform;
 					newOther.transform.SetParent (monster);
 
 					newOther.name = "Other";
@@ -73,8 +77,7 @@ namespace WordJourney
 					newOther.localScale = Vector3.one;
 					newOther.localRotation = Quaternion.identity;
 
-				}
-
+//				} 
 
 				Transform skillsContainer = newOther.transform.Find ("SkillsContainer");
 
@@ -140,7 +143,7 @@ namespace WordJourney
 				bmcScript.isIdle = true;
 
 
-				bmcScript.collosionLayer = 1<<9;
+				bmcScript.collosionLayer = 1<<11;
 				bmcScript.boxCollider = bc2d;
 				bmcScript.normalAttack = na;
 				Transform effectAnimContainer = newOther.transform.Find ("EffectAnimContainer");
@@ -152,11 +155,15 @@ namespace WordJourney
 				mmScript.alertAreas = alertAreasContainer.GetComponentsInChildren<MonsterAlertArea> ();
 				mmScript.alertToFightIcon = alertIcon.GetComponent<SpriteRenderer> ();
 
-				mmScript.collisionLayer = 1<<9;
+				mmScript.collisionLayer = 1<<11;
+
+				mmScript.alertToFightIcon.sortingLayerName = "effect";
 
 				for (int j = 0; j < mmScript.alertAreas.Length; j++) {
 					mmScript.alertAreas [j].mapMonster = mmScript;
+					mmScript.alertAreas [j].GetComponent<SpriteRenderer>().sortingLayerName = "wall";
 				}
+
 
 			}
 

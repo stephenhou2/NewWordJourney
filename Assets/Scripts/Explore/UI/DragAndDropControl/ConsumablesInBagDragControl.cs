@@ -124,6 +124,11 @@ namespace WordJourney
 
 		}
 
+		public override void Reset ()
+		{
+			return;
+		}
+
 		void OnDestroy(){
 //			itemImage = null;
 //			item = null;

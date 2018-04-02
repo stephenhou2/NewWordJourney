@@ -20,11 +20,11 @@ namespace WordJourney
 
 		public SpecialOperationItemDragControl soDragControl;
 
-		private CallBack dropCallBack;
-
-		public void InitSpecialOperationDropControl(CallBack dropCallBack){
-			this.dropCallBack = dropCallBack;
-		}
+//		private CallBack dropCallBack;
+//
+//		public void InitSpecialOperationDropControl(CallBack dropCallBack){
+//			this.dropCallBack = dropCallBack;
+//		}
 
 
 		protected override void OnUserPointerEnter (PointerEventData eventData)
@@ -146,15 +146,15 @@ namespace WordJourney
 				soDragControl.itemImage.enabled = true;
 
 
-				int oriIndexInBag = Player.mainPlayer.GetItemIndexInBag (draggedItem);
+//				int oriIndexInBag = Player.mainPlayer.GetItemIndexInBag (draggedItem);
 
-				if (soDragControl.item != null) {
-					Player.mainPlayer.AddItem (soDragControl.item, oriIndexInBag);
-				}
+//				if (soDragControl.item != null) {
+//					Player.mainPlayer.AddItem (soDragControl.item, oriIndexInBag);
+//				}
 
-				Player.mainPlayer.RemoveItem (draggedItem,1);
-
-				dropCallBack ();
+//				Player.mainPlayer.RemoveItem (draggedItem,1);
+//
+//				dropCallBack ();
 
 				if (draggedItem.itemType == ItemType.Equipment) {
 					soDragControl.item = draggedItem;

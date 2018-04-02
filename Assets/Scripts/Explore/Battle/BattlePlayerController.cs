@@ -281,12 +281,14 @@ namespace WordJourney
 						if (modelActive != playerForward) {
 							resetWalkAnim = true;
 						}
-						TowardsDown ();
+						ActiveBattlePlayer (true, false, false);
+						towards = MyTowards.Down;
 					} else if (nextPos.y > transform.position.y) {
 						if (modelActive != playerBackWard) {
 							resetWalkAnim = true;
 						}
-						TowardsUp ();
+						ActiveBattlePlayer (false, true, false);
+						towards = MyTowards.Up;
 					}
 
 				}

@@ -16,11 +16,15 @@ namespace WordJourney
 		public void InitSpecialOperationHUD(CallBack refreshCurrentBagCallBack,CallBack addSkillCallBack){
 			this.refreshCurrentBagCallBack = refreshCurrentBagCallBack;
 			this.addSkillCallBack = addSkillCallBack;
-			equipmentCell.InitSpecialOperationCell (refreshCurrentBagCallBack);
-			functionalItemCell.InitSpecialOperationCell (refreshCurrentBagCallBack);
+//			equipmentCell.InitSpecialOperationCell (refreshCurrentBagCallBack);
+//			functionalItemCell.InitSpecialOperationCell (refreshCurrentBagCallBack);
 		}
 
 		public void OnAddSkillButtonClick(){
+
+			if (Player.mainPlayer.totalGold < 200) {
+				return;
+			}
 
 			Equipment equipment = equipmentCell.soDragControl.item as Equipment;
 
@@ -32,7 +36,11 @@ namespace WordJourney
 
 			equipment.AddSkill (gemstone.skillId);
 
-			Player.mainPlayer.AddItem (equipment);
+//			Player.mainPlayer.AddItem (equipment);
+
+			Player.mainPlayer.RemoveItem (gemstone, 1);
+
+			Player.mainPlayer.totalGold -= 200;
 
 			equipmentCell.ResetSpecialOperationCell ();
 

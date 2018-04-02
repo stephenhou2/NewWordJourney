@@ -64,7 +64,6 @@ namespace WordJourney
 				GenerateDisplayImageObject ("ItemImage",itemImage);
 			}
 
-			backgroundImage.enabled = false;
 			itemImage.enabled = false;
 		}
 
@@ -102,11 +101,15 @@ namespace WordJourney
 
 		}
 
+
+		public override void Reset(){
+			item = null;
+			itemImage.enabled = false;
+		}
+
 		public override void OnDropFailed ()
 		{
-			backgroundImage.enabled = true;
 			itemImage.enabled = itemImage.sprite != null;
-
 		}
 
 	}

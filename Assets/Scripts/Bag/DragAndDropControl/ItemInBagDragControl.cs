@@ -134,6 +134,12 @@ namespace WordJourney
 			newItemTintIcon.enabled = false;
 			extroInfo.enabled = true;
 
+		
+		}
+
+		public override void Reset ()
+		{
+			return;
 		}
 
 		void OnDestroy(){

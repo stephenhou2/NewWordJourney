@@ -335,6 +335,9 @@ namespace WordJourney
 
 		public Equipment RebuildEquipment(){
 			Equipment eqp = itemDetail.SpecialOperationOnEquipment (SpecialOperation.ChongZhu, 0);
+			if (eqp == null) {
+				return null;
+			}
 			SetUpCurrentBagItemsPlane ();
 			itemDetail.SetUpItemDetail (eqp);
 			return eqp;
@@ -342,6 +345,9 @@ namespace WordJourney
 
 		public Equipment UpgradeEquipmentToGold(){
 			Equipment eqp = itemDetail.SpecialOperationOnEquipment (SpecialOperation.DianJin, 0);
+			if (eqp == null) {
+				return null;
+			}
 			SetUpCurrentBagItemsPlane ();
 			itemDetail.SetUpItemDetail (eqp);
 			return eqp;
@@ -349,6 +355,9 @@ namespace WordJourney
 
 		public Equipment RemoveEquipmentAttachedSkill(){
 			Equipment eqp = itemDetail.SpecialOperationOnEquipment (SpecialOperation.XiaoMo, 0);
+			if (eqp == null) {
+				return null;
+			}
 			SetUpCurrentBagItemsPlane ();
 			itemDetail.SetUpItemDetail (eqp);
 			return eqp;
@@ -451,6 +460,8 @@ namespace WordJourney
 			}
 
 			bagItemsDisplay.QuitBagItemPlane ();
+
+			itemDetail.soCell.ResetSpecialOperationCell ();
 
 			GetComponent<Canvas> ().enabled = false;
 		}

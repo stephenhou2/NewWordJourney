@@ -241,6 +241,8 @@ namespace WordJourney
 
 			Player player = Player.mainPlayer;
 
+			bool removeAndUpdate = false;
+
 			switch (consumables.type) {
 			case ConsumablesType.ShuXingTiSheng:
 
@@ -256,18 +258,33 @@ namespace WordJourney
 				}
 
 				bagView.SetUpPlayerStatusPlane ();
+				removeAndUpdate = true;
+
 				break;  
 			case ConsumablesType.ChongZhuShi:
-				currentSelectItem = bagView.RebuildEquipment ();
+				Equipment eqp = bagView.RebuildEquipment ();
+				if (eqp != null) {
+					currentSelectItem = eqp;
+					removeAndUpdate = true;
+				}
 				break;
 			case ConsumablesType.DianJinShi:
-				currentSelectItem = bagView.UpgradeEquipmentToGold ();
+				eqp = bagView.UpgradeEquipmentToGold ();
+				if (eqp != null) {
+					currentSelectItem = eqp;
+					removeAndUpdate = true;
+				}
 				break;
 			case ConsumablesType.XiaoMoJuanZhou:
-				currentSelectItem = bagView.RemoveEquipmentAttachedSkill ();
+				eqp = bagView.RemoveEquipmentAttachedSkill ();
+				if (eqp != null) {
+					currentSelectItem = eqp;
+					removeAndUpdate = true;
+				}
 				break;
 			case ConsumablesType.YinShenJuanZhou:
 				ExploreManager.Instance.PlayerFade ();
+				removeAndUpdate = true;
 				break;
 			}
 
@@ -275,10 +292,11 @@ namespace WordJourney
 			if (itemToAddWhenBagFull != null && !Player.mainPlayer.CheckBagFull (itemToAddWhenBagFull)) {
 				AddItemInWait ();
 			}
-
-			player.RemoveItem (consumables, 1);
 				
-			bagView.SetUpCurrentBagItemsPlane ();
+			if (removeAndUpdate) {
+				player.RemoveItem (consumables, 1);
+				bagView.SetUpCurrentBagItemsPlane ();
+			}
 
 		}
 

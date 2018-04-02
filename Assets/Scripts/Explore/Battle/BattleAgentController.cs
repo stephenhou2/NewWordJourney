@@ -424,9 +424,6 @@ namespace WordJourney
 		/// <param name="cb">动画完成回调.</param>
 		public void PlayRoleAnim (string animName, int playTimes, CallBack cb)
 		{
-//			if (armatureCom.animation.lastAnimationName == "die") {
-//				return;
-//			}
 
 
 			isIdle = animName == "wait";

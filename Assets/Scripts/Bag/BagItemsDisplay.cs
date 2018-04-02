@@ -13,6 +13,10 @@ namespace WordJourney
 		public Transform bagItemsContainer;
 		public Transform bagItemModel;
 
+		public Button[] bagTabs;
+		public Sprite bagTabSelectedIcon;
+		public Sprite bagTabDeselectedIcon;
+
 
 		private int singleBagItemVolume = 24;
 		private int currentBagIndex;
@@ -44,6 +48,14 @@ namespace WordJourney
 
 			currentBagIndex = bagIndex;
 
+			for (int i = 0; i < bagTabs.Length; i++) {
+				if (i == currentBagIndex) {
+					bagTabs[i].GetComponentInChildren<Image>().sprite = bagTabSelectedIcon;
+				}else{
+					bagTabs[i].GetComponentInChildren<Image>().sprite = bagTabDeselectedIcon;
+				}
+			}
+
 			if (Player.mainPlayer.allItemsInBag.Count <= minItemIndexOfCurrentBag) {
 				return;
 			}
@@ -68,6 +80,7 @@ namespace WordJourney
 			}
 			currentBagIndex = bagIndex;
 			SetUpBagItemsPlane (bagIndex,shortClickCallBack);
+
 		}
 
 

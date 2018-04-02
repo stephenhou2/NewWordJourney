@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using DragonBones;
 
 public class Test : MonoBehaviour {
 
 	public GameObject go;
 
-	public void Copy(){
+	void Start(){
 
-		GameObject test = Instantiate (go);
+		go.GetComponent<UnityArmatureComponent> ().animation.Play ("attack", 0);
 
 	}
 }

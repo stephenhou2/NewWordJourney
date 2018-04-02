@@ -34,6 +34,8 @@ namespace WordJourney
 
 		public void SetUpItemDetail(Item item,CallBack dropCallBack = null){
 
+
+
 			ClearItemDetails ();
 
 			Sprite itemSprite = GameManager.Instance.gameDataCenter.GetGameItemSprite (item);
@@ -89,7 +91,7 @@ namespace WordJourney
 				case ConsumablesType.DianJinShi:
 				case ConsumablesType.XiaoMoJuanZhou:
 					soCell.gameObject.SetActive (true);
-					soCell.InitSpecialOperationCell (dropCallBack);
+//					soCell.InitSpecialOperationCell (dropCallBack);
 					break;
 				}
 				break;
@@ -133,6 +135,7 @@ namespace WordJourney
 
 			SetUpOperationButtons (false, false, false);
 
+			soCell.ResetSpecialOperationCell ();
 			soCell.gameObject.SetActive(false);
 
 			attachedSkillDisplay.gameObject.SetActive(false);
@@ -142,6 +145,10 @@ namespace WordJourney
 		public Equipment SpecialOperationOnEquipment(SpecialOperation so,int attachedInfo){
 
 			Equipment equipment = soCell.soDragControl.item as Equipment;
+
+			if (equipment == null) {
+				return null;
+			}
 
 			switch (so) {
 			case SpecialOperation.ChongZhu:
@@ -158,7 +165,7 @@ namespace WordJourney
 				break;
 			}
 
-			Player.mainPlayer.AddItem (equipment);
+//			Player.mainPlayer.AddItem (equipment);
 
 			soCell.ResetSpecialOperationCell ();
 

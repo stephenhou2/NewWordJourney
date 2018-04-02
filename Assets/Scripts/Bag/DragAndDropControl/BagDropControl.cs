@@ -74,15 +74,17 @@ namespace WordJourney
 				return;
 			}
 
+			ItemDragControl dragControl = draggedObject.GetComponent<ItemDragControl> ();
+
 			// 如果是从背包中拖拽出来的物品
-			if (draggedObject.GetComponent<ItemInBagDragControl> () != null) {
+			if (dragControl is ItemInBagDragControl) {
 				SetDropResult (eventData, false);
 				tintImage.enabled = false;
 				return;
 			}
 
 			// 如果是从已装备面板拖拽过来的物品
-			if (draggedObject.GetComponent<EquipedItemDragControl>() != null) {
+			if (dragControl is EquipedItemDragControl) {
 
 				if (Player.mainPlayer.CheckBagFull (draggedItem)) {
 					SetDropResult (eventData, false);
@@ -113,7 +115,7 @@ namespace WordJourney
 			}
 
 			// 如果是从已装备面板拖拽过来的物品
-			if (draggedObject.GetComponent<SpecialOperationItemDragControl> () != null) {
+			if (dragControl is SpecialOperationItemDragControl) {
 
 				if (Player.mainPlayer.CheckBagFull (draggedItem)) {
 					SetDropResult (eventData, false);
@@ -124,16 +126,10 @@ namespace WordJourney
 
 				Equipment equipment = draggedItem as Equipment;
 
-				int equipmentIndexInPanel = Player.mainPlayer.GetEquipmentIndexInPanel (equipment);
-
-				PropertyChange propertyChange = Player.mainPlayer.UnloadEquipment (equipment, equipmentIndexInPanel);
-
-				bagView.SetUpEquipedEquipmentsPlane ();
-
 				if (equipment.itemId >= 0) {
-					bagView.AddBagItem (draggedItem);
-					bagView.SetUpEquipedEquipmentsPlane ();
-					bagView.SetUpPlayerStatusPlane ();
+					Player.mainPlayer.AddItem (equipment);
+					bagView.AddBagItem (equipment);
+					(dragControl as SpecialOperationItemDragControl).Reset ();
 					SetDropResult (eventData, true);
 				} else {
 					SetDropResult (eventData, false);

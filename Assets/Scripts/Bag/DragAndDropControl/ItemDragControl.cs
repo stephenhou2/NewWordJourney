@@ -85,7 +85,7 @@ namespace WordJourney
 			tempDraggingObject.transform.position = globalMousePos;
 		}
 
-
+		public abstract void Reset ();
 
 
 	}

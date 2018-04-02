@@ -14,9 +14,10 @@ namespace WordJourney
 
 //		private CallBack dropCallBack;
 
-		public void InitSpecialOperationCell(CallBack dropCallBack){
-			soDropControl.InitSpecialOperationDropControl (dropCallBack);
-		}
+//		public void InitSpecialOperationCell(CallBack dropCallBack){
+//			soDropControl.InitSpecialOperationDropControl (dropCallBack);
+//		}
+			
 	
 		public void ResetSpecialOperationCell(){
 
@@ -26,7 +27,6 @@ namespace WordJourney
 			soDragControl.item = null;
 
 			soDropControl.tintImage.enabled = false;
-
 
 		}
 

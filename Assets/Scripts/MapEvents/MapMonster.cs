@@ -377,7 +377,7 @@ namespace WordJourney
 
 			if (posOffsetX > 0) {
 
-				battlePlayerCtr.TowardsLeft (false);
+				battlePlayerCtr.TowardsLeft (true);
 				bmCtr.TowardsRight ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
@@ -405,7 +405,7 @@ namespace WordJourney
 
 					bmCtr.TowardsRight ();
 
-					battlePlayerCtr.TowardsLeft (false);
+					battlePlayerCtr.TowardsLeft (true);
 
 					monsterFightPos = new Vector3 (playerOriPos.x - 1, playerOriPos.y, 0);
 

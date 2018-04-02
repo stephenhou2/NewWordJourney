@@ -113,6 +113,13 @@ namespace WordJourney
 			detectReceiver = false;
 		}
 
+		public override void Reset ()
+		{
+			item = null;
+			itemImage.enabled = item != null;
+			backgroundImage.enabled = true;
+		}
+
 		void OnDestroy(){
 			
 //			if (checkOperationTypeCoroutine != null) {
