@@ -70,9 +70,9 @@ namespace WordJourney
 		/// </summary>
 		public void InitCharacterButtons(){
 
-			for (int i = 0; i < inputCharacterButtons.Length; i++) {
-				inputCharacterButtons [i].interactable = Player.mainPlayer.charactersCount[i] > 0;
-			}
+//			for (int i = 0; i < inputCharacterButtons.Length; i++) {
+//				inputCharacterButtons [i].interactable = Player.mainPlayer.charactersCount[i] > 0;
+//			}
 
 		}
 
@@ -81,10 +81,10 @@ namespace WordJourney
 
 			charactersEntered.text = characters;
 
-			for (int i = 0; i < inputCharacterButtons.Length; i++) {
-				inputCharacterButtons [i].interactable = charactersInsufficientArray [i] == 0 
-					&& Player.mainPlayer.charactersCount[i] > 0;
-			}
+//			for (int i = 0; i < inputCharacterButtons.Length; i++) {
+//				inputCharacterButtons [i].interactable = charactersInsufficientArray [i] == 0 
+//					&& Player.mainPlayer.charactersCount[i] > 0;
+//			}
 
 		}
 
@@ -108,9 +108,9 @@ namespace WordJourney
 		}
 
 		public void UpdateCharactersPlane(){
-			for (int i = 0; i < inputCharacterButtons.Length; i++) {
-				inputCharacterButtons [i].interactable = Player.mainPlayer.charactersCount[i] > 0;
-			}
+//			for (int i = 0; i < inputCharacterButtons.Length; i++) {
+//				inputCharacterButtons [i].interactable = Player.mainPlayer.charactersCount[i] > 0;
+//			}
 		}
 
 		public void SetUpCreateCountHUD(int minValue,int maxValue){

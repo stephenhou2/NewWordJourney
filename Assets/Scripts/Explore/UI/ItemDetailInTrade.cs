@@ -21,8 +21,6 @@ namespace WordJourney
 		public Text attachedDescription;
 		public Image itemIcon;
 		public Image itemIconBackground;
-		public Image goldIcon;
-		public Text priceText;
 
 
 		public Transform buyButton;
@@ -36,19 +34,13 @@ namespace WordJourney
 
 			switch (tradeType) {
 			case TradeType.Buy:
-				SetUpTradeButtons (true, false);
-				goldIcon.enabled = true;
-				priceText.text = item.price.ToString ();
+				SetUpTradeButtons (true, false, item.price);
 				break;
 			case TradeType.Sell:
-				SetUpTradeButtons (false, true);
-				goldIcon.enabled = true;
-				priceText.text = (item.price / 8).ToString ();
+				SetUpTradeButtons (false, true, item.price / 8);
 				break;
 			case TradeType.None:
-				SetUpTradeButtons (false, false);
-				goldIcon.enabled = false;
-				priceText.text = string.Empty;
+				SetUpTradeButtons (false, false, 0);
 				break;
 			}
 
@@ -61,10 +53,6 @@ namespace WordJourney
 			itemIconBackground.enabled = true;
 
 			itemName.text = item.itemName;
-
-			itemDescription.text = item.itemDescription;
-
-			goldIcon.enabled = true;
 
 			switch(item.itemType){
 			case ItemType.Equipment:
@@ -80,6 +68,7 @@ namespace WordJourney
 					itemName.text = string.Format("<color=yellow>{0}</color>",item.itemName);
 					break;
 				}
+				itemDescription.text = item.itemDescription;
 				attachedDescription.text = eqp.attachedPropertyDescription;
 				if (eqp.attachedSkillId > 0) {
 					attachedSkillDisplay.gameObject.SetActive (true);
@@ -92,6 +81,7 @@ namespace WordJourney
 				}
 				break;
 			case ItemType.Consumables:
+				attachedDescription.text = item.itemDescription;
 				attachedSkillDisplay.gameObject.SetActive (false);
 				break;
 			case ItemType.Gemstone:
@@ -100,9 +90,11 @@ namespace WordJourney
 				Skill attachedSkill = GameManager.Instance.gameDataCenter.allSkills.Find (delegate(Skill obj) {
 					return obj.skillId == gemstone.skillId;
 				});
+				attachedDescription.text = item.itemDescription;
 				attachedSkillDisplay.SetUpAttachedSkillDisplay (attachedSkill);
 				break;
 			case ItemType.Task:
+				attachedDescription.text = item.itemDescription;
 				attachedSkillDisplay.gameObject.SetActive (false);
 				break;
 			}
@@ -110,9 +102,19 @@ namespace WordJourney
 		}
 
 
-		private void SetUpTradeButtons(bool buyButtonEnable,bool sellButtonEnable){
+		private void SetUpTradeButtons(bool buyButtonEnable,bool sellButtonEnable,int price){
+
 			buyButton.gameObject.SetActive (buyButtonEnable);
 			sellButton.gameObject.SetActive (sellButtonEnable);
+
+			if (buyButtonEnable) {
+				buyButton.Find ("Price").GetComponent<Text> ().text = price.ToString ();
+			} 
+
+			if (sellButtonEnable) {
+				sellButton.Find ("Price").GetComponent<Text> ().text = price.ToString ();
+			}
+				
 		}
 
 
@@ -126,10 +128,8 @@ namespace WordJourney
 			itemIcon.sprite = null;
 			itemIcon.enabled = false;
 			itemIconBackground.enabled = false;
-			goldIcon.enabled = false;
-			priceText.text = string.Empty;
 
-			SetUpTradeButtons (false, false);
+			SetUpTradeButtons (false, false, 0);
 
 			attachedSkillDisplay.gameObject.SetActive(false);
 

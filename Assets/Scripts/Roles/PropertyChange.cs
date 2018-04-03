@@ -13,9 +13,19 @@ namespace WordJourney
 		public int magicAttackChange;
 		public int armorChange;
 		public int magicResistChange;
+		public int armorDecreaseChange;
+		public int magicResistDecreaseChange;
+		public float dodgeChange;
+		public float critChange;
+		public int healthRecoveryChange;
+		public int magicRecoveryChange;
+		public int extraGoldChange;
+		public int extraExperienceChange;
 
 		public PropertyChange(int maxHealthChange,int maxManaChange,int attackChange,
-			int magicAttackChange,int armorChange,int magicResistChange){
+			int magicAttackChange,int armorChange,int magicResistChange,int armorDecreaseChange,
+			int magicResistDecreaseChange,float dodgeChage,float critChange,int healthRecoveryChange,
+			int magicRecoveryChange,int extraGoldChange,int extraExperienceChange){
 
 			this.maxHealthChange = maxHealthChange;
 			this.maxManaChange = maxManaChange;
@@ -23,6 +33,14 @@ namespace WordJourney
 			this.magicAttackChange = magicAttackChange;
 			this.armorChange = armorChange;
 			this.magicResistChange = magicResistChange;
+			this.armorDecreaseChange = armorDecreaseChange;
+			this.magicResistDecreaseChange = magicResistDecreaseChange;
+			this.dodgeChange = dodgeChage;
+			this.critChange = critChange;
+			this.healthRecoveryChange = healthRecoveryChange;
+			this.magicRecoveryChange = magicRecoveryChange;
+			this.extraGoldChange = extraGoldChange;
+			this.extraExperienceChange = extraExperienceChange;
 
 		}
 
@@ -34,7 +52,14 @@ namespace WordJourney
 			mergedPropertyChange.magicAttackChange = arg1.magicAttackChange + arg2.magicAttackChange;
 			mergedPropertyChange.armorChange = arg1.armorChange + arg2.armorChange;
 			mergedPropertyChange.magicResistChange = arg1.magicResistChange + arg2.magicResistChange;
-
+			mergedPropertyChange.armorDecreaseChange = arg1.armorDecreaseChange + arg2.armorDecreaseChange;
+			mergedPropertyChange.magicResistDecreaseChange = arg1.magicResistDecreaseChange + arg2.magicResistDecreaseChange;
+			mergedPropertyChange.dodgeChange = arg1.dodgeChange + arg2.dodgeChange;
+			mergedPropertyChange.critChange = arg1.critChange + arg2.critChange;
+			mergedPropertyChange.healthRecoveryChange = arg1.healthRecoveryChange + arg2.healthRecoveryChange;
+			mergedPropertyChange.magicRecoveryChange = arg1.magicRecoveryChange + arg2.magicRecoveryChange;
+			mergedPropertyChange.extraGoldChange = arg1.extraGoldChange + arg2.extraGoldChange;
+			mergedPropertyChange.extraExperienceChange = arg1.extraExperienceChange = arg2.extraExperienceChange;
 			return mergedPropertyChange;
 		}
 

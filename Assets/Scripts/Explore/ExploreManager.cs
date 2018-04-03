@@ -41,7 +41,7 @@ namespace WordJourney
 		private BattleMonsterController battleMonsterCtr;
 
 		// 玩家控制器
-		private BattlePlayerController battlePlayerCtr;
+		public BattlePlayerController battlePlayerCtr;
 
 		[HideInInspector]public ExploreUICotroller expUICtr;
 
@@ -102,7 +102,7 @@ namespace WordJourney
 		}
 			
 		//Initializes the game for each level.
-		public void SetUpExploreView(GameLevelData levelData)
+		public void SetUpExploreView()
 		{
 			DisableInteractivity ();
 
@@ -111,19 +111,15 @@ namespace WordJourney
 				SoundManager.Instance.PlayBgmAudioClip (CommonData.exploreBgmName);
 			}
 
-//			Debug.Log ("初始化关卡数据");
-			levelData.LoadAllData ();
+			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];
 
 			currentLevelIndex = levelData.gameLevelIndex;
 
-
-//			Debug.Log ("初始化地图");
-//			mapGenerator.SetUpMap(levelData);
 			newMapGenerator.SetUpMapWith(levelData);
 
 			ExploreUICotroller expUICtr = TransformManager.FindTransform ("ExploreCanvas").GetComponent <ExploreUICotroller> ();
 
-			expUICtr.SetUpExploreCanvas (levelData.gameLevelIndex,levelData.chapterName);
+			expUICtr.SetUpExploreCanvas (levelData.gameLevelIndex);
 
 //			Debug.Log ("初始化人物数据");
 			battlePlayerCtr.InitBattlePlayer ();
@@ -314,12 +310,12 @@ namespace WordJourney
 
 
 		public void ShowWordsChoosePlane(LearnWord[] wordsArray){
-			AllMonstersStopMove ();
+			AllWalkableEventsStopMove ();
 			expUICtr.SetUpWordHUD (wordsArray);
 		}
 
 		public void ShowCharacterFillPlane(LearnWord word){
-			AllMonstersStopMove ();
+			AllWalkableEventsStopMove ();
 			expUICtr.SetUpWordHUD (word);
 		}
 
@@ -367,17 +363,15 @@ namespace WordJourney
 
 		}
 
-		public void AllMonstersStopMove(){
-			for (int i = 0; i < newMapGenerator.allMonstersInMap.Count; i++) {
-				newMapGenerator.allMonstersInMap [i].StopMoveAtEndOfCurrentMove ();
-//				newMapGenerator.allMonstersInMap [i].StopMoveImmidiately();
+		public void AllWalkableEventsStopMove(){
+			for (int i = 0; i < newMapGenerator.allWalkableEventsInMap.Count; i++) {
+				newMapGenerator.allWalkableEventsInMap [i].StopMoveAtEndOfCurrentMove ();
 			}
 		}
 
-		public void AllMonstersStartMove(){
-//			Debug.LogFormat ("所有怪物开始移动{0}", Time.time);
-			for (int i = 0; i < newMapGenerator.allMonstersInMap.Count; i++) {
-				newMapGenerator.allMonstersInMap [i].StartMove ();
+		public void AllWalkableEventsStartMove(){
+			for (int i = 0; i < newMapGenerator.allWalkableEventsInMap.Count; i++) {
+				newMapGenerator.allWalkableEventsInMap [i].StartMove ();
 			}
 		}
 
@@ -445,13 +439,13 @@ namespace WordJourney
 			
 
 		public void ShowNPCPlane(MapNPC mapNPC){
-			AllMonstersStopMove ();
+			AllWalkableEventsStopMove ();
 			expUICtr.EnterNPC (mapNPC.npc, currentLevelIndex);
 		}
 			
 
 		public void ShowBillboard(Billboard bb){
-			AllMonstersStopMove ();
+			AllWalkableEventsStopMove ();
 			expUICtr.SetUpBillboard (bb);
 		}
 
@@ -575,7 +569,7 @@ namespace WordJourney
 				expUICtr.ShowNPCPlane ();
 			}
 
-			AllMonstersStartMove ();
+			AllWalkableEventsStartMove ();
 
 		}
 
@@ -668,7 +662,7 @@ namespace WordJourney
 
 		public void EnterNextLevel(){
 
-			AllMonstersStopMove ();
+			AllWalkableEventsStopMove ();
 
 			Time.timeScale = 1;
 
@@ -691,10 +685,9 @@ namespace WordJourney
 
 			GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
 				
-			// 游戏中统一使用关卡信息的拷贝，这样不会影响到原始数据
-			GameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [player.currentLevelIndex].Copy ();;
 
-			SetUpExploreView (levelData);
+
+			SetUpExploreView ();
 
 //			EnableInteractivity ();
 

@@ -61,7 +61,7 @@ namespace WordJourney
 		public SimpleItemDetail simpleItemDetail;
 
 
-		public void SetUpExploreCanvas(int gameLevelIndex, string gameLevelLocation){
+		public void SetUpExploreCanvas(int gameLevelIndex){
 
 
 //			unlockScrollDetail.InitUnlockScrollDetailHUD (true, null, UnlockItemCallBack, ResolveScrollCallBack);
@@ -69,7 +69,7 @@ namespace WordJourney
 //			npcUIController.InitNPCHUD (gameLevelIndex);
 			pauseHUD.InitPauseHUD (true, null, null, null, null);
 
-			wordHUD.InitWordHUD (true, ExploreManager.Instance.AllMonstersStartMove,ChooseAnswerInWordHUD,ConfirmCharacterFillInWordHUD);
+			wordHUD.InitWordHUD (true, ExploreManager.Instance.AllWalkableEventsStartMove,ChooseAnswerInWordHUD,ConfirmCharacterFillInWordHUD);
 
 			if (!GameManager.Instance.UIManager.UIDic.ContainsKey ("BagCanvas")) {
 
@@ -81,7 +81,7 @@ namespace WordJourney
 			}
 				
 			string gameLevelInCurrentLocation = MyTool.NumberToChinese(gameLevelIndex % 5 + 1);
-			gameLevelLocationText.text = string.Format("{0}  第 {1} 层",gameLevelLocation,gameLevelInCurrentLocation);
+			gameLevelLocationText.text = string.Format("第 {0} 层",gameLevelInCurrentLocation);
 
 
 			bpUICtr.InitExploreAgentView ();
@@ -205,7 +205,7 @@ namespace WordJourney
 			billboardPlane.gameObject.SetActive (true);
 			Text billboardContent = billboard.Find ("Content").GetComponent<Text> ();
 			billboardContent.text = bb.content;
-			ExploreManager.Instance.AllMonstersStopMove ();
+			ExploreManager.Instance.AllWalkableEventsStopMove ();
 		}
 
 		/// <summary>
@@ -213,7 +213,7 @@ namespace WordJourney
 		/// </summary>
 		public void QuitBillboard(){
 			billboardPlane.gameObject.SetActive (false);
-			ExploreManager.Instance.AllMonstersStartMove ();
+			ExploreManager.Instance.AllWalkableEventsStartMove ();
 		}
 
 

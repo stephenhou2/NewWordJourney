@@ -173,7 +173,7 @@ namespace WordJourney
 
 				bagView.SetUpEquipedEquipmentsPlane ();
 
-				bagView.SetUpPlayerStatusPlane ();
+				bagView.SetUpPlayerStatusPlane (propertyChange);
 
 				// 对应格子中的装备数据更换
 				allEquipedItemDragControls[indexInPanel].item = equipmentPrepareToLoad;

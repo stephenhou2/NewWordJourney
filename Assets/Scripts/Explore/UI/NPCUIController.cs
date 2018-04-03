@@ -59,7 +59,7 @@ namespace WordJourney
 
 		public Vector3 bagItemsPlaneStartPos;
 
-		public int goodsPlaneMoveEndY;
+		public int goodsPlaneMoveEndX;
 
 		public int itemDetailMoveEndX;
 
@@ -294,9 +294,9 @@ namespace WordJourney
 
 				HLHNPCGoods goods = itemsAsGoods [i];
 
-				if (goods.totalCount == 0 && goods.isFixedCount) {
-					continue;
-				}
+//				if (goods.totalCount == 0 && goods.isFixedCount) {
+//					continue;
+//				}
 
 				Transform goodsCell = goodsPool.GetInstance<Transform> (goodsModel.gameObject, goodsContainer);
 
@@ -413,7 +413,7 @@ namespace WordJourney
 
 			bool totallyRemoveFromBag = player.RemoveItem (currentSelectedItem, 1);
 
-			npc.BuyGoods (currentSelectedItem.itemId);
+//			npc.BuyGoods (currentSelectedItem.itemId);
 
 			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().UpdateItemButtonsAndCoins ();
 
@@ -446,7 +446,7 @@ namespace WordJourney
 			itemDetail.transform.localPosition = itemDetailPlaneStartPos;
 			itemDetail.transform.DOLocalMoveX (itemDetailMoveEndX, flyDuration);
 			goodsDisplayPlane.transform.localPosition = goodsPlaneStartPos;
-			goodsDisplayPlane.transform.DOLocalMoveY (goodsPlaneMoveEndY, flyDuration);
+			goodsDisplayPlane.transform.DOLocalMoveX (goodsPlaneMoveEndX, flyDuration);
 			specialOperationHUD.transform.localPosition = specialOperationHUDStartPos;
 			bagItemsDisplay.transform.localPosition = bagItemsPlaneStartPos;
 			bagItemsDisplay.transform.DOLocalMoveY (bagItemsPlaneMoveEndY, flyDuration);
@@ -469,7 +469,7 @@ namespace WordJourney
 		private void QuitTradeDisplay(){
 			dialogPlane.gameObject.SetActive (true);
 			itemDetail.transform.DOLocalMoveX (itemDetailPlaneStartPos.x, flyDuration);
-			goodsDisplayPlane.transform.DOLocalMoveY (goodsPlaneStartPos.y, flyDuration);
+			goodsDisplayPlane.transform.DOLocalMoveX (goodsPlaneStartPos.x, flyDuration);
 			specialOperationHUD.transform.localPosition = specialOperationHUDStartPos;
 			bagItemsDisplay.transform.DOLocalMoveY (bagItemsPlaneStartPos.y, flyDuration);
 		}
@@ -478,7 +478,7 @@ namespace WordJourney
 			dialogPlane.gameObject.SetActive (true);
 			itemDetail.transform.DOLocalMoveX (itemDetailPlaneStartPos.x, flyDuration);
 			goodsDisplayPlane.transform.localPosition = goodsPlaneStartPos;
-			specialOperationHUD.transform.DOLocalMoveX (specialOpeartionHUDMoveEndX, flyDuration);
+			specialOperationHUD.transform.DOLocalMoveX (specialOperationHUDStartPos.x, flyDuration);
 			bagItemsDisplay.transform.DOLocalMoveY (bagItemsPlaneStartPos.y, flyDuration);
 		}
 
@@ -529,26 +529,6 @@ namespace WordJourney
 //			bagItemsDisplay.transform.DOLocalMoveY (bagItemsPlaneStartPos.y, flyDuration);
 //		}
 
-			
-
-		public void QuitNPCPlane(){
-
-			if (npc == null) {
-				return;
-			}
-			QuitDialogDisplay ();
-			ResetTradeAndSpecialOperationPlane ();
-
-			dialogText.text = string.Empty;
-
-			gameObject.SetActive (false);
-
-			npc = null;
-
-			ExploreManager.Instance.AllMonstersStartMove ();
-
-		}
-
 		private void ResetTradeAndSpecialOperationPlane(){
 			itemDetail.transform.localPosition = itemDetailPlaneStartPos;
 			goodsDisplayPlane.transform.localPosition = goodsPlaneStartPos;
@@ -565,6 +545,27 @@ namespace WordJourney
 			currentSelectedItem = null;
 
 			QuitTradeDisplay ();
+		}
+
+		public void QuitNPCPlane(){
+
+			if (npc == null) {
+				return;
+			}
+			QuitDialogDisplay ();
+			ResetTradeAndSpecialOperationPlane ();
+
+			dialogText.text = string.Empty;
+
+			gameObject.SetActive (false);
+
+			npc = null;
+
+			ExploreManager.Instance.AllWalkableEventsStartMove ();
+
+			(ExploreManager.Instance.currentEnteredMapEvent as MapNPC).EnableAllAlertAreas ();
+
+			ExploreManager.Instance.EnableInteractivity ();
 
 		}
 

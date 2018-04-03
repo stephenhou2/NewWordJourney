@@ -387,7 +387,7 @@ namespace WordJourney
 
 
 			if (createNewGoods) {
-				HLHNPCGoods goods = new HLHNPCGoods ();
+				HLHNPCGoods goods = new HLHNPCGoods (0);
 				npc.npcGoodsList.Add (goods);
 			}
 			if (removeLastGoods && npc.npcGoodsList.Count > 0) {
@@ -407,9 +407,9 @@ namespace WordJourney
 
 //					goods.goodsPrice = EditorGUILayout.IntField ("商品价格", goods.goodsPrice, shortLayouts);
 
-					goods.totalCount = EditorGUILayout.IntField ("商品总数量", goods.totalCount, shortLayouts);
+//					goods.totalCount = EditorGUILayout.IntField ("商品总数量", goods.totalCount, shortLayouts);
 
-					goods.isFixedCount = EditorGUILayout.Toggle ("售出后数量是否会减少", goods.isFixedCount, shortLayouts);
+//					goods.isFixedCount = EditorGUILayout.Toggle ("售出后数量是否会减少", goods.isFixedCount, shortLayouts);
 				}
 
 			}

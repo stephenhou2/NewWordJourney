@@ -106,7 +106,7 @@ namespace WordJourney
 				if (equipment.itemId >= 0) {
 					bagView.AddBagItem (draggedItem);
 					bagView.SetUpEquipedEquipmentsPlane ();
-					bagView.SetUpPlayerStatusPlane ();
+					bagView.SetUpPlayerStatusPlane (propertyChange);
 					SetDropResult (eventData, true);
 				} else {
 					SetDropResult (eventData, false);

@@ -41,12 +41,18 @@ namespace WordJourney
 			int healthRecord = health;
 			int maxManaRecord = maxMana;
 			int manaRecord = mana;
-
 			int attackRecord = attack;
 			int magicAttackRecord = magicAttack;
-
 			int armorRecord = armor;
 			int magicResistRecord = magicResist;
+			int armorDecreaseRecord = armorDecrease;
+			int magicResistDecreaseRecord = magicResistDecrease;
+			float dodgeRecord = dodge;
+			float critRecord = crit;
+			int healthRecoveryRecord = healthRecovery;
+			int magicRecoveryRecord = magicRecovery;
+			int extraGoldRecord = extraGold;
+			int extraExperienceRecord = extraExperience;
 
 			maxHealth = originalMaxHealth;
 			maxMana = originalMaxMana;
@@ -96,7 +102,21 @@ namespace WordJourney
 			int armorChange = armor - armorRecord;
 			int magicResistChange = magicResist - magicResistRecord;
 
-			return new PropertyChange (maxHealthChange, maxManaChange, attackChange, magicAttackChange, armorChange, magicResistChange);
+			int armorDecreaseChange = armorDecrease - armorDecreaseRecord;
+			int magicResistDecreaseChange = magicResistDecrease - magicResistDecreaseRecord;
+
+			float dodgeChange = dodge - dodgeRecord;
+			float critChange = crit - critRecord;
+
+			int healthRecoveryChange = healthRecovery - healthRecoveryRecord;
+			int magicRecoveryChange = magicRecovery - magicRecoveryRecord;
+
+			int extraGoldChange = extraGold - extraGoldRecord;
+			int extraExperienceChange = extraExperience - extraExperienceRecord;
+
+			return new PropertyChange (maxHealthChange, maxManaChange, attackChange, magicAttackChange,
+				armorChange, magicResistChange,armorDecreaseChange,magicResistDecreaseChange,
+				dodgeChange,critChange,healthRecoveryChange,magicRecoveryChange,extraGoldChange,extraExperienceChange);
 
 		}
 

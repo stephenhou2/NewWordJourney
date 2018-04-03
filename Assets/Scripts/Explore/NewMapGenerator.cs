@@ -20,8 +20,8 @@ namespace WordJourney
 		// 地图可行走信息数组
 		public int[,] mapWalkableInfoArray;
 
-		// 地图上怪物位置信息数组(有怪物的位置或者行走中的怪物的行走终点为1，没有怪物的位置或者行走中的怪物的行走原点为0)
-		public int[,] mapMonsterInfoArray;
+		// 地图上怪物和npc位置信息数组(有怪物的位置或者行走中的怪物的行走终点为1，没有怪物的位置或者行走中的怪物的行走原点为0)
+		public int[,] mapWalkableEventInfoArray;
 
 
 		//************* 模型 *************//
@@ -108,30 +108,23 @@ namespace WordJourney
 		// 行走提示动画
 		public Transform destinationAnimation;
 
-
+		// 数据库处理助手
 		private MySQLiteHelper mySql;
 
+		private HLHGameLevelData currentLevelData;
 
 		private List<TriggeredGear> allTriggeredMapEvents = new List<TriggeredGear> ();
-		public List<MapMonster> allMonstersInMap = new List<MapMonster> ();
+		public List<MapWalkableEvent> allWalkableEventsInMap = new List<MapWalkableEvent> ();
 
 
 		public Transform fogOfWarPlane;
 
-		private Transform m_battlePlayerTrans;
-		private Transform battlePlayerTrans{
-			get{
-				if (m_battlePlayerTrans == null) {
-					m_battlePlayerTrans = Player.mainPlayer.transform.Find ("BattlePlayer").transform;
-				}
-				return m_battlePlayerTrans;
-			}
-		}
-
 		// 本层出口位置
 		private Vector2 exitPos;
 
-//		public Material fogOfWarMaterial;
+
+
+
 
 //		void Update(){
 //			Material m = fogOfWarPlane.GetComponent<Renderer>().material;
@@ -146,9 +139,10 @@ namespace WordJourney
 		}
 
 
-		public void SetUpMapWith(GameLevelData levelData)
+		public void SetUpMapWith(HLHGameLevelData levelData)
 		{
-			
+
+			currentLevelData = levelData;
 
 			mapData = MapData.GetMapDataOfLevel (levelData.gameLevelIndex);
 
@@ -157,7 +151,7 @@ namespace WordJourney
 			columns = mapData.columnCount;
 
 			mapWalkableInfoArray = new int[columns, rows];
-			mapMonsterInfoArray = new int[columns, rows];
+			mapWalkableEventInfoArray = new int[columns, rows];
 			InitMapWalkableInfoAndMonsterPosInfo ();
 
 			// 绘制地图
@@ -200,7 +194,7 @@ namespace WordJourney
 			for (int i = 0; i < columns; i++) {
 				for (int j = 0; j < rows ; j++) {
 					mapWalkableInfoArray [i, j] = -2;
-					mapMonsterInfoArray [i, j] = 0;
+					mapWalkableEventInfoArray [i, j] = 0;
 				}
 			}
 		}
@@ -348,6 +342,8 @@ namespace WordJourney
 					#warning 这里先用告示牌位置来测试npc
 					mapEvent = GetMapNPC (eventTile);
 					mapWalkableInfoArray [posX, posY] = 0;
+					mapWalkableEventInfoArray [posX, posY] = 1;
+					allWalkableEventsInMap.Add (mapEvent as MapNPC);
 //					mapEvent = mapEventsPool.GetInstanceWithName<Billboard> (billboardModel.name, billboardModel.gameObject, mapEventsContainer);
 //					mapWalkableInfoArray [posX, posY] = 0;
 					break;
@@ -368,8 +364,8 @@ namespace WordJourney
 //					InitializeMonster (eventTile,posX,posY,wordsArray);
 					mapEvent = GetMonster (eventTile);
 					mapWalkableInfoArray [posX, posY] = 2;
-					mapMonsterInfoArray [posX, posY] = 1;
-					allMonstersInMap.Add (mapEvent as MapMonster);
+					mapWalkableEventInfoArray [posX, posY] = 1;
+					allWalkableEventsInMap.Add (mapEvent as MapMonster);
 					break;
 				case "goldpack":
 					mapEvent = mapEventsPool.GetInstanceWithName<GoldPack> (goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
@@ -398,7 +394,8 @@ namespace WordJourney
 				case "crystal":
 					mapEvent = mapEventsPool.GetInstanceWithName<Crystal> (crystalModel.name, crystalModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
-					break;
+					break;mapWalkableEventInfoArray [posX, posY] = 1;
+					allWalkableEventsInMap.Add (mapEvent as MapNPC);
 				case "curePoint":
 					mapEvent = mapEventsPool.GetInstanceWithName<CurePoint> (curePointModel.name, curePointModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
@@ -440,6 +437,8 @@ namespace WordJourney
 				case "npc":
 					mapEvent = GetMapNPC (eventTile);
 					mapWalkableInfoArray [posX, posY] = 0;
+					mapWalkableEventInfoArray [posX, posY] = 1;
+					allWalkableEventsInMap.Add (mapEvent as MapNPC);
 					break;
 				case "tombstone":
 
@@ -823,7 +822,9 @@ namespace WordJourney
 
 		public Vector3 GetDirectionVectorTowardsExit(){
 
-			return new Vector3 (exitPos.x - battlePlayerTrans.position.x, exitPos.y - battlePlayerTrans.position.y,0); 
+			Transform playerTrans = ExploreManager.Instance.battlePlayerCtr.transform;
+
+			return new Vector3 (exitPos.x - playerTrans.position.x, exitPos.y - playerTrans.position.y,0); 
 
 		}
 

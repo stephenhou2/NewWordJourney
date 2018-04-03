@@ -24,7 +24,7 @@ namespace WordJourney
 				                               Mathf.RoundToInt (enemy.transform.position.z));
 
 
-			ExploreManager.Instance.AllMonstersStartMove ();
+			ExploreManager.Instance.AllWalkableEventsStartMove ();
 
 			MapMonster mm = enemy.GetComponent<MapMonster> ();
 

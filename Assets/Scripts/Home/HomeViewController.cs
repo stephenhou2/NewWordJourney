@@ -156,8 +156,6 @@ namespace WordJourney
 
 			yield return null;
 
-			GameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex].Copy();
-
 			QuitHomeView();
 
 			GameManager.Instance.UIManager.RemoveMultiCanvasCache (new string[] {
@@ -170,7 +168,7 @@ namespace WordJourney
 
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.exploreSceneBundleName, "ExploreCanvas", () => {
 
-				ExploreManager.Instance.SetUpExploreView(levelData);
+				ExploreManager.Instance.SetUpExploreView();
 
 			},false,false);
 

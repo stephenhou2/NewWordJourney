@@ -147,7 +147,7 @@ namespace WordJourney
 
 			bagView.SetUpEquipedEquipmentsPlane ();
 
-			bagView.SetUpPlayerStatusPlane ();
+			bagView.SetUpPlayerStatusPlane (finalPropertyChange);
 
 			bagView.RemoveBagItemAt (oriItemIndexInBag);
 
@@ -218,7 +218,7 @@ namespace WordJourney
 
 			bagView.SetUpEquipedEquipmentsPlane ();
 
-			bagView.SetUpPlayerStatusPlane ();
+			bagView.SetUpPlayerStatusPlane (propertyChange);
 
 			bagView.AddBagItem (currentSelectItem);
 
@@ -257,7 +257,7 @@ namespace WordJourney
 					ExploreManager.Instance.expUICtr.ShowLevelUpPlane ();
 				}
 
-				bagView.SetUpPlayerStatusPlane ();
+				bagView.SetUpPlayerStatusPlane (new PropertyChange());
 				removeAndUpdate = true;
 
 				break;  
@@ -328,9 +328,7 @@ namespace WordJourney
 				}
 			}
 
-			bagView.SetUpPlayerStatusPlane ();
-
-
+			bagView.SetUpPlayerStatusPlane (new PropertyChange());
 
 			bagView.ClearItemDetail ();
 

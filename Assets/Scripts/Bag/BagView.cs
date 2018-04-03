@@ -34,9 +34,6 @@ namespace WordJourney
 		public BagItemsDisplay bagItemsDisplay;
 
 
-		private Sequence[] changeTintFromEqSequences = new Sequence[8];
-		private Sequence[] changeTintFromOtherSequences = new Sequence[8];
-
 		public TintHUD tintHUD;
 
 		public ItemDetail itemDetail;
@@ -93,7 +90,7 @@ namespace WordJourney
 
 				PropertyChange propertyChange = player.ResetBattleAgentProperties (false);
 
-				SetUpPlayerStatusPlane ();
+				SetUpPlayerStatusPlane (propertyChange);
 
 				SetUpEquipedEquipmentsPlane ();
 
@@ -117,42 +114,16 @@ namespace WordJourney
 		/// <summary>
 		/// 初始化玩家属性界面
 		/// </summary>
-		public void SetUpPlayerStatusPlane(){
+		public void SetUpPlayerStatusPlane(PropertyChange pc){
 
-			propertyDisplay.UpdatePropertyDisplay ();
+			propertyDisplay.UpdatePropertyDisplay (pc);
 
 			if (ExploreManager.Instance != null) {
 				ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar ();
 			}
 
-//			// 更新玩家生命条和魔法条
-//			RefreshStatusBars ();
-//
-//			// 玩家水晶数量
-//			coinCount.text = player.totalGold.ToString ();
-//
-//			// 玩家属性面板
-//			Text playerMaxHealthValue = playerMaxHealth.Find("PropertyValue").GetComponent<Text>();
-//			Text playerMaxManaValue = playerMaxMana.Find ("PropertyValue").GetComponent<Text> ();
-//			Text playerAttackValue = playerAttack.Find ("PropertyValue").GetComponent<Text> ();
-//			Text playerMagicAttackValue = playerMagicAttack.Find ("PropertyValue").GetComponent<Text> ();
-//			Text playerArmorValue = playerArmor.Find ("PropertyValue").GetComponent<Text> ();
-//			Text playerMagicResistValue = playerMagicResist.Find ("PropertyValue").GetComponent<Text> ();
-//
-//			playerMaxHealthValue.text = player.maxHealth.ToString();
-//			playerMaxManaValue.text = player.maxMana.ToString ();
-//			playerAttackValue.text = player.attack.ToString ();
-//			playerMagicAttackValue.text = player.magicAttack.ToString ();
-//			playerArmorValue.text = player.armor.ToString ();
-//			playerMagicResistValue.text = player.magicResist.ToString ();
-//
-//
-//			ShowEquipmentChangeTint (playerMaxHealth, propertyChange.maxHealthChange,0);
-//			ShowEquipmentChangeTint (playerMaxMana, propertyChange.maxManaChange,1);
-//			ShowEquipmentChangeTint (playerAttack, propertyChange.attackChange,2);
-//			ShowEquipmentChangeTint (playerMagicAttack, propertyChange.magicAttackChange,3);
-//			ShowEquipmentChangeTint (playerArmor, propertyChange.armorChange,4);
-//			ShowEquipmentChangeTint (playerMagicResist, propertyChange.magicResistChange,5);
+
+
 
 
 		}
@@ -185,59 +156,10 @@ namespace WordJourney
 //
 //		}
 
-		private int CheckPropertyChange(int change){
-			int changeResult = 0;
-			if (change > 0) {
-				changeResult = 1;
-			} else if (change < 0) {
-				changeResult = -1;
-			}
-			return changeResult;
-		}
+
 			
 
-//		private void ShowEquipmentChangeTint(Transform propertyTrans,int change,int indexInPanel){
-//			
-//			int changeResult = CheckPropertyChange (change);
-//
-//			Image changeTint = propertyTrans.Find ("ChangeTint").GetComponent<Image>();
-//
-//			changeTint.enabled = false;
-//
-//			if (changeTintFromEqSequences [indexInPanel] != null && !changeTintFromEqSequences [indexInPanel].IsComplete()) {
-//				changeTintFromEqSequences [indexInPanel].Complete ();
-//			}
-//
-//			if (changeResult == 0) {
-//				return;
-//			}
-//
-//			changeTint.enabled = true;
-//
-//			int rotationZ = changeResult > 0 ? 0 : 180;
-//
-//			changeTint.transform.localRotation = Quaternion.Euler(new Vector3 (0, 0, rotationZ));
-//
-//			changeTint.color = changeResult > 0 ? Color.green : Color.red;
-//
-//
-//			if (changeTintFromEqSequences[indexInPanel] == null) {
-//				Sequence changeTintSequence = DOTween.Sequence ();
-//				changeTintSequence
-//					.Append(changeTint.DOFade (0.2f, 1))
-//					.Append(changeTint.DOFade (1f, 1))
-//					.AppendCallback(()=>{
-//						changeTint.enabled = false;
-//					});
-//				changeTintSequence.SetUpdate (true);
-//				changeTintFromEqSequences[indexInPanel] = changeTintSequence;
-//				changeTintSequence.SetAutoKill (false);
-//				return;
-//			}
-//
-//			changeTintFromEqSequences [indexInPanel].Restart ();
-//
-//		}
+
 
 		/// <summary>
 		/// 初始化已装备物品界面
@@ -452,16 +374,11 @@ namespace WordJourney
 
 			tintHUD.QuitTintHUD ();
 
-			for (int i = 0; i < changeTintFromEqSequences.Length; i++) {
-				changeTintFromEqSequences [i].Kill (false);
-				changeTintFromOtherSequences [i].Kill (false);
-				changeTintFromEqSequences [i] = null;
-				changeTintFromOtherSequences [i] = null;
-			}
-
 			bagItemsDisplay.QuitBagItemPlane ();
 
 			itemDetail.soCell.ResetSpecialOperationCell ();
+
+			propertyDisplay.ClearPropertyDisplay ();
 
 			GetComponent<Canvas> ().enabled = false;
 		}

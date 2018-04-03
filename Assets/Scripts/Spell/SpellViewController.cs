@@ -42,12 +42,12 @@ namespace WordJourney
 
 					int characterNeed = charactersEnteredArray [i];
 
-					if (characterNeed > 0) {
-						int maxCreateCount = Player.mainPlayer.charactersCount [i] / characterNeed;
-						if (maxCreateCount < myMaxCreateCount) {
-							myMaxCreateCount = maxCreateCount;
-						}
-					}
+//					if (characterNeed > 0) {
+//						int maxCreateCount = Player.mainPlayer.charactersCount [i] / characterNeed;
+//						if (maxCreateCount < myMaxCreateCount) {
+//							myMaxCreateCount = maxCreateCount;
+//						}
+//					}
 				}
 
 				return myMaxCreateCount;
@@ -139,11 +139,11 @@ namespace WordJourney
 				int index = (int)charactersEntered[i] - CommonData.aInASCII;
 
 				// 将字母碎片不足的字母记录到不足字母列表中
-				if (Player.mainPlayer.charactersCount [index] <= charactersEnteredArray[index]) {
-
-					charactersInsufficientArray [index] = 1;
-
-				}
+//				if (Player.mainPlayer.charactersCount [index] <= charactersEnteredArray[index]) {
+//
+//					charactersInsufficientArray [index] = 1;
+//
+//				}
 
 			}
 
@@ -300,14 +300,14 @@ namespace WordJourney
 
 				int numNeed = charactersEnteredArray [i] * count;
 
-				if (Player.mainPlayer.charactersCount [i] < numNeed) {
-
-					string unsufficientCharacter = ((char)(i + CommonData.aInASCII)).ToString ();
-					unsufficientCharactesStr.AppendFormat ("字母碎片{0}缺少{1}个、",unsufficientCharacter,numNeed - Player.mainPlayer.charactersCount[i]);
-
-					sufficient = false;
-
-				}
+//				if (Player.mainPlayer.charactersCount [i] < numNeed) {
+//
+//					string unsufficientCharacter = ((char)(i + CommonData.aInASCII)).ToString ();
+//					unsufficientCharactesStr.AppendFormat ("字母碎片{0}缺少{1}个、",unsufficientCharacter,numNeed - Player.mainPlayer.charactersCount[i]);
+//
+//					sufficient = false;
+//
+//				}
 
 			}
 				
@@ -407,7 +407,7 @@ namespace WordJourney
 			
 			for (int i = 0; i < charactersEntered.Length; i++) {
 				int characterIndex = (int)charactersEntered [i] - CommonData.aInASCII;
-				Player.mainPlayer.charactersCount [characterIndex] -= createCount;
+//				Player.mainPlayer.charactersCount [characterIndex] -= createCount;
 			}
 		}
 

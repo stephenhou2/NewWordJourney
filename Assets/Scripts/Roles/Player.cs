@@ -208,8 +208,6 @@ namespace WordJourney
 			this.magicRecovery = playerData.magicRecovery;
 
 
-			this.charactersCount = playerData.charactersCount;
-
 			this.allEquipmentsInBag = playerData.allEquipmentsInBag;
 			this.allConsumablesInBag = playerData.allConsumablesInBag;
 //			this.allUnlockScrollsInBag = playerData.allUnlockScrollsInBag;
@@ -330,12 +328,18 @@ namespace WordJourney
 			int healthRecord = health;
 			int maxManaRecord = maxMana;
 			int manaRecord = mana;
-
 			int attackRecord = attack;
 			int magicAttackRecord = magicAttack;
-
 			int armorRecord = armor;
 			int magicResistRecord = magicResist;
+			int armorDecreaseRecord = armorDecrease;
+			int magicResistDecreaseRecord = magicResistDecrease;
+			float dodgeRecord = dodge;
+			float critRecord = crit;
+			int healthRecoveryRecord = healthRecovery;
+			int magicRecoveryRecord = magicRecovery;
+			int extraGoldRecord = extraGold;
+			int extraExperienceRecord = extraExperience;
 
 			maxHealth = originalMaxHealth;
 			maxMana = originalMaxMana;
@@ -438,7 +442,21 @@ namespace WordJourney
 			int armorChange = armor - armorRecord;
 			int magicResistChange = magicResist - magicResistRecord;
 
-			return new PropertyChange (maxHealthChange, maxManaChange, attackChange, magicAttackChange, armorChange, magicResistChange);
+			int armorDecreaseChange = armorDecrease - armorDecreaseRecord;
+			int magicResistDecreaseChange = magicResistDecrease - magicResistDecreaseRecord;
+
+			float dodgeChange = dodge - dodgeRecord;
+			float critChange = crit - critRecord;
+
+			int healthRecoveryChange = healthRecovery - healthRecoveryRecord;
+			int magicRecoveryChange = magicRecovery - magicRecoveryRecord;
+
+			int extraGoldChange = extraGold - extraGoldRecord;
+			int extraExperienceChange = extraExperience - extraExperienceRecord;
+
+			return new PropertyChange (maxHealthChange, maxManaChange, attackChange, magicAttackChange,
+				armorChange, magicResistChange,armorDecreaseChange,magicResistDecreaseChange,
+				dodgeChange,critChange,healthRecoveryChange,magicRecoveryChange,extraGoldChange,extraExperienceChange);
 
 		}
 
@@ -868,36 +886,7 @@ namespace WordJourney
 //		}
 
 
-		/// <summary>
-		/// 用户获得字母碎片
-		/// </summary>
-		/// <param name="character">Character.</param>
-		/// <param name="count">Count.</param>
-		public void AddCharacterFragment(char character,int count){
 
-			int characterIndex = (int)(character) - CommonData.aInASCII;
-
-			charactersCount [characterIndex] += count;
-
-		}
-
-		/// <summary>
-		/// 用户损失字母碎片
-		/// </summary>
-		/// <param name="character">Character.</param>
-		/// <param name="count">Count.</param>
-		public void RemoveCharacterFragment(char character,int count){
-			
-			int characterIndex = (int)(character) - CommonData.aInASCII;
-
-			int characterCount = charactersCount [characterIndex];
-
-			if (characterCount < count) {
-				charactersCount [characterIndex] = 0;
-			} else {
-				charactersCount [characterIndex] -= count;
-			}
-		}
 
 
 		public bool CheckBagFull(Item item){
@@ -992,11 +981,6 @@ namespace WordJourney
 //				allItemsInBag.Add (item);
 //				allCraftingRecipesInBag.Add (item as CraftingRecipe);
 //				break;
-			case ItemType.CharacterFragment:
-				CharacterFragment characterFragment = item as CharacterFragment;
-				int characterIndex = (int)(characterFragment.character) - CommonData.aInASCII;
-				charactersCount [characterIndex]++;
-				break;
 			}
 				
 		}
@@ -1088,6 +1072,25 @@ namespace WordJourney
 		}
 
 
+		public void ArrangeBagItems(){
+
+			for (int i = 0; i < allItemsInBag.Count - 1; i++) {
+
+				for (int j = 0; j < allItemsInBag.Count - i - 1; j++) {
+					
+					Item tempItemFormer = allItemsInBag [j];
+
+					Item tempItemLatter = allItemsInBag [j + 1];
+
+					if (tempItemFormer.itemId > tempItemLatter.itemId) {
+						allItemsInBag [j] = tempItemLatter;
+						allItemsInBag [j + 1] = tempItemFormer;
+					}
+				}
+			}
+
+		}
+
 		/// <summary>
 		/// 分解物品
 		/// </summary>
@@ -1175,18 +1178,18 @@ namespace WordJourney
 				charactersNeed [index]++;
 			}
 
-			// 判断玩家字母碎片是否足够
-			for(int i = 0;i<charactersNeed.Length;i++){
-
-				if (charactersNeed [i] > Player.mainPlayer.charactersCount[i]) {
-
-					char c = (char)(i + CommonData.aInASCII);
-
-					unsufficientCharacters.Add (c);
-
-				}
-
-			}
+//			// 判断玩家字母碎片是否足够
+//			for(int i = 0;i<charactersNeed.Length;i++){
+//
+//				if (charactersNeed [i] > Player.mainPlayer.charactersCount[i]) {
+//
+//					char c = (char)(i + CommonData.aInASCII);
+//
+//					unsufficientCharacters.Add (c);
+//
+//				}
+//
+//			}
 
 			return unsufficientCharacters;
 
@@ -1376,9 +1379,6 @@ namespace WordJourney
 
 			this.healthRecovery = player.healthRecovery;
 			this.magicRecovery = player.magicRecovery;
-
-
-			this.charactersCount = player.charactersCount;
 
 			this.allEquipmentsInBag = player.allEquipmentsInBag;
 			this.allEquipedEquipments = player.allEquipedEquipments;

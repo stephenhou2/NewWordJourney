@@ -246,20 +246,6 @@ namespace WordJourney
 
 		public List<string> allStatus = new List<string> ();
 
-		[SerializeField]protected int[] mCharactersCount;
-		public int[] charactersCount{
-			get{
-				if (mCharactersCount == null || mCharactersCount.Length == 0) {
-					mCharactersCount = new int[26];
-				}
-				return mCharactersCount;
-			}
-
-			set{
-				mCharactersCount = value;
-			}
-
-		}
 
 
 		// 攻击间隔
@@ -274,8 +260,6 @@ namespace WordJourney
 			
 		// 仅根据物品重新计人物的属性，其余属性重置为初始状态
 		public abstract PropertyChange ResetBattleAgentProperties (bool toOriginalState = false);
-
-
 
 
 		public override string ToString ()

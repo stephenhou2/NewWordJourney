@@ -5,19 +5,16 @@ using UnityEngine;
 
 namespace WordJourney
 {
-//	using DG.Tweening;
 
-	public class MapMonster : MapEvent {
+	public class MapMonster : MapWalkableEvent {
 
-		private BattleMonsterController bmCtr;
+//		private BattleMonsterController baCtr;
 
 		public MonsterAlertArea[] alertAreas;
 
 		public SpriteRenderer alertToFightIcon;
 
-//		private Tween moveTweener;
-
-		private IEnumerator moveCoroutine;
+//		private IEnumerator moveCoroutine;
 
 		public LayerMask collisionLayer;
 
@@ -26,9 +23,9 @@ namespace WordJourney
 
 		public bool isReadyToFight;
 
-		private bool canMove;
+//		private bool canMove;
 
-		private bool isInAutoWalk;
+//		private bool isInAutoWalk;
 
 		// 掉落物品的ID
 		public int dropItemID;
@@ -39,7 +36,7 @@ namespace WordJourney
 		protected override void Awake ()
 		{
 			base.Awake ();
-			bmCtr = GetComponent<BattleMonsterController> ();
+//			baCtr = GetComponent<BattleMonsterController> ();
 			alertIconOffsetX = alertToFightIcon.transform.localPosition.x;
 			alertIconOffsetY = alertToFightIcon.transform.localPosition.y;
 		}
@@ -53,7 +50,7 @@ namespace WordJourney
 			HideAllAlertAreas ();
 			gameObject.SetActive (false);
 			pool.AddInstanceToPool (this.gameObject);
-			ExploreManager.Instance.newMapGenerator.allMonstersInMap.Remove (this);
+			ExploreManager.Instance.newMapGenerator.allWalkableEventsInMap.Remove (this);
 		}
 
 		public void QuitFightAndDelayMove(int delay){
@@ -81,33 +78,7 @@ namespace WordJourney
 			StartMove ();
 
 		}
-
-		public void StartMove(){
-			if (isInAutoWalk) {
-				return;
-			}
-			StartCoroutine ("AutoWalk");
-			isInAutoWalk = true;
-		}
-
-		public void StopMoveImmidiately(){
-//			if (moveTweener != null) {
-//				moveTweener.Kill (false);
-//			}
-			if (moveCoroutine != null) {
-				StopCoroutine (moveCoroutine);
-			}
-			StopCoroutine("AutoWalk");
-			isInAutoWalk = false;
-		}
-
-		public void StopMoveAtEndOfCurrentMove(){
-//			if (moveTweener != null) {
-//				moveTweener.Kill (true);
-//			}
-			StopCoroutine("AutoWalk");
-			isInAutoWalk = false;
-		}
+			
 
 		public void OnTriggerEnter2D (Collider2D col){
 
@@ -124,7 +95,7 @@ namespace WordJourney
 
 		public override void EnterMapEvent (BattlePlayerController bp)
 		{
-			ExploreManager.Instance.AllMonstersStopMove ();
+			ExploreManager.Instance.AllWalkableEventsStopMove ();
 
 			StopMoveImmidiately ();
 
@@ -141,7 +112,7 @@ namespace WordJourney
 
 			Vector3 lineCastEnd = Vector3.zero;
 			Vector3 lineCastStart = Vector3.zero;
-			switch (bmCtr.towards) {
+			switch (baCtr.towards) {
 			case MyTowards.Up:
 				lineCastStart = transform.position + new Vector3 (0, 0.5f, 0);
 				lineCastEnd = transform.position + new Vector3 (0, 2.5f, 0);
@@ -181,12 +152,10 @@ namespace WordJourney
 
 			DisableAllDetect ();
 
-			ExploreManager.Instance.AllMonstersStopMove ();
+			ExploreManager.Instance.AllWalkableEventsStopMove ();
 			StopMoveImmidiately ();
 
-
 			bp.StopMoveAtEndOfCurrentStep ();
-
 
 			ExploreManager.Instance.EnterFight (this.transform);
 
@@ -215,7 +184,7 @@ namespace WordJourney
 
 		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
 		{
-			BattleMonsterController bmCtr = transform.GetComponent<BattleMonsterController> ();
+			BattleMonsterController baCtr = transform.GetComponent<BattleMonsterController> ();
 
 //			bool canTalk = bool.Parse(KVPair.GetPropertyStringWithKey ("canTalk", attachedInfo.properties));
 //			int monsterId = int.Parse (KVPair.GetPropertyStringWithKey ("monsterID", attachedInfo.properties));
@@ -230,7 +199,7 @@ namespace WordJourney
 			HideAllAlertAreas ();
 
 			if (canMove) {
-				ShowAlertAreaTint (bmCtr.towards);
+				ShowAlertAreaTint (baCtr.towards);
 			}
 
 			transform.position = attachedInfo.position;
@@ -239,12 +208,11 @@ namespace WordJourney
 			gameObject.SetActive (true);
 
 
-			bmCtr.SetAlive();
+			baCtr.SetAlive();
 
 			RandomTowards ();
 
 			StartMove ();
-
 
 			bc2d.enabled = true;
 			isReadyToFight = false;
@@ -257,17 +225,17 @@ namespace WordJourney
 
 			switch (towardsIndex) {
 			case 0:
-				bmCtr.TowardsRight ();
+				baCtr.TowardsRight ();
 				break;
 			case 1:
-				bmCtr.TowardsLeft ();
+				baCtr.TowardsLeft ();
 				alertToFightIcon.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
 				break;
 			case 2:
-				bmCtr.TowardsUp ();
+				baCtr.TowardsUp ();
 				break;
 			case 3:
-				bmCtr.TowardsDown ();
+				baCtr.TowardsDown ();
 				break;
 			}
 
@@ -357,7 +325,7 @@ namespace WordJourney
 
 			yield return new WaitUntil (() => isReadyToFight);
 
-			bmCtr.PlayRoleAnim ("wait", 0, null);
+			baCtr.PlayRoleAnim ("wait", 0, null);
 
 			yield return new WaitForSeconds (1f);
 
@@ -377,8 +345,8 @@ namespace WordJourney
 
 			if (posOffsetX > 0) {
 
-				battlePlayerCtr.TowardsLeft (true);
-				bmCtr.TowardsRight ();
+				battlePlayerCtr.TowardsLeft (false);
+				baCtr.TowardsRight ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 
@@ -395,7 +363,7 @@ namespace WordJourney
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 
-					bmCtr.TowardsLeft ();
+					baCtr.TowardsLeft ();
 
 					battlePlayerCtr.TowardsRight (false);
 
@@ -403,15 +371,15 @@ namespace WordJourney
 
 				} else if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 
-					bmCtr.TowardsRight ();
+					baCtr.TowardsRight ();
 
-					battlePlayerCtr.TowardsLeft (true);
+					battlePlayerCtr.TowardsLeft (false);
 
 					monsterFightPos = new Vector3 (playerOriPos.x - 1, playerOriPos.y, 0);
 
 				} else {
 
-					bmCtr.TowardsLeft ();
+					baCtr.TowardsLeft ();
 
 					battlePlayerCtr.TowardsRight (false);
 						
@@ -423,7 +391,7 @@ namespace WordJourney
 			} else if (posOffsetX < 0) {
 
 				battlePlayerCtr.TowardsRight (false);
-				bmCtr.TowardsLeft ();
+				baCtr.TowardsLeft ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 
@@ -453,54 +421,9 @@ namespace WordJourney
 		}
 
 
-		private IEnumerator AutoWalk(){
+		public override void WalkToPosition(Vector3 position,CallBack cb,bool showAlertArea = true){
 
-			while (true) {
-
-				float standDuration = Random.Range (4.0f, 5.0f);
-
-				float timer = 0;
-
-				while (timer < standDuration) {
-
-					yield return null;
-
-					timer += Time.deltaTime;
-
-				}
-
-				if (CheckCanWalk ()) {
-					Walk ();
-				}
-			}
-
-		}
-
-		private void Walk(){
-
-			int[,] mapWalkableInfo = ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray;
-			int[,] mapMonsterInfoArray = ExploreManager.Instance.newMapGenerator.mapMonsterInfoArray;
-
-			Vector3 randomPositionAround = transform.position;
-
-			bool validPositionAround = false;
-
-			while (!validPositionAround) {
-				
-				randomPositionAround = GetRandomPositionAround (transform.position);
-				int posX = Mathf.RoundToInt (randomPositionAround.x);
-				int posY = Mathf.RoundToInt (randomPositionAround.y);
-				validPositionAround = mapWalkableInfo [posX, posY] == 1 
-					&& mapMonsterInfoArray[posX,posY] == 0;
-			}
-
-			WalkToPosition (randomPositionAround,null);
-
-		}
-
-		public void WalkToPosition(Vector3 position,CallBack cb,bool showAlertArea = true){
-
-			bmCtr.PlayRoleAnim ("walk", 0, null);
+			baCtr.PlayRoleAnim ("walk", 0, null);
 
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
 			int oriPosY = Mathf.RoundToInt (transform.position.y);
@@ -508,40 +431,38 @@ namespace WordJourney
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
-			ExploreManager.Instance.newMapGenerator.mapMonsterInfoArray [oriPosX, oriPosY] = 0;
-			ExploreManager.Instance.newMapGenerator.mapMonsterInfoArray [targetPosX, targetPosY] = 1;
+			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
+			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
 
 			if (targetPosY == oriPosY) {
 				if (targetPosX >= oriPosX) {
-					bmCtr.TowardsRight ();
+					baCtr.TowardsRight ();
 					alertToFightIcon.transform.localPosition = new Vector3 (alertIconOffsetX, alertIconOffsetY, 0);
 				} else {
-					bmCtr.TowardsLeft ();
+					baCtr.TowardsLeft ();
 					alertToFightIcon.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
 				}
 			} else if(targetPosX == oriPosX){
 
 				if (targetPosY >= oriPosY) {
-					bmCtr.TowardsUp ();
+					baCtr.TowardsUp ();
 				} else {
-					bmCtr.TowardsDown ();
+					baCtr.TowardsDown ();
 				}
 			}
 
 			if (showAlertArea) {
-				ShowAlertAreaTint (bmCtr.towards);
+				ShowAlertAreaTint (baCtr.towards);
 			}
 
 			SetSortingOrder (-Mathf.RoundToInt (position.y));
-		
-//			float distance = Mathf.Sqrt ((targetPosX - oriPosX) * (targetPosX - oriPosX) + (targetPosY - oriPosY) * (targetPosY - oriPosY));
 
 			if (moveCoroutine != null) {
 				StopCoroutine (moveCoroutine);
 			}
 
 			moveCoroutine = MoveTo (position,3f,delegate{
-				bmCtr.PlayRoleAnim("wait",0,null);
+				baCtr.PlayRoleAnim("wait",0,null);
 				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
 				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 2;
 				if(cb != null){
@@ -555,9 +476,9 @@ namespace WordJourney
 
 
 
-		private void RunToPosition(Vector3 position,CallBack cb){
+		protected override void RunToPosition(Vector3 position,CallBack cb){
 
-			bmCtr.PlayRoleAnim ("run", 0, null);
+			baCtr.PlayRoleAnim ("run", 0, null);
 
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
 			int oriPosY = Mathf.RoundToInt (transform.position.y);
@@ -565,15 +486,13 @@ namespace WordJourney
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
-			ExploreManager.Instance.newMapGenerator.mapMonsterInfoArray [oriPosX, oriPosY] = 0;
-			ExploreManager.Instance.newMapGenerator.mapMonsterInfoArray [targetPosX, targetPosY] = 1;
+			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
+			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
 
 			SetSortingOrder (-Mathf.RoundToInt (position.y));
 
-//			float distance = Mathf.Sqrt ((targetPosX - oriPosX) * (targetPosX - oriPosX) + (targetPosY - oriPosY) * (targetPosY - oriPosY));
-
 			moveCoroutine = MoveTo (position,1f,delegate{
-				bmCtr.PlayRoleAnim("wait",0,null);
+				baCtr.PlayRoleAnim("wait",0,null);
 				if(cb != null){
 					cb();
 				}
@@ -583,91 +502,12 @@ namespace WordJourney
 
 		}
 
-		private IEnumerator MoveTo(Vector3 position,float timeScale,CallBack cb){
-
-			int oriPosX = Mathf.RoundToInt (transform.position.x);
-			int oriPosY = Mathf.RoundToInt (transform.position.y);
-
-			int targetPosX = Mathf.RoundToInt (position.x);
-			int targetPosY = Mathf.RoundToInt (position.y);
-
-			float distance = Mathf.Sqrt ((targetPosX - oriPosX) * (targetPosX - oriPosX) + (targetPosY - oriPosY) * (targetPosY - oriPosY));
-
-			float moveDuration = bmCtr.moveDuration * distance * timeScale;
-
-//			float moveSpeedX = ;
-//
-//			float moveSpeedY = ;
-
-			Vector3 moveVector = new Vector3((targetPosX - oriPosX) / moveDuration,(targetPosY - oriPosY) / moveDuration,0);
-
-			float timer = 0;
-
-			while (timer < moveDuration) {
-
-				transform.position += moveVector * Time.deltaTime;
-
-				timer += Time.deltaTime;
-
-				yield return null;
-
-			}
-
-			transform.position = position;
-
-			if (cb != null) {
-				cb ();
-			}
-
-		}
 
 		public override void SetSortingOrder (int order)
 		{
-			bmCtr.SetSortingOrder (order);
+			baCtr.SetSortingOrder (order);
 		}
-
-		private bool CheckCanWalk(){
-			int posX = Mathf.RoundToInt (transform.position.x);
-			int posY = Mathf.RoundToInt (transform.position.y);
-			return IsPositionCanWalk (posX, posY + 1) || IsPositionCanWalk (posX, posY - 1)
-			|| IsPositionCanWalk (posX - 1, posY) || IsPositionCanWalk (posX + 1, posY);
-		}
-
-		private bool IsPositionCanWalk(int posX,int posY){
 			
-			int[,] mapWalkableInfo = ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray;
-			int[,] mapMonsterLayoutInfo = ExploreManager.Instance.newMapGenerator.mapMonsterInfoArray;
-			return mapWalkableInfo [posX, posY] == 1 && mapMonsterLayoutInfo [posX, posY] == 0;
-		}
-
-		private Vector3 GetRandomPositionAround(Vector3 position){
-
-			int posX = Mathf.RoundToInt (position.x);
-			int posY = Mathf.RoundToInt (position.y);
-
-			int directionSeed = Random.Range (0, 4);
-
-			Vector3 randomPosition = position;
-
-			switch (directionSeed) {
-			case 0:
-				randomPosition = new Vector3 (posX, posY + 1, position.z);
-				break;
-			case 1:
-				randomPosition = new Vector3 (posX, posY - 1, position.z);
-				break;
-			case 2:
-				randomPosition = new Vector3 (posX - 1, posY, position.z);
-				break;
-			case 3:
-				randomPosition = new Vector3 (posX + 1, posY, position.z);
-				break;
-
-			}
-
-			return randomPosition;
-
-		}
 
 	}
 }

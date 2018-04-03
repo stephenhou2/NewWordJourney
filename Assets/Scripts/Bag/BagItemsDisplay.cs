@@ -17,6 +17,8 @@ namespace WordJourney
 		public Sprite bagTabSelectedIcon;
 		public Sprite bagTabDeselectedIcon;
 
+		public Text totalGoldText;
+
 
 		private int singleBagItemVolume = 24;
 		private int currentBagIndex;
@@ -41,6 +43,8 @@ namespace WordJourney
 		/// 初始化背包物品界面
 		/// </summary>
 		public void SetUpBagItemsPlane(int bagIndex,ShortClickCallBack shortClickCallBack){
+
+			totalGoldText.text = Player.mainPlayer.totalGold.ToString ();
 
 			this.shortClickCallBack = shortClickCallBack;
 
@@ -67,6 +71,11 @@ namespace WordJourney
 				AddBagItem (Player.mainPlayer.allItemsInBag[i]);
 			}
 
+		}
+
+		public void ArrangeBag(){
+			Player.mainPlayer.ArrangeBagItems ();
+			SetUpCurrentBagItemsPlane ();
 		}
 
 		public void SetUpCurrentBagItemsPlane(){

@@ -21,6 +21,8 @@ namespace WordJourney
 		public Text attachedDescription;
 		public Image itemIcon;
 		public Image itemIconBackground;
+		public Image goldIcon;
+		public Text priceText;
 
 		public Transform equipButton;
 		public Transform unloadButton;
@@ -33,8 +35,6 @@ namespace WordJourney
 
 
 		public void SetUpItemDetail(Item item,CallBack dropCallBack = null){
-
-
 
 			ClearItemDetails ();
 
@@ -49,6 +49,8 @@ namespace WordJourney
 			itemName.text = item.itemName;
 
 			itemDescription.text = item.itemDescription;
+
+			priceText.text = (item.price / 8).ToString ();
 
 			switch(item.itemType){
 			case ItemType.Equipment:
@@ -132,6 +134,8 @@ namespace WordJourney
 			itemIcon.sprite = null;
 			itemIcon.enabled = false;
 			itemIconBackground.enabled = false;
+			goldIcon.enabled = false;
+			priceText.text = string.Empty;
 
 			SetUpOperationButtons (false, false, false);
 

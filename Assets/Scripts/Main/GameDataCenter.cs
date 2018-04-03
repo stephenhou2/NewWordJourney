@@ -26,7 +26,7 @@ namespace WordJourney
 		}
 
 		private GameSettings mGameSettings;
-		private List<GameLevelData> mGameLevelDatas = new List<GameLevelData>();
+		private List<HLHGameLevelData> mGameLevelDatas = new List<HLHGameLevelData>();
 		private List<EquipmentModel> mAllEquipmentModels = new List<EquipmentModel> ();
 		private List<ConsumablesModel> mAllConsumablesModels = new List<ConsumablesModel>();
 		private List<SkillGemstoneModel> mAllSkillGemstoneModels = new List<SkillGemstoneModel> ();
@@ -95,7 +95,7 @@ namespace WordJourney
 //		}
 
 
-		public List<GameLevelData> gameLevelDatas{
+		public List<HLHGameLevelData> gameLevelDatas{
 			get{
 				if (mGameLevelDatas.Count == 0) {
 					LoadGameLevelDatas ();
@@ -106,7 +106,7 @@ namespace WordJourney
 		}
 
 		private void LoadGameLevelDatas(){
-			GameLevelData[] gameLevelDatasArray = DataHandler.LoadDataToModelsWithPath<GameLevelData> (CommonData.gameLevelDataFilePath);
+			HLHGameLevelData[] gameLevelDatasArray = DataHandler.LoadDataToModelsWithPath<HLHGameLevelData> (CommonData.gameLevelDataFilePath);
 			for (int i = 0; i < gameLevelDatasArray.Length; i++) {
 				mGameLevelDatas.Add(gameLevelDatasArray[i]);
 			}

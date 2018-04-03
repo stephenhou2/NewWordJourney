@@ -19,12 +19,7 @@ namespace WordJourney
 
 	public class EditHelper {
 
-		[MenuItem("EditHelper/GameLevelDatasHelper")]
-		public static void GameLevelDatasHelper(){
-			GameLevelDataHandler gldh = new GameLevelDataHandler ();
-			gldh.LoadGameDatas ();
-			gldh.SaveGameDatas ();
-		}
+
 
 		[MenuItem("EditHelper/TempHelper")]
 		public static void TempHelper(){

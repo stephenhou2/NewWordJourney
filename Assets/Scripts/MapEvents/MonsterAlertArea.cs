@@ -55,8 +55,6 @@ namespace WordJourney
 			MapMonster mm = mapMonster as MapMonster;
 			mm.isReadyToFight = true;
 
-
-
 			mm.DetectPlayer (bp);
 		}
 

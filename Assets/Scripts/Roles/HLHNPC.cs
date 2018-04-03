@@ -124,43 +124,19 @@ namespace WordJourney
 		/// <param name="player">Player.</param>
 		public void SoldGoods(int goodsId){
 
-			for (int i = 0; i < npcGoodsList.Count; i++) {
+			npcGoodsList.RemoveAt (goodsId);
 
-				HLHNPCGoods goods = npcGoodsList [i];
-
-				if (goods.goodsId == goodsId && !goods.isFixedCount) {
-					npcGoodsList [i].totalCount--;
-				}
-			}
-
-		}
-
-		public void BuyGoods(int goodsId){
-
-			for (int i = 0; i < npcGoodsList.Count; i++) {
-
-				HLHNPCGoods goods = npcGoodsList [i];
-
-				if (goods.goodsId == goodsId) {
-
-					if (!goods.isFixedCount) {
-						npcGoodsList [i].totalCount++;
-						return;
-					}
-				}
-			}
-
-			HLHNPCGoods newGoods = new HLHNPCGoods ();
-
-			newGoods.goodsId = goodsId;
-
-			newGoods.isFixedCount = false;
-
-			newGoods.totalCount = 1;
-
-			npcGoodsList.Add (newGoods);
+//			for (int i = 0; i < npcGoodsList.Count; i++) {
+//
+//				HLHNPCGoods goods = npcGoodsList [i];
+//
+//				if (goods.goodsId == goodsId && !goods.isFixedCount) {
+//					npcGoodsList [i].totalCount--;
+//				}
+//			}
 
 		}
+
 
 
 		/// <summary>
@@ -389,9 +365,9 @@ namespace WordJourney
 
 //		public int goodsPrice;
 
-		public int totalCount;
+//		public int totalCount;
 
-		public bool isFixedCount;
+//		public bool isFixedCount;
 
 		public Item itemAsGoods;
 
@@ -400,6 +376,10 @@ namespace WordJourney
 				itemAsGoods = Item.NewItemWith (goodsId, 1);
 			}
 			return itemAsGoods;
+		}
+
+		public HLHNPCGoods(int goodsId){
+			this.goodsId = goodsId;
 		}
 
 	}
