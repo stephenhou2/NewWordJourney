@@ -1381,19 +1381,19 @@ namespace WordJourney
 //			return mapItem != null && mapItem.mapItemType == MapItemType.Plant;
 //		}
 
-		private bool CheckTargetMatchKey(Vector3 targetPos){
-			Transform mapItemTrans = GetAliveOtherItemAt (targetPos);
-			if (mapItemTrans == null) {
-				return false;
-			}
-			MapEvent mapItem = mapItemTrans.GetComponent<MapEvent>();
-
-			if (!(mapItem is TreasureBox)) {
-				return false;
-			}
-
-			return (mapItem as TreasureBox).locked;
-		}
+//		private bool CheckTargetMatchKey(Vector3 targetPos){
+//			Transform mapItemTrans = GetAliveOtherItemAt (targetPos);
+//			if (mapItemTrans == null) {
+//				return false;
+//			}
+//			MapEvent mapItem = mapItemTrans.GetComponent<MapEvent>();
+//
+//			if (!(mapItem is TreasureBox)) {
+//				return false;
+//			}
+//
+//			return (mapItem as TreasureBox).locked;
+//		}
 
 //		private bool CheckTargetMatchTorch(Vector3 targetPos){
 //
@@ -1776,8 +1776,6 @@ namespace WordJourney
 					TransformManager.FindTransform ("BagCanvas").GetComponent<BagViewController> ().AddBagItemWhenBagFull (reward);
 				}, false, true);
 			} else {
-
-
 
 				GetComponent<ExploreManager> ().ObtainReward (reward);
 			}

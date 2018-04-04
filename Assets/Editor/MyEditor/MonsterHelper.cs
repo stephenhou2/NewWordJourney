@@ -167,9 +167,6 @@ namespace WordJourney
 
 			}
 
-
-
-
 		}
 
 		private static MonsterModel[] LoadMonsterModels(){

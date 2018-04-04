@@ -149,6 +149,19 @@ namespace WordJourney
 
 			answerCharacters [characterCellIndex] = changeTo;
 
+			bool isCharactersFillCorrect = CheckCharactersCorrect();
+
+			if (isCharactersFillCorrect) {
+				StartCoroutine ("DelayWhenCharactersAllFillCorrect");
+			}
+		}
+
+		private IEnumerator DelayWhenCharactersAllFillCorrect(){
+			yield return new WaitForSeconds (1.0f);
+			QuitWordHUD ();
+			if (characterFillConfirmCallBack != null) {
+				characterFillConfirmCallBack (true);
+			}
 		}
 
 
@@ -163,8 +176,6 @@ namespace WordJourney
 					charactersCorrect = false;
 					break;
 				}
-
-
 			}
 
 			return charactersCorrect;
@@ -230,19 +241,7 @@ namespace WordJourney
 			return index;
 
 		}
-
-
-		public void OnUnlockButtonClick(){
-
-			bool isCharactersFillCorrect = CheckCharactersCorrect();
-
-			QuitWordHUD ();
-
-			if (characterFillConfirmCallBack != null) {
-				characterFillConfirmCallBack (isCharactersFillCorrect);
-			}
-
-		}
+			
 
 
 		/// <summary>
@@ -274,8 +273,6 @@ namespace WordJourney
 		}
 
 		public void QuitWordHUD(){
-
-			Debug.LogFormat ("QUIT word HUD{0}",Time.time);
 
 			if (quitCallBack != null) {
 				quitCallBack ();

@@ -18,15 +18,8 @@ namespace WordJourney
 
 //		public Transform skillsContainer;
 //		private Transform skillButtonModel;
-	
-		/**********  ConsumablesPlane UI *************/
-		public Transform consumablesInBagPlane;
-		public Transform consumablesInBagContainer;
-		public Transform consumablesButtonModel;
-		public InstancePool consumablesButtonPool;
-		/**********  ConsumablesPlane UI *************/
 
-		public Button allConsumablesButton;
+		public ConsumablesDisplay consDisplay;
 
 
 		public Transform activeSkillButtonContainer;
@@ -57,13 +50,6 @@ namespace WordJourney
 		public Transform directionArrow;
 
 
-		private int consumablesCountInOnePage = 6;
-
-		private int currentConsumablesPage;
-
-		public Button nextPageButton;
-		public Button lastPageButton;
-
 		public Transform levelUpPlane;
 
 
@@ -76,12 +62,6 @@ namespace WordJourney
 		/// <param name="skillSelectCallBack">Skill select call back.</param>
 		public void SetUpExplorePlayerView(Player player){
 
-//			if (consumablesButtonPool == null) {
-//				consumablesButtonPool = InstancePool.GetOrCreateInstancePool ("ConsumablesButtonPool", CommonData.exploreScenePoolContainerName);
-//			}
-			
-			currentConsumablesPage = 0;
-
 			this.player = player;
 
 			healthBar.InitHLHFillBar (player.maxHealth, player.health);
@@ -89,8 +69,9 @@ namespace WordJourney
 
 			coinCount.text = player.totalGold.ToString ();
 
-			SetUpBottomConsumablesButtons ();
+			consDisplay.InitConsumablesDisplay (UpdateAgentStatusPlane);
 
+			SetUpConsumablesButtons ();
 		}
 
 
@@ -175,14 +156,6 @@ namespace WordJourney
 
 			player.mana -= skill.manaConsume;
 
-			UpdateSkillButtonsStatus ();
-
-		}
-
-		private void UpdateSkillButtonsStatus(){
-
-
-
 		}
 
 			
@@ -190,30 +163,7 @@ namespace WordJourney
 			coinCount.text = player.totalGold.ToString ();
 		}
 
-		/// <summary>
-		/// 更新底部物品栏状态
-		/// </summary>
-		public void SetUpBottomConsumablesButtons(){
 
-			int totalConsumablesCount = player.allConsumablesInBag.Count;
-
-			for (int i = 0; i < equipedConsumablesButtons.Length; i++) {
-
-				Button equipedConsumablesButton = equipedConsumablesButtons [i];
-
-				if (i < totalConsumablesCount) {
-
-					Consumables consumables = player.allConsumablesInBag [i];
-
-					equipedConsumablesButton.GetComponent<ConsumablesInBagCell> ().SetUpConsumablesInBagCell (consumables);
-
-				} else {
-					equipedConsumablesButton.GetComponent<ConsumablesInBagCell> ().SetUpConsumablesInBagCell (null);
-				}
-
-			}
-		}
-			
 
 
 		/// <summary>
@@ -230,109 +180,8 @@ namespace WordJourney
 			}, false,true);
 
 		}
-			
-
-		/// <summary>
-		/// 打开所有消耗品界面的 箭头按钮 的点击响应
-		/// </summary>
-		public void OnShowConsumablesInBagButtonClick(){
-
-			currentConsumablesPage = 0;
-
-			// 如果箭头朝下，则退出所有消耗品显示界面
-			if (allConsumablesButton.transform.localRotation != Quaternion.identity) {
-
-				QuitConsumablesInBagPlane ();
-
-				return;
-
-			}
-
-			allConsumablesButton.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, 180));
-
-			Time.timeScale = 0f;
-
-			// 箭头朝上，初始化剩余的消耗品显示界面
-			SetUpConsumablesInBagPlane ();
-
-			consumablesInBagPlane.gameObject.SetActive (true);
-
-		}
-
-		private void UpdatePageButtonStatus(){
-
-			bool nextButtonEnable = player.allConsumablesInBag.Count > equipedConsumablesButtons.Length + (currentConsumablesPage + 1) * consumablesCountInOnePage;
-			bool lastButtonEnable = currentConsumablesPage >= 1;
-
-			nextPageButton.gameObject.SetActive (nextButtonEnable);
-			lastPageButton.gameObject.SetActive (lastButtonEnable);
-
-		}
-
-		/// <summary>
-		/// 初始化所有消耗品显示界面
-		/// </summary>
-		public void SetUpConsumablesInBagPlane(){
-			
-			UpdatePageButtonStatus ();
-
-			consumablesButtonPool.AddChildInstancesToPool (consumablesInBagContainer);
-
-			if (player.allConsumablesInBag.Count <= equipedConsumablesButtons.Length) {
-				return;
-			}
-				
-			int firstIndexOfCurrentPage = equipedConsumablesButtons.Length + currentConsumablesPage * consumablesCountInOnePage; 
-
-			int firstIndexOfNextPage = firstIndexOfCurrentPage + consumablesCountInOnePage;
-
-			int endIndexOfConsumablesInCurrentPage = player.allConsumablesInBag.Count < firstIndexOfNextPage ? player.allConsumablesInBag.Count - 1 : firstIndexOfNextPage - 1;
-
-			for (int i = firstIndexOfCurrentPage; i <= endIndexOfConsumablesInCurrentPage; i++) {
-
-				Consumables consumables = Player.mainPlayer.allConsumablesInBag [i];
-
-				Button consumablesButton = consumablesButtonPool.GetInstance<Button> (consumablesButtonModel.gameObject, consumablesInBagContainer);
-
-				consumablesButton.GetComponent<ConsumablesInBagCell> ().SetUpConsumablesInBagCell (consumables);
-
-			}
-
-		}
-
-		public void OnNextPageButtonClick(){
-			currentConsumablesPage++;
-			SetUpConsumablesInBagPlane ();
-		}
-
-		public void OnLastPageButtonClick(){
-			currentConsumablesPage--;
-			SetUpConsumablesInBagPlane ();
-		}
 
 
-
-		public void OnEquipedConsumablesButtonClick(int indexInPanel){
-			Consumables consumables = player.allConsumablesInBag [indexInPanel];
-			OnConsumablesButtonClick (consumables);
-		}
-
-
-		public void OnConsumablesButtonClick(Consumables consumables){
-
-			player.health += consumables.healthGain;
-			player.mana += consumables.manaGain;
-
-			player.RemoveItem (consumables, 1);
-
-			SetUpBottomConsumablesButtons ();
-			SetUpConsumablesInBagPlane ();
-
-			UpdateAgentStatusPlane ();
-
-			QuitConsumablesInBagPlane ();
-
-		}
 
 
 		public void OnProduceButtonClick(){
@@ -342,46 +191,27 @@ namespace WordJourney
 			}, false, true);
 		}
 
-
-		/// <summary>
-		/// 退出所有消耗品显示栏
-		/// </summary>
-		public void QuitConsumablesInBagPlane(){
-
-			Time.timeScale = 1f;
-
-			allConsumablesButton.transform.localRotation = Quaternion.identity;
-
-			consumablesInBagPlane.gameObject.SetActive (false);
-
+		public void SetUpConsumablesButtons(){
+			consDisplay.SetUpConsumablesButtons ();
 		}
+
 
 		/// <summary>
 		/// 更新底部物品栏和人物状态栏
 		/// </summary>
 		public void UpdateItemButtonsAndCoins(){
-
-			SetUpBottomConsumablesButtons ();
+			SetUpConsumablesButtons ();
 			UpdateCoin ();
-
 		}
 
 			
-
-
-		public override void PrepareForRefreshment ()
-		{
-			base.PrepareForRefreshment ();
-			QuitConsumablesInBagPlane ();
-		}
-
-
 
 		/// <summary>
 		/// 显示升级时的属性强化面板
 		/// </summary>
 		public void ShowLevelUpPlane(){
 			levelUpPlane.gameObject.SetActive (true);
+			ExploreManager.Instance.AllWalkableEventsStopMove ();
 		}
 
 		/// <summary>
@@ -421,18 +251,9 @@ namespace WordJourney
 			GetComponent<ExploreUICotroller> ().HideMask ();
 			UpdateAgentStatusPlane ();
 			levelUpPlane.gameObject.SetActive (false);
+			ExploreManager.Instance.AllWalkableEventsStartMove ();
 		}
 			
-
-		void OnDestroy(){
-//			consumablesButtonPool = null;
-//			fightTextManager = null;
-//			fightTextPool = null;
-//			statusTintPool = null;
-//			mExploreManager = null;
-//			mBpCtr = null;
-//			attackCheckController = null;
-		}
 
 	}
 }

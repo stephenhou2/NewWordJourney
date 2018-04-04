@@ -86,7 +86,7 @@ namespace WordJourney
 			if (isSuccess) {
 				(bp.agent as Player).totalGold += goldAmount;
 				ExploreManager.Instance.UpdatePlayerStatusPlane ();
-				string tintText = string.Format ("获得金币 +{0}", goldAmount);
+				string tintText = string.Format ("+{0}", goldAmount);
 				ExploreManager.Instance.ShowTint (tintText, null);
 			}
 

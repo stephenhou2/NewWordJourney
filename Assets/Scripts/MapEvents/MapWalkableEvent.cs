@@ -56,7 +56,7 @@ namespace WordJourney
 
 			while (true) {
 
-				float standDuration = Random.Range (4.0f, 5.0f);
+				float standDuration = Random.Range (2.0f, 4.0f);
 
 				float timer = 0;
 

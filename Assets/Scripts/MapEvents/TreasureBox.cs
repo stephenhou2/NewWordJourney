@@ -5,20 +5,15 @@ using UnityEngine;
 namespace WordJourney
 {
 	public enum TreasureBoxType{
-		NormalTreasureBox,
-		LockedTreasureBox
+		Pot,
+		Bucket,
+		TreasuerBox
 	}
 
 	public class TreasureBox: MapEvent {
 
 		// 地图物品状态变化之后是否可以行走
 		public bool walkableAfterChangeStatus;
-
-		// 开启所需物品的名称
-		public string unlockItemName;
-
-		// 是否有锁
-		public bool locked;
 
 		public TreasureBoxType tbType;
 
@@ -42,10 +37,7 @@ namespace WordJourney
 			int sortingOrder = -(int)transform.position.y;
 			SetSortingOrder (sortingOrder);
 			SetAnimationSortingOrder (sortingOrder);
-//			isDroppable = false;
-			if (tbType == TreasureBoxType.LockedTreasureBox) {
-				locked = true; 
-			}
+
 		}
 
 		private void SetAnimationSortingOrder(int order){
@@ -117,7 +109,6 @@ namespace WordJourney
 		}
 
 		protected void AnimEnd (){
-			locked = false;
 			if (animEndCallBack != null) {
 				animEndCallBack ();
 			}
@@ -134,13 +125,13 @@ namespace WordJourney
 				isGoldTreasureBox = type == "1";
 			}
 
-			string rewardItemIdsString = KVPair.GetPropertyStringWithKey ("IDRange", attachedInfo.properties);
+//			string rewardItemIdsString = KVPair.GetPropertyStringWithKey ("IDRange", attachedInfo.properties);
 
-			if (rewardItemIdsString.Equals ("-1")) {
-				rewardItem = Item.GetRandomItem ();
-			} else {
+//			if (rewardItemIdsString.Equals ("-1")) {
+//				rewardItem = Item.GetRandomItem ();
+//			} else {
 				
-				int rewardItemId = GetRandomItemIdFromRangeString (rewardItemIdsString);
+				int rewardItemId = GetRandomItemIdFromGameLevelData();
 
 				rewardItem = Item.NewItemWith (rewardItemId, 1);
 
@@ -170,7 +161,7 @@ namespace WordJourney
 					eqp.ResetPropertiesByQuality (quality);
 
 				}
-			}
+//			}
 				
 			CheckIsWordTriggeredAndShow ();
 
@@ -180,28 +171,33 @@ namespace WordJourney
 			int sortingOrder = -(int)transform.position.y;
 			SetSortingOrder (sortingOrder);
 			SetAnimationSortingOrder (sortingOrder);
-//			isDroppable = false;
-			if (tbType == TreasureBoxType.LockedTreasureBox) {
-				locked = true; 
-			}
 
 		}
 
 
 
-		private int GetRandomItemIdFromRangeString(string itemIdRangeString){
+		private int GetRandomItemIdFromGameLevelData(){
 
-			string[] idStringArray = itemIdRangeString.Split (new char[]{ '_' }, System.StringSplitOptions.RemoveEmptyEntries);
+			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];
 
-			int[] idRangeArray = new int[idStringArray.Length];
+			List<int> possibleItemIds = null;
 
-			for (int i = 0; i < idStringArray.Length; i++) {
-				idRangeArray [i] = int.Parse (idStringArray [i]);
+			switch (tbType) {
+			case TreasureBoxType.Pot:
+				possibleItemIds = levelData.itemIdsInPot;
+				break;
+			case TreasureBoxType.Bucket:
+				possibleItemIds = levelData.itemIdsInBucket;
+				break;
+			case TreasureBoxType.TreasuerBox:
+				possibleItemIds = levelData.itemIdsInTreasureBox;
+				break;
 			}
 
-			int randomIndex = Random.Range (0, idRangeArray.Length);
+			int randomSeed = Random.Range (0, possibleItemIds.Count);
 
-			return idRangeArray [randomIndex];
+			return possibleItemIds [randomSeed];
+
 
 		}
 

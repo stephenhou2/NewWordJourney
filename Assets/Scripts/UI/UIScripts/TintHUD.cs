@@ -10,6 +10,7 @@ namespace WordJourney
 
 		public Text tintText;
 		public Image tintImage;
+		public Text singleTextTint;
 		public float tintHUDShowDuration = 1f;
 		private IEnumerator tintHUDCoroutine;
 
@@ -17,12 +18,18 @@ namespace WordJourney
 
 			gameObject.SetActive (true);
 
-			tintText.text = tint;
-
-			tintImage.sprite = sprite;
-			tintImage.enabled = sprite != null;
-
-
+			if (sprite != null) {
+				tintText.enabled = true;
+				tintImage.enabled = true;
+				singleTextTint.enabled = false;
+				tintText.text = tint;
+				tintImage.sprite = sprite;
+			} else {
+				tintText.enabled = false;
+				tintImage.enabled = false;
+				singleTextTint.enabled = true;
+				singleTextTint.text = tint;
+			}
 
 			if (tintHUDCoroutine != null) {
 				StopCoroutine (tintHUDCoroutine);

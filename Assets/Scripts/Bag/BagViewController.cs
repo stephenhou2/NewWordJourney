@@ -241,7 +241,7 @@ namespace WordJourney
 
 			Player player = Player.mainPlayer;
 
-			bool removeAndUpdate = false;
+			bool clearItemDetail = false;
 
 			switch (consumables.type) {
 			case ConsumablesType.ShuXingTiSheng:
@@ -250,7 +250,7 @@ namespace WordJourney
 				player.mana += consumables.manaGain;
 				player.experience += consumables.experienceGain;
 
-				player.RemoveItem (consumables, 1);
+				clearItemDetail = player.RemoveItem (consumables, 1);
 
 				bool isLevelUp = player.LevelUpIfExperienceEnough ();
 				if (isLevelUp) {
@@ -258,33 +258,32 @@ namespace WordJourney
 				}
 
 				bagView.SetUpPlayerStatusPlane (new PropertyChange());
-				removeAndUpdate = true;
 
 				break;  
 			case ConsumablesType.ChongZhuShi:
 				Equipment eqp = bagView.RebuildEquipment ();
 				if (eqp != null) {
 					currentSelectItem = eqp;
-					removeAndUpdate = true;
 				}
+				player.RemoveItem (consumables, 1);
 				break;
 			case ConsumablesType.DianJinShi:
 				eqp = bagView.UpgradeEquipmentToGold ();
 				if (eqp != null) {
 					currentSelectItem = eqp;
-					removeAndUpdate = true;
 				}
+				player.RemoveItem (consumables, 1);
 				break;
 			case ConsumablesType.XiaoMoJuanZhou:
 				eqp = bagView.RemoveEquipmentAttachedSkill ();
 				if (eqp != null) {
 					currentSelectItem = eqp;
-					removeAndUpdate = true;
 				}
+				player.RemoveItem (consumables, 1);
 				break;
 			case ConsumablesType.YinShenJuanZhou:
 				ExploreManager.Instance.PlayerFade ();
-				removeAndUpdate = true;
+				clearItemDetail = player.RemoveItem (consumables, 1);
 				break;
 			}
 
@@ -292,16 +291,20 @@ namespace WordJourney
 			if (itemToAddWhenBagFull != null && !Player.mainPlayer.CheckBagFull (itemToAddWhenBagFull)) {
 				AddItemInWait ();
 			}
-				
-			if (removeAndUpdate) {
-				player.RemoveItem (consumables, 1);
-				bagView.SetUpCurrentBagItemsPlane ();
+
+
+			bagView.SetUpCurrentBagItemsPlane ();
+			if (clearItemDetail) {
+				bagView.ClearItemDetail ();
 			}
 
 		}
 
 
 		public void OnRemoveButtonClick(){
+			if (currentSelectItem == null) {
+				return;
+			}
 			bagView.ShowRemoveQueryHUD ();
 		}
 

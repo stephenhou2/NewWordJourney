@@ -114,41 +114,40 @@ namespace WordJourney
 			Vector3 lineCastStart = Vector3.zero;
 			switch (baCtr.towards) {
 			case MyTowards.Up:
-				lineCastStart = transform.position + new Vector3 (0, 0.5f, 0);
-				lineCastEnd = transform.position + new Vector3 (0, 2.5f, 0);
+				lineCastStart = transform.position + new Vector3 (0, 0.25f, 0);
+				lineCastEnd = transform.position + new Vector3 (0, 1.5f, 0);
 				break;
 			case MyTowards.Down:
-				lineCastStart = transform.position + new Vector3 (0, -0.5f, 0);
-				lineCastEnd = transform.position + new Vector3 (0, -2.5f, 0);
+				lineCastStart = transform.position + new Vector3 (0, -0.25f, 0);
+				lineCastEnd = transform.position + new Vector3 (0, -1.5f, 0);
 				break;
 			case MyTowards.Left:
-				lineCastStart = transform.position + new Vector3 (-0.5f, 0, 0);
-				lineCastEnd = transform.position + new Vector3 (-2.5f, 0, 0);
+				lineCastStart = transform.position + new Vector3 (-0.25f, 0, 0);
+				lineCastEnd = transform.position + new Vector3 (-1.5f, 0, 0);
 				break;
 			case MyTowards.Right:
-				lineCastStart = transform.position + new Vector3 (0.5f, 0, 0);
-				lineCastEnd = transform.position + new Vector3 (2.5f, 0, 0);
+				lineCastStart = transform.position + new Vector3 (0.25f, 0, 0);
+				lineCastEnd = transform.position + new Vector3 (1.5f, 0, 0);
 				break;
 			}
 
-			RaycastHit2D[] r2ds = Physics2D.LinecastAll (lineCastStart, lineCastEnd ,collisionLayer);
-
-			for (int i = 0; i < r2ds.Length; i++) {
-
-				RaycastHit2D r2d = r2ds [i];
-
-				if (r2d.transform != null) {
-
-					bool isBlocked = CheckIsBlocked (r2d.transform.position,bp.transform.position);
-
-					if (isBlocked) {
-						return;
-					}
-				}
-			}
+//			RaycastHit2D[] r2ds = Physics2D.LinecastAll (lineCastStart, lineCastEnd ,collisionLayer);
+//
+//			for (int i = 0; i < r2ds.Length; i++) {
+//
+//				RaycastHit2D r2d = r2ds [i];
+//
+//				if (r2d.transform != null) {
+//
+//					bool isBlocked = CheckIsBlocked (r2d.transform.position,bp.transform.position);
+//
+//					if (isBlocked) {
+//						return;
+//					}
+//				}
+//			}
 				
 			ExploreManager.Instance.DisableInteractivity ();
-//			Debug.Log ("禁止点击");
 
 			DisableAllDetect ();
 
@@ -163,24 +162,24 @@ namespace WordJourney
 
 		}
 
-		private bool CheckIsBlocked(Vector3 collisionPos,Vector3 playerPos){
-
-			bool isBlocked = true;
-
-			int posX = Mathf.RoundToInt (collisionPos.x);
-			int posY = Mathf.RoundToInt (collisionPos.y);
-
-			isBlocked = ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [posX, posY] != 1;
-
-			if (posX == Mathf.RoundToInt (transform.position.x)) {
-				isBlocked = (transform.position.y - posY) * (playerPos.y - posY) < 0;
-			} else if (posY == Mathf.RoundToInt (transform.position.y)) {
-				isBlocked = (transform.position.x - posX) * (playerPos.x - posX) < 0;
-			}
-				
-			return isBlocked;
-
-		}
+//		private bool CheckIsBlocked(Vector3 collisionPos,Vector3 playerPos){
+//
+//			bool isBlocked = true;
+//
+//			int posX = Mathf.RoundToInt (collisionPos.x);
+//			int posY = Mathf.RoundToInt (collisionPos.y);
+//
+//			isBlocked = ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [posX, posY] != 1;
+//
+//			if (posX == Mathf.RoundToInt (transform.position.x)) {
+//				isBlocked = (transform.position.y - posY) * (playerPos.y - posY) < 0;
+//			} else if (posY == Mathf.RoundToInt (transform.position.y)) {
+//				isBlocked = (transform.position.x - posX) * (playerPos.x - posX) < 0;
+//			}
+//				
+//			return isBlocked;
+//
+//		}
 
 		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
 		{
@@ -345,7 +344,7 @@ namespace WordJourney
 
 			if (posOffsetX > 0) {
 
-				battlePlayerCtr.TowardsLeft (false);
+				battlePlayerCtr.TowardsLeft (!battlePlayerCtr.isInFight);
 				baCtr.TowardsRight ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
@@ -365,7 +364,7 @@ namespace WordJourney
 
 					baCtr.TowardsLeft ();
 
-					battlePlayerCtr.TowardsRight (false);
+					battlePlayerCtr.TowardsRight (!battlePlayerCtr.isInFight);
 
 					monsterFightPos = new Vector3 (playerOriPos.x+ 1, playerOriPos.y, 0);
 
@@ -373,7 +372,7 @@ namespace WordJourney
 
 					baCtr.TowardsRight ();
 
-					battlePlayerCtr.TowardsLeft (false);
+					battlePlayerCtr.TowardsLeft (!battlePlayerCtr.isInFight);
 
 					monsterFightPos = new Vector3 (playerOriPos.x - 1, playerOriPos.y, 0);
 
@@ -381,7 +380,7 @@ namespace WordJourney
 
 					baCtr.TowardsLeft ();
 
-					battlePlayerCtr.TowardsRight (false);
+					battlePlayerCtr.TowardsRight (!battlePlayerCtr.isInFight);
 						
 					monsterFightPos = new Vector3 (playerOriPos.x + 0.5f, playerOriPos.y, 0);
 					battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
@@ -390,7 +389,7 @@ namespace WordJourney
 
 			} else if (posOffsetX < 0) {
 
-				battlePlayerCtr.TowardsRight (false);
+				battlePlayerCtr.TowardsRight (!battlePlayerCtr.isInFight);
 				baCtr.TowardsLeft ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {

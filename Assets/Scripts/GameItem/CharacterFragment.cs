@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	#warning 这个类应该没有用了
 	// 字母碎片的id=10000
 	public class CharacterFragment : Item {
 

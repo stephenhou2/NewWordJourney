@@ -17,7 +17,7 @@ namespace WordJourney
 		public List<int> itemIdsInBucket;
 
 		// 宝箱中可能会开出来的物品id数组
-		public List<int> itemIdsInLockedBox;
+		public List<int> itemIdsInTreasureBox;
 
 		public List<int> goodsIdsListArray_0 = new List<int>();
 		public List<int> goodsIdsListArray_1 = new List<int>();
@@ -37,7 +37,7 @@ namespace WordJourney
 
 			itemIdsInBucket = InitIntArrayWithString (dataStrings [2]);
 
-			itemIdsInLockedBox = InitIntArrayWithString (dataStrings [3]);
+			itemIdsInTreasureBox = InitIntArrayWithString (dataStrings [3]);
 
 			goodsIdsListArray_0 = InitIntArrayWithString (dataStrings [4]);
 			goodsIdsListArray_1 = InitIntArrayWithString (dataStrings [5]);

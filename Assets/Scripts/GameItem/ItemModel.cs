@@ -103,6 +103,7 @@ namespace WordJourney
 		public int experienceGain;
 
 		public ConsumablesType type;
+		public bool isShowInBagOnly;
 
 	}
 

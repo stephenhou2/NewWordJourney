@@ -23,8 +23,6 @@ namespace WordJourney
 
 		public EquipedItemDragControl[] allEquipedItemDragControls;
 
-//		public int equipmentIndexInPanel;
-
 		protected override void OnUserPointerEnter (PointerEventData eventData)
 		{
 
@@ -189,6 +187,8 @@ namespace WordJourney
 					bagView.GetComponent<BagViewController> ().AddItemInWait ();
 
 				}
+
+				bagView.SetUpItemDetail (equipmentPrepareToLoad);
 
 				tintImage.enabled = false;
 

@@ -107,39 +107,34 @@ namespace WordJourney
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
 			if (isSuccess) {
+				if (isOpen) {
+					bp.transform.position = pairDoorPos;
+					bp.singleMoveEndPos = pairDoorPos;
+					bp.moveDestination = pairDoorPos;
 
-				isOpen = true;
-				mapItemRenderer.sprite = null;
+					Vector3 continueMovePos = Vector3.zero;
 
+					switch (bp.towards) {
+					case MyTowards.Up:
+						continueMovePos = pairDoorPos + new Vector3 (0, 1, 0);
+						break;
+					case MyTowards.Down:
+						continueMovePos = pairDoorPos + new Vector3 (0, -1, 0);
+						break;
+					case MyTowards.Left:
+						continueMovePos = pairDoorPos + new Vector3 (-1, 0, 0);
+						break;
+					case MyTowards.Right:
+						continueMovePos = pairDoorPos + new Vector3 (1, 0, 0);
+						break;
+					}
 
-				bp.transform.position = pairDoorPos;
-				bp.singleMoveEndPos = pairDoorPos;
-				bp.moveDestination = pairDoorPos;
+					bp.MoveToPosition (continueMovePos, ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray);
 
-				Vector3 continueMovePos = Vector3.zero;
-
-				switch (bp.towards) {
-				case MyTowards.Up:
-					continueMovePos = pairDoorPos + new Vector3 (0, 1, 0);
-					break;
-				case MyTowards.Down:
-					continueMovePos = pairDoorPos + new Vector3 (0, -1, 0);
-					break;
-				case MyTowards.Left:
-					continueMovePos = pairDoorPos + new Vector3 (-1, 0, 0);
-					break;
-				case MyTowards.Right:
-					continueMovePos = pairDoorPos + new Vector3 (1, 0, 0);
-					break;
+				} else {
+					isOpen = true;
+					mapItemRenderer.sprite = null;
 				}
-
-				bp.MoveToPosition (continueMovePos, ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray);
-
-
-			} else {
-
-				ExploreManager.Instance.ShowTint("口令不正确！",null);
-
 			}
 		}
 

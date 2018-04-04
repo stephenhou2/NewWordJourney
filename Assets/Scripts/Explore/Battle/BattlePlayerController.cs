@@ -184,11 +184,13 @@ namespace WordJourney
 		/// <param name="targetPos">Target position.</param>
 		private void MoveToPosition(Vector3 targetPos){
 
-			bpUICtr.RefreshMiniMap();
+
 
 			exploreManager.newMapGenerator.UpdateFogOfWar ();
 
 			moveTweener =  transform.DOMove (targetPos, moveDuration).OnComplete (() => {
+
+				bpUICtr.RefreshMiniMap();
 
 				if(fadeStepsLeft > 0){
 					fadeStepsLeft--;

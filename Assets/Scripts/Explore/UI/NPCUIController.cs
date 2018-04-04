@@ -45,8 +45,6 @@ namespace WordJourney
 
 		public TintHUD tintHUD;
 
-//		private HLHNPCGoods currentSelectedGoods;
-
 		private Item currentSelectedItem;
 
 		public float flyDuration;
@@ -66,6 +64,9 @@ namespace WordJourney
 		public int specialOpeartionHUDMoveEndX;
 
 		public int bagItemsPlaneMoveEndY;
+
+		public Button quitTradeButton;
+		public Button quitSpecialOperationButton;
 
 		public void ShowNPCPlane(){
 			gameObject.SetActive (true);
@@ -251,17 +252,9 @@ namespace WordJourney
 
 			bagItemsDisplay.SetUpBagItemsPlane (0, OnItemInBagClickInTrade);
 
-			#warning 从关卡数据里加载商品数据
-			if (npc.npcGoodsList.Count == 0) {
-
-
-
-			}
-
+			quitTradeButton.gameObject.SetActive (true);
+			quitSpecialOperationButton.gameObject.SetActive (false);
 			EnterTradeDisplay ();
-//			EnterSpecialOperationDisplay();
-//			specialOperationHUD.InitSpecialOperationHUD (bagItemsDisplay.SetUpCurrentBagItemsPlane,RefreshCurrentSelectItemDetailDisplay);
-
 		}
 
 		private void RefreshCurrentSelectItemDetailDisplay(){
@@ -279,9 +272,13 @@ namespace WordJourney
 
 			bagItemsDisplay.SetUpBagItemsPlane (0, OnItemInBagClickInSpecialOperation);
 
-			EnterSpecialOperationDisplay();
+			quitTradeButton.gameObject.SetActive (false);
+			quitSpecialOperationButton.gameObject.SetActive (true);
 
 			specialOperationHUD.InitSpecialOperationHUD (bagItemsDisplay.SetUpCurrentBagItemsPlane,RefreshCurrentSelectItemDetailDisplay);
+		
+			EnterSpecialOperationDisplay();
+
 		}
 
 		private void UpdateGoodsDisplay(){
@@ -545,6 +542,10 @@ namespace WordJourney
 			currentSelectedItem = null;
 
 			QuitTradeDisplay ();
+		}
+
+		public void QuitSpecialOperationPlane(){
+			QuitSpecialOperationDisplay ();
 		}
 
 		public void QuitNPCPlane(){

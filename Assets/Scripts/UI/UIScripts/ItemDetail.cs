@@ -50,6 +50,8 @@ namespace WordJourney
 
 			itemDescription.text = item.itemDescription;
 
+			goldIcon.enabled = true;
+
 			priceText.text = (item.price / 8).ToString ();
 
 			switch(item.itemType){

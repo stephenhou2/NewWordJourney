@@ -111,7 +111,7 @@ namespace WordJourney
 		// 数据库处理助手
 		private MySQLiteHelper mySql;
 
-		private HLHGameLevelData currentLevelData;
+//		private HLHGameLevelData currentLevelData;
 
 		private List<TriggeredGear> allTriggeredMapEvents = new List<TriggeredGear> ();
 		public List<MapWalkableEvent> allWalkableEventsInMap = new List<MapWalkableEvent> ();
@@ -121,9 +121,6 @@ namespace WordJourney
 
 		// 本层出口位置
 		private Vector2 exitPos;
-
-
-
 
 
 //		void Update(){
@@ -139,12 +136,12 @@ namespace WordJourney
 		}
 
 
-		public void SetUpMapWith(HLHGameLevelData levelData)
+		public void SetUpMap()
 		{
 
-			currentLevelData = levelData;
+//			currentLevelData = levelData;
 
-			mapData = MapData.GetMapDataOfLevel (levelData.gameLevelIndex);
+			mapData = MapData.GetMapDataOfLevel (Player.mainPlayer.currentLevelIndex);
 
 			// 获取地图建模的行数和列数
 			rows = mapData.rowCount;
@@ -367,21 +364,24 @@ namespace WordJourney
 					mapWalkableEventInfoArray [posX, posY] = 1;
 					allWalkableEventsInMap.Add (mapEvent as MapMonster);
 					break;
-				case "goldpack":
+				case "goldPack":
 					mapEvent = mapEventsPool.GetInstanceWithName<GoldPack> (goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 1;
 					break;
 				case "bucket":
 					mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox> (bucketModel.name, bucketModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
+					(mapEvent as TreasureBox).tbType = TreasureBoxType.Bucket;
 					break;
 				case "pot":
 					mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox> (potModel.name, potModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
+					(mapEvent as TreasureBox).tbType = TreasureBoxType.Pot;
 					break;
 				case "treasure":
 					mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox> (lockedTreasureBoxModel.name, lockedTreasureBoxModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
+					(mapEvent as TreasureBox).tbType = TreasureBoxType.TreasuerBox;
 					break;
 				case "stone":
 					mapEvent = mapEventsPool.GetInstanceWithName<Obstacle> (stoneModel.name, stoneModel.gameObject, mapEventsContainer);
@@ -394,8 +394,7 @@ namespace WordJourney
 				case "crystal":
 					mapEvent = mapEventsPool.GetInstanceWithName<Crystal> (crystalModel.name, crystalModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
-					break;mapWalkableEventInfoArray [posX, posY] = 1;
-					allWalkableEventsInMap.Add (mapEvent as MapNPC);
+					break;
 				case "curePoint":
 					mapEvent = mapEventsPool.GetInstanceWithName<CurePoint> (curePointModel.name, curePointModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;

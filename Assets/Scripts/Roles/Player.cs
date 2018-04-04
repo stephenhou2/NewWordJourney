@@ -1019,7 +1019,7 @@ namespace WordJourney
 				// 如果是消耗品，且背包中已经存在该消耗品，则只合并数量
 			case ItemType.Consumables:
 				Consumables consumablesInBag = allConsumablesInBag.Find (delegate(Consumables obj) {
-					return obj == item;	
+					return obj.itemId == item.itemId;	
 				});
 
 				if (consumablesInBag == null) {

@@ -108,6 +108,7 @@ namespace WordJourney
 					bagView.SetUpEquipedEquipmentsPlane ();
 					bagView.SetUpPlayerStatusPlane (propertyChange);
 					SetDropResult (eventData, true);
+					bagView.ClearItemDetail ();
 				} else {
 					SetDropResult (eventData, false);
 				}

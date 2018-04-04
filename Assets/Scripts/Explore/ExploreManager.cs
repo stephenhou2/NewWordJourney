@@ -111,15 +111,15 @@ namespace WordJourney
 				SoundManager.Instance.PlayBgmAudioClip (CommonData.exploreBgmName);
 			}
 
-			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];
+//			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];
+//
+//			currentLevelIndex = levelData.gameLevelIndex;
 
-			currentLevelIndex = levelData.gameLevelIndex;
-
-			newMapGenerator.SetUpMapWith(levelData);
+			newMapGenerator.SetUpMap();
 
 			ExploreUICotroller expUICtr = TransformManager.FindTransform ("ExploreCanvas").GetComponent <ExploreUICotroller> ();
 
-			expUICtr.SetUpExploreCanvas (levelData.gameLevelIndex);
+			expUICtr.SetUpExploreCanvas ();
 
 //			Debug.Log ("初始化人物数据");
 			battlePlayerCtr.InitBattlePlayer ();
@@ -331,7 +331,7 @@ namespace WordJourney
 
 			MapEvent me = currentEnteredMapEvent.GetComponent<MapEvent> ();
 
-			me.MapEventTriggered (isFillCorrect, battlePlayerCtr);
+			me.MapEventTriggered (true, battlePlayerCtr);
 
 		}
 
@@ -488,14 +488,20 @@ namespace WordJourney
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);
 
-			(battlePlayerCtr.agent as Player).DestroyEquipmentInBagAttachedSkills ();
+			Transform trans = monsterTransArray [0];
+
+			BattleMonsterController bmCtr = trans.GetComponent<BattleMonsterController> ();
+
+			Monster monster = trans.GetComponent<Monster> ();
+
+			Player player = Player.mainPlayer;
+
+
+			player.DestroyEquipmentInBagAttachedSkills ();
 
 			battlePlayerCtr.enemy = null;
 
-			battleMonsterCtr.enemy = null;
-
-//			battlePlayerCtr.RemoveTriggeredSkillEffect ();
-//			battleMonsterCtr.RemoveTriggeredSkillEffect ();
+			bmCtr.enemy = null;
 
 			FightEndCallBacks ();
 
@@ -509,63 +515,46 @@ namespace WordJourney
 				return;
 			}
 
-			Transform trans = monsterTransArray [0];
 
-			Vector3 monsterPos = trans.GetComponent<BattleMonsterController> ().originalPos;
+			Vector3 monsterPos = bmCtr.originalPos;
 
-//			// 位置偏差修正
-			int X = Mathf.RoundToInt(monsterPos.x);
-			int Y = Mathf.RoundToInt(monsterPos.y);
+			int monsterPosX = Mathf.RoundToInt(monsterPos.x);
+			int monsterPosY = Mathf.RoundToInt(monsterPos.y);
 
-			newMapGenerator.mapWalkableInfoArray [X, Y] = 1;
+			newMapGenerator.mapWalkableInfoArray [monsterPosX, monsterPosY] = 1;
 
-			Player player = battlePlayerCtr.agent as Player;
+			player.totalGold += monster.rewardGold;//更新玩家金钱
 
-			player.experience += trans.GetComponent<Monster> ().rewardExperience;//更新玩家经验值
+			string tint = string.Format ("+{0}", monster.rewardGold);
+
+			ShowTint (tint, null);
+
+			player.experience += monster.rewardExperience;//更新玩家经验值
 
 			bool isLevelUp = player.LevelUpIfExperienceEnough ();//判断是否升级
 
 			if (isLevelUp) {
-//				battlePlayerCtr.ActiveBattlePlayer (true, false, false);
 				PlayLevelUpAnim ();
 				DisableInteractivity ();
 				expUICtr.ShowLevelUpPlane ();
 			}
 
-
-			Item reward = null;
-
-			// 怪物是普通怪
-			if (monsterTransArray [0].GetComponent<Monster> ().monsterId < 50) {
-
-				int characterIndex = Random.Range (0, 26);
-
-				char character = (char)(characterIndex + CommonData.aInASCII);
-
-				reward = new CharacterFragment (character, 1);
-
-			} else {
-
-				int randomCraftingRecipesId = Random.Range (450, 460);
-
-				reward = Item.NewItemWith (randomCraftingRecipesId, 1);
-
+			MapMonster mm = bmCtr.GetComponent<MapMonster> ();
+			if (mm != null) {
+				int itemId = mm.dropItemID;
+				float dropProbability = mm.dropItemProbability;
+				if (Random.Range (0, 1.0f) <= dropProbability) {
+					newMapGenerator.SetUpRewardInMap (Item.NewItemWith (itemId, 1), mm.transform.position);
+				}
 			}
-
-
-//			mapGenerator.SetUpRewardInMap (reward, monsterPos);
-
-//			ResetCamareAndContinueMove (battleMonsterCtr.originalPos);
 
 			battlePlayerCtr.PlayRoleAnim ("wait", 0, null);
 
 			EnableInteractivity ();
 
-//			monsterEntered = null;
-
 			battlePlayerCtr.isInFight = false;
 
-			if (battleMonsterCtr.GetComponent<MapNPC> () != null) {
+			if (bmCtr.GetComponent<MapNPC> () != null) {
 				expUICtr.ShowNPCPlane ();
 			}
 
@@ -592,8 +581,6 @@ namespace WordJourney
 			battleMonsterCtr.enemy = null;
 
 			FightEndCallBacks ();
-
-//			monsterEntered = null;
 
 			QuitExploreScene (false);
 		}

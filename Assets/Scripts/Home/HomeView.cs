@@ -13,41 +13,21 @@ namespace WordJourney
 	public class HomeView : MonoBehaviour {
 
 
-		public Text wordTypeText;
-		public Text coinCount;
-
 		public Image maskImage;
 
 		public Transform difficultyChoosePlane;
 		public Transform difficultyChooseContainer;
 
-//		public Transform chapterSelectPlane;
-//		public Transform chaptersContainer;
-
-//		public Button[] chapterButtons;
 
 		public float zoomInDuration = 0.2f;
 
 
-
 		public void SetUpHomeView(){
-			
-			SetUpBasicInformation ();
 
 			GetComponent<Canvas> ().enabled = true;
 
 		}
-
-
-
-		private void SetUpBasicInformation(){
-
-			wordTypeText.text = GameManager.Instance.gameDataCenter.gameSettings.GetWordTypeString ();
-
-			coinCount.text = Player.mainPlayer.totalGold.ToString ();
-
-		}
-
+			
 
 		public void ShowMaskImage (){
 			maskImage.gameObject.SetActive (true);

@@ -27,18 +27,15 @@ namespace WordJourney
 	public class Consumables : Item {
 
 
-		public static int minProducableConsumablesId = 300;
-		public static int maxProducableConsumablesId = 400;
-
-
 		public ConsumablesType type;
 
 		public int healthGain;
 		public int manaGain;
 		public int experienceGain;
 
+		public bool isShowInBagOnly;
 
-
+	
 //		public bool isOnlyExploreUse;
 
 		/// <summary>
@@ -58,6 +55,7 @@ namespace WordJourney
 			this.experienceGain = consumablesModel.experienceGain;
 
 			this.type = consumablesModel.type;
+			this.isShowInBagOnly = consumablesModel.isShowInBagOnly;
 
 		}
 

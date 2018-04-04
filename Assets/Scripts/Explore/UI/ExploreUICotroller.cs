@@ -61,7 +61,7 @@ namespace WordJourney
 		public SimpleItemDetail simpleItemDetail;
 
 
-		public void SetUpExploreCanvas(int gameLevelIndex){
+		public void SetUpExploreCanvas(){
 
 
 //			unlockScrollDetail.InitUnlockScrollDetailHUD (true, null, UnlockItemCallBack, ResolveScrollCallBack);
@@ -80,8 +80,8 @@ namespace WordJourney
 					
 			}
 				
-			string gameLevelInCurrentLocation = MyTool.NumberToChinese(gameLevelIndex % 5 + 1);
-			gameLevelLocationText.text = string.Format("第 {0} 层",gameLevelInCurrentLocation);
+//			string gameLevelInCurrentLocation = MyTool.NumberToChinese(gameLevelIndex % 5 + 1);
+			gameLevelLocationText.text = string.Format("第 {0} 层",Player.mainPlayer.currentLevelIndex);
 
 
 			bpUICtr.InitExploreAgentView ();
@@ -171,7 +171,7 @@ namespace WordJourney
 		/// 更新底部消耗品栏
 		/// </summary>
 		public void UpdateBottomBar(){
-			bpUICtr.SetUpBottomConsumablesButtons ();
+			bpUICtr.SetUpConsumablesButtons ();
 		}
 
 		public void UpdatePlayerStatusBar(){
@@ -450,25 +450,6 @@ namespace WordJourney
 			Destroy (this.gameObject,0.3f);
 		}
 			
-
-		public void TestNpc(){
-
-			MapNPC npc = null;
-
-			if (ExploreManager.Instance.currentEnteredMapEvent == null) {
-				npc = (new GameObject ()).AddComponent<MapNPC> ();
-
-				ExploreManager.Instance.currentEnteredMapEvent = npc;
-			} else {
-				npc = ExploreManager.Instance.currentEnteredMapEvent as MapNPC;
-			}
-
-			npc.InitializeWithAttachedInfo (new MapAttachedInfoTile ("npc",new Vector2(0,0),new List<KVPair>()));
-
-			npc.EnterMapEvent (Player.mainPlayer.GetComponent<BattlePlayerController>());
-
-		}
-
 
 		void OnDestroy(){
 //			tintHUD = null;

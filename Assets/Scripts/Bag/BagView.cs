@@ -121,11 +121,6 @@ namespace WordJourney
 			if (ExploreManager.Instance != null) {
 				ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar ();
 			}
-
-
-
-
-
 		}
 
 		public void SetUpItemDetail(Item item){
