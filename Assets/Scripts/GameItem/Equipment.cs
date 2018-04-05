@@ -19,7 +19,8 @@ namespace WordJourney
 	public enum EquipmentQuality{
 		Gray,
 		Blue,
-		Gold
+		Gold,
+		DarkGold
 	}
 
 
@@ -89,6 +90,7 @@ namespace WordJourney
 		public int equipmentGrade;//装备评级
 		public EquipmentQuality quality;//装备品质
 
+		public int oriAttachedSkillId;//原始附带技能id
 		public int attachedSkillId;//附带技能id
 
 		public Skill attachedSkill;//附带的技能
@@ -124,6 +126,7 @@ namespace WordJourney
 			// 初始化物品基本属性
 			InitBaseProperties (equipmentModel);
 
+			this.oriAttachedSkillId = equipmentModel.attachedSkillId;
 			this.attachedSkillId = equipmentModel.attachedSkillId;
 
 			// 初始化装备属性(默认初始化为灰色装备)
@@ -157,15 +160,17 @@ namespace WordJourney
 			this.price = equipmentModel.price;
 
 			this.equipmentType = (EquipmentType)(equipmentModel.equipmentType);
-
-			// 默认初始化为灰色装备
-			ResetPropertiesByQuality (EquipmentQuality.Gray);
+			this.equipmentGrade = equipmentModel.equipmentGrade;
 
 			this.specProperties = equipmentModel.specProperties;
 
-//			#warning 测试完技能之后去掉
-//			this.attachedSkillId = itemId;
-
+			if (equipmentGrade == -1) {
+				// 暗金装备初始化为暗金装备
+				ResetPropertiesByQuality (EquipmentQuality.DarkGold);
+			} else {
+				// 非暗金装备初始化为灰色装备
+				ResetPropertiesByQuality (EquipmentQuality.Gray);
+			}
 			InitDescription ();
 		}
 
@@ -185,14 +190,15 @@ namespace WordJourney
 
 			int randomSeed = Random.Range (0, 100);
 
-			EquipmentQuality quality = EquipmentQuality.Gray;
-
-			if (randomSeed < 50){
-				quality = EquipmentQuality.Gray;
-			}else if(randomSeed < 80){
-				quality = EquipmentQuality.Blue;
-			}else if(randomSeed < 100){
-				quality = EquipmentQuality.Gold;
+			// 非暗金装备重铸时装备品质重新随机，暗金装备重铸后仍是暗金装备
+			if (quality != EquipmentQuality.DarkGold) {
+				if (randomSeed < 50) {
+					quality = EquipmentQuality.Gray;
+				} else if (randomSeed < 80) {
+					quality = EquipmentQuality.Blue;
+				} else if (randomSeed < 100) {
+					quality = EquipmentQuality.Gold;
+				}
 			}
 
 			ResetPropertiesByQuality (quality);
@@ -314,6 +320,18 @@ namespace WordJourney
 				}
 
 				this.price = price * 2;
+				break;
+			case EquipmentQuality.DarkGold:
+				gainScaler = Random.Range (1.3f, 1.4f);
+				for (int i = 0; i < specProperties.Count; i++) {
+
+					ps = specProperties [i];
+
+					InitSpecificProperty (ps);
+				}
+
+				this.price = price * 2;
+				attachedSkillId = oriAttachedSkillId;
 				break;
 			}
 
@@ -480,9 +498,9 @@ namespace WordJourney
 			}
 
 			if (oriCritHurtScalerGain > 0) {
-				sb.AppendFormat ("暴击伤害 x{0}%\n", (int)(maxHealthGain * 100));
+				sb.AppendFormat ("暴击伤害 x{0}%\n", (int)(critHurtScalerGain * 100));
 			} else if (oriCritHurtScalerGain == 0 && critHurtScalerGain > 0) {
-				attachedSb.AppendFormat("暴击伤害 x{0}%\n", (int)(maxHealthGain * 100));
+				attachedSb.AppendFormat("暴击伤害 x{0}%\n", (int)(critHurtScalerGain * 100));
 			}
 
 			if (oriExtraGoldGain > 0) {
@@ -596,7 +614,6 @@ namespace WordJourney
 		public bool AddSkill(int skillId){
 
 			bool addSuccess = false;
-
 
 			attachedSkillId = skillId;
 			addSuccess = true;

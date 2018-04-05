@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	using System.Data;
+
 	public class Door : TriggeredGear {
 
 
@@ -96,12 +98,52 @@ namespace WordJourney
 			}
 
 			if (isWordTrigger) {
-				ExploreManager.Instance.ShowCharacterFillPlane (wordsArray[0]);
+				for (int i = 0; i < wordsArray.Length; i++) {
+					if (wordsArray [i].spell.Length <= 7) {
+						ExploreManager.Instance.ShowCharacterFillPlane (wordsArray [i]);
+						break;
+					}
+					#warning 这里如果已有的单词队列里单词长度都大于7，暂时先用第一个单词作为题目，数据库更新以后打开下面的代码
+					ExploreManager.Instance.ShowCharacterFillPlane (wordsArray [0]);
+
+//					LearnWord word = GetAValidWord ();
+//					ExploreManager.Instance.ShowCharacterFillPlane (word);
+				}
 			}
 
 			if (!isOpen && !isWordTrigger) {
 				ExploreManager.Instance.ShowTint ("隐约听到齿轮转动的声音,应该需要通过机关才能打开", null);
 			}
+		}
+		private LearnWord GetAValidWord(){
+			
+			MySQLiteHelper mySql = MySQLiteHelper.Instance;
+
+			mySql.GetConnectionWith (CommonData.dataBaseName);
+
+			string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
+
+			string[] condition = new string[]{"wordLength <= 7 ORDER BY RANDOM() LIMIT 1"};
+
+			IDataReader reader = mySql.ReadSpecificRowsOfTable (currentWordsTableName, null, condition, true);
+
+			reader.Read ();
+
+			int wordId = reader.GetInt32 (0);
+
+			string spell = reader.GetString (1);
+
+			string phoneticSymble = reader.GetString (2);
+
+			string explaination = reader.GetString (3);
+
+			int learnedTimes = reader.GetInt16 (4);
+
+			int ungraspTimes = reader.GetInt16 (5);
+
+			LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, learnedTimes, ungraspTimes);
+
+			return word;
 		}
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)

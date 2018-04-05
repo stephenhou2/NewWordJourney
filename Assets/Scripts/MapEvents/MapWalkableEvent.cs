@@ -44,6 +44,7 @@ namespace WordJourney
 			}
 			StopCoroutine("AutoWalk");
 			isInAutoWalk = false;
+			baCtr.PlayRoleAnim ("wait", 0, null);
 		}
 
 		public void StopMoveAtEndOfCurrentMove(){

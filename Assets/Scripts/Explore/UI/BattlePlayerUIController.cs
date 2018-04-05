@@ -57,6 +57,7 @@ namespace WordJourney
 
 			healthBar.InitHLHFillBar (player.maxHealth, player.health);
 			manaBar.InitHLHFillBar (player.maxMana, player.mana);
+			experienceBar.InitHLHFillBar (player.upgradeExprience, player.experience);
 
 			consDisplay.InitConsumablesDisplay (UpdateAgentStatusPlane);
 

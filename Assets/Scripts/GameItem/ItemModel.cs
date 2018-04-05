@@ -79,7 +79,7 @@ namespace WordJourney
 
 		public int equipmentGrade;//装备评级
 
-		public int quality;//装备品质（同一件装备细分为灰／蓝／金三级）
+		public int quality;//装备品质（同一件装备细分为灰／蓝／金,暗金4级）
 
 		public int attachedSkillId;
 
