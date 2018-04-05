@@ -10,14 +10,11 @@ namespace WordJourney
 
 		private Player player;
 
-		public Text coinCount;
-
 		public Button[] equipedConsumablesButtons;
 
 		public HLHFillBar manaBar;
-
-//		public Transform skillsContainer;
-//		private Transform skillButtonModel;
+		public HLHFillBar experienceBar;
+		public Text playerLevelText;
 
 		public ConsumablesDisplay consDisplay;
 
@@ -27,15 +24,7 @@ namespace WordJourney
 		public Transform activeSkillButtonModel;
 
 
-//		private ExploreManager mExploreManager;
-//		private ExploreManager exploreManager{
-//			get{
-//				if (mExploreManager == null) {
-//					mExploreManager = ExploreManager.Instance.GetComponent<ExploreManager>();
-//				}
-//				return mExploreManager;
-//			}
-//		}
+
 
 		private BattlePlayerController mBpCtr;
 		private BattlePlayerController bpCtr{
@@ -47,8 +36,10 @@ namespace WordJourney
 			}
 		}
 
-		public Transform directionArrow;
 
+		public Transform miniMap;
+
+		public Transform directionArrow;
 
 		public Transform levelUpPlane;
 
@@ -67,28 +58,22 @@ namespace WordJourney
 			healthBar.InitHLHFillBar (player.maxHealth, player.health);
 			manaBar.InitHLHFillBar (player.maxMana, player.mana);
 
-			coinCount.text = player.totalGold.ToString ();
-
 			consDisplay.InitConsumablesDisplay (UpdateAgentStatusPlane);
 
 			SetUpConsumablesButtons ();
+
+			miniMap.gameObject.SetActive (player.hasCompass);
 		}
 
-
-		/// <summary>
-		/// 初始化人物状态栏
-		/// </summary>
-		private void SetUpPlayerStatusPlane(){
-
-			healthBar.maxValue = player.maxHealth;
-			healthBar.value = player.health;
-			coinCount.text = player.totalGold.ToString ();
-
-		}
 
 		protected void UpdateManaBarAnim(Agent agent){
 			manaBar.maxValue = player.maxMana;
 			manaBar.value = player.mana;
+		}
+
+		protected void UpdateExperienceBarAnim(Agent agent){
+			experienceBar.maxValue = player.upgradeExprience;
+			experienceBar.value = player.experience;
 		}
 
 
@@ -96,24 +81,23 @@ namespace WordJourney
 		/// 更新人物状态栏
 		/// </summary>
 		public override void UpdateAgentStatusPlane(){
-	
-			coinCount.text = player.totalGold.ToString ();
 
 			UpdateHealthBarAnim(player);
 			UpdateManaBarAnim (player);
+			UpdateExperienceBarAnim (player);
+			playerLevelText.text = player.agentLevel.ToString();
 			UpdateSkillStatusPlane (player);
 
-//			if (bpCtr.isInFight) {
-//				attackCheckController.UpdateHealth ();
-//			}
 		}
 
 
 		public void RefreshMiniMap(){
+
+			if (!Player.mainPlayer.hasCompass) {
+				return;
+			}
 			
 			Vector3 directionVector = ExploreManager.Instance.newMapGenerator.GetDirectionVectorTowardsExit ();
-
-//			float rotation = Mathf.
 
 			directionArrow.localRotation = Quaternion.FromToRotation (new Vector3 (0, 1, 0), directionVector);
 
@@ -158,14 +142,6 @@ namespace WordJourney
 
 		}
 
-			
-		private void UpdateCoin(){
-			coinCount.text = player.totalGold.ToString ();
-		}
-
-
-
-
 		/// <summary>
 		/// 背包按钮点击响应
 		/// </summary>
@@ -194,17 +170,7 @@ namespace WordJourney
 		public void SetUpConsumablesButtons(){
 			consDisplay.SetUpConsumablesButtons ();
 		}
-
-
-		/// <summary>
-		/// 更新底部物品栏和人物状态栏
-		/// </summary>
-		public void UpdateItemButtonsAndCoins(){
-			SetUpConsumablesButtons ();
-			UpdateCoin ();
-		}
-
-			
+				
 
 		/// <summary>
 		/// 显示升级时的属性强化面板

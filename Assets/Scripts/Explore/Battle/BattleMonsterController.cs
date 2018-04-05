@@ -276,7 +276,6 @@ namespace WordJourney
 
 		public override void QuitFight ()
 		{
-			agent.isDead = true;
 			StopCoroutinesWhenFightEnd ();
 			isIdle = true;
 			enemy = null;
@@ -285,6 +284,9 @@ namespace WordJourney
 			SetRoleAnimTimeScale (1.0f);
 			agent.ResetBattleAgentProperties (false);
 			boxCollider.enabled = false;
+			if (!agent.isDead) {
+				PlayRoleAnim ("wait", 0, null);
+			}
 		}
 
 		/// <summary>
@@ -304,6 +306,8 @@ namespace WordJourney
 
 			enemy.QuitFight();
 
+			agent.isDead = true;
+
 			QuitFight ();
 
 			this.armatureCom.animation.Stop ();
@@ -315,7 +319,6 @@ namespace WordJourney
 			});
 
 			agent.ResetBattleAgentProperties (true);
-
 		}
 
 		public override void TowardsLeft (bool andWait = true)

@@ -29,10 +29,7 @@ namespace WordJourney
 		// 地图生成器
 		private MapGenerator mapGenerator;	
 
-		public NewMapGenerator newMapGenerator;
-
-		// 当前地图id
-		private int currentLevelIndex;	
+		public NewMapGenerator newMapGenerator;	
 	
 		// 当前关卡所有怪物
 //		private List<BattleMonsterController> battleMonsters = new List<BattleMonsterController>();	
@@ -104,6 +101,11 @@ namespace WordJourney
 		//Initializes the game for each level.
 		public void SetUpExploreView()
 		{
+
+			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
+
+			Player.mainPlayer.SetUpPlayerWithPlayerData (playerData);
+
 			DisableInteractivity ();
 
 			if (!SoundManager.Instance.bgmAS.isPlaying 
@@ -111,25 +113,16 @@ namespace WordJourney
 				SoundManager.Instance.PlayBgmAudioClip (CommonData.exploreBgmName);
 			}
 
-//			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];
-//
-//			currentLevelIndex = levelData.gameLevelIndex;
-
 			newMapGenerator.SetUpMap();
 
 			ExploreUICotroller expUICtr = TransformManager.FindTransform ("ExploreCanvas").GetComponent <ExploreUICotroller> ();
 
 			expUICtr.SetUpExploreCanvas ();
 
-//			Debug.Log ("初始化人物数据");
 			battlePlayerCtr.InitBattlePlayer ();
 
 			EnableInteractivity ();
 
-
-//			StopCoroutine ("ShowTransportPosAndRollBack");
-//
-//			StartCoroutine ("ShowTransportPosAndRollBack");
 
 		}
 
@@ -440,7 +433,7 @@ namespace WordJourney
 
 		public void ShowNPCPlane(MapNPC mapNPC){
 			AllWalkableEventsStopMove ();
-			expUICtr.EnterNPC (mapNPC.npc, currentLevelIndex);
+			expUICtr.EnterNPC (mapNPC.npc, Player.mainPlayer.currentLevelIndex);
 		}
 			
 
@@ -496,7 +489,6 @@ namespace WordJourney
 
 			Player player = Player.mainPlayer;
 
-
 			player.DestroyEquipmentInBagAttachedSkills ();
 
 			battlePlayerCtr.enemy = null;
@@ -548,8 +540,6 @@ namespace WordJourney
 				}
 			}
 
-			battlePlayerCtr.PlayRoleAnim ("wait", 0, null);
-
 			EnableInteractivity ();
 
 			battlePlayerCtr.isInFight = false;
@@ -582,7 +572,9 @@ namespace WordJourney
 
 			FightEndCallBacks ();
 
-			QuitExploreScene (false);
+			expUICtr.QuitFight ();
+
+			expUICtr.ShowBuyLifeQueryHUD ();
 		}
 
 
@@ -695,9 +687,9 @@ namespace WordJourney
 				GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
 			}
 				
-			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
-
-			Player.mainPlayer.SetUpPlayerWithPlayerData (playerData);
+//			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
+//
+//			Player.mainPlayer.SetUpPlayerWithPlayerData (playerData);
 
 //			Camera.main.transform.Find ("Background").gameObject.SetActive (false);
 			Camera.main.transform.SetParent (null);
@@ -706,16 +698,13 @@ namespace WordJourney
 			battlePlayerCtr.QuitExplore ();
 			battlePlayerCtr.isInExplore = false;
 		
-			mapGenerator.DestroyInstancePools ();
+//			newMapGenerator.DestroyInstancePools ();
 
 			TransformManager.DestroyTransfromWithName (CommonData.exploreScenePoolContainerName);
-
-//			Destroy(this.gameObject);
 
 			GameManager.Instance.gameDataCenter.ReleaseDataWithDataTypes (new GameDataCenter.GameDataType[] {
 				GameDataCenter.GameDataType.MapSprites,
 				GameDataCenter.GameDataType.SkillSprites,
-//				GameDataCenter.GameDataType.Monsters,
 				GameDataCenter.GameDataType.NPCs,
 				GameDataCenter.GameDataType.GameLevelDatas
 
@@ -731,15 +720,6 @@ namespace WordJourney
 			}, false, false);
 
 			Destroy (this.gameObject,0.3f);
-		}
-
-		void OnDestroy(){
-//			mapGenerator = null;
-//			battlePlayerCtr = null;
-//			battleMonsterCtr = null;
-//			crystalEntered = null;
-//			monsterEntered = null;
-//			expUICtr = null;
 		}
 
 	}

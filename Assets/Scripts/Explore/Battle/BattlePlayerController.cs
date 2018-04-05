@@ -59,6 +59,7 @@ namespace WordJourney
 				} else {
 					stepCount.enabled = true;
 					stepCount.text = mFadeStepsLeft.ToString ();
+					boxCollider.enabled = false;
 					if (mFadeStepsLeft > 5) {
 						stepCount.color = Color.green;
 					} else {
@@ -183,8 +184,6 @@ namespace WordJourney
 		/// </summary>
 		/// <param name="targetPos">Target position.</param>
 		private void MoveToPosition(Vector3 targetPos){
-
-
 
 			exploreManager.newMapGenerator.UpdateFogOfWar ();
 
@@ -780,18 +779,18 @@ namespace WordJourney
 
 			StopCoroutinesWhenFightEnd ();
 
-			agent.isDead = true;
-
 			enemy = null;
 			isInFight = false;
 			isIdle = true;
 			currentUsingActiveSkill = null;
 
-			boxCollider.enabled = fadeStepsLeft == 0;
-
 			SetRoleAnimTimeScale (1.0f);
 
 			agent.ResetBattleAgentProperties (false);
+
+			if (!agent.isDead) {
+				PlayRoleAnim ("wait", 0, null);
+			}
 		}
 
 		/// <summary>
@@ -802,40 +801,43 @@ namespace WordJourney
 			if (agent.isDead) {
 				return;
 			}
-				
 
-			// 如果是在战斗中死亡的
-			if (enemy != null) {
+			agent.isDead = true;
 
-				enemy.QuitFight ();
+			bool fromFight = isInFight;
 
-				ActiveBattlePlayer (false, false, true);
-
-				ExploreManager.Instance.DisableInteractivity ();
-
-				PlayRoleAnim ("die", 1, () => {
-					ExploreManager.Instance.BattlePlayerLose ();
-				});
-
-				agent.ResetBattleAgentProperties (true);
-
-			} else {
-
-				// 如果不是在战斗中死亡的
-				PlayRoleAnim ("die", 1, () => {
-					exploreManager.GetComponent<ExploreManager> ().QuitExploreScene (false);
-				});
-
-				agent.ResetBattleAgentProperties (true);
-
-			}
-
+			enemy.QuitFight ();
 
 			QuitFight ();
 
+			PlayRoleAnim ("die", 1, () => {
+				if(fromFight){
+					exploreManager.BattlePlayerLose ();
+				}else{
+					exploreManager.expUICtr.ShowBuyLifeQueryHUD();
+				}
+			});
+
+			agent.isDead = true;
+
+			ActiveBattlePlayer (false, false, true);
+
+			ExploreManager.Instance.DisableInteractivity ();
 
 		}
 
+
+		public void RecomeToLife(){
+			agent.ResetBattleAgentProperties (true);
+			PlayRoleAnim ("wait", 0, null);
+			isInFight = false;
+			isInExplore = true;
+			inSingleMoving = false;
+			moveDestination = transform.position;
+			singleMoveEndPos = transform.position;
+			pathPosList.Clear ();
+			fadeStepsLeft = 20;
+		}
 
 		void OnDestroy(){
 //			StopAllCoroutines ();

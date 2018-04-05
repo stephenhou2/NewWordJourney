@@ -13,8 +13,8 @@ namespace WordJourney
 	public class ExploreUICotroller : MonoBehaviour {
 
 		public TintHUD tintHUD;
-		public UnlockScrollDetailHUD unlockScrollDetail;
-		public CraftingRecipesHUD craftingRecipesDetail;
+//		public UnlockScrollDetailHUD unlockScrollDetail;
+//		public CraftingRecipesHUD craftingRecipesDetail;
 		public PauseHUD pauseHUD;
 		public WordHUD wordHUD;
 
@@ -29,7 +29,7 @@ namespace WordJourney
 
 		public Text gameLevelLocationText;
 
-		public Transform transitionMask;
+		public Image transitionMask;
 
 		public Transform tasksDescriptionContainer;
 
@@ -60,6 +60,9 @@ namespace WordJourney
 
 		public SimpleItemDetail simpleItemDetail;
 
+		public Transform buyLifeQueryHUD;
+		public Transform enterNextLevelQueryHUD;
+
 
 		public void SetUpExploreCanvas(){
 
@@ -81,7 +84,7 @@ namespace WordJourney
 			}
 				
 //			string gameLevelInCurrentLocation = MyTool.NumberToChinese(gameLevelIndex % 5 + 1);
-			gameLevelLocationText.text = string.Format("第 {0} 层",Player.mainPlayer.currentLevelIndex);
+			gameLevelLocationText.text = string.Format("第 {0} 层",Player.mainPlayer.currentLevelIndex + 1);
 
 
 			bpUICtr.InitExploreAgentView ();
@@ -89,6 +92,7 @@ namespace WordJourney
 			bmUICtr.InitExploreAgentView ();
 
 			GetComponent<Canvas> ().enabled = true;
+			transitionMask.color = Color.black;
 			transitionMask.gameObject.SetActive (false);
 
 			if (!Player.mainPlayer.isNewPlayer) {
@@ -98,6 +102,39 @@ namespace WordJourney
 				introductionPlane.PlayIntroductionTransition ();
 			}
 
+		}
+
+		public void DisplayTransitionMaskAnim(CallBack cb){
+			ExploreManager.Instance.AllWalkableEventsStopMove ();
+			transitionMask.gameObject.SetActive (true);
+			StartCoroutine ("TransitionMaskShowAndHide", cb);
+		}
+
+		private IEnumerator TransitionMaskShowAndHide(CallBack cb){
+
+
+			float tempAlpha = 0;
+			float fadeSpeed = 3f;
+
+			while(tempAlpha < 1){
+				tempAlpha += fadeSpeed * Time.deltaTime;
+				transitionMask.color = new Color (0, 0, 0, tempAlpha);
+				yield return null;
+			}
+
+			if (cb != null) {
+				cb ();
+			}
+
+			tempAlpha = 1;
+
+			while (tempAlpha > 0) {
+				tempAlpha -= fadeSpeed * Time.deltaTime;
+				transitionMask.color = new Color (0, 0, 0, tempAlpha);
+				yield return null;
+			}
+			transitionMask.gameObject.SetActive (false);
+			ExploreManager.Instance.AllWalkableEventsStartMove ();
 		}
 
 		public void UpdateTasksDescription(){
@@ -225,27 +262,27 @@ namespace WordJourney
 //			unlockScrollDetail.SetUpUnlockScrollDetailHUD (item);
 //		}
 
-		/// <summary>
-		/// 解锁卷轴展示界面点击事件原本就会退出展示页面，一般情况下不用主动调用这个方法
-		/// </summary>
-		public void QuitUnlockScrollHUD(){
-			unlockScrollDetail.QuitUnlockScrollDetailHUD ();
-		}
+//		/// <summary>
+//		/// 解锁卷轴展示界面点击事件原本就会退出展示页面，一般情况下不用主动调用这个方法
+//		/// </summary>
+//		public void QuitUnlockScrollHUD(){
+//			unlockScrollDetail.QuitUnlockScrollDetailHUD ();
+//		}
 
-		/// <summary>
-		/// 显示合成界面
-		/// </summary>
-		/// <param name="item">Item.</param>
-		public void SetUpCraftingRecipesHUD(Item item){
-//			craftingRecipesDetail.SetUpCraftingRecipesHUD (item);
-		}
+//		/// <summary>
+//		/// 显示合成界面
+//		/// </summary>
+//		/// <param name="item">Item.</param>
+//		public void SetUpCraftingRecipesHUD(Item item){
+////			craftingRecipesDetail.SetUpCraftingRecipesHUD (item);
+//		}
 
-		/// <summary>
-		/// 合成界面点击事件原本就会退出展示页面，一般情况下不用主动调用这个方法
-		/// </summary>
-		public void QuitCraftingRecipesHUD(){
-			craftingRecipesDetail.QuitCraftingRecipesHUD ();
-		}
+//		/// <summary>
+//		/// 合成界面点击事件原本就会退出展示页面，一般情况下不用主动调用这个方法
+//		/// </summary>
+//		public void QuitCraftingRecipesHUD(){
+//			craftingRecipesDetail.QuitCraftingRecipesHUD ();
+//		}
 
 
 
@@ -323,7 +360,43 @@ namespace WordJourney
 			simpleItemDetail.SetupSimpleItemDetail (item);
 		}
 
+		public void ShowEnterNextLevelQueryHUD(){
+			enterNextLevelQueryHUD.gameObject.SetActive (true);
+		}
 
+		public void HideEnterNextLevelQueryHUD(){
+			enterNextLevelQueryHUD.gameObject.SetActive (false);
+		}
+
+		public void ConfirmEnterNextLevel(){
+			HideEnterNextLevelQueryHUD ();
+			ExploreManager.Instance.EnterNextLevel ();
+		}
+
+		public void CancelEnterNextLevel(){
+			HideEnterNextLevelQueryHUD ();
+		}
+
+
+		public void ShowBuyLifeQueryHUD(){
+			buyLifeQueryHUD.gameObject.SetActive (true);
+		}
+
+		public void HideBuyLifeQueryHUD(){
+			buyLifeQueryHUD.gameObject.SetActive (false);
+		}
+
+		public void ConfirmBuyLife(){
+			Debug.Log ("BUY LIFE");
+			ExploreManager.Instance.battlePlayerCtr.ResetAgent ();
+		}
+
+		public void CancelBuyLife(){
+			HideBuyLifeQueryHUD ();
+			GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal ();
+			ExploreManager.Instance.QuitExploreScene (true);
+		}
+			
 //		public void OnRefreshButtonClick(){
 //			queryType = QueryType.Refresh;
 //			ShowQueryHUD ();
@@ -410,16 +483,7 @@ namespace WordJourney
 //		}
 
 
-//		public void PrepareForRefreshment(){
-//			bpUICtr.PrepareForRefreshment ();
-//			bmUICtr.PrepareForRefreshment ();
-//			npcUIController.QuitNPCPlane ();
-//			QuitFight ();
-//			QuitCrystalQuery ();
-//			craftingRecipesDetail.QuitCraftingRecipesHUD ();
-//			unlockScrollDetail.QuitUnlockScrollDetailHUD ();
-//			tintHUD.QuitTintHUD ();
-//		}
+
 
 		public void QuitFight(){
 			bpUICtr.QuitFightPlane ();

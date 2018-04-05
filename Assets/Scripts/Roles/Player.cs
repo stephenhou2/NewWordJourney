@@ -135,6 +135,8 @@ namespace WordJourney
 		// 是否是新建的玩家
 		public bool isNewPlayer = true;
 
+		public bool hasCompass = false;
+
 		private int maxBagCount = 4;
 		private int singleBagVolume = 24;
 
@@ -256,6 +258,7 @@ namespace WordJourney
 			this.experience = playerData.experience;
 
 			this.isNewPlayer = playerData.isNewPlayer;
+			this.hasCompass = playerData.hasCompass;
 
 			this.attachedTriggeredSkills.Clear ();
 			this.allStatus.Clear ();
@@ -1317,6 +1320,7 @@ namespace WordJourney
 		public int totalGold;//人物金币数量
 
 		public bool isNewPlayer;
+		public bool hasCompass;
 
 
 		public PlayerData(Player player){
@@ -1401,6 +1405,7 @@ namespace WordJourney
 			this.experience = player.experience;
 
 			this.isNewPlayer = player.isNewPlayer;
+			this.hasCompass = player.hasCompass;
 
 			ClearAllEquipmentAttachedSkills ();
 

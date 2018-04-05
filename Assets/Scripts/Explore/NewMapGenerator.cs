@@ -827,5 +827,22 @@ namespace WordJourney
 
 		}
 
+//		public void DestroyInstancePools(){
+//
+//			Destroy (floorsPool.gameObject);
+//
+//			Destroy(wallsPool.gameObject);
+//
+//			Destroy(decorationsPool.gameObject);
+//
+//			Destroy(npcsPool.gameObject);
+//
+//			Destroy (mapEventsPool.gameObject);
+//
+//			Destroy (monstersPool.gameObject);
+//
+//			Destroy (rewardPool.gameObject);
+//		}
+
 	}
 }

@@ -386,7 +386,7 @@ namespace WordJourney
 					
 			}
 
-			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().UpdateItemButtonsAndCoins ();
+			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().SetUpConsumablesButtons ();
 
 			currentSelectedItem = null;
 
@@ -412,7 +412,7 @@ namespace WordJourney
 
 //			npc.BuyGoods (currentSelectedItem.itemId);
 
-			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().UpdateItemButtonsAndCoins ();
+			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().SetUpConsumablesButtons ();
 
 			if (totallyRemoveFromBag) {
 				currentSelectedItem = null;
@@ -537,7 +537,7 @@ namespace WordJourney
 
 			goodsPool.AddChildInstancesToPool(goodsContainer);
 
-			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().UpdateItemButtonsAndCoins ();
+			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().SetUpConsumablesButtons ();
 
 			currentSelectedItem = null;
 

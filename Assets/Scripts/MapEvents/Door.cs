@@ -107,10 +107,13 @@ namespace WordJourney
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
 			if (isSuccess) {
+				
 				if (isOpen) {
-					bp.transform.position = pairDoorPos;
-					bp.singleMoveEndPos = pairDoorPos;
-					bp.moveDestination = pairDoorPos;
+
+					// 从门内移动到门外
+//					bp.transform.position = pairDoorPos;
+//					bp.singleMoveEndPos = pairDoorPos;
+//					bp.moveDestination = pairDoorPos;
 
 					Vector3 continueMovePos = Vector3.zero;
 
@@ -129,7 +132,15 @@ namespace WordJourney
 						break;
 					}
 
-					bp.MoveToPosition (continueMovePos, ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray);
+					ExploreManager.Instance.expUICtr.DisplayTransitionMaskAnim (delegate {
+						// 直接在门外的位置，没有移动动画
+						bp.transform.position = continueMovePos;
+						bp.singleMoveEndPos = continueMovePos;
+						bp.moveDestination = continueMovePos;
+					});
+
+					// 从门内移动到门外
+//					bp.MoveToPosition (continueMovePos, ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray);
 
 				} else {
 					isOpen = true;

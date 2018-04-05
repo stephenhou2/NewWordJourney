@@ -31,7 +31,7 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
-			ExploreManager.Instance.QuitExploreScene (true);
+			ExploreManager.Instance.expUICtr.ShowEnterNextLevelQueryHUD ();
 		}
 
 	}

@@ -15,6 +15,11 @@ namespace WordJourney
 		public Monster monster;
 
 		public Transform monsterStatusPlane;
+
+		public Text attackText;
+		public Text magicAttackText;
+		public Text armorText;
+		public Text magicResistText;
 	
 
 		public void SetUpMonsterStatusPlane(Monster monster){
@@ -23,8 +28,17 @@ namespace WordJourney
 
 			healthBar.InitHLHFillBar (monster.maxHealth, monster.health);
 
+			attackText.text = monster.attack.ToString ();
+			magicAttackText.text = monster.magicAttack.ToString ();
+			armorText.text = monster.armor.ToString ();
+			magicResistText.text = monster.magicResist.ToString ();
+
 			monsterStatusPlane.gameObject.SetActive (true);
 		}
+
+
+
+
 
 		public override void UpdateAgentStatusPlane (){
 
@@ -32,7 +46,14 @@ namespace WordJourney
 
 			UpdateSkillStatusPlane (monster);
 
+			attackText.text = monster.attack.ToString ();
+			magicAttackText.text = monster.magicAttack.ToString ();
+			armorText.text = monster.armor.ToString ();
+			magicResistText.text = monster.magicResist.ToString ();
+
 		}
+
+
 
 		public override void QuitFightPlane ()
 		{
