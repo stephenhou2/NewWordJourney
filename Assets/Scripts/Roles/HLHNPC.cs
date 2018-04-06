@@ -21,7 +21,7 @@ namespace WordJourney
 
 		public List<HLHNPCGoods> npcGoodsList = new List<HLHNPCGoods> ();
 
-		public List<HLHDialogGroup> regularGreetings = new List<HLHDialogGroup> ();
+		public HLHDialogGroup regularGreeting;
 
 
 		/// <summary>
@@ -74,16 +74,7 @@ namespace WordJourney
 			}
 
 			if (targetDg == null) {
-
-				for (int i = 0; i < regularGreetings.Count; i++) {
-
-					HLHDialogGroup dg = regularGreetings [i];
-
-					if(dg.triggerCondition.IsTriggered(player)){
-						targetDg = dg;
-						break;
-					}
-				}
+				targetDg = regularGreeting;
 			}
 
 			return targetDg;
@@ -173,20 +164,6 @@ namespace WordJourney
 
 	}
 
-	[System.Serializable]
-	public struct HLHRegularGreeting{
-
-		public HLHDialogGroup dialogGroup;
-		public int playerJustice;
-		public int playerPower;
-
-		public HLHRegularGreeting(HLHDialogGroup dialogGroup,int playerJustice,int playerPower){
-			this.dialogGroup = dialogGroup;
-			this.playerJustice = playerJustice;
-			this.playerPower = playerPower;
-		}
-
-	}
 
 	[System.Serializable]
 	public class HLHDialogGroup{
@@ -200,9 +177,6 @@ namespace WordJourney
 		public List<HLHChoice> choices;
 
 		public bool isFinish;
-
-		//对话组是否是可重复型的,如果不是则在该对话组结束后将isFinish属性设为true
-		public bool isMultiTimes;
 
 		public bool isTaskTriggeredDg;
 
@@ -241,17 +215,7 @@ namespace WordJourney
 		Justice,
 		Power
 	}
-
-//	[System.Serializable]
-//	public struct HLHHiddenPropertyChange{
-//
-//		public HLHRoleHiddenProperty hiddenProperty;
-//
-//		public int change;
-//
-//	}
-
-
+		
 
 	[System.Serializable]
 	public class HLHDialog{
@@ -261,12 +225,6 @@ namespace WordJourney
 		public string dialogContent;
 
 		public List<int> choiceIds;
-
-//		public HLHDialog(int dialogId,string dialogContent,List<int> choiceIds){
-//			this.dialogId = dialogId;
-//			this.dialogContent = dialogContent;
-//			this.choiceIds = choiceIds;
-//		}
 
 	}
 
@@ -363,12 +321,6 @@ namespace WordJourney
 
 		public int goodsId;
 
-//		public int goodsPrice;
-
-//		public int totalCount;
-
-//		public bool isFixedCount;
-
 		public Item itemAsGoods;
 
 		public Item GetGoodsItem(){
@@ -388,26 +340,25 @@ namespace WordJourney
 	public struct HLHTriggerCondition{
 
 		// 单个数组内部做与运算
-		// condition_1 和 condition_2 之间做或运算
-		public List<HLHValueWithLink> condition_1;
+		public List<HLHValueWithLink> condition;
 
-		public List<HLHValueWithLink> condition_2;
+//		public List<HLHValueWithLink> condition_2;
 
 
 		public bool IsTriggered(Player player){
 
 			bool isCondition1Triggered = true;
-			bool isCondition2Triggered = true;
+//			bool isCondition2Triggered = true;
 
-			if (condition_1 != null) {
+			if (condition != null) {
 
-				if (condition_1.Count == 0) {
+				if (condition.Count == 0) {
 					isCondition1Triggered = false;
 				}
 
-				for (int i = 0; i < condition_1.Count; i++) {
+				for (int i = 0; i < condition.Count; i++) {
 
-					HLHValueWithLink vwl = condition_1 [i];
+					HLHValueWithLink vwl = condition [i];
 
 					bool temp = vwl.CheckAccordance (player);
 
@@ -417,26 +368,26 @@ namespace WordJourney
 
 			}
 
-			if (condition_2 != null) {
+//			if (condition_2 != null) {
+//
+//				if (condition_2.Count == 0) {
+//					isCondition2Triggered = false;
+//				}
+//
+//				for (int i = 0; i < condition_2.Count; i++) {
+//
+//					HLHValueWithLink vwl = condition_2 [i];
+//
+//					bool temp = vwl.CheckAccordance (player);
+//
+//					isCondition2Triggered = isCondition2Triggered && temp;
+//
+//				}
+//
+//			}
 
-				if (condition_2.Count == 0) {
-					isCondition2Triggered = false;
-				}
-
-				for (int i = 0; i < condition_2.Count; i++) {
-
-					HLHValueWithLink vwl = condition_2 [i];
-
-					bool temp = vwl.CheckAccordance (player);
-
-					isCondition2Triggered = isCondition2Triggered && temp;
-
-				}
-
-			}
-
-			return isCondition1Triggered || isCondition2Triggered;
-
+//			return isCondition1Triggered || isCondition2Triggered;
+			return isCondition1Triggered;
 		}
 
 	}

@@ -15,9 +15,6 @@ namespace WordJourney{
 
 		public bool canShowNpcPlane;
 
-
-
-
 		public override void InitMapItem ()
 		{
 			bc2d.enabled = true;
@@ -49,8 +46,6 @@ namespace WordJourney{
 //				int npcId = Random.Range (0, 13);
 //				#warning 这里暂时使用id为0的npc作为测试数据
 
-			canMove = true;
-
 			if (!hasNpcDataLoaded) {
 				
 				int npcId = 1;
@@ -62,7 +57,6 @@ namespace WordJourney{
 
 			if (npc.npcId == 1) {
 				InitNpcGoodsFromLevelData ();
-				canMove = false;
 			}
 
 			baCtr.PlayRoleAnim ("wait", 0, null);

@@ -11,13 +11,50 @@ namespace WordJourney
 
 		private int rotateSpeed = 90;
 
-		private int timeout = 20;
+//		private int timeout = 20;
 
-		public void SetUpPurchasePendingHUD(){
+		public TintHUD tintHUD;
+
+		private CallBack purchaseFinishCallBack;
+
+		private string currentPurchasingItemId;
+
+		public void SetUpPurchasePendingHUD(string productId,CallBack purchaseFinishCallBack){
+
+			currentPurchasingItemId = productId;
+
+			this.purchaseFinishCallBack = purchaseFinishCallBack;
 
 			gameObject.SetActive (true);
 
 			StartCoroutine ("PendingTintRotate");
+
+			GameManager.Instance.purchaseManager.PurchaseProduct (productId, OnPurchaseSucceed, OnPurchaseFail);
+
+		}
+
+
+		private void OnPurchaseSucceed(){
+
+			if(currentPurchasingItemId.Equals(PurchaseManager.extra_bag_id)){
+				tintHUD.SetUpTintHUD ("成功解锁装备槽7", null);
+			}else if(currentPurchasingItemId.Equals(PurchaseManager.extra_equipmentSlot_id)){
+				tintHUD.SetUpTintHUD ("解锁成功背包4", null);
+			}else if (currentPurchasingItemId.Equals(PurchaseManager.new_life_id)){
+				
+			}
+
+			purchaseFinishCallBack ();
+
+			QuitPurchasePendingHUD ();
+		}
+
+
+		private void OnPurchaseFail(){
+
+			tintHUD.SetUpTintHUD ("购买失败，请稍后重试", null);
+
+			QuitPurchasePendingHUD ();
 
 		}
 

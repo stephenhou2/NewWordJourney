@@ -8,7 +8,7 @@ namespace WordJourney
 	public abstract class MapWalkableEvent : MapEvent {
 
 
-		protected bool canMove;
+		public bool canMove;
 
 		protected bool isInAutoWalk;
 
@@ -44,7 +44,9 @@ namespace WordJourney
 			}
 			StopCoroutine("AutoWalk");
 			isInAutoWalk = false;
-			baCtr.PlayRoleAnim ("wait", 0, null);
+			if (!baCtr.isIdle) {
+				baCtr.PlayRoleAnim ("wait", 0, null);
+			}
 		}
 
 		public void StopMoveAtEndOfCurrentMove(){

@@ -189,18 +189,20 @@ namespace WordJourney
 		public void SelectPropertyPromote(int type){
 			switch (type) {
 			case 0:
-				int oriMaxHealthRecord = player.originalMaxHealth;
+				int maxHealthRecord = player.maxHealth;
 				player.originalMaxHealth += 10;
-				player.health = (int)((float)player.originalMaxHealth / oriMaxHealthRecord * player.health);
+				player.maxHealth += 10;
+				player.health = (int)((float)player.maxHealth / maxHealthRecord * player.health);
 				break;
 			case 1:
 				player.originalAttack += 1;
 				player.attack += 1;
 				break;
 			case 2:
-				int oriMaxManaRecord = player.originalMaxMana;
+				int maxManaRecord = player.maxMana;
 				player.originalMaxMana += 5;
-				player.mana = (int)((float)player.originalMaxMana / oriMaxManaRecord * player.mana);
+				player.maxMana += 5;
+				player.mana = (int)((float)player.maxMana / maxManaRecord * player.mana);
 				break;
 			case 3:
 				player.originalArmor += 1;

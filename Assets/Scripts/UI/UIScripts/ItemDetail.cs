@@ -48,8 +48,6 @@ namespace WordJourney
 
 			itemName.text = item.itemName;
 
-			itemDescription.text = item.itemDescription;
-
 			goldIcon.enabled = true;
 
 			priceText.text = (item.price / 8).ToString ();
@@ -57,6 +55,8 @@ namespace WordJourney
 			switch(item.itemType){
 			case ItemType.Equipment:
 				Equipment eqp = item as Equipment;
+				itemDescription.text = item.itemDescription;
+				attachedDescription.text = eqp.attachedPropertyDescription;
 				switch (eqp.quality) {
 				case EquipmentQuality.Gray:
 					itemName.text = string.Format("<color=gray>{0}</color>",item.itemName);
@@ -68,10 +68,9 @@ namespace WordJourney
 					itemName.text = string.Format("<color=yellow>{0}</color>",item.itemName);
 					break;
 				}
-
 				SetUpOperationButtons (!eqp.equiped, eqp.equiped, false);
 				soCell.gameObject.SetActive (false);
-				attachedDescription.text = eqp.attachedPropertyDescription;
+
 				if (eqp.attachedSkillId > 0) {
 					attachedSkillDisplay.gameObject.SetActive (true);
 					Skill skill = GameManager.Instance.gameDataCenter.allSkills.Find (delegate (Skill obj) {
@@ -84,6 +83,7 @@ namespace WordJourney
 				break;
 			case ItemType.Consumables:
 				Consumables cons = item as Consumables;
+				attachedDescription.text = item.itemDescription;
 				SetUpOperationButtons (false, false, true);
 				attachedSkillDisplay.gameObject.SetActive (false);
 				switch (cons.type) {
@@ -101,7 +101,7 @@ namespace WordJourney
 				break;
 			case ItemType.Gemstone:
 				SkillGemstone gemstone = item as SkillGemstone;
-				itemDescription.text = item.itemDescription;
+				attachedDescription.text = item.itemDescription;
 				attachedSkillDisplay.gameObject.SetActive (true);
 				Skill attachedSkill = GameManager.Instance.gameDataCenter.allSkills.Find (delegate(Skill obj) {
 					return obj.skillId == gemstone.skillId;
@@ -111,7 +111,7 @@ namespace WordJourney
 				soCell.gameObject.SetActive (false);
 				break;
 			case ItemType.Task:
-				itemDescription.text = item.itemDescription;
+				attachedDescription.text = item.itemDescription;
 				soCell.gameObject.SetActive (false);
 				attachedSkillDisplay.gameObject.SetActive (false);
 				SetUpOperationButtons (false, false, false);

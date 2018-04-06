@@ -29,9 +29,9 @@ namespace WordJourney
 
 		protected override void OnUserShortClick (PointerEventData eventData)
 		{
-			if ((item as Equipment).itemId < 0) {
-				return;
-			}
+//			if ((item as Equipment).itemId < 0) {
+//				return;
+//			}
 			bagView.GetComponent<BagViewController> ().OnItemInEquipmentPlaneClick(item,equipmentIndexInPanel);
 		}
 

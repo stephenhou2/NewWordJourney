@@ -59,15 +59,15 @@ namespace WordJourney
 //			}
 //		}
 
-		private ShortClickCallBack mShortClickCallBack;
-		private ShortClickCallBack shortClickCallBack{
-			get{
-				if (mShortClickCallBack == null) {
-					mShortClickCallBack = GetComponent<BagViewController> ().OnItemInBagClick;
-				}
-				return mShortClickCallBack;
-			}
-		}
+//		private ShortClickCallBack mShortClickCallBack;
+//		private ShortClickCallBack shortClickCallBack{
+//			get{
+//				if (mShortClickCallBack == null) {
+//					mShortClickCallBack = 
+//				}
+//				return mShortClickCallBack;
+//			}
+//		}
 
 //		private int offsetX = 40;
 //		private int offsetY = 70;
@@ -95,6 +95,13 @@ namespace WordJourney
 				SetUpEquipedEquipmentsPlane ();
 
 				itemDetail.ClearItemDetails ();
+
+				ShortClickCallBack shortClickCallback = GetComponent<BagViewController> ().OnItemInBagClick;
+				CallBack initPurchaseBag = delegate {
+					SetUpPurchasePlane(PurchaseManager.extra_bag_id);
+				};
+
+				bagItemsDisplay.InitBagItemsDisplayPlane (shortClickCallback, initPurchaseBag);
 
 				// 默认初始化 背包一
 				SetUpBagItemsPlane (0);
@@ -172,7 +179,7 @@ namespace WordJourney
 				bool equipmentSlotUnlocked = true;
 
 				if (i == 6) {
-					equipmentSlotUnlocked = BuyRecord.Instance.extraBagUnlocked;
+					equipmentSlotUnlocked = BuyRecord.Instance.extraEquipmentSlotUnlocked;
 				}
 
 				equipedEquipmentButton.GetComponent<EquipedEquipmentCell> ().SetUpEquipedEquipmentCell (equipment, equipmentSlotUnlocked);
@@ -285,8 +292,7 @@ namespace WordJourney
 		/// </summary>
 		public void SetUpBagItemsPlane(int bagIndex){
 
-			bagItemsDisplay.SetUpBagItemsPlane (bagIndex,shortClickCallBack);
-
+			bagItemsDisplay.SetUpBagItemsPlane (bagIndex);
 		}
 
 
@@ -350,19 +356,15 @@ namespace WordJourney
 			tintHUD.SetUpTintHUD (tint,sprite);
 		}
 			
-		public void SetUpPurchasePlane(){
+		public void SetUpPurchasePlane(string productID){
 
-			purchaseHUD.SetUpPurchasePendingHUD ();
-
-		}
-
-		public void QuitPurchasePlane(){
-
-			purchaseHUD.QuitPurchasePendingHUD ();
+			purchaseHUD.SetUpPurchasePendingHUD (productID,delegate {
+				SetUpEquipedEquipmentsPlane();
+				bagItemsDisplay.UpdateBagTabs();
+			});
 
 		}
 			
-
 
 		// 关闭背包界面
 		public void QuitBagPlane(){

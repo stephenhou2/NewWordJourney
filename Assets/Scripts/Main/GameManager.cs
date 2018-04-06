@@ -40,6 +40,8 @@ namespace WordJourney
 		public PersistDataManager persistDataManager;
 
 		public PronounceManager pronounceManager;
+
+		public PurchaseManager purchaseManager;
 			
 		#warning 如果决定使用scene来进行场景转换打开下面的代码
 //		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

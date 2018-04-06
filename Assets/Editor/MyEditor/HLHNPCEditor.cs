@@ -200,8 +200,8 @@ namespace WordJourney
 
 		private void DrawRegularGreetings (){
 
-			if (npc.regularGreetings == null) {
-				npc.regularGreetings = new List<HLHDialogGroup> ();
+			if (npc.regularGreeting == null) {
+				npc.regularGreeting = new HLHDialogGroup ();
 			}
 
 			EditorGUILayout.BeginHorizontal ();
@@ -211,57 +211,15 @@ namespace WordJourney
 			});
 			EditorGUILayout.BeginVertical ();
 
+			HLHDialogGroup rdg = npc.regularGreeting;
 
-			EditorGUILayout.BeginHorizontal ();
-			bool createNewRegularGreeting = GUILayout.Button ("添加新的寒暄",buttonLayouts);
-			bool removeLastRegularGreeting = GUILayout.Button ("删除尾部寒暄",buttonLayouts);
-			bool unfoldAll = GUILayout.Button ("全部展开", buttonLayouts);
-			bool foldAll = GUILayout.Button ("全部合上", buttonLayouts);
-			EditorGUILayout.EndHorizontal ();
+			rdg.dialogGroupId = npc.dialogGroups.Count;
 
-			if (unfoldAll) {
-				for (int i = 0; i < regularGreetingInfoArray.Length; i++) {
-					regularGreetingInfoArray[i] = true;
-				}
-			}
+			DrawTriggerConditions (rdg);
 
-			if (foldAll) {
-				for (int i = 0; i < regularGreetingInfoArray.Length; i++) {
-					regularGreetingInfoArray[i] = false;
-				}
-			}
+			DrawDialogs (rdg);
 
-
-			if (createNewRegularGreeting) {
-				HLHDialogGroup greeting = new HLHDialogGroup ();
-				npc.regularGreetings.Add (greeting);
-			}
-			if (removeLastRegularGreeting && npc.regularGreetings.Count > 0) {
-				npc.regularGreetings.RemoveAt (npc.regularGreetings.Count - 1);
-			}
-
-
-			for (int i = 0; i < npc.regularGreetings.Count; i++) {
-				
-				int specialDgsCount = npc.dialogGroups.Count;
-				regularGreetingInfoArray [i] = EditorGUILayout.Foldout (regularGreetingInfoArray [i], "寒暄" + (i+1).ToString() + "  对话组ID" + (specialDgsCount + i).ToString());
-
-				if (regularGreetingInfoArray [i]) {
-
-					HLHDialogGroup rdg = npc.regularGreetings [i];
-
-					rdg.dialogGroupId = i + specialDgsCount;
-
-					DrawTriggerConditions (rdg);
-
-					DrawDialogs (rdg);
-
-					DrawChoices (rdg);
-
-				}
-
-			}
-
+			DrawChoices (rdg);
 
 			EditorGUILayout.EndVertical ();
 			EditorGUILayout.EndHorizontal ();
@@ -325,8 +283,6 @@ namespace WordJourney
 					HLHDialogGroup dg = npc.dialogGroups [i];
 
 					dg.dialogGroupId = i;
-
-					dg.isMultiTimes = EditorGUILayout.Toggle ("是否是可重复型的对话", dg.isMultiTimes, shortLayouts);
 
 					dg.isTaskTriggeredDg = EditorGUILayout.Toggle ("是否任务触发的对话", dg.isTaskTriggeredDg, shortLayouts);
 
@@ -745,24 +701,28 @@ namespace WordJourney
 			if (triggerConditionInfoArray [dg.dialogGroupId]) {
 				EditorGUILayout.LabelField ("-----------触发条件------------", middleLayouts);
 				EditorGUILayout.BeginHorizontal ();
-				bool addNewTriggerCondition = GUILayout.Button ("添加触发条件2", buttonLayouts);
-				bool removeLastTriggerCondition = GUILayout.Button ("移除触发条件2", buttonLayouts);
+				bool addNewTriggerCondition = GUILayout.Button ("添加触发条件", buttonLayouts);
+				bool removeLastTriggerCondition = GUILayout.Button ("移除触发条件", buttonLayouts);
 				EditorGUILayout.EndHorizontal ();
 
-				if (dg.triggerCondition.condition_1 == null) {
-					dg.triggerCondition.condition_1 = new List<HLHValueWithLink> ();
-					dg.triggerCondition.condition_1.Add (new HLHValueWithLink ());
+				if (addNewTriggerCondition && dg.triggerCondition.condition == null) {
+					dg.triggerCondition.condition = new List<HLHValueWithLink> ();
+					dg.triggerCondition.condition.Add (new HLHValueWithLink ());
 				}
 
-				if (addNewTriggerCondition && dg.triggerCondition.condition_2 == null) {
-					dg.triggerCondition.condition_2 = new List<HLHValueWithLink> ();
-					dg.triggerCondition.condition_2.Add (new HLHValueWithLink ());
-
+				if (removeLastTriggerCondition && dg.triggerCondition.condition != null) {
+					dg.triggerCondition.condition = null;
 				}
 
-				if (removeLastTriggerCondition && dg.triggerCondition.condition_2 != null) {
-					dg.triggerCondition.condition_2 = null;
-				}
+//				if (addNewTriggerCondition && dg.triggerCondition.condition_2 == null) {
+//					dg.triggerCondition.condition_2 = new List<HLHValueWithLink> ();
+//					dg.triggerCondition.condition_2.Add (new HLHValueWithLink ());
+//
+//				}
+//
+//				if (removeLastTriggerCondition && dg.triggerCondition.condition_2 != null) {
+//					dg.triggerCondition.condition_2 = null;
+//				}
 
 
 				EditorGUILayout.BeginHorizontal ();
@@ -775,8 +735,8 @@ namespace WordJourney
 
 				EditorGUILayout.LabelField ("触发条件1", shortLayouts);
 				EditorGUILayout.BeginHorizontal ();
-				for (int i = 0; i < dg.triggerCondition.condition_1.Count; i++) {
-					HLHValueWithLink vwl = dg.triggerCondition.condition_1 [i];
+				for (int i = 0; i < dg.triggerCondition.condition.Count; i++) {
+					HLHValueWithLink vwl = dg.triggerCondition.condition [i];
 					EditorGUILayout.BeginHorizontal ();
 					HLHConditionType type = (HLHConditionType)EditorGUILayout.EnumPopup (vwl.type, shorterLayouts);
 					HLHCalculateLink calculateLink = (HLHCalculateLink)EditorGUILayout.EnumPopup (vwl.calculateLink, shorterLayouts);
@@ -785,7 +745,7 @@ namespace WordJourney
 					newVwl.type = type;
 					newVwl.calculateLink = calculateLink;
 					newVwl.value = value;
-					dg.triggerCondition.condition_1 [i] = newVwl;
+					dg.triggerCondition.condition [i] = newVwl;
 
 					EditorGUILayout.EndHorizontal ();
 
@@ -795,62 +755,20 @@ namespace WordJourney
 				bool removeLastVwlInCondition1 = GUILayout.Button ("删除", tinyLayouts);
 
 				if (addNewVwlInCondition1) {
-					dg.triggerCondition.condition_1.Add (new HLHValueWithLink ());
+					dg.triggerCondition.condition.Add (new HLHValueWithLink ());
 				}
 
-				if (removeLastVwlInCondition1 && dg.triggerCondition.condition_1.Count > 1) {
-					dg.triggerCondition.condition_1.RemoveAt (dg.triggerCondition.condition_1.Count - 1);
+				if (removeLastVwlInCondition1 && dg.triggerCondition.condition.Count > 1) {
+					dg.triggerCondition.condition.RemoveAt (dg.triggerCondition.condition.Count - 1);
 				}
 
 				EditorGUILayout.EndHorizontal ();
 
 				EditorGUILayout.EndVertical ();
 				EditorGUILayout.EndHorizontal ();
-
-
-				if (dg.triggerCondition.condition_2 != null) {
-
-					EditorGUILayout.BeginHorizontal ();
-					EditorGUILayout.LabelField ("**************************************", new GUILayoutOption[] {
-						GUILayout.Height (20),
-						GUILayout.Width (20)
-					});
-					EditorGUILayout.BeginVertical ();
-
-					EditorGUILayout.LabelField ("触发条件2", shortLayouts);
-					EditorGUILayout.BeginHorizontal ();
-					for (int i = 0; i < dg.triggerCondition.condition_2.Count; i++) {
-						HLHValueWithLink vwl = dg.triggerCondition.condition_2 [i];
-						EditorGUILayout.BeginHorizontal ();
-						HLHConditionType type = (HLHConditionType)EditorGUILayout.EnumPopup (vwl.type, shorterLayouts);
-						HLHCalculateLink calculateLink = (HLHCalculateLink)EditorGUILayout.EnumPopup (vwl.calculateLink, shorterLayouts);
-						int value = EditorGUILayout.IntField (vwl.value, shorterLayouts);
-						HLHValueWithLink newVwl = new HLHValueWithLink ();
-						newVwl.type = type;
-						newVwl.calculateLink = calculateLink;
-						newVwl.value = value;
-						dg.triggerCondition.condition_2 [i] = newVwl;
-
-						EditorGUILayout.EndHorizontal ();
-
-					}
-
-					bool addNewVwlInCondition2 = GUILayout.Button ("添加", tinyLayouts);
-					bool removeLastVwlInCondition2 = GUILayout.Button ("删除", tinyLayouts);
-					if (addNewVwlInCondition2) {
-						dg.triggerCondition.condition_2.Add (new HLHValueWithLink ());
-					}
-					if (removeLastVwlInCondition2 && dg.triggerCondition.condition_2.Count > 1) {
-						dg.triggerCondition.condition_2.RemoveAt (dg.triggerCondition.condition_2.Count - 1);
-					}
-
-					EditorGUILayout.EndHorizontal ();
-
-					EditorGUILayout.EndVertical ();
-					EditorGUILayout.EndHorizontal ();
-
-				}
 			}
+
+
 
 			EditorGUILayout.EndVertical ();
 			EditorGUILayout.EndHorizontal ();

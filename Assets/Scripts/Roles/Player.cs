@@ -137,8 +137,8 @@ namespace WordJourney
 
 		public bool hasCompass = false;
 
-		private int maxBagCount = 4;
-		private int singleBagVolume = 24;
+		private int maxBagCount{ get{ return BuyRecord.Instance.extraBagUnlocked ? 4 : 3; } }
+//		private int singleBagVolume = 24;
 
 		public void SetUpPlayerWithPlayerData(PlayerData playerData){
 
@@ -858,11 +858,16 @@ namespace WordJourney
 				agentLevel++;
 
 				int maxHealthRecord = maxHealth;
+				originalMaxHealth += 10;
 				maxHealth += 10;
-				health = (int)(health * (float)maxHealthRecord / maxHealth);
+				health = (int)(health * (float) maxHealth / maxHealthRecord);
+				originalAttack++;
 				attack++;
+				originalArmor++;
 				armor++;
+				originalMagicAttack++;
 				magicAttack++;
+				originalMagicResist++;
 				magicResist++;
 
 				levelUp = true;
@@ -895,7 +900,7 @@ namespace WordJourney
 		public bool CheckBagFull(Item item){
 
 			if (item.itemType == ItemType.Equipment) {
-				return allItemsInBag.Count >= maxBagCount * singleBagVolume;
+				return allItemsInBag.Count >= maxBagCount * CommonData.singleBagItemVolume;
 			} else {
 
 				Item itemInBag = allItemsInBag.Find (delegate (Item obj) {
@@ -903,7 +908,7 @@ namespace WordJourney
 				});
 
 				if (itemInBag == null) {
-					return allItemsInBag.Count >= maxBagCount * singleBagVolume;
+					return allItemsInBag.Count >= maxBagCount * CommonData.singleBagItemVolume;
 				} 
 
 				return false;

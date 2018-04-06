@@ -68,6 +68,9 @@ namespace WordJourney
 		public Button quitTradeButton;
 		public Button quitSpecialOperationButton;
 
+		public PurchasePendingHUD purchaseHUD;
+
+
 		public void ShowNPCPlane(){
 			gameObject.SetActive (true);
 		}
@@ -88,6 +91,8 @@ namespace WordJourney
 
 			SetUpDialogPlane (dialog,dg);
 			ResetTradeAndSpecialOperationPlane ();
+
+
 
 			gameObject.SetActive (true);
 
@@ -220,9 +225,7 @@ namespace WordJourney
 					
 				if(choice.isEnd){
 
-					if(!dg.isMultiTimes){
-						dg.isFinish = true;
-					}
+					dg.isFinish = true;
 
 					QuitNPCPlane();
 
@@ -242,6 +245,13 @@ namespace WordJourney
 
 		}
 
+		public void InitPurchaseExtraBag(){
+			purchaseHUD.SetUpPurchasePendingHUD (PurchaseManager.extra_bag_id,delegate {
+				bagItemsDisplay.UpdateBagTabs ();
+			});
+		}
+			
+			
 
 		public void SetUpTrade(){
 
@@ -250,7 +260,8 @@ namespace WordJourney
 			ClearItemDetail ();
 			UpdateGoodsDisplay ();
 
-			bagItemsDisplay.SetUpBagItemsPlane (0, OnItemInBagClickInTrade);
+			bagItemsDisplay.InitBagItemsDisplayPlane (OnItemInBagClickInTrade, InitPurchaseExtraBag);
+			bagItemsDisplay.SetUpBagItemsPlane (0);
 
 			quitTradeButton.gameObject.SetActive (true);
 			quitSpecialOperationButton.gameObject.SetActive (false);
@@ -270,8 +281,9 @@ namespace WordJourney
 
 			ClearItemDetail ();
 
-			bagItemsDisplay.SetUpBagItemsPlane (0, OnItemInBagClickInSpecialOperation);
+			bagItemsDisplay.InitBagItemsDisplayPlane (OnItemInBagClickInSpecialOperation, InitPurchaseExtraBag);
 
+			bagItemsDisplay.SetUpBagItemsPlane (0);
 			quitTradeButton.gameObject.SetActive (false);
 			quitSpecialOperationButton.gameObject.SetActive (true);
 

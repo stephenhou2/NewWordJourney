@@ -20,33 +20,34 @@ namespace WordJourney
 		public Text totalGoldText;
 
 
-		private int singleBagItemVolume = 24;
+//		private int singleBagItemVolume = 24;
 		private int currentBagIndex;
 
 		private int minItemIndexOfCurrentBag {
 			get {
-				return currentBagIndex * singleBagItemVolume;
+				return currentBagIndex * CommonData.singleBagItemVolume;
 			}
 		}
 
 		private int maxItemIndexOfCurrentBag {
 			get {
-				return minItemIndexOfCurrentBag + singleBagItemVolume - 1;
+				return minItemIndexOfCurrentBag + CommonData.singleBagItemVolume - 1;
 			}
 		}
 		private ShortClickCallBack shortClickCallBack;
+		private CallBack initPurchaseBag;
 
-
-
+		public void InitBagItemsDisplayPlane(ShortClickCallBack shortClickCallBack,CallBack initPurchaseBag){
+			this.shortClickCallBack = shortClickCallBack;
+			this.initPurchaseBag = initPurchaseBag;
+		}
 
 		/// <summary>
 		/// 初始化背包物品界面
 		/// </summary>
-		public void SetUpBagItemsPlane(int bagIndex,ShortClickCallBack shortClickCallBack){
+		public void SetUpBagItemsPlane(int bagIndex){
 
 			totalGoldText.text = Player.mainPlayer.totalGold.ToString ();
-
-			this.shortClickCallBack = shortClickCallBack;
 
 			bagItemsPool.AddChildInstancesToPool (bagItemsContainer);
 
@@ -73,22 +74,32 @@ namespace WordJourney
 
 		}
 
+		public void UpdateBagTabs(){
+			bagTabs [3].transform.Find ("LockIcon").gameObject.SetActive (!BuyRecord.Instance.extraBagUnlocked);
+		}
+
 		public void ArrangeBag(){
 			Player.mainPlayer.ArrangeBagItems ();
 			SetUpCurrentBagItemsPlane ();
 		}
 
 		public void SetUpCurrentBagItemsPlane(){
-			SetUpBagItemsPlane (currentBagIndex,shortClickCallBack);
+			SetUpBagItemsPlane (currentBagIndex);
 		}
 
 
 		public void ChangeBag(int bagIndex){
+
+			if (bagIndex == 3 && !BuyRecord.Instance.extraBagUnlocked) {
+				initPurchaseBag ();
+				return;
+			}
+
 			if (bagIndex == currentBagIndex) {
 				return;
 			}
 			currentBagIndex = bagIndex;
-			SetUpBagItemsPlane (bagIndex,shortClickCallBack);
+			SetUpBagItemsPlane (bagIndex);
 
 		}
 
@@ -163,7 +174,7 @@ namespace WordJourney
 		public void AddBagItem(Item item,int atIndex = -1,bool forceAdd = false){
 
 			// 如果当前背包已满
-			if (bagItemsContainer.childCount == singleBagItemVolume && !forceAdd) {
+			if (bagItemsContainer.childCount == CommonData.singleBagItemVolume && !forceAdd) {
 				return;
 			}
 

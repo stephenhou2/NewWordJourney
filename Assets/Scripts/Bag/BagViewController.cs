@@ -11,7 +11,7 @@ namespace WordJourney
 
 		public Item currentSelectItem;
 
-		public PurchaseManager purchaseManager;
+//		public PurchaseManager purchaseManager;
 
 //		private int currentBagIndex;
 
@@ -67,17 +67,10 @@ namespace WordJourney
 		public void OnItemInEquipmentPlaneClick(Item item,int equipmentIndexInPanel){
 
 			if (equipmentIndexInPanel == 6 && !BuyRecord.Instance.extraEquipmentSlotUnlocked) {
-				string productId = "";
-//				if (equipmentIndexInPanel == 4) {
-					productId = PurchaseManager.equipmentSlot_6_id;
-//				} else if (equipmentIndexInPanel == 5) {
-//					productId = PurchaseManager.equipmentSlot_6_id;
-//				}
-
-				InitPurchase (productId);
+				bagView.SetUpPurchasePlane (PurchaseManager.extra_equipmentSlot_id);
 			}
 
-			if (item == null) {
+			if (item == null || item.itemId<0) {
 				return;
 			}
 
@@ -85,23 +78,8 @@ namespace WordJourney
 
 		}
 
-		private void InitPurchase(string productId){
-			bagView.SetUpPurchasePlane ();
-			purchaseManager.PurchaseProduct (productId, PurchaseSuccessCallback, PurchaseFailCallback);
 
-		}
 
-		private void PurchaseSuccessCallback(){
-
-			bagView.SetUpEquipedEquipmentsPlane ();
-
-			bagView.QuitPurchasePlane ();
-		}
-
-		private void PurchaseFailCallback(){
-
-			bagView.QuitPurchasePlane ();
-		}
 
 		public void OnItemInBagClick(Item item){
 
@@ -156,7 +134,6 @@ namespace WordJourney
 			bagView.SetUpEquipedEquipmentsPlane ();
 
 			bagView.itemDetail.SetUpOperationButtons (false, true, false);
-//			bagView.SetUpTintHUD ("装备栏已满",null);
 
 		}
 
@@ -463,29 +440,8 @@ namespace WordJourney
 //
 //		}
 
-		public void OnEquipmentSlotPurchaseSucceed(int slotIndex){
 
-			BuyRecord.Instance.extraEquipmentSlotUnlocked = true;
-
-			GameManager.Instance.persistDataManager.SaveBuyRecord ();
-
-			bagView.SetUpTintHUD (string.Format ("成功解锁装备槽{0}", slotIndex + 1), null);
-
-			bagView.SetUpEquipedEquipmentsPlane ();
-		}
-
-
-		public void OnEquipmentSlotPurchaseFail(int slotIndex){
-
-			bagView.SetUpTintHUD ("购买失败", null);
-
-		}
 	
-
-//		public void RemoveItem(Item item){
-////			bagView.SetUpBagItemsPlane (currentBagIndex);
-//			bagView.RemoveBagItem (item);
-//		}
 
 
 
@@ -496,24 +452,9 @@ namespace WordJourney
 
 			bagView.QuitBagPlane ();
 
-//			Transform exploreCanvas = TransformManager.FindTransform ("ExploreCanvas");
-//
-//			if (exploreCanvas == null) {
-//
-//				GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.homeCanvasBundleName, "HomeCanvas", () => {
-//
-//					TransformManager.FindTransform ("HomeCanvas").GetComponent<HomeViewController> ().SetUpHomeView ();
-//
-////					GameManager.Instance.gameDataCenter.ReleaseDataWithNames(new string[]{"AllItemSprites","AllMaterialSprites","AllMaterials","AllItemModels"});
-//
-////					TransformManager.DestroyTransfromWithName ("PoolContainerOfBagCanvas", TransformRoot.PoolContainer);
-//				});
-//			} else {
-				ExploreUICotroller expUICtr = ExploreManager.Instance.expUICtr;
-				expUICtr.UpdatePlayerStatusBar ();
-				expUICtr.UpdateBottomBar ();
-//			}
-
+			ExploreUICotroller expUICtr = ExploreManager.Instance.expUICtr;
+			expUICtr.UpdatePlayerStatusBar ();
+			expUICtr.UpdateBottomBar ();
 
 			Time.timeScale = 1;
 
@@ -524,29 +465,10 @@ namespace WordJourney
 		// 完全清理背包界面内存
 		public void DestroyInstances(){
 
-//			GameManager.Instance.UIManager.RemoveCanvasCache ("BagCanvas");
-
-
 			MyResourceManager.Instance.UnloadAssetBundle (CommonData.bagCanvasBundleName,true);
-
-
-//			StartCoroutine ("LatelyDestroyView");
-//		}
-//
-//		private IEnumerator LatelyDestroyView(){
-//
-//			yield return new WaitForSeconds (0.3f);
 
 			Destroy (this.gameObject,0.3f);
 		}
 
-
-		void OnDestroy(){
-			Debug.Log ("销毁背包");
-			bagView = null;
-			currentSelectItem = null;
-			purchaseManager = null;
-			itemToAddWhenBagFull = null;
-		}
 	}
 }

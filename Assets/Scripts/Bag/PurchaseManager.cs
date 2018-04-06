@@ -17,10 +17,10 @@ namespace WordJourney
 		// Product identifiers for all products capable of being purchased: 
 		// "convenience" general identifiers for use with Purchasing, and their store-specific identifier 
 		// counterparts for use with and outside of Unity Purchasing. Define store-specific identifiers 
-		// also on each platform's publisher dashboard (iTunes Connect, Google Play Developer Console, etc.)
-
-//		public static string equipmentSlot_5_id = "com.yougan233.wordjourney.equipmentslot5";
-		public static string equipmentSlot_6_id = "com.yougan233.wordjourney.equipmentslot6";
+		// also on each platform's publisher dashboard (iTunes Connect, Google Play Developer Console, etc.
+		public static string extra_equipmentSlot_id = "com.yougan233.wordjourney.extraEquipmentSlot";
+		public static string extra_bag_id = "com.yougan233.wordjourney.extraBag";
+		public static string new_life_id = "com.yougan233.wordjourney.lifeCard";
 
 
 		private CallBack purchaseSucceedCallback;
@@ -31,9 +31,9 @@ namespace WordJourney
 		{
 			var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
-//			builder.AddProduct(PurchaseManager.equipmentSlot_5_id, ProductType.NonConsumable);
-
-			builder.AddProduct(PurchaseManager.equipmentSlot_6_id, ProductType.NonConsumable);
+			builder.AddProduct(PurchaseManager.extra_equipmentSlot_id, ProductType.NonConsumable);
+			builder.AddProduct (PurchaseManager.extra_bag_id, ProductType.NonConsumable);
+			builder.AddProduct (PurchaseManager.new_life_id, ProductType.Consumable);
 
 			UnityPurchasing.Initialize(this, builder);
 		}
@@ -51,6 +51,7 @@ namespace WordJourney
 
 
 			this.controller = controller;
+
 //			this.extensions = extensions;
 //			Debug.Log("Initialize success");
 		}
@@ -100,7 +101,7 @@ namespace WordJourney
 		/// </summary>
 		public PurchaseProcessingResult ProcessPurchase (PurchaseEventArgs e)
 		{
-//			Debug.Log ("purchase success!!");
+			Debug.Log ("purchase success!!");
 
 			BuyRecord.Instance.PurchaseSuccess (e.purchasedProduct.definition.id);
 
@@ -114,7 +115,7 @@ namespace WordJourney
 		/// </summary>
 		public void OnPurchaseFailed (Product i, PurchaseFailureReason p)
 		{
-//			Debug.Log ("purchase failed!!");
+			Debug.Log ("purchase failed!!");
 			purchaseFailCallback ();
 		}
 

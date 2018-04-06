@@ -111,6 +111,7 @@ namespace WordJourney{
 		// 当前屏幕分辨率和预设屏幕分辨率之间的转换比例
 		public static float scalerToPresetResulotion = 1920f / Camera.main.pixelHeight;
 
+		public static int singleBagItemVolume = 24;
 
 		public static char diamond = (char)6;
 		public static int totalFadeStep = 20;

@@ -57,16 +57,10 @@ namespace WordJourney
 
 		protected CallBack animEndCallBack;
 
-//		public MapItemType mapItemType;
-
 		protected BoxCollider2D bc2d;
 
 		// 单词数组，第0项为显示的目标单词
 		public LearnWord[] wordsArray;
-
-//		public bool isDroppable;
-
-//		public MapEnglishTriggerInfo engTriggerInfo;
 
 		protected bool isWordTriggered{
 			get{

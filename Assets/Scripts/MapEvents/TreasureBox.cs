@@ -51,8 +51,6 @@ namespace WordJourney
 		}
 
 
-
-
 		/// <summary>
 		/// 地图物品被破坏或开启
 		/// </summary>

@@ -98,11 +98,16 @@ namespace WordJourney
 			}
 
 			if (isWordTrigger) {
+				bool hasValidWord = false;
 				for (int i = 0; i < wordsArray.Length; i++) {
 					if (wordsArray [i].spell.Length <= 7) {
 						ExploreManager.Instance.ShowCharacterFillPlane (wordsArray [i]);
+						hasValidWord = true;
 						break;
 					}
+				}
+
+				if(!hasValidWord){
 					#warning 这里如果已有的单词队列里单词长度都大于7，暂时先用第一个单词作为题目，数据库更新以后打开下面的代码
 					ExploreManager.Instance.ShowCharacterFillPlane (wordsArray [0]);
 
