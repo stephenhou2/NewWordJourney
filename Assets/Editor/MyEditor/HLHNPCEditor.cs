@@ -72,8 +72,6 @@ namespace WordJourney
 
 		private bool[] goodsFoldOutInfoArray;
 
-		private bool[] regularGreetingInfoArray;
-
 		private bool[] triggerConditionInfoArray;
 
 		private int dataResult = -1;
@@ -89,7 +87,6 @@ namespace WordJourney
 			editor.choiceFoldOutInfoArray = new bool[50, 50];
 			editor.taskFoldOutInfoArray = new bool[50];
 			editor.goodsFoldOutInfoArray = new bool[50];
-			editor.regularGreetingInfoArray = new bool[50];
 			editor.dialogGroupFoldOutInfoArray = new bool[50];
 			editor.triggerConditionInfoArray = new bool[50];
 
@@ -205,17 +202,15 @@ namespace WordJourney
 			}
 
 			EditorGUILayout.BeginHorizontal ();
-			EditorGUILayout.LabelField ("**************************************", new GUILayoutOption[] {
+			EditorGUILayout.LabelField ("***编辑常规寒暄对话", new GUILayoutOption[] {
 				GUILayout.Height (20),
-				GUILayout.Width (20)
+				GUILayout.Width (120)
 			});
 			EditorGUILayout.BeginVertical ();
 
 			HLHDialogGroup rdg = npc.regularGreeting;
 
 			rdg.dialogGroupId = npc.dialogGroups.Count;
-
-			DrawTriggerConditions (rdg);
 
 			DrawDialogs (rdg);
 
@@ -248,9 +243,9 @@ namespace WordJourney
 
 
 			EditorGUILayout.BeginHorizontal ();
-			EditorGUILayout.LabelField ("**************************************", new GUILayoutOption[] {
+			EditorGUILayout.LabelField ("***编辑对话组", new GUILayoutOption[] {
 				GUILayout.Height (20),
-				GUILayout.Width (20)
+				GUILayout.Width (120)
 			});
 			EditorGUILayout.BeginVertical ();
 
@@ -315,9 +310,9 @@ namespace WordJourney
 			}
 
 			EditorGUILayout.BeginHorizontal ();
-			EditorGUILayout.LabelField ("**************************************", new GUILayoutOption[] {
+			EditorGUILayout.LabelField ("***编辑商品信息", new GUILayoutOption[] {
 				GUILayout.Height (20),
-				GUILayout.Width (20)
+				GUILayout.Width (120)
 			});
 			EditorGUILayout.BeginVertical ();
 
@@ -387,9 +382,9 @@ namespace WordJourney
 			}
 
 			EditorGUILayout.BeginHorizontal ();
-			EditorGUILayout.LabelField ("**************************************", new GUILayoutOption[] {
+			EditorGUILayout.LabelField ("***编辑任务信息", new GUILayoutOption[] {
 				GUILayout.Height (20),
-				GUILayout.Width (20)
+				GUILayout.Width (120)
 			});
 			EditorGUILayout.BeginVertical ();
 
@@ -468,9 +463,9 @@ namespace WordJourney
 			}
 
 			EditorGUILayout.BeginHorizontal ();
-			EditorGUILayout.LabelField ("**************************************", new GUILayoutOption[] {
+			EditorGUILayout.LabelField ("***编辑人物选择", new GUILayoutOption[] {
 				GUILayout.Height (20),
-				GUILayout.Width (20)
+				GUILayout.Width (120)
 			});
 			EditorGUILayout.BeginVertical ();
 
@@ -596,11 +591,13 @@ namespace WordJourney
 			}
 
 			EditorGUILayout.BeginHorizontal ();
-			EditorGUILayout.LabelField ("**************************************", new GUILayoutOption[] {
+			EditorGUILayout.LabelField ("***编辑对话数组", new GUILayoutOption[] {
 				GUILayout.Height (20),
-				GUILayout.Width (20)
+				GUILayout.Width (120)
 			});
 			EditorGUILayout.BeginVertical ();
+
+			dg.isOneOff = EditorGUILayout.Toggle ("是否只能触发一次", dg.isOneOff, middleLayouts);
 
 			EditorGUILayout.BeginHorizontal ();
 			bool createNewDialog = GUILayout.Button ("添加新的对话",buttonLayouts);
@@ -691,28 +688,28 @@ namespace WordJourney
 		private void DrawTriggerConditions(HLHDialogGroup dg){
 
 			EditorGUILayout.BeginHorizontal ();
-			EditorGUILayout.LabelField ("**************************************", new GUILayoutOption[] {
+			EditorGUILayout.LabelField ("***编辑触发条件", new GUILayoutOption[] {
 				GUILayout.Height (20),
-				GUILayout.Width (20)
+				GUILayout.Width (120)
 			});
 			EditorGUILayout.BeginVertical ();
 			triggerConditionInfoArray [dg.dialogGroupId] = EditorGUILayout.Foldout (triggerConditionInfoArray [dg.dialogGroupId], "编辑触发条件");
 
 			if (triggerConditionInfoArray [dg.dialogGroupId]) {
-				EditorGUILayout.LabelField ("-----------触发条件------------", middleLayouts);
-				EditorGUILayout.BeginHorizontal ();
-				bool addNewTriggerCondition = GUILayout.Button ("添加触发条件", buttonLayouts);
-				bool removeLastTriggerCondition = GUILayout.Button ("移除触发条件", buttonLayouts);
-				EditorGUILayout.EndHorizontal ();
-
-				if (addNewTriggerCondition && dg.triggerCondition.condition == null) {
-					dg.triggerCondition.condition = new List<HLHValueWithLink> ();
-					dg.triggerCondition.condition.Add (new HLHValueWithLink ());
-				}
-
-				if (removeLastTriggerCondition && dg.triggerCondition.condition != null) {
-					dg.triggerCondition.condition = null;
-				}
+//				EditorGUILayout.LabelField ("-----------触发条件------------", middleLayouts);
+//				EditorGUILayout.BeginHorizontal ();
+//				bool addNewTriggerCondition = GUILayout.Button ("添加触发条件", buttonLayouts);
+//				bool removeLastTriggerCondition = GUILayout.Button ("移除触发条件", buttonLayouts);
+//				EditorGUILayout.EndHorizontal ();
+//
+//				if (addNewTriggerCondition && dg.triggerCondition.condition == null) {
+//					dg.triggerCondition.condition = new List<HLHValueWithLink> ();
+//					dg.triggerCondition.condition.Add (new HLHValueWithLink ());
+//				}
+//
+//				if (removeLastTriggerCondition && dg.triggerCondition.condition != null) {
+//					dg.triggerCondition.condition = null;
+//				}
 
 //				if (addNewTriggerCondition && dg.triggerCondition.condition_2 == null) {
 //					dg.triggerCondition.condition_2 = new List<HLHValueWithLink> ();
@@ -733,7 +730,7 @@ namespace WordJourney
 				EditorGUILayout.BeginVertical ();
 
 
-				EditorGUILayout.LabelField ("触发条件1", shortLayouts);
+				EditorGUILayout.LabelField ("触发条件", shortLayouts);
 				EditorGUILayout.BeginHorizontal ();
 				for (int i = 0; i < dg.triggerCondition.condition.Count; i++) {
 					HLHValueWithLink vwl = dg.triggerCondition.condition [i];

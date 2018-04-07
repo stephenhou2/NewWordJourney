@@ -225,7 +225,9 @@ namespace WordJourney
 					
 				if(choice.isEnd){
 
-					dg.isFinish = true;
+					if(dg.isOneOff){
+						dg.isFinish = true;
+					}
 
 					QuitNPCPlane();
 

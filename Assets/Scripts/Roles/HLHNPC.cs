@@ -54,7 +54,11 @@ namespace WordJourney
 
 				HLHDialogGroup dg = dialogGroups [i];
 
-				if (!dg.isFinish && dg.triggerCondition.IsTriggered (player)) {
+				if (dg.isFinish) {
+					continue;
+				}
+					
+				if(dg.triggerCondition.IsTriggered (player)){
 
 					// 如果符合条件的对话组不是任务触发的对话组
 					if (!dg.isTaskTriggeredDg) {
@@ -68,14 +72,16 @@ namespace WordJourney
 							break;
 						}
 					}
-
 				}
+
+
 
 			}
 
 			if (targetDg == null) {
 				targetDg = regularGreeting;
 			}
+
 
 			return targetDg;
 
@@ -177,6 +183,8 @@ namespace WordJourney
 		public List<HLHChoice> choices;
 
 		public bool isFinish;
+
+		public bool isOneOff;
 
 		public bool isTaskTriggeredDg;
 
@@ -347,13 +355,13 @@ namespace WordJourney
 
 		public bool IsTriggered(Player player){
 
-			bool isCondition1Triggered = true;
+			bool isConditionTriggered = true;
 //			bool isCondition2Triggered = true;
 
 			if (condition != null) {
 
 				if (condition.Count == 0) {
-					isCondition1Triggered = false;
+					isConditionTriggered = true;
 				}
 
 				for (int i = 0; i < condition.Count; i++) {
@@ -362,7 +370,7 @@ namespace WordJourney
 
 					bool temp = vwl.CheckAccordance (player);
 
-					isCondition1Triggered = isCondition1Triggered && temp;
+					isConditionTriggered = isConditionTriggered && temp;
 
 				}
 
@@ -387,7 +395,7 @@ namespace WordJourney
 //			}
 
 //			return isCondition1Triggered || isCondition2Triggered;
-			return isCondition1Triggered;
+			return isConditionTriggered;
 		}
 
 	}

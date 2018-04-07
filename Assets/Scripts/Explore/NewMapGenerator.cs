@@ -366,7 +366,7 @@ namespace WordJourney
 					break;
 				case "goldPack":
 					mapEvent = mapEventsPool.GetInstanceWithName<GoldPack> (goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 1;
+					mapWalkableInfoArray [posX, posY] = 0;
 					break;
 				case "bucket":
 					mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox> (bucketModel.name, bucketModel.gameObject, mapEventsContainer);
