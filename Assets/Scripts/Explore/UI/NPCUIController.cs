@@ -19,13 +19,17 @@ namespace WordJourney
 		public Transform dialogPlane;
 		public Text dialogText;
 
-		public Transform onChoicePlane;
-		public Transform twoChoicePlane;
-		public Transform threeChoicePlane;
 
-		public Button choiceBtnInOnChoicePlane;
-		public Button[] choiceBtnsInTwoChoicePlane;
-		public Button[] choiceBtnsInThreeChoicePlane;
+		public Transform choiceButtonModel;
+		public InstancePool choiceButtonPool;
+		public Transform choiceButtonContainer;
+//		public Transform onChoicePlane;
+//		public Transform twoChoicePlane;
+//		public Transform threeChoicePlane;
+//
+//		public Button choiceBtnInOnChoicePlane;
+//		public Button[] choiceBtnsInTwoChoicePlane;
+//		public Button[] choiceBtnsInThreeChoicePlane;
 
 		/**********  dialogPlane UI *************/
 
@@ -106,48 +110,13 @@ namespace WordJourney
 
 			HLHChoice[] choices = dg.GetChoices (dialog);
 
-			if (choices.Length == 1) {
-
-				HLHChoice choice = choices [0];
-
-				onChoicePlane.gameObject.SetActive (true);
-				twoChoicePlane.gameObject.SetActive (false);
-				threeChoicePlane.gameObject.SetActive (false);
-
-				SetUpChoiceButton (choiceBtnInOnChoicePlane, choice, dg);
-
-			} else if (choices.Length == 2) {
-				
-				onChoicePlane.gameObject.SetActive (false);
-				twoChoicePlane.gameObject.SetActive (true);
-				threeChoicePlane.gameObject.SetActive (false);
-
-				for (int i = 0; i < 2; i++) {
-
-					Button choiceButton = choiceBtnsInTwoChoicePlane [i];
-
-					HLHChoice choice = choices [i];
-
-					SetUpChoiceButton (choiceButton, choice, dg);
-
-				}
-			} else if (choices.Length == 3) {
-
-				onChoicePlane.gameObject.SetActive (false);
-				twoChoicePlane.gameObject.SetActive (false);
-				threeChoicePlane.gameObject.SetActive (true);
-
-				for (int i = 0; i < 3; i++) {
-
-					Button choiceButton = choiceBtnsInThreeChoicePlane [i];
-
-					HLHChoice choice = choices [i];
-
-					SetUpChoiceButton (choiceButton, choice, dg);
-
-				}
+			for (int i = 0; i < choices.Length; i++) {
+				Button choiceButton = choiceButtonPool.GetInstance<Button> (choiceButtonModel.gameObject, choiceButtonContainer);
+				HLHChoice choice = choices [i];
+				SetUpChoiceButton (choiceButton, choice, dg);
 
 			}
+				
 		}
 			
 		private void SetUpChoiceButton(Button choiceButton,HLHChoice choice,HLHDialogGroup dg){
@@ -189,9 +158,10 @@ namespace WordJourney
 
 			choiceButton.onClick.AddListener (delegate {
 
-				if(choice.isHiddenPropertyChangeTriggered){
-					Player.mainPlayer.HiddenPropertyChange(choice.playerJusticeChange,choice.playerPowerChange);
-				}
+				choiceButtonPool.AddChildInstancesToPool(choiceButtonContainer);
+
+				bool totallyQuitNPCPlane = true;
+
 				if(choice.isReceiveTaskTriggered){
 					HLHTask task = npc.GetTask(choice.triggeredTaskId);
 					Player.mainPlayer.ReceiveTask(task);
@@ -203,33 +173,38 @@ namespace WordJourney
 					ExploreManager.Instance.expUICtr.UpdateTasksDescription();
 				}
 				if(choice.isRewardTriggered){
-					int randomSeed = Random.Range(0,choice.possibleRewards.Count);
-					HLHNPCReward reward = choice.possibleRewards[randomSeed];
+					int randomSeed = Random.Range(0,choice.rewards.Count);
+					HLHNPCReward reward = choice.rewards[randomSeed];
 					Player.mainPlayer.GainFromNPCReward(reward);
 				}
 				if(choice.isTradeTriggered){
 					SetUpTrade();
 					hideDialogPlane = true;
+					totallyQuitNPCPlane = false;
 				}
 				if(choice.isAddSkillTriggered){
 					SetUpSpecialOperation();
 					hideDialogPlane = true;
+					totallyQuitNPCPlane = false;
 				}
 				if(choice.isFightTriggered){
 					HideNPCPlane();
 					Transform mapNpc = ExploreManager.Instance.currentEnteredMapEvent.transform;
-					ExploreManager.Instance.EnterFight(mapNpc);
-					ExploreManager.Instance.PlayerAndMonsterStartFight();
+					mapNpc.GetComponent<MapNPC>().EnterFight(ExploreManager.Instance.battlePlayerCtr);
 					hideDialogPlane = true;
 				}
 					
 				if(choice.isEnd){
 
-					if(dg.isOneOff){
+					if(!dg.isMultiOff && choice.finishCurrentDialog){
 						dg.isFinish = true;
 					}
 
-					QuitNPCPlane();
+					if(totallyQuitNPCPlane){
+						QuitNPCPlane();
+					}else{
+						QuitDialogPlane();
+					}
 
 					return;
 				}
@@ -239,7 +214,7 @@ namespace WordJourney
 				SetUpDialogPlane(newDialog,dg);
 
 				if(hideDialogPlane){
-					QuitDialogDisplay();
+					QuitDialogPlane();
 				}
 
 			});
@@ -473,7 +448,8 @@ namespace WordJourney
 			bagItemsDisplay.transform.DOLocalMoveY (bagItemsPlaneMoveEndY, flyDuration);
 		}
 
-		private void QuitDialogDisplay(){
+		private void QuitDialogPlane(){
+			choiceButtonPool.AddChildInstancesToPool (choiceButtonContainer);
 			dialogPlane.gameObject.SetActive (false);
 		}
 
@@ -556,10 +532,13 @@ namespace WordJourney
 			currentSelectedItem = null;
 
 			QuitTradeDisplay ();
+
+			QuitNPCPlane ();
 		}
 
 		public void QuitSpecialOperationPlane(){
 			QuitSpecialOperationDisplay ();
+			QuitNPCPlane ();
 		}
 
 		public void QuitNPCPlane(){
@@ -567,7 +546,8 @@ namespace WordJourney
 			if (npc == null) {
 				return;
 			}
-			QuitDialogDisplay ();
+
+			QuitDialogPlane ();
 			ResetTradeAndSpecialOperationPlane ();
 
 			dialogText.text = string.Empty;

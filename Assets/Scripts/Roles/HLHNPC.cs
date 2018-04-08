@@ -21,8 +21,16 @@ namespace WordJourney
 
 		public List<HLHNPCGoods> npcGoodsList = new List<HLHNPCGoods> ();
 
-		public HLHDialogGroup regularGreeting;
+		public List<HLHDialogGroup> regularGreetings = new List<HLHDialogGroup>();
 
+		// 标示当npc数据变化时是否需要保存npc数据
+		public bool saveOnChange;
+
+		// 本层触发的对话组的记录
+		private HLHDialogGroup dialogGroupRecord;
+
+
+		//******************************************************************************** start *************************************************************************//
 
 		/// <summary>
 		/// 查找人物当前触发的对话组
@@ -32,6 +40,18 @@ namespace WordJourney
 		public HLHDialogGroup FindQulifiedDialogGroup(Player player){
 
 			HLHDialogGroup targetDg = null;
+
+			if (dialogGroupRecord != null) {
+				if (!dialogGroupRecord.isFinish) {
+					return dialogGroupRecord;
+				} else {
+					targetDg = regularGreetings.Find (delegate(HLHDialogGroup obj) {
+						return obj.dialogGroupId == dialogGroupRecord.dialogGroupId;
+					});
+					dialogGroupRecord = targetDg;
+					return targetDg;
+				}
+			}
 
 			for (int i = 0; i < dialogGroups.Count; i++) {
 
@@ -44,11 +64,14 @@ namespace WordJourney
 					if (t.dialogGroupId == dg.dialogGroupId) {
 
 						targetDg = dg;
+						dialogGroupRecord = dg;
 
 						return dg;
 					}
 				}
 			}
+
+			List<HLHDialogGroup> possibleDialogGroups = new List<HLHDialogGroup> ();
 
 			for (int i = 0; i < dialogGroups.Count; i++) {
 
@@ -58,12 +81,11 @@ namespace WordJourney
 					continue;
 				}
 					
-				if(dg.triggerCondition.IsTriggered (player)){
+				if (dg.triggerLevel == -1) {
 
 					// 如果符合条件的对话组不是任务触发的对话组
 					if (!dg.isTaskTriggeredDg) {
-						targetDg = dg;
-						break;
+						possibleDialogGroups.Add (dg);
 					} else {
 						// 如果符合添加的对话组是从任务触发的对话组
 						bool hasPlayerReceiveTask = player.CheckTaskExistFromTriggeredDialogGroupId (dg.dialogGroupId);
@@ -72,16 +94,25 @@ namespace WordJourney
 							break;
 						}
 					}
+				} else if(dg.triggerLevel == player.currentLevelIndex && !dg.isFinish){
+					targetDg = dg;
+					dialogGroupRecord = dg;
+					return targetDg;
 				}
-
-
-
 			}
+
+			if (targetDg == null && possibleDialogGroups.Count > 0) {
+				int randomSeed = Random.Range (0, possibleDialogGroups.Count);
+				targetDg = possibleDialogGroups [randomSeed];
+			}
+
 
 			if (targetDg == null) {
-				targetDg = regularGreeting;
+				int randomSeed = Random.Range (0, regularGreetings.Count);
+				targetDg = regularGreetings [randomSeed];
 			}
 
+			dialogGroupRecord = targetDg;
 
 			return targetDg;
 
@@ -121,7 +152,11 @@ namespace WordJourney
 		/// <param name="player">Player.</param>
 		public void SoldGoods(int goodsId){
 
-			npcGoodsList.RemoveAt (goodsId);
+			int goodsDisplayIndex = npcGoodsList.FindIndex (delegate(HLHNPCGoods obj) {
+				return obj.goodsId == goodsId;
+			});
+
+			npcGoodsList.RemoveAt (goodsDisplayIndex);
 
 //			for (int i = 0; i < npcGoodsList.Count; i++) {
 //
@@ -168,6 +203,9 @@ namespace WordJourney
 			return taskFinishDialogGroup;
 		}
 
+
+		//***************************************************************************** end ****************************************************************************//
+
 	}
 
 
@@ -176,7 +214,8 @@ namespace WordJourney
 
 		public int dialogGroupId;
 
-		public HLHTriggerCondition triggerCondition;
+		// 对话的触发关卡序号【-1代表对话不跟关卡走】
+		public int triggerLevel;
 
 		public List<HLHDialog> dialogs;
 
@@ -184,15 +223,19 @@ namespace WordJourney
 
 		public bool isFinish;
 
-		public bool isOneOff;
+		// 是否可以反复触发
+		public bool isMultiOff;
 
 		public bool isTaskTriggeredDg;
 
+
 		public HLHDialog GetDialog(HLHChoice choice){
 			return dialogs.Find (delegate(HLHDialog obj) {
-				return obj.dialogId == choice.triggerDialogId;
+				return obj.dialogId == choice.nextDialogId;
 			});
 		}
+
+		//***************************************************************************** start *******************************************************************************//
 
 		public HLHChoice[] GetChoices(HLHDialog dialog){
 
@@ -213,16 +256,10 @@ namespace WordJourney
 			return choicesArray;
 
 		}
+		//****************************************************************************** end *******************************************************************************//
 
 	}
 
-	/// <summary>
-	/// 人物隐藏属性枚举
-	/// </summary>
-	public enum HLHRoleHiddenProperty{
-		Justice,
-		Power
-	}
 		
 
 	[System.Serializable]
@@ -243,31 +280,37 @@ namespace WordJourney
 
 		public string choiceContent;
 
-		public int triggerDialogId;
+		public int nextDialogId;
 
-		public bool isHiddenPropertyChangeTriggered;
+		public bool isTradeTriggered;
+
+		public bool isFightTriggered;
+
+		public bool isWeaponChangeTriggered;
+
+		public bool isEquipmentLoseTriggered;
+
+		public bool isRewardTriggered;
+
+		public bool isWordLearningTriggered;
 
 		public bool isReceiveTaskTriggered;
 
 		public bool isHandInTaskTriggered;
 
-		public bool isRewardTriggered;
-
-		public bool isTradeTriggered;
+		public bool isRobTriggered;
 
 		public bool isAddSkillTriggered;
 
-		public bool isFightTriggered;
-
-		public int playerJusticeChange;
-
-		public int playerPowerChange;
-
-		public List<HLHNPCReward> possibleRewards;
+		public List<HLHNPCReward> rewards;
 
 		public int triggeredTaskId;
 
+		// 标示是否退出对话
 		public bool isEnd;
+
+		// 标示该对话组是否标记为结束【该项应该只在isEnd = true的情况下进行设定】
+		public bool finishCurrentDialog;
 
 
 	}
@@ -329,6 +372,8 @@ namespace WordJourney
 
 		public int goodsId;
 
+		//******************************************************************************* start *****************************************************************************//
+
 		public Item itemAsGoods;
 
 		public Item GetGoodsItem(){
@@ -338,141 +383,13 @@ namespace WordJourney
 			return itemAsGoods;
 		}
 
+		//********************************************************************************* end ***************************************************************************//
+
 		public HLHNPCGoods(int goodsId){
 			this.goodsId = goodsId;
 		}
 
 	}
 
-	[System.Serializable]
-	public struct HLHTriggerCondition{
-
-		// 单个数组内部做与运算
-		public List<HLHValueWithLink> condition;
-
-//		public List<HLHValueWithLink> condition_2;
-
-
-		public bool IsTriggered(Player player){
-
-			bool isConditionTriggered = true;
-//			bool isCondition2Triggered = true;
-
-			if (condition != null) {
-
-				if (condition.Count == 0) {
-					isConditionTriggered = true;
-				}
-
-				for (int i = 0; i < condition.Count; i++) {
-
-					HLHValueWithLink vwl = condition [i];
-
-					bool temp = vwl.CheckAccordance (player);
-
-					isConditionTriggered = isConditionTriggered && temp;
-
-				}
-
-			}
-
-//			if (condition_2 != null) {
-//
-//				if (condition_2.Count == 0) {
-//					isCondition2Triggered = false;
-//				}
-//
-//				for (int i = 0; i < condition_2.Count; i++) {
-//
-//					HLHValueWithLink vwl = condition_2 [i];
-//
-//					bool temp = vwl.CheckAccordance (player);
-//
-//					isCondition2Triggered = isCondition2Triggered && temp;
-//
-//				}
-//
-//			}
-
-//			return isCondition1Triggered || isCondition2Triggered;
-			return isConditionTriggered;
-		}
-
-	}
-
-	/// <summary>
-	/// 数值运算枚举
-	/// </summary>
-	public enum HLHCalculateLink{
-		LessOrEqual, //  <=
-		Equal, //  ==
-		MoreOrEqual //  >=
-	}
-
-	/// <summary>
-	/// 人物隐藏属性枚举
-	/// </summary>
-	public enum HLHConditionType{
-		Justice,//正义度
-		TotalJustice,//总正义度
-		Power,//强大度
-		TotalPower,//总强大度
-		GameLevel//关卡所在层级
-	}
-
-	[System.Serializable]
-	public struct HLHValueWithLink{
-
-		public HLHConditionType type;
-
-		public HLHCalculateLink calculateLink;
-
-		public int value;
-
-		public bool CheckAccordance(Player player){
-
-			bool isAccord = false;
-
-			switch (type) {
-			case HLHConditionType.Justice:
-				isAccord = CheckNumAccord (player.justice);
-				break;
-			case HLHConditionType.TotalJustice:
-				isAccord = CheckNumAccord (player.totalJustice);
-				break;
-			case HLHConditionType.Power:
-				isAccord = CheckNumAccord (player.power);
-				break;
-			case HLHConditionType.TotalPower:
-				isAccord = CheckNumAccord (player.totalJustice);
-				break;
-			case HLHConditionType.GameLevel:
-				isAccord = CheckNumAccord (player.maxUnlockLevelIndex);
-				break;
-			}
-
-			return isAccord;
-		}
-
-		private bool CheckNumAccord(int num){
-
-			bool isNumAccord = false;
-
-			switch (calculateLink) {
-			case HLHCalculateLink.LessOrEqual:
-				isNumAccord = num <= value;
-				break;
-			case HLHCalculateLink.Equal:
-				isNumAccord = num == value;
-				break;
-			case HLHCalculateLink.MoreOrEqual:
-				isNumAccord = num >= value;
-				break;
-			}
-				
-			return isNumAccord;
-		}
-
-	}
 
 }

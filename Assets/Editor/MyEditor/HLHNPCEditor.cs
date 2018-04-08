@@ -54,14 +54,6 @@ namespace WordJourney
 		private GUIStyle style = new GUIStyle();
 
 
-//		private Dictionary<string,bool> foldOutInfoDic = new Dictionary<string, bool> () {
-//			{"dialogGroups",false},
-//			{"taskList",false},
-//			{"npcGoodsList",false},
-//			{"regularGreetings",false}
-//
-//		};
-
 		private bool[] dialogGroupFoldOutInfoArray;
 
 		private bool[,] dialogFoldOutInfoArray;
@@ -72,7 +64,9 @@ namespace WordJourney
 
 		private bool[] goodsFoldOutInfoArray;
 
-		private bool[] triggerConditionInfoArray;
+		private bool[] regularGreetingsFoldOutInfoArray;
+		private bool[,] regularGreetingDialogFoldOutInfoArray;
+		private bool[,] regularGreetingChoiceFoldOutInfoArray;
 
 		private int dataResult = -1;
 
@@ -88,8 +82,9 @@ namespace WordJourney
 			editor.taskFoldOutInfoArray = new bool[50];
 			editor.goodsFoldOutInfoArray = new bool[50];
 			editor.dialogGroupFoldOutInfoArray = new bool[50];
-			editor.triggerConditionInfoArray = new bool[50];
-
+			editor.regularGreetingsFoldOutInfoArray = new bool[50];
+			editor.regularGreetingDialogFoldOutInfoArray = new bool[50,50];
+			editor.regularGreetingChoiceFoldOutInfoArray = new bool[50,50];
 			editor.style.richText = true;
 
 		}
@@ -151,7 +146,6 @@ namespace WordJourney
 
 			if (loadNpcData) {
 				if (File.Exists (npcDataPath)) {
-//					npc = DataHandler.LoadDataToSingleModelWithPath<HLHNPC> (npcDataPath);
 					string npcData = File.ReadAllText (npcDataPath);
 					if (npcData == string.Empty) {
 						npc = new HLHNPC ();
@@ -181,8 +175,10 @@ namespace WordJourney
 
 			npc.npcId = EditorGUILayout.IntField ("npc ID:", npc.npcId,shortLayouts);
 
+			npc.saveOnChange = EditorGUILayout.Toggle ("数据变化时是否保存", npc.saveOnChange, shortLayouts);
 
-			DrawDialogGroups ();
+
+			DrawRegularDialogGroups ();
 
 			DrawTasks ();
 
@@ -197,10 +193,6 @@ namespace WordJourney
 
 		private void DrawRegularGreetings (){
 
-			if (npc.regularGreeting == null) {
-				npc.regularGreeting = new HLHDialogGroup ();
-			}
-
 			EditorGUILayout.BeginHorizontal ();
 			EditorGUILayout.LabelField ("***编辑常规寒暄对话", new GUILayoutOption[] {
 				GUILayout.Height (20),
@@ -208,13 +200,47 @@ namespace WordJourney
 			});
 			EditorGUILayout.BeginVertical ();
 
-			HLHDialogGroup rdg = npc.regularGreeting;
 
-			rdg.dialogGroupId = npc.dialogGroups.Count;
+			EditorGUILayout.BeginHorizontal ();
+			bool createNewDialogGroup = GUILayout.Button ("添加新的对话组",buttonLayouts);
+			bool removeLastDialogGroup = GUILayout.Button ("删除尾部对话组",buttonLayouts);
+			EditorGUILayout.EndHorizontal ();
 
-			DrawDialogs (rdg);
+			if (createNewDialogGroup) {
+				HLHDialogGroup dg = new HLHDialogGroup ();
+				dg.dialogs = new List<HLHDialog> ();
+				dg.choices = new List<HLHChoice> ();
+				npc.regularGreetings.Add (dg);
 
-			DrawChoices (rdg);
+			}
+			if (removeLastDialogGroup && npc.regularGreetings.Count > 0) {
+				npc.regularGreetings.RemoveAt (npc.dialogGroups.Count - 1);
+			}
+
+
+			for (int i = 0; i < npc.regularGreetings.Count; i++) {
+
+				regularGreetingsFoldOutInfoArray [i] = EditorGUILayout.Foldout (regularGreetingsFoldOutInfoArray [i], "npc寒暄   对话组ID:" + i.ToString());
+
+
+				if (regularGreetingsFoldOutInfoArray [i]) {
+
+					HLHDialogGroup dg = npc.regularGreetings [i];
+
+					dg.dialogGroupId = i;
+
+					dg.isTaskTriggeredDg = false;
+
+					dg.triggerLevel = -1;
+
+					DrawDialogs (dg,regularGreetingDialogFoldOutInfoArray);
+
+					DrawChoices (dg,regularGreetingChoiceFoldOutInfoArray);
+
+
+				}
+			}
+				
 
 			EditorGUILayout.EndVertical ();
 			EditorGUILayout.EndHorizontal ();
@@ -228,18 +254,7 @@ namespace WordJourney
 
 
 
-		private void DrawDialogGroups(){
-
-//			EditorGUILayout.Separator ();
-//			EditorGUILayout.LabelField ("************************对话组编辑区*************************", new GUILayoutOption[] {
-//				GUILayout.Height (20),
-//				GUILayout.Width (600)
-//			});
-//			EditorGUILayout.Separator ();
-
-			if (npc.dialogGroups == null) {
-				npc.dialogGroups = new List<HLHDialogGroup> ();
-			}
+		private void DrawRegularDialogGroups(){
 
 
 			EditorGUILayout.BeginHorizontal ();
@@ -281,13 +296,11 @@ namespace WordJourney
 
 					dg.isTaskTriggeredDg = EditorGUILayout.Toggle ("是否任务触发的对话", dg.isTaskTriggeredDg, shortLayouts);
 
-//					EditorGUILayout.LabelField ("对话组ID", i.ToString(), shortLayouts);
+					dg.triggerLevel = EditorGUILayout.IntField ("触发关卡", dg.triggerLevel, middleLayouts);
 
-					DrawTriggerConditions (dg);
+					DrawDialogs (dg,dialogFoldOutInfoArray);
 
-					DrawDialogs (dg);
-
-					DrawChoices (dg);
+					DrawChoices (dg,choiceFoldOutInfoArray);
 
 
 				}
@@ -355,12 +368,6 @@ namespace WordJourney
 					HLHNPCGoods goods = npc.npcGoodsList [i];
 
 					goods.goodsId = EditorGUILayout.IntField ("商品 ID", goods.goodsId, shortLayouts);
-
-//					goods.goodsPrice = EditorGUILayout.IntField ("商品价格", goods.goodsPrice, shortLayouts);
-
-//					goods.totalCount = EditorGUILayout.IntField ("商品总数量", goods.totalCount, shortLayouts);
-
-//					goods.isFixedCount = EditorGUILayout.Toggle ("售出后数量是否会减少", goods.isFixedCount, shortLayouts);
 				}
 
 			}
@@ -456,7 +463,7 @@ namespace WordJourney
 
 		}
 
-		private void DrawChoices(HLHDialogGroup dg){
+		private void DrawChoices(HLHDialogGroup dg,bool[,] choiceFoldoutInfoArray){
 
 			if (dg.choices == null) {
 				dg.choices = new List<HLHChoice> ();
@@ -499,37 +506,38 @@ namespace WordJourney
 
 			for (int j = 0; j < dg.choices.Count; j++) {
 
-				choiceFoldOutInfoArray [dg.dialogGroupId, j] = EditorGUILayout.Foldout (choiceFoldOutInfoArray [dg.dialogGroupId, j], "编辑选择");
+				HLHChoice c = dg.choices [j];
 
-				if (choiceFoldOutInfoArray [dg.dialogGroupId, j]) {
+				c.choiceId = j;
+				string foldContent = string.Format ("编辑选择	\t\t***选择ID:   {0}\t\t\t***选择内容:   {1}", c.choiceId, c.choiceContent);
 
-					HLHChoice c = dg.choices [j];
+				choiceFoldoutInfoArray [dg.dialogGroupId, j] = EditorGUILayout.Foldout (choiceFoldoutInfoArray [dg.dialogGroupId, j], foldContent);
 
-					c.choiceId = EditorGUILayout.IntField ("选择ID",c.choiceId, shortLayouts);
+				if (choiceFoldoutInfoArray [dg.dialogGroupId, j]) {
+
+					EditorGUILayout.LabelField ("选择ID:"+c.choiceId.ToString(), shortLayouts);
 
 					c.choiceContent = EditorGUILayout.TextField ("选择的内容", c.choiceContent, longLayouts);
 
-					c.triggerDialogId = EditorGUILayout.IntField ("npc下一句话id", c.triggerDialogId, shortLayouts);
+					c.nextDialogId = EditorGUILayout.IntField ("npc下一句话id", c.nextDialogId, shortLayouts);
 
 					EditorGUILayout.BeginHorizontal ();
-					EditorGUILayout.LabelField ("触发事件类型:", shortLayouts);
+					EditorGUILayout.LabelField ("触发事件类型:", new GUILayoutOption[]{GUILayout.Height(20),GUILayout.Width(100)});
 
 					EditorGUILayout.BeginHorizontal ();
-					c.isHiddenPropertyChangeTriggered = EditorGUILayout.Toggle ("\t    隐藏属性变化", c.isHiddenPropertyChangeTriggered, shortLayouts);
-					c.isReceiveTaskTriggered = EditorGUILayout.Toggle ("\t\t    接受任务", c.isReceiveTaskTriggered, shortLayouts);
-					c.isHandInTaskTriggered = EditorGUILayout.Toggle ("\t\t    提交任务", c.isHandInTaskTriggered, shortLayouts);
-					c.isRewardTriggered = EditorGUILayout.Toggle ("\t\t    奖励", c.isRewardTriggered, shortLayouts);
-					c.isTradeTriggered = EditorGUILayout.Toggle ("\t\t    交易", c.isTradeTriggered, shortLayouts);
-					c.isAddSkillTriggered = EditorGUILayout.Toggle ("\t\t    添加技能", c.isAddSkillTriggered, shortLayouts);
-					c.isFightTriggered = EditorGUILayout.Toggle ("\t\t    战斗", c.isFightTriggered, shortLayouts);
+					c.isTradeTriggered = EditorGUILayout.ToggleLeft ("交易", c.isTradeTriggered, shorterLayouts);
+					c.isFightTriggered = EditorGUILayout.ToggleLeft ("战斗", c.isFightTriggered, shorterLayouts);
+					c.isWeaponChangeTriggered = EditorGUILayout.ToggleLeft ("武器更换", c.isWeaponChangeTriggered, shorterLayouts);
+					c.isEquipmentLoseTriggered = EditorGUILayout.ToggleLeft ("装备丢失", c.isEquipmentLoseTriggered, shorterLayouts);
+					c.isRewardTriggered = EditorGUILayout.ToggleLeft ("奖励", c.isRewardTriggered, shorterLayouts);
+					c.isWordLearningTriggered = EditorGUILayout.ToggleLeft ("单词", c.isWordLearningTriggered, shorterLayouts);
+					c.isReceiveTaskTriggered = EditorGUILayout.ToggleLeft ("接受任务", c.isReceiveTaskTriggered, shorterLayouts);
+					c.isHandInTaskTriggered = EditorGUILayout.ToggleLeft ("提交任务", c.isHandInTaskTriggered, shorterLayouts);
+					c.isRobTriggered = EditorGUILayout.ToggleLeft ("掠夺", c.isRobTriggered, shorterLayouts);
+					c.isAddSkillTriggered = EditorGUILayout.ToggleLeft ("添加技能", c.isAddSkillTriggered, shorterLayouts);
+
 
 					EditorGUILayout.EndHorizontal ();
-					EditorGUILayout.EndHorizontal ();
-
-					EditorGUILayout.BeginHorizontal ();
-					EditorGUILayout.LabelField ("隐藏属性变化",shortLayouts);
-					c.playerJusticeChange = EditorGUILayout.IntField ("正义度", c.playerJusticeChange, shortLayouts);
-					c.playerPowerChange = EditorGUILayout.IntField ("强大度", c.playerPowerChange, shortLayouts);
 					EditorGUILayout.EndHorizontal ();
 
 	
@@ -538,12 +546,12 @@ namespace WordJourney
 					EditorGUILayout.BeginHorizontal ();
 
 
-					if (c.possibleRewards == null) {
-						c.possibleRewards = new List<HLHNPCReward> ();
+					if (c.rewards == null) {
+						c.rewards = new List<HLHNPCReward> ();
 					}
 
-					for (int k = 0; k < c.possibleRewards.Count; k++) {
-						HLHNPCReward reward = c.possibleRewards [k];
+					for (int k = 0; k < c.rewards.Count; k++) {
+						HLHNPCReward reward = c.rewards [k];
 						HLHRewardType rewardType = (HLHRewardType)EditorGUILayout.EnumPopup (reward.rewardType, tinyLayouts);
 						int rewardValue = EditorGUILayout.IntField (reward.rewardValue, tinyLayouts);
 						int attachValue = EditorGUILayout.IntField (reward.attachValue, tinyLayouts);
@@ -551,7 +559,7 @@ namespace WordJourney
 						newReward.rewardType = rewardType;
 						newReward.attachValue = attachValue;
 						newReward.rewardValue = rewardValue;
-						c.possibleRewards [k] = newReward;
+						c.rewards [k] = newReward;
 					}
 
 
@@ -559,17 +567,20 @@ namespace WordJourney
 					bool removeLastReward = GUILayout.Button ("删除", tinyLayouts);
 
 					if (addNewReward) {
-						c.possibleRewards.Add (new HLHNPCReward ());
+						c.rewards.Add (new HLHNPCReward ());
 					}
 
-					if (removeLastReward && c.possibleRewards.Count >= 1) {
-						c.possibleRewards.RemoveAt (c.possibleRewards.Count - 1);
+					if (removeLastReward && c.rewards.Count >= 1) {
+						c.rewards.RemoveAt (c.rewards.Count - 1);
 					}
 
 					EditorGUILayout.EndHorizontal ();
 
 					c.triggeredTaskId = EditorGUILayout.IntField ("触发的任务id", c.triggeredTaskId, shortLayouts);
-					c.isEnd = EditorGUILayout.Toggle ("是否结束对话组",c.isEnd, shortLayouts);
+					EditorGUILayout.BeginHorizontal ();
+					c.isEnd = EditorGUILayout.Toggle ("是否退出当前对话组",c.isEnd, shortLayouts);
+					c.finishCurrentDialog = EditorGUILayout.Toggle ("是否将本对话组标记为已结束", c.finishCurrentDialog, shortLayouts);
+					EditorGUILayout.EndHorizontal ();
 					EditorGUILayout.Separator ();
 					EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
 				}
@@ -584,7 +595,7 @@ namespace WordJourney
 		}
 
 
-		private void DrawDialogs(HLHDialogGroup dg){
+		private void DrawDialogs(HLHDialogGroup dg,bool[,] dgFoldoutInfoArray){
 			
 			if (dg.dialogs == null) {
 				dg.dialogs = new List<HLHDialog> ();
@@ -597,7 +608,7 @@ namespace WordJourney
 			});
 			EditorGUILayout.BeginVertical ();
 
-			dg.isOneOff = EditorGUILayout.Toggle ("是否只能触发一次", dg.isOneOff, middleLayouts);
+			dg.isMultiOff = EditorGUILayout.Toggle ("是否可以反复触发", dg.isMultiOff, middleLayouts);
 
 			EditorGUILayout.BeginHorizontal ();
 			bool createNewDialog = GUILayout.Button ("添加新的对话",buttonLayouts);
@@ -629,13 +640,19 @@ namespace WordJourney
 
 			for (int j = 0; j < dg.dialogs.Count; j++) {
 
-				dialogFoldOutInfoArray [dg.dialogGroupId, j] = EditorGUILayout.Foldout (dialogFoldOutInfoArray [dg.dialogGroupId, j], "编辑对话");
+				HLHDialog d = dg.dialogs [j];
 
-				if (dialogFoldOutInfoArray [dg.dialogGroupId, j]) {
+				d.dialogId = j;
 
-					HLHDialog d = dg.dialogs [j];
+				string foldContent = string.Format ("编辑对话	\t\t***对话ID:   {0}\t\t\t***对话内容:   {1}", d.dialogId, d.dialogContent);
 
-					d.dialogId = j;
+				dgFoldoutInfoArray [dg.dialogGroupId, j] = EditorGUILayout.Foldout (dgFoldoutInfoArray [dg.dialogGroupId, j], foldContent);
+
+				if (dgFoldoutInfoArray [dg.dialogGroupId, j]) {
+
+//					HLHDialog d = dg.dialogs [j];
+//
+//					d.dialogId = j;
 
 					EditorGUILayout.LabelField ("对话ID", d.dialogId.ToString(), shortLayouts);
 
@@ -683,96 +700,7 @@ namespace WordJourney
 			EditorGUILayout.Separator ();
 			EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
 		}
-
-
-		private void DrawTriggerConditions(HLHDialogGroup dg){
-
-			EditorGUILayout.BeginHorizontal ();
-			EditorGUILayout.LabelField ("***编辑触发条件", new GUILayoutOption[] {
-				GUILayout.Height (20),
-				GUILayout.Width (120)
-			});
-			EditorGUILayout.BeginVertical ();
-			triggerConditionInfoArray [dg.dialogGroupId] = EditorGUILayout.Foldout (triggerConditionInfoArray [dg.dialogGroupId], "编辑触发条件");
-
-			if (triggerConditionInfoArray [dg.dialogGroupId]) {
-//				EditorGUILayout.LabelField ("-----------触发条件------------", middleLayouts);
-//				EditorGUILayout.BeginHorizontal ();
-//				bool addNewTriggerCondition = GUILayout.Button ("添加触发条件", buttonLayouts);
-//				bool removeLastTriggerCondition = GUILayout.Button ("移除触发条件", buttonLayouts);
-//				EditorGUILayout.EndHorizontal ();
-//
-//				if (addNewTriggerCondition && dg.triggerCondition.condition == null) {
-//					dg.triggerCondition.condition = new List<HLHValueWithLink> ();
-//					dg.triggerCondition.condition.Add (new HLHValueWithLink ());
-//				}
-//
-//				if (removeLastTriggerCondition && dg.triggerCondition.condition != null) {
-//					dg.triggerCondition.condition = null;
-//				}
-
-//				if (addNewTriggerCondition && dg.triggerCondition.condition_2 == null) {
-//					dg.triggerCondition.condition_2 = new List<HLHValueWithLink> ();
-//					dg.triggerCondition.condition_2.Add (new HLHValueWithLink ());
-//
-//				}
-//
-//				if (removeLastTriggerCondition && dg.triggerCondition.condition_2 != null) {
-//					dg.triggerCondition.condition_2 = null;
-//				}
-
-
-				EditorGUILayout.BeginHorizontal ();
-				EditorGUILayout.LabelField ("**************************************", new GUILayoutOption[] {
-					GUILayout.Height (20),
-					GUILayout.Width (20)
-				});
-				EditorGUILayout.BeginVertical ();
-
-
-				EditorGUILayout.LabelField ("触发条件", shortLayouts);
-				EditorGUILayout.BeginHorizontal ();
-				for (int i = 0; i < dg.triggerCondition.condition.Count; i++) {
-					HLHValueWithLink vwl = dg.triggerCondition.condition [i];
-					EditorGUILayout.BeginHorizontal ();
-					HLHConditionType type = (HLHConditionType)EditorGUILayout.EnumPopup (vwl.type, shorterLayouts);
-					HLHCalculateLink calculateLink = (HLHCalculateLink)EditorGUILayout.EnumPopup (vwl.calculateLink, shorterLayouts);
-					int value = EditorGUILayout.IntField (vwl.value, shorterLayouts);
-					HLHValueWithLink newVwl = new HLHValueWithLink ();
-					newVwl.type = type;
-					newVwl.calculateLink = calculateLink;
-					newVwl.value = value;
-					dg.triggerCondition.condition [i] = newVwl;
-
-					EditorGUILayout.EndHorizontal ();
-
-				}
-
-				bool addNewVwlInCondition1 = GUILayout.Button ("添加", tinyLayouts);
-				bool removeLastVwlInCondition1 = GUILayout.Button ("删除", tinyLayouts);
-
-				if (addNewVwlInCondition1) {
-					dg.triggerCondition.condition.Add (new HLHValueWithLink ());
-				}
-
-				if (removeLastVwlInCondition1 && dg.triggerCondition.condition.Count > 1) {
-					dg.triggerCondition.condition.RemoveAt (dg.triggerCondition.condition.Count - 1);
-				}
-
-				EditorGUILayout.EndHorizontal ();
-
-				EditorGUILayout.EndVertical ();
-				EditorGUILayout.EndHorizontal ();
-			}
-
-
-
-			EditorGUILayout.EndVertical ();
-			EditorGUILayout.EndHorizontal ();
-
-			EditorGUILayout.Separator ();
-			EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
-		}
+			
 
 	}
 }

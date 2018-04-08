@@ -98,35 +98,35 @@ namespace WordJourney
 
 		public List<HLHTask> inProgressTasks = new List<HLHTask> ();
 
-		public int mJustice;
-		public int justice{
-			get{ return mJustice; }
-			set{ 
-				if (value > 1) {
-					mJustice = 1;
-				} else if (value < -1) {
-					mJustice = -1;
-				} else {
-					mJustice = value;
-				}
-			}
-		}
-		public int totalJustice;
-
-		public int mPower;
-		public int power{
-			get{ return mPower; }
-			set{ 
-				if (value > 1) {
-					mPower = 1;
-				} else if (value < -1) {
-					mPower = -1;
-				} else {
-					mPower = value;
-				}
-			}
-		}
-		public int totalPower;
+//		public int mJustice;
+//		public int justice{
+//			get{ return mJustice; }
+//			set{ 
+//				if (value > 1) {
+//					mJustice = 1;
+//				} else if (value < -1) {
+//					mJustice = -1;
+//				} else {
+//					mJustice = value;
+//				}
+//			}
+//		}
+//		public int totalJustice;
+//
+//		public int mPower;
+//		public int power{
+//			get{ return mPower; }
+//			set{ 
+//				if (value > 1) {
+//					mPower = 1;
+//				} else if (value < -1) {
+//					mPower = -1;
+//				} else {
+//					mPower = value;
+//				}
+//			}
+//		}
+//		public int totalPower;
 
 		public int maxUnlockLevelIndex;
 
@@ -247,11 +247,11 @@ namespace WordJourney
 			this.inProgressTasks = playerData.inProgressTasks;
 
 
-			this.justice = playerData.justice;
-			this.totalJustice = playerData.totalJustice;
-
-			this.power = playerData.power;
-			this.totalPower = playerData.totalPower;
+//			this.justice = playerData.justice;
+//			this.totalJustice = playerData.totalJustice;
+//
+//			this.power = playerData.power;
+//			this.totalPower = playerData.totalPower;
 
 
 			this.totalGold = playerData.totalGold;
@@ -548,9 +548,64 @@ namespace WordJourney
 
 		}
 
-		public void PlayerPropertyGain(PropertyType type,float gain){
-
-
+		public void PlayerPropertyChange(PropertyType type,float change){
+			switch (type) {
+			case PropertyType.MaxHealth:
+				int maxHealthRecord = maxHealth;
+				maxHealth += (int)change;
+				health = (int)(health * (float) maxHealth / maxHealthRecord);
+				break;
+			case PropertyType.Health:
+				health += (int)change;
+				break;
+			case PropertyType.MaxMana:
+				int maxManaRecord = maxMana;
+				maxMana += (int)change;
+				mana = (int)(mana * (float)maxMana / maxManaRecord);
+				break;
+			case PropertyType.Attack:
+				attack += (int)change;
+				break;
+			case PropertyType.MagicAttack:
+				magicAttack += (int)change;
+				break;
+			case PropertyType.Armor:
+				armor += (int)change;
+				break;
+			case PropertyType.MagicResist:
+				magicResist += (int)change;
+				break;
+			case PropertyType.ArmorDecrease:
+				armorDecrease += (int)change;
+				break;
+			case PropertyType.MagicResistDecrease:
+				magicResistDecrease += (int)change;
+				break;
+			case PropertyType.MoveSpeed:
+				moveSpeed += (int)change;
+				break;
+			case PropertyType.Dodge:
+				dodge += change;
+				break;
+			case PropertyType.Crit:
+				crit += change;
+				break;
+			case PropertyType.CritHurtScaler:
+				critHurtScaler += change;
+				break;
+			case PropertyType.ExtraGold:
+				extraGold += (int)change;
+				break;
+			case PropertyType.ExtraExperience:
+				extraExperience += (int)change;
+				break;
+			case PropertyType.HealthRecovery:
+				healthRecovery += (int)change;
+				break;
+			case PropertyType.MagicRecovery:
+				magicRecovery += (int)change;
+				break;
+			}
 		}
 
 
@@ -692,19 +747,19 @@ namespace WordJourney
 			return index;
 		}
 
-		/// <summary>
-		/// 人物隐藏属性变化
-		/// </summary>
-		/// <param name="property">Property.</param>
-		/// <param name="change">Change.</param>
-		public void HiddenPropertyChange(int justiceChange,int powerChange){
-			
-			justice += justiceChange;
-			totalJustice += justiceChange;
-			power += powerChange;
-			totalPower += powerChange;
-
-		}
+//		/// <summary>
+//		/// 人物隐藏属性变化
+//		/// </summary>
+//		/// <param name="property">Property.</param>
+//		/// <param name="change">Change.</param>
+//		public void HiddenPropertyChange(int justiceChange,int powerChange){
+//			
+//			justice += justiceChange;
+//			totalJustice += justiceChange;
+//			power += powerChange;
+//			totalPower += powerChange;
+//
+//		}
 
 		/// <summary>
 		/// 收获奖励
@@ -720,12 +775,17 @@ namespace WordJourney
 				experience += reward.rewardValue;
 				break;
 			case HLHRewardType.Item:
-				Item rewardItem = Item.NewItemWith(reward.rewardValue,reward.attachValue);
-				AddItem(rewardItem);
+				if (reward.attachValue > 0) {
+					Item rewardItem = Item.NewItemWith (reward.rewardValue, reward.attachValue);
+					AddItem (rewardItem);
+				} else {
+					Item removeItem = Item.NewItemWith (reward.rewardValue, reward.attachValue);
+					RemoveItem (removeItem,removeItem.itemCount);
+				}
 				break;
 			case HLHRewardType.Property:
 				PropertyType pt = (PropertyType)reward.rewardValue;
-				PlayerPropertyGain(pt,reward.attachValue);
+				PlayerPropertyChange(pt,reward.attachValue);
 				break;
 			}
 		}
@@ -992,7 +1052,7 @@ namespace WordJourney
 			}
 				
 		}
-			
+
 
 		public bool RemoveItem(Item item,int removeCount){
 
@@ -1007,6 +1067,7 @@ namespace WordJourney
 	
 				if (equipment == null) {
 					Debug.Log ("未找到物品");
+					return false;
 				}
 
 				if (equipment.equiped) {
@@ -1032,6 +1093,7 @@ namespace WordJourney
 
 				if (consumablesInBag == null) {
 					Debug.Log ("未找到物品");
+					return false;
 				}
 
 				consumablesInBag.itemCount -= removeCount;
@@ -1049,6 +1111,7 @@ namespace WordJourney
 
 				if (skillGemstoneInBag == null) {
 					Debug.Log ("未找到物品");
+					return false;
 				}
 
 				skillGemstoneInBag.itemCount -= removeCount;
@@ -1066,6 +1129,7 @@ namespace WordJourney
 
 				if (taskItemInBag == null) {
 					Debug.Log ("未找到物品");
+					return false;
 				}
 
 				taskItemInBag.itemCount -= removeCount;
@@ -1315,11 +1379,11 @@ namespace WordJourney
 
 		public List<HLHTask> inProgressTasks;
 
-		public int justice;
-		public int totalJustice;
-
-		public int power;
-		public int totalPower;
+//		public int justice;
+//		public int totalJustice;
+//
+//		public int power;
+//		public int totalPower;
 
 		public int experience;//人物经验值
 		public int totalGold;//人物金币数量
@@ -1400,11 +1464,11 @@ namespace WordJourney
 
 			this.inProgressTasks = player.inProgressTasks;
 
-			this.justice = player.justice;
-			this.totalJustice = player.totalJustice;
-
-			this.power = player.power;
-			this.totalPower = player.totalPower;
+//			this.justice = player.justice;
+//			this.totalJustice = player.totalJustice;
+//
+//			this.power = player.power;
+//			this.totalPower = player.totalPower;
 
 			this.totalGold = player.totalGold;
 			this.experience = player.experience;

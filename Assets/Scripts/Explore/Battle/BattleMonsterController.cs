@@ -300,7 +300,7 @@ namespace WordJourney
 
 			ExploreUICotroller expUICtr = bmUICtr.GetComponent<ExploreUICotroller> ();
 
-			GetComponent<MapMonster> ().ResetWhenDie ();
+			GetComponent<MapWalkableEvent> ().ResetWhenDie ();
 
 			expUICtr.QuitFight ();
 
@@ -315,7 +315,7 @@ namespace WordJourney
 			exploreManager.BattlePlayerWin (new Transform[]{ transform });
 
 			PlayRoleAnim ("death", 1, delegate {
-				GetComponent<MapMonster>().AddToPool(exploreManager.newMapGenerator.monstersPool);
+				GetComponent<MapWalkableEvent>().AddToPool(exploreManager.newMapGenerator.monstersPool);
 			});
 
 			agent.ResetBattleAgentProperties (true);

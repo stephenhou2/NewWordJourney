@@ -643,7 +643,10 @@ namespace WordJourney
 			// 播放技能对应的音效
 			SoundManager.Instance.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);
 
-			enemy.GetComponent<MapMonster> ().isReadyToFight = true;
+			MapMonster mm = enemy.GetComponent<MapMonster> ();
+			if (mm != null) {
+				mm.isReadyToFight = true;
+			}
 
 			// 技能效果影响玩家和怪物
 			currentUsingActiveSkill.AffectAgents(this,enemy);

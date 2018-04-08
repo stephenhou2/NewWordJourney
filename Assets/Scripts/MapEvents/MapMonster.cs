@@ -61,7 +61,7 @@ namespace WordJourney
 
 		}
 
-		public void ResetWhenDie(){
+		public override void ResetWhenDie(){
 
 			StopAllCoroutines ();
 			HideAllAlertAreas ();

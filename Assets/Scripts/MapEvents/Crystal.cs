@@ -81,7 +81,7 @@ namespace WordJourney
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
 			if (isSuccess) {
-				(bp.agent as Player).PlayerPropertyGain (propertyType,gainAmount);
+				(bp.agent as Player).PlayerPropertyChange (propertyType,gainAmount);
 				string propertyName = MyTool.GetPropertyName (propertyType);
 				string tintText = string.Format("{0}+{1}",propertyName,gainAmount);
 				ExploreManager.Instance.ShowTint(tintText,null);

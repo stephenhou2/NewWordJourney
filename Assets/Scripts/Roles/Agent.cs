@@ -24,7 +24,8 @@ namespace WordJourney
 		ExtraGold,
 		ExtraExperience,
 		HealthRecovery,
-		MagicRecovery
+		MagicRecovery,
+		Health
 	}
 		
 
