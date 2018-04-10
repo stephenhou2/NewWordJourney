@@ -59,7 +59,7 @@ namespace WordJourney
 
 			animEndCallBack = cb;
 
-			SoundManager.Instance.PlayAudioClip ("MapEffects/" + audioClipName);
+			GameManager.Instance.soundManager.PlayAudioClip ("MapEffects/" + audioClipName);
 
 			mapItemRenderer.enabled = false;
 

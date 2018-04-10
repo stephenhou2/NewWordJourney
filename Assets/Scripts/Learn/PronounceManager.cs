@@ -89,7 +89,7 @@ namespace WordJourney
 				waitDownloadFinishCoroutine = PlayPronunciationWhenFinishDownloading (pronunciationWWW);
 				StartCoroutine (waitDownloadFinishCoroutine);
 			} else {
-				SoundManager.Instance.PlayPronuncitaion (pro.pronunciation,false);
+				GameManager.Instance.soundManager.PlayPronuncitaion (pro.pronunciation,false);
 			}
 
 		}
@@ -139,7 +139,7 @@ namespace WordJourney
 
 					pronunciationCache.Add (pro);
 
-					SoundManager.Instance.PlayPronuncitaion (pronunciationClip, false);
+					GameManager.Instance.soundManager.PlayPronuncitaion (pronunciationClip, false);
 
 					www.Dispose ();
 				}

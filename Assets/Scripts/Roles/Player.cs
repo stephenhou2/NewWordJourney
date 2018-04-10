@@ -98,35 +98,7 @@ namespace WordJourney
 
 		public List<HLHTask> inProgressTasks = new List<HLHTask> ();
 
-//		public int mJustice;
-//		public int justice{
-//			get{ return mJustice; }
-//			set{ 
-//				if (value > 1) {
-//					mJustice = 1;
-//				} else if (value < -1) {
-//					mJustice = -1;
-//				} else {
-//					mJustice = value;
-//				}
-//			}
-//		}
-//		public int totalJustice;
-//
-//		public int mPower;
-//		public int power{
-//			get{ return mPower; }
-//			set{ 
-//				if (value > 1) {
-//					mPower = 1;
-//				} else if (value < -1) {
-//					mPower = -1;
-//				} else {
-//					mPower = value;
-//				}
-//			}
-//		}
-//		public int totalPower;
+		public int robTime;
 
 		public int maxUnlockLevelIndex;
 
@@ -178,7 +150,7 @@ namespace WordJourney
 			this.originalExtraExperience = playerData.originalExtraExperience;
 
 			this.originalHealthRecovery = playerData.originalHealthRecovery;
-			this.originalMagicRecoverty = playerData.originalMagicRecoverty;
+			this.originalMagicRecovery = playerData.originalMagicRecovery;
 
 
 			//初始化实际信息
@@ -370,7 +342,7 @@ namespace WordJourney
 			extraExperience = originalExtraExperience;
 
 			healthRecovery = originalHealthRecovery;
-			magicRecovery = originalMagicRecoverty;
+			magicRecovery = originalMagicRecovery;
 
 			shenLuTuTengScaler = 0;
 			poisonHurtScaler = 1f;
@@ -491,7 +463,7 @@ namespace WordJourney
 		/// <param name="equipmentIndexInPanel">Equipment index in panel.</param>
 		public PropertyChange UnloadEquipment(Equipment equipment,int equipmentIndexInPanel,int indexInBag = -1){
 
-			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Equipment");
+			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Equipment");
 
 			equipment.equiped = false;
 
@@ -638,7 +610,7 @@ namespace WordJourney
 		/// <param name="equipmentIndexInPanel">Equipment index in panel.</param>
 		public PropertyChange EquipEquipment(Equipment equipment,int equipmentIndexInPanel){
 
-			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Equipment");
+			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Equipment");
 
 			equipment.equiped = true;
 
@@ -776,10 +748,15 @@ namespace WordJourney
 				break;
 			case HLHRewardType.Item:
 				if (reward.attachValue > 0) {
-					Item rewardItem = Item.NewItemWith (reward.rewardValue, reward.attachValue);
+					Item rewardItem = Item.NewItemWith (reward.rewardValue,1);
+					if (rewardItem.itemType == ItemType.Equipment) {
+						Equipment eqp = rewardItem as Equipment;
+						EquipmentQuality quality = (EquipmentQuality)reward.attachValue;
+						eqp.ResetPropertiesByQuality (quality);
+					}
 					AddItem (rewardItem);
 				} else {
-					Item removeItem = Item.NewItemWith (reward.rewardValue, reward.attachValue);
+					Item removeItem = Item.NewItemWith (reward.rewardValue,1);
 					RemoveItem (removeItem,removeItem.itemCount);
 				}
 				break;
@@ -1169,7 +1146,7 @@ namespace WordJourney
 		/// <returns>分解后获得的字母碎片</returns>
 //		public List<char> ResolveItemAndGetCharacters(Item item,int resolveCount){
 //
-//			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Resolve");
+//			e.PlayAudioClip ("UI/sfx_UI_Resolve");
 //
 //			// 分解后得到的字母碎片
 //			List<char> charactersReturn = new List<char> ();
@@ -1267,6 +1244,20 @@ namespace WordJourney
 
 		}
 			
+		public List<Equipment> GetAllEquipedEquipment(){
+
+			List<Equipment> equipedEquipments = new List<Equipment> ();
+
+			for (int i = 0; i < allEquipedEquipments.Length; i++) {
+				Equipment eqp = allEquipedEquipments [i];
+				if (eqp.itemId >= 0) {
+					equipedEquipments.Add (eqp);
+				}
+			}
+
+			return equipedEquipments;
+		}
+
 
 
 		/// <summary>
@@ -1337,7 +1328,7 @@ namespace WordJourney
 		public float originalMagicalHurtScaler;//基础魔法伤害系数
 		public float originalCritHurtScaler;//基础暴击系数
 		public int originalHealthRecovery;//基础生命回复系数
-		public int originalMagicRecoverty;//基础魔法回复系数
+		public int originalMagicRecovery;//基础魔法回复系数
 		//*****初始信息********//
 
 		//*****实际信息********//
@@ -1423,7 +1414,7 @@ namespace WordJourney
 			this.originalExtraExperience = player.originalExtraExperience;
 
 			this.originalHealthRecovery = player.originalHealthRecovery;
-			this.originalMagicRecoverty = player.originalMagicRecoverty;
+			this.originalMagicRecovery = player.originalMagicRecovery;
 
 
 			this.maxHealth = player.maxHealth;

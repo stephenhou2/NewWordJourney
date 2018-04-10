@@ -17,7 +17,7 @@ namespace WordJourney
 
 
 		public void SetUpSettingView(){
-//			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+//			e.PlayAudioClip ("UI/sfx_UI_Click");
 //			StartCoroutine ("SetUpViewAfterDataReady");
 //
 //		}

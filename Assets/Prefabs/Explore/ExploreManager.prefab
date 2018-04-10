@@ -791,6 +791,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1348261378206388
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 224363973308628618}
+  - component: {fileID: 114001247856390582}
+  m_Layer: 5
+  m_Name: EffectAnimPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1366678043721960
 GameObject:
   m_ObjectHideFlags: 0
@@ -5656,6 +5672,18 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114001247856390582
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1348261378206388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 583e11a219d644db78023793de1a6423, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isDirty: 0
 --- !u!114 &114007766542703482
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6312,7 +6340,6 @@ MonoBehaviour:
   rows: 0
   floorModel: {fileID: 4331375990699850}
   mapNpcModel: {fileID: 224232322928327464}
-  effectModel: {fileID: 4458394808192308}
   rewardItemModel: {fileID: 0}
   crystalModel: {fileID: 224230014250286552}
   consumablesValidPosTintModel: {fileID: 224122381023409260}
@@ -6371,7 +6398,6 @@ MonoBehaviour:
   wallModel: {fileID: 4596127105650642}
   decorationModel: {fileID: 4530124817280236}
   pickableItemModel: {fileID: 114103200458796244}
-  treeModel: {fileID: 0}
   stoneModel: {fileID: 114029342013738704}
   thornTrapModel: {fileID: 114101742283772882}
   thornTrapSwitchModel: {fileID: 114951093725201586}
@@ -6404,6 +6430,7 @@ MonoBehaviour:
   monstersPool: {fileID: 114051836076214414}
   npcsPool: {fileID: 114326370703515354}
   rewardPool: {fileID: 114350855806347512}
+  effectAnimPool: {fileID: 114001247856390582}
   destinationAnimation: {fileID: 4820474142459204}
   allWalkableEventsInMap: []
   fogOfWarPlane: {fileID: 4109292605484882}
@@ -6576,15 +6603,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioClipName: 
   wordsArray: []
+  canMove: 0
   npc:
     npcId: 0
     npcName: 
+    isExcutor: 0
     dialogGroups: []
     taskList: []
-    npcGoodsList: []
+    npcGoodsGroupList: []
     regularGreetings: []
+    saveOnChange: 0
+    monsterData:
+      monsterName: 
+      monsterId: 0
+      agentLevel: 1
+      originalMaxHealth: 0
+      originalMaxMana: 0
+      originalAttack: 0
+      originalMagicAttack: 0
+      originalArmor: 0
+      originalMagicResist: 0
+      originalArmorDecrease: 0
+      originalMagicResistDecrease: 0
+      originalMoveSpeed: 0
+      originalCrit: 0
+      originalDodge: 0
+      originalExtraGold: 0
+      originalExtraExperience: 0
+      originalPhysicalHurtScaler: 1.5
+      originalMagicalHurtScaler: 1.5
+      originalCritHurtScaler: 0
+      originalHealthRecovery: 0
+      originalMagicRecovery: 0
+      attackInterval: 0
+      rewardExperience: 0
+      rewardGold: 0
+      shenLuTuTengScaler: 0
+      poisonHurtScaler: 1
+      monsterPropertyGainList: []
   alertAreas: []
   canShowNpcPlane: 0
+  fightReward:
+    rewardType: 0
+    rewardValue: 0
+    attachValue: 0
 --- !u!114 &114292796212847162
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -11767,6 +11829,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 2, y: 0.5}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!224 &224363973308628618
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1348261378206388}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 224819064278128286}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224396240012976746
 RectTransform:
   m_ObjectHideFlags: 1
@@ -12320,6 +12400,7 @@ RectTransform:
   - {fileID: 224729091670554188}
   - {fileID: 224759901964489322}
   - {fileID: 224993667561844150}
+  - {fileID: 224363973308628618}
   m_Father: {fileID: 224760096497338216}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

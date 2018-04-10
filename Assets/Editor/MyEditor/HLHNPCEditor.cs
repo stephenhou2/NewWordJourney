@@ -8,6 +8,7 @@ namespace WordJourney
 	using UnityEditor;
 	using System;
 	using System.IO;
+	using System.Text;
 
 
 	public class HLHNPCEditor : EditorWindow {
@@ -39,6 +40,8 @@ namespace WordJourney
 
 		private GUILayoutOption[] seperatorLayouts = new GUILayoutOption[]{ GUILayout.Height(10), GUILayout.Width(800)};
 
+		private GUILayoutOption[] singleIntLayouts = new GUILayoutOption[]{ GUILayout.Height(20), GUILayout.Width(20)};
+
 		private GUILayoutOption[] tinyLayouts = new GUILayoutOption[]{ GUILayout.Height(20), GUILayout.Width(50)};
 
 		private GUILayoutOption[] shorterLayouts = new GUILayoutOption[]{ GUILayout.Height(20), GUILayout.Width(100)};
@@ -64,7 +67,7 @@ namespace WordJourney
 
 		private bool[] goodsFoldOutInfoArray;
 
-		private bool[] regularGreetingsFoldOutInfoArray;
+		private bool[] regularGreetingDgFoldoutInfoArray;
 		private bool[,] regularGreetingDialogFoldOutInfoArray;
 		private bool[,] regularGreetingChoiceFoldOutInfoArray;
 
@@ -80,9 +83,9 @@ namespace WordJourney
 			editor.dialogFoldOutInfoArray = new bool[50, 50];
 			editor.choiceFoldOutInfoArray = new bool[50, 50];
 			editor.taskFoldOutInfoArray = new bool[50];
-			editor.goodsFoldOutInfoArray = new bool[50];
+			editor.goodsFoldOutInfoArray = new bool[10];
 			editor.dialogGroupFoldOutInfoArray = new bool[50];
-			editor.regularGreetingsFoldOutInfoArray = new bool[50];
+			editor.regularGreetingDgFoldoutInfoArray = new bool[10];
 			editor.regularGreetingDialogFoldOutInfoArray = new bool[50,50];
 			editor.regularGreetingChoiceFoldOutInfoArray = new bool[50,50];
 			editor.style.richText = true;
@@ -149,6 +152,12 @@ namespace WordJourney
 					string npcData = File.ReadAllText (npcDataPath);
 					if (npcData == string.Empty) {
 						npc = new HLHNPC ();
+						npc.monsterData = new MonsterData ();
+//						npc.regularGreeting = new HLHDialogGroup ();
+						for (int i = 0; i < 10; i++) {
+							HLHNPCGoodsGroup gg = new HLHNPCGoodsGroup ();
+							npc.npcGoodsGroupList.Add (gg);
+						}
 					} else {
 						npc = JsonUtility.FromJson<HLHNPC> (npcData);
 					}
@@ -177,6 +186,7 @@ namespace WordJourney
 
 			npc.saveOnChange = EditorGUILayout.Toggle ("数据变化时是否保存", npc.saveOnChange, shortLayouts);
 
+			npc.isExcutor = EditorGUILayout.Toggle ("是否是执法者", npc.isExcutor, shortLayouts);
 
 			DrawRegularDialogGroups ();
 
@@ -186,6 +196,7 @@ namespace WordJourney
 
 			DrawRegularGreetings ();
 
+			DrawMonsterData ();
 
 			EditorGUILayout.EndScrollView ();
 		}
@@ -194,11 +205,12 @@ namespace WordJourney
 		private void DrawRegularGreetings (){
 
 			EditorGUILayout.BeginHorizontal ();
-			EditorGUILayout.LabelField ("***编辑常规寒暄对话", new GUILayoutOption[] {
+			EditorGUILayout.LabelField ("***编辑对话组", new GUILayoutOption[] {
 				GUILayout.Height (20),
 				GUILayout.Width (120)
 			});
 			EditorGUILayout.BeginVertical ();
+
 
 
 			EditorGUILayout.BeginHorizontal ();
@@ -214,16 +226,16 @@ namespace WordJourney
 
 			}
 			if (removeLastDialogGroup && npc.regularGreetings.Count > 0) {
-				npc.regularGreetings.RemoveAt (npc.dialogGroups.Count - 1);
+				npc.regularGreetings.RemoveAt (npc.regularGreetings.Count - 1);
 			}
 
 
 			for (int i = 0; i < npc.regularGreetings.Count; i++) {
 
-				regularGreetingsFoldOutInfoArray [i] = EditorGUILayout.Foldout (regularGreetingsFoldOutInfoArray [i], "npc寒暄   对话组ID:" + i.ToString());
+				regularGreetingDgFoldoutInfoArray [i] = EditorGUILayout.Foldout (regularGreetingDgFoldoutInfoArray [i], "npc寒暄情况" + (i+1).ToString());
 
 
-				if (regularGreetingsFoldOutInfoArray [i]) {
+				if (regularGreetingDgFoldoutInfoArray [i]) {
 
 					HLHDialogGroup dg = npc.regularGreetings [i];
 
@@ -236,26 +248,52 @@ namespace WordJourney
 					DrawDialogs (dg,regularGreetingDialogFoldOutInfoArray);
 
 					DrawChoices (dg,regularGreetingChoiceFoldOutInfoArray);
-
-
 				}
 			}
-				
+
 
 			EditorGUILayout.EndVertical ();
 			EditorGUILayout.EndHorizontal ();
+			EditorGUILayout.Separator ();
 
 			EditorGUILayout.Separator ();
 			EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
 
-
+//			EditorGUILayout.BeginHorizontal ();
+//			EditorGUILayout.LabelField ("***编辑常规寒暄对话", new GUILayoutOption[] {
+//				GUILayout.Height (20),
+//				GUILayout.Width (120)
+//			});
+//			EditorGUILayout.BeginVertical ();
+//
+//			if (npc.regularGreeting == null) {
+//				npc.regularGreeting = new HLHDialogGroup ();
+//			}
+//
+//			HLHDialogGroup dg = npc.regularGreeting;
+//
+//			dg.dialogGroupId = -1;
+//
+//			dg.isTaskTriggeredDg = false;
+//
+//			dg.triggerLevel = -1;
+//
+//			DrawDialogs (dg,regularGreetingDialogFoldOutInfoArray);
+//
+//			DrawChoices (dg,regularGreetingChoiceFoldOutInfoArray);
+//				
+//
+//			EditorGUILayout.EndVertical ();
+//			EditorGUILayout.EndHorizontal ();
+//
+//			EditorGUILayout.Separator ();
+//			EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
 
 		}
 
 
 
 		private void DrawRegularDialogGroups(){
-
 
 			EditorGUILayout.BeginHorizontal ();
 			EditorGUILayout.LabelField ("***编辑对话组", new GUILayoutOption[] {
@@ -318,60 +356,69 @@ namespace WordJourney
 
 		private void DrawGoods(){
 
-			if (npc.npcGoodsList == null) {
-				npc.npcGoodsList = new List<HLHNPCGoods> ();
-			}
-
 			EditorGUILayout.BeginHorizontal ();
 			EditorGUILayout.LabelField ("***编辑商品信息", new GUILayoutOption[] {
 				GUILayout.Height (20),
 				GUILayout.Width (120)
 			});
+
 			EditorGUILayout.BeginVertical ();
 
-
 			EditorGUILayout.BeginHorizontal ();
-			bool createNewGoods = GUILayout.Button ("添加新的商品",buttonLayouts);
-			bool removeLastGoods = GUILayout.Button ("删除尾部商品",buttonLayouts);
 			bool unfoldAll = GUILayout.Button ("全部展开", buttonLayouts);
 			bool foldAll = GUILayout.Button ("全部合上", buttonLayouts);
 			EditorGUILayout.EndHorizontal ();
 
 			if (unfoldAll) {
 				for (int i = 0; i < goodsFoldOutInfoArray.Length; i++) {
-					goodsFoldOutInfoArray[i] = true;
+					goodsFoldOutInfoArray [i] = true;
 				}
 			}
-
 			if (foldAll) {
 				for (int i = 0; i < goodsFoldOutInfoArray.Length; i++) {
-					goodsFoldOutInfoArray[i] = false;
+					goodsFoldOutInfoArray [i] = false;
 				}
 			}
 
-
-			if (createNewGoods) {
-				HLHNPCGoods goods = new HLHNPCGoods (0);
-				npc.npcGoodsList.Add (goods);
+			if (npc.npcGoodsGroupList.Count < 10) {
+				npc.npcGoodsGroupList.Clear ();
+				for (int i = 0; i < 10; i++) {
+					HLHNPCGoodsGroup gg = new HLHNPCGoodsGroup ();
+					npc.npcGoodsGroupList.Add (gg);
+				}
 			}
-			if (removeLastGoods && npc.npcGoodsList.Count > 0) {
-				npc.npcGoodsList.RemoveAt (npc.npcGoodsList.Count - 1);
-			}
 
-
-			for (int i = 0; i < npc.npcGoodsList.Count; i++) {
-
-				goodsFoldOutInfoArray [i] = EditorGUILayout.Foldout (goodsFoldOutInfoArray [i], "编辑商品");
+			for(int i = 0;i<10;i++){
+				goodsFoldOutInfoArray [i] = EditorGUILayout.Foldout (goodsFoldOutInfoArray [i], string.Format ("{0}-{1}层商品信息", i * 5, (i + 1) * 5));
 
 				if (goodsFoldOutInfoArray [i]) {
 
-					HLHNPCGoods goods = npc.npcGoodsList [i];
+					EditorGUILayout.BeginHorizontal ();
+					EditorGUILayout.LabelField ("\t\t\t\t", new GUILayoutOption[] {
+						GUILayout.Height (20),
+						GUILayout.Width (20)
+					});
 
-					goods.goodsId = EditorGUILayout.IntField ("商品 ID", goods.goodsId, shortLayouts);
+					EditorGUILayout.BeginVertical ();
+
+					HLHNPCGoodsGroup gg = npc.npcGoodsGroupList [i];
+
+					EditorGUILayout.BeginHorizontal ();
+
+					ShowGoods (gg.goodsList_1);
+					ShowGoods (gg.goodsList_2);
+					ShowGoods (gg.goodsList_3);
+					ShowGoods (gg.goodsList_4);
+					ShowGoods (gg.goodsList_5);
+
+					EditorGUILayout.EndHorizontal ();
+
+					EditorGUILayout.EndVertical ();
+					EditorGUILayout.EndHorizontal ();
 				}
 
-			}
 
+			}
 
 			EditorGUILayout.EndVertical ();
 			EditorGUILayout.EndHorizontal ();
@@ -379,6 +426,42 @@ namespace WordJourney
 			EditorGUILayout.Separator ();
 			EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
 
+
+		}
+
+		private void ShowGoods(List<HLHNPCGoods> goodsList){
+
+			EditorGUILayout.BeginVertical ();
+
+			EditorGUILayout.BeginHorizontal ();
+			bool addNewGoods = GUILayout.Button ("添加商品", shorterLayouts);
+			bool removeLastGoods = GUILayout.Button ("删除尾部商品", shorterLayouts);
+			EditorGUILayout.EndHorizontal ();
+
+			if (addNewGoods) {
+				goodsList.Add (new HLHNPCGoods ());
+			}
+
+			if (removeLastGoods && goodsList.Count > 0) {
+				goodsList.RemoveAt (goodsList.Count - 1);
+			}
+
+			for (int i = 0; i < goodsList.Count; i++) {
+
+				HLHNPCGoods goods = goodsList [i];
+
+				EditorGUILayout.BeginHorizontal ();
+				EditorGUILayout.LabelField ("商品id", tinyLayouts);
+				goods.goodsId = EditorGUILayout.IntField (goods.goodsId, tinyLayouts);
+				EditorGUILayout.LabelField ("价格浮动", tinyLayouts);
+				goods.priceFloat = EditorGUILayout.FloatField ( goods.priceFloat, tinyLayouts);
+				EditorGUILayout.LabelField ("装备品质", tinyLayouts);
+				goods.equipmentQuality = EditorGUILayout.IntField (goods.equipmentQuality, singleIntLayouts);
+				EditorGUILayout.EndHorizontal ();
+
+			}
+
+			EditorGUILayout.EndVertical ();
 
 		}
 
@@ -431,6 +514,13 @@ namespace WordJourney
 
 				if (taskFoldOutInfoArray [i]) {
 
+					EditorGUILayout.BeginHorizontal ();
+					EditorGUILayout.LabelField ("\t\t\t\t", new GUILayoutOption[] {
+						GUILayout.Height (20),
+						GUILayout.Width (20)
+					});
+					EditorGUILayout.BeginVertical ();
+
 					HLHTask task = npc.taskList [i];
 
 					int npcId = EditorGUILayout.IntField ("npc ID", task.npcId, shortLayouts);
@@ -450,6 +540,9 @@ namespace WordJourney
 					HLHTask newTask = new HLHTask (npcId, i, taskItemId, taskItemCount, dialogGroupId, taskDescription,isCurrentLevelTask);
 
 					npc.taskList [i] = newTask;
+
+					EditorGUILayout.EndVertical ();
+					EditorGUILayout.EndHorizontal ();
 				}
 
 			}
@@ -515,6 +608,13 @@ namespace WordJourney
 
 				if (choiceFoldoutInfoArray [dg.dialogGroupId, j]) {
 
+					EditorGUILayout.BeginHorizontal ();
+					EditorGUILayout.LabelField ("\t\t\t\t", new GUILayoutOption[] {
+						GUILayout.Height (20),
+						GUILayout.Width (20)
+					});
+					EditorGUILayout.BeginVertical ();
+
 					EditorGUILayout.LabelField ("选择ID:"+c.choiceId.ToString(), shortLayouts);
 
 					c.choiceContent = EditorGUILayout.TextField ("选择的内容", c.choiceContent, longLayouts);
@@ -523,8 +623,6 @@ namespace WordJourney
 
 					EditorGUILayout.BeginHorizontal ();
 					EditorGUILayout.LabelField ("触发事件类型:", new GUILayoutOption[]{GUILayout.Height(20),GUILayout.Width(100)});
-
-					EditorGUILayout.BeginHorizontal ();
 					c.isTradeTriggered = EditorGUILayout.ToggleLeft ("交易", c.isTradeTriggered, shorterLayouts);
 					c.isFightTriggered = EditorGUILayout.ToggleLeft ("战斗", c.isFightTriggered, shorterLayouts);
 					c.isWeaponChangeTriggered = EditorGUILayout.ToggleLeft ("武器更换", c.isWeaponChangeTriggered, shorterLayouts);
@@ -533,48 +631,49 @@ namespace WordJourney
 					c.isWordLearningTriggered = EditorGUILayout.ToggleLeft ("单词", c.isWordLearningTriggered, shorterLayouts);
 					c.isReceiveTaskTriggered = EditorGUILayout.ToggleLeft ("接受任务", c.isReceiveTaskTriggered, shorterLayouts);
 					c.isHandInTaskTriggered = EditorGUILayout.ToggleLeft ("提交任务", c.isHandInTaskTriggered, shorterLayouts);
-					c.isRobTriggered = EditorGUILayout.ToggleLeft ("掠夺", c.isRobTriggered, shorterLayouts);
 					c.isAddSkillTriggered = EditorGUILayout.ToggleLeft ("添加技能", c.isAddSkillTriggered, shorterLayouts);
-
-
-					EditorGUILayout.EndHorizontal ();
+					c.isRobTriggered = EditorGUILayout.ToggleLeft ("掠夺", c.isRobTriggered, shorterLayouts);
 					EditorGUILayout.EndHorizontal ();
 
-	
-					EditorGUILayout.LabelField ("可能的奖励(属性 0:最大血量，1:最大魔法，2:攻击，3:魔法攻击，4:移速，5:护甲，6:抗性，" +
-						"7:暴击，8:闪避，9:暴击倍率，10:额外金钱，11:额外经验，12:生命回复，13:魔法回复)", longLayouts);
-					EditorGUILayout.BeginHorizontal ();
 
 
-					if (c.rewards == null) {
-						c.rewards = new List<HLHNPCReward> ();
+					if (c.isRewardTriggered) {
+
+						EditorGUILayout.LabelField ("可能的奖励(属性 0:最大血量，1:最大魔法，2:攻击，3:魔法攻击，4:移速，5:护甲，6:抗性，" +
+							"7:护甲穿透，8:魔法穿透，9:暴击，10:闪避，11:暴击倍率，12:额外金钱，13:额外经验，14:生命回复，15:魔法回复,16:实际血量,17:骑士血量惩罚,18:骑士攻击惩罚)", new GUILayoutOption[]{GUILayout.Height(20),GUILayout.Width(1500)});
+						EditorGUILayout.LabelField ("物品---id---品质", new GUILayoutOption[]{GUILayout.Height(20),GUILayout.Width(1500)});
+						
+						if (c.rewards == null) {
+							c.rewards = new List<HLHNPCReward> ();
+							for (int k = 0; k < 10; k++) {
+								HLHNPCReward reward = new HLHNPCReward ();
+								c.rewards.Add (reward);
+							}
+						} else if (c.rewards.Count == 0) {
+							for (int k = 0; k < 10; k++) {
+								HLHNPCReward reward = new HLHNPCReward ();
+								c.rewards.Add (reward);
+							}
+						}
+
+						for (int k = 0; k < 10; k++) {
+							HLHNPCReward reward = c.rewards [k];
+							EditorGUILayout.BeginHorizontal ();
+							EditorGUILayout.LabelField (string.Format ("{0}-{1}层奖励", k * 5, (k + 1) * 5), middleLayouts);
+							HLHRewardType rewardType = (HLHRewardType)EditorGUILayout.EnumPopup (reward.rewardType, tinyLayouts);
+							int rewardValue = EditorGUILayout.IntField (reward.rewardValue, tinyLayouts);
+							int attachValue = EditorGUILayout.IntField (reward.attachValue, tinyLayouts);
+							EditorGUILayout.EndHorizontal ();
+							HLHNPCReward newReward = new HLHNPCReward ();
+							newReward.rewardType = rewardType;
+							newReward.attachValue = attachValue;
+							newReward.rewardValue = rewardValue;
+							c.rewards [k] = newReward;
+						}
+					} else {
+						c.rewards = null;
 					}
-
-					for (int k = 0; k < c.rewards.Count; k++) {
-						HLHNPCReward reward = c.rewards [k];
-						HLHRewardType rewardType = (HLHRewardType)EditorGUILayout.EnumPopup (reward.rewardType, tinyLayouts);
-						int rewardValue = EditorGUILayout.IntField (reward.rewardValue, tinyLayouts);
-						int attachValue = EditorGUILayout.IntField (reward.attachValue, tinyLayouts);
-						HLHNPCReward newReward = new HLHNPCReward ();
-						newReward.rewardType = rewardType;
-						newReward.attachValue = attachValue;
-						newReward.rewardValue = rewardValue;
-						c.rewards [k] = newReward;
-					}
-
-
-					bool addNewReward = GUILayout.Button ("添加", tinyLayouts);
-					bool removeLastReward = GUILayout.Button ("删除", tinyLayouts);
-
-					if (addNewReward) {
-						c.rewards.Add (new HLHNPCReward ());
-					}
-
-					if (removeLastReward && c.rewards.Count >= 1) {
-						c.rewards.RemoveAt (c.rewards.Count - 1);
-					}
-
-					EditorGUILayout.EndHorizontal ();
+						
 
 					c.triggeredTaskId = EditorGUILayout.IntField ("触发的任务id", c.triggeredTaskId, shortLayouts);
 					EditorGUILayout.BeginHorizontal ();
@@ -583,6 +682,8 @@ namespace WordJourney
 					EditorGUILayout.EndHorizontal ();
 					EditorGUILayout.Separator ();
 					EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
+					EditorGUILayout.EndVertical ();
+					EditorGUILayout.EndHorizontal ();
 				}
 
 			}
@@ -650,9 +751,12 @@ namespace WordJourney
 
 				if (dgFoldoutInfoArray [dg.dialogGroupId, j]) {
 
-//					HLHDialog d = dg.dialogs [j];
-//
-//					d.dialogId = j;
+					EditorGUILayout.BeginHorizontal ();
+					EditorGUILayout.LabelField ("\t\t\t\t\t", new GUILayoutOption[] {
+						GUILayout.Height (20),
+						GUILayout.Width (20)
+					});
+					EditorGUILayout.BeginVertical ();
 
 					EditorGUILayout.LabelField ("对话ID", d.dialogId.ToString(), shortLayouts);
 
@@ -662,12 +766,7 @@ namespace WordJourney
 						d.choiceIds = new List<int> ();
 					}
 
-					EditorGUILayout.BeginHorizontal ();
-					EditorGUILayout.LabelField ("**************************************", new GUILayoutOption[] {
-						GUILayout.Height (20),
-						GUILayout.Width (20)
-					});
-					EditorGUILayout.BeginVertical ();
+
 
 					EditorGUILayout.BeginHorizontal ();
 					bool createNewChoice = GUILayout.Button ("添加新的选择",buttonLayouts);
@@ -690,6 +789,7 @@ namespace WordJourney
 
 					EditorGUILayout.EndVertical ();
 					EditorGUILayout.EndHorizontal ();
+
 				}
 
 			}
@@ -701,6 +801,152 @@ namespace WordJourney
 			EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
 		}
 			
+		public void DrawMonsterData(){
 
+			EditorGUILayout.BeginHorizontal ();
+			EditorGUILayout.LabelField ("***属性", new GUILayoutOption[] {
+				GUILayout.Height (20),
+				GUILayout.Width (120)
+			});
+			EditorGUILayout.BeginVertical ();
+
+			MonsterData md = npc.monsterData;
+
+
+			if (md == null) {
+				npc.monsterData = new MonsterData ();
+				md = npc.monsterData;
+			}
+
+			if (md.monsterPropertyGainList.Count == 0) {
+				for (int i = 0; i < 10; i++) {
+					md.monsterPropertyGainList.Add (new MonsterPropertyGain ());
+				}
+			}
+
+			md.monsterName = npc.npcName;
+			md.monsterId = npc.npcId;
+
+			EditorGUILayout.LabelField ("基础属性", middleLayouts);
+			EditorGUILayout.BeginHorizontal ();
+			EditorGUILayout.LabelField ("\t\t\t", new GUILayoutOption[] {
+				GUILayout.Height (20),
+				GUILayout.Width (20)
+			});
+			EditorGUILayout.BeginVertical ();
+			EditorGUILayout.BeginHorizontal ();
+			EditorGUILayout.LabelField ("血量", tinyLayouts);
+			EditorGUILayout.LabelField ("魔法", tinyLayouts);
+			EditorGUILayout.LabelField ("攻击", tinyLayouts);
+			EditorGUILayout.LabelField ("魔攻", tinyLayouts);
+			EditorGUILayout.LabelField ("护甲", tinyLayouts);
+			EditorGUILayout.LabelField ("抗性", tinyLayouts);
+			EditorGUILayout.LabelField ("护甲穿透", tinyLayouts);
+			EditorGUILayout.LabelField ("魔法穿透", tinyLayouts);
+			EditorGUILayout.LabelField ("移动速度", tinyLayouts);
+			EditorGUILayout.LabelField ("暴击", tinyLayouts);
+			EditorGUILayout.LabelField ("闪避", tinyLayouts);
+			EditorGUILayout.LabelField ("暴击倍率", tinyLayouts);
+			EditorGUILayout.LabelField ("额外金币", tinyLayouts);
+			EditorGUILayout.LabelField ("额外经验", tinyLayouts);
+			EditorGUILayout.LabelField ("生命回复", tinyLayouts);
+			EditorGUILayout.LabelField ("魔法回复", tinyLayouts);
+			EditorGUILayout.LabelField ("攻击间隔", tinyLayouts);
+			EditorGUILayout.LabelField ("奖励金币", tinyLayouts);
+			EditorGUILayout.LabelField ("奖励经验", tinyLayouts);
+			EditorGUILayout.EndHorizontal ();
+
+			EditorGUILayout.BeginHorizontal ();
+			md.originalMaxHealth = EditorGUILayout.IntField (md.originalMaxHealth, tinyLayouts);
+			md.originalMaxMana = EditorGUILayout.IntField (md.originalMaxMana, tinyLayouts);
+			md.originalAttack = EditorGUILayout.IntField (md.originalAttack, tinyLayouts);
+			md.originalMagicAttack = EditorGUILayout.IntField (md.originalMagicAttack, tinyLayouts);
+			md.originalArmor = EditorGUILayout.IntField (md.originalArmor, tinyLayouts);
+			md.originalMagicResist = EditorGUILayout.IntField (md.originalMagicResist, tinyLayouts);
+			md.originalArmorDecrease = EditorGUILayout.IntField (md.originalArmorDecrease, tinyLayouts);
+			md.originalMagicResistDecrease = EditorGUILayout.IntField (md.originalMagicResistDecrease, tinyLayouts);
+			md.originalMoveSpeed = EditorGUILayout.IntField (md.originalMoveSpeed, tinyLayouts);
+			md.originalCrit = EditorGUILayout.FloatField (md.originalCrit, tinyLayouts);
+			md.originalDodge = EditorGUILayout.FloatField (md.originalDodge, tinyLayouts);
+			md.originalCritHurtScaler = EditorGUILayout.FloatField (md.originalCritHurtScaler, tinyLayouts);
+			md.originalExtraGold = EditorGUILayout.IntField (md.originalExtraGold, tinyLayouts);
+			md.originalExtraExperience = EditorGUILayout.IntField (md.originalExtraExperience, tinyLayouts);
+			md.originalHealthRecovery = EditorGUILayout.IntField (md.originalHealthRecovery, tinyLayouts);
+			md.originalMagicRecovery = EditorGUILayout.IntField (md.originalMagicRecovery, tinyLayouts);
+			md.attackInterval = EditorGUILayout.FloatField (md.attackInterval, tinyLayouts);
+			md.rewardGold = EditorGUILayout.IntField (md.rewardGold, tinyLayouts);
+			md.rewardExperience = EditorGUILayout.IntField (md.rewardExperience, tinyLayouts);
+			EditorGUILayout.EndHorizontal ();
+			EditorGUILayout.EndVertical ();
+			EditorGUILayout.EndHorizontal ();
+
+			EditorGUILayout.LabelField ("属性增长", middleLayouts);
+			for (int i = 0; i < 10; i++) {
+				MonsterPropertyGain mpg = md.monsterPropertyGainList [i];
+				EditorGUILayout.BeginHorizontal ();
+				EditorGUILayout.LabelField ("\t\t\t", new GUILayoutOption[] {
+					GUILayout.Height (20),
+					GUILayout.Width (20)
+				});
+				EditorGUILayout.BeginVertical ();
+				EditorGUILayout.BeginHorizontal ();
+
+				EditorGUILayout.LabelField (string.Format ("{0}-{1}层", i * 5, (i + 1) * 5), tinyLayouts);
+
+				EditorGUILayout.LabelField ("血量", tinyLayouts);
+				EditorGUILayout.LabelField ("魔法", tinyLayouts);
+				EditorGUILayout.LabelField ("攻击", tinyLayouts);
+				EditorGUILayout.LabelField ("魔攻", tinyLayouts);
+				EditorGUILayout.LabelField ("护甲", tinyLayouts);
+				EditorGUILayout.LabelField ("抗性", tinyLayouts);
+				EditorGUILayout.LabelField ("护甲穿透", tinyLayouts);
+				EditorGUILayout.LabelField ("魔法穿透", tinyLayouts);
+				EditorGUILayout.LabelField ("移动速度", tinyLayouts);
+				EditorGUILayout.LabelField ("暴击", tinyLayouts);
+				EditorGUILayout.LabelField ("闪避", tinyLayouts);
+				EditorGUILayout.LabelField ("暴击倍率", tinyLayouts);
+				EditorGUILayout.LabelField ("额外金币", tinyLayouts);
+				EditorGUILayout.LabelField ("额外经验", tinyLayouts);
+				EditorGUILayout.LabelField ("生命回复", tinyLayouts);
+				EditorGUILayout.LabelField ("魔法回复", tinyLayouts);
+				EditorGUILayout.LabelField ("攻击间隔", tinyLayouts);
+				EditorGUILayout.LabelField ("奖励金币", tinyLayouts);
+				EditorGUILayout.LabelField ("奖励经验", tinyLayouts);
+				EditorGUILayout.EndHorizontal ();
+
+				EditorGUILayout.BeginHorizontal ();
+				EditorGUILayout.LabelField ("\t\t\t\t\t", tinyLayouts);
+				mpg.maxHealthGain = EditorGUILayout.IntField (mpg.maxHealthGain, tinyLayouts);
+				mpg.maxManaGain = EditorGUILayout.IntField (mpg.maxManaGain, tinyLayouts);
+				mpg.attackGain = EditorGUILayout.IntField (mpg.attackGain, tinyLayouts);
+				mpg.magicAttackGain = EditorGUILayout.IntField (mpg.magicAttackGain , tinyLayouts);
+				mpg.armorGain = EditorGUILayout.IntField (mpg.armorGain, tinyLayouts);
+				mpg.magicResistGain = EditorGUILayout.IntField (mpg.magicResistGain, tinyLayouts);
+				mpg.armorDecreaseGain = EditorGUILayout.IntField (mpg.armorDecreaseGain, tinyLayouts);
+				mpg.magicResistDecreaseGain = EditorGUILayout.IntField (mpg.magicResistDecreaseGain, tinyLayouts);
+				mpg.moveSpeedGain = EditorGUILayout.IntField (mpg.moveSpeedGain, tinyLayouts);
+				mpg.critGain = EditorGUILayout.FloatField (mpg.critGain, tinyLayouts);
+				mpg.dodgeGain = EditorGUILayout.FloatField (mpg.dodgeGain, tinyLayouts);
+				mpg.critHurtScalerGain = EditorGUILayout.FloatField (mpg.critHurtScalerGain, tinyLayouts);
+				mpg.extraGoldGain = EditorGUILayout.IntField (mpg.extraGoldGain, tinyLayouts);
+				mpg.extraExperienceGain = EditorGUILayout.IntField (mpg.extraExperienceGain, tinyLayouts);
+				mpg.healthRecoveryGain = EditorGUILayout.IntField (mpg.healthRecoveryGain, tinyLayouts);
+				mpg.magicRecoveryGain = EditorGUILayout.IntField (mpg.magicRecoveryGain, tinyLayouts);
+				mpg.attackIntervalGain = EditorGUILayout.FloatField (mpg.attackIntervalGain, tinyLayouts);
+				mpg.rewardGoldGain = EditorGUILayout.IntField (mpg.rewardGoldGain, tinyLayouts);
+				mpg.rewardExperienceGain = EditorGUILayout.IntField (mpg.rewardExperienceGain, tinyLayouts);
+				EditorGUILayout.EndHorizontal ();
+				EditorGUILayout.EndVertical ();
+				EditorGUILayout.EndHorizontal ();
+			}
+
+
+			EditorGUILayout.EndVertical ();
+			EditorGUILayout.EndHorizontal ();
+
+			EditorGUILayout.Separator ();
+			EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
+		}
 	}
+
 }

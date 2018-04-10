@@ -75,7 +75,7 @@ namespace WordJourney
 				return;
 			}
 
-			SoundManager.Instance.PlayAudioClip("MapEffects/" + audioClipName);
+			GameManager.Instance.soundManager.PlayAudioClip("MapEffects/" + audioClipName);
 
 			BattlePlayerController bp = col.GetComponent<BattlePlayerController> ();
 

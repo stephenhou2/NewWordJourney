@@ -25,7 +25,9 @@ namespace WordJourney
 		ExtraExperience,
 		HealthRecovery,
 		MagicRecovery,
-		Health
+		Health,
+		HealthPunish,
+		AttackPunish
 	}
 		
 
@@ -76,7 +78,7 @@ namespace WordJourney
 		public float originalMagicalHurtScaler;//基础魔法伤害系数
 		public float originalCritHurtScaler;//基础暴击系数
 		public int originalHealthRecovery;//基础生命回复
-		public int originalMagicRecoverty;//基础魔法回复
+		public int originalMagicRecovery;//基础魔法回复
 		//*****人物基础信息(无装备，无状态加成时的人物属性)********//
 
 

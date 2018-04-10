@@ -91,7 +91,7 @@ namespace WordJourney
 
 			if (Player.mainPlayer.isNewPlayer) {
 
-				SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Paper");
+				GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Paper");
 
 				homeView.SetUpDifficultyChoosePlane ();
 			} else {
@@ -110,7 +110,7 @@ namespace WordJourney
 
 		public void SelectChapter(int chapterIndex){
 
-//			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+//			e.PlayAudioClip ("UI/sfx_UI_Click");
 			
 //			Player.mainPlayer.currentLevelIndex = 5 * chapterIndex;
 
@@ -129,7 +129,7 @@ namespace WordJourney
 		/// <param name="difficulty">Difficulty.</param>
 		public void OnDifficultyChoose(int difficulty){
 
-			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Click");
 
 			switch (difficulty) {
 			case 0:
@@ -175,7 +175,7 @@ namespace WordJourney
 		}
 
 		public void OnRecordButtonClick(){
-			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Click");
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.recordCanvasBundleName, "RecordCanvas", () => {
 				TransformManager.FindTransform("RecordCanvas").GetComponent<RecordViewController> ().SetUpRecordView();
 				homeView.OnQuitHomeView();
@@ -183,7 +183,7 @@ namespace WordJourney
 		}
 
 		public void OnLearnButtonClick(){
-			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Click");
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.learnCanvasBundleName, "LearnCanvas", () => {
 				TransformManager.FindTransform("LearnCanvas").GetComponent<LearnViewController>().SetUpLearnView();
 				homeView.OnQuitHomeView();
@@ -193,7 +193,7 @@ namespace WordJourney
 			
 
 		public void OnBagButtonClick(){
-			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Click");
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.bagCanvasBundleName, "BagCanvas", () => {
 				TransformManager.FindTransform("BagCanvas").GetComponent<BagViewController> ().SetUpBagView (true);
 				homeView.OnQuitHomeView();
@@ -201,7 +201,7 @@ namespace WordJourney
 		}
 
 		public void OnSettingButtonClick(){
-			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Click");
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.settingCanvasBundleName, "SettingCanvas", () => {
 				TransformManager.FindTransform("SettingCanvas").GetComponent<SettingViewController> ().SetUpSettingView ();
 				homeView.OnQuitHomeView();
@@ -209,7 +209,7 @@ namespace WordJourney
 		}
 
 		public void OnSpellButtonClick(){
-			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Click");
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.spellCanvasBundleName, "SpellCanvas", () => {
 				TransformManager.FindTransform("SpellCanvas").GetComponent<SpellViewController>().SetUpSpellViewForCreate(null,null);
 				homeView.OnQuitHomeView();

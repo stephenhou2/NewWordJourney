@@ -17,7 +17,7 @@ namespace WordJourney
 
 			MonsterModel[] monsterModels = LoadMonsterModels ();
 
-			Transform other = TransformManager.FindTransform ("Other");
+			Transform other = GameObject.Find ("Other").transform;
 
 			for (int i = 0; i < monsterModels.Length; i++) {
 
@@ -63,26 +63,34 @@ namespace WordJourney
 				}
 
 				Transform mynewOther = monster.Find ("Other");
+
 				if (mynewOther != null) {
-					GameObject.DestroyImmediate(mynewOther.gameObject);
+					if (mynewOther.Find ("AlertAreasContainer") != null) {
+						GameObject.DestroyImmediate (mynewOther.Find ("AlertAreasContainer").gameObject);
+					}
+					Transform newAlertAreas = GameObject.Instantiate (other.Find ("AlertAreasContainer").gameObject, mynewOther).transform;
+					newAlertAreas.name = "AlertAreasContainer";
+					newAlertAreas.localPosition = Vector3.zero;
+					newAlertAreas.localRotation = Quaternion.identity;
+					newAlertAreas.localScale = Vector3.one;
 				}
 
-//				if (newOther == null) {
-					Transform newOther = GameObject.Instantiate (other.gameObject).transform;
-					newOther.transform.SetParent (monster);
+				if (mynewOther == null) {
+					mynewOther = GameObject.Instantiate (other.gameObject).transform;
+					mynewOther.transform.SetParent (monster);
 
-					newOther.name = "Other";
+					mynewOther.name = "Other";
 
-					newOther.localPosition = Vector3.zero;
-					newOther.localScale = Vector3.one;
-					newOther.localRotation = Quaternion.identity;
+					mynewOther.localPosition = Vector3.zero;
+					mynewOther.localScale = Vector3.one;
+					mynewOther.localRotation = Quaternion.identity;
 
-//				} 
+				} 
 
-				Transform skillsContainer = newOther.transform.Find ("SkillsContainer");
+				Transform skillsContainer = mynewOther.transform.Find ("SkillsContainer");
 
 
-				monsterScript.monsterId = mm.monsterId;
+//				monsterScript.monsterId = mm.monsterId;
 				monsterScript.agentName = mm.monsterName;
 				monsterScript.agentLevel = 1;
 				monsterScript.rewardGold = mm.gold;
@@ -146,11 +154,11 @@ namespace WordJourney
 				bmcScript.collosionLayer = 1<<11;
 				bmcScript.boxCollider = bc2d;
 				bmcScript.normalAttack = na;
-				Transform effectAnimContainer = newOther.transform.Find ("EffectAnimContainer");
+				Transform effectAnimContainer = mynewOther.transform.Find ("EffectAnimContainer");
 				bmcScript.effectAnimContainer = effectAnimContainer;
 
-				Transform alertAreasContainer = newOther.transform.Find ("AlertAreasContainer");
-				Transform alertIcon = newOther.transform.Find ("AlertIcon");
+				Transform alertAreasContainer = mynewOther.transform.Find ("AlertAreasContainer");
+				Transform alertIcon = mynewOther.transform.Find ("AlertIcon");
 
 				mmScript.alertAreas = alertAreasContainer.GetComponentsInChildren<MonsterAlertArea> ();
 				mmScript.alertToFightIcon = alertIcon.GetComponent<SpriteRenderer> ();
@@ -161,7 +169,7 @@ namespace WordJourney
 
 				for (int j = 0; j < mmScript.alertAreas.Length; j++) {
 					mmScript.alertAreas [j].mapMonster = mmScript;
-					mmScript.alertAreas [j].GetComponent<SpriteRenderer>().sortingLayerName = "wall";
+					mmScript.alertAreas [j].GetComponent<UnityArmatureComponent>().sortingLayerName = "wall";
 				}
 
 

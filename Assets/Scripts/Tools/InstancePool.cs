@@ -104,6 +104,30 @@ namespace WordJourney
 
 		}
 
+		public T GetInstanceWithName<T>(string goName)
+			where T:Component
+		{
+
+			Transform mInstance = null;
+
+			if (this.transform.childCount > 0) {
+
+				for (int i = 0; i < this.transform.childCount; i++) {
+					Transform t = this.transform.GetChild (i);
+					if (t != null && t.name == goName) {
+						mInstance = t;
+						break;
+					}
+				}
+			} 
+
+			if (mInstance == null) {
+				return null;
+			}
+
+			return mInstance.GetComponent<T>();
+		}
+
 		public void AddChildInstancesToPool(Transform originalParent){
 
 			int counter = 0;

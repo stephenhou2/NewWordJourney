@@ -108,9 +108,9 @@ namespace WordJourney
 
 			DisableInteractivity ();
 
-			if (!SoundManager.Instance.bgmAS.isPlaying 
-				|| SoundManager.Instance.bgmAS.clip.name != CommonData.exploreBgmName) {
-				SoundManager.Instance.PlayBgmAudioClip (CommonData.exploreBgmName);
+			if (!GameManager.Instance.soundManager.bgmAS.isPlaying 
+				|| GameManager.Instance.soundManager.bgmAS.clip.name != CommonData.exploreBgmName) {
+				GameManager.Instance.soundManager.PlayBgmAudioClip (CommonData.exploreBgmName);
 			}
 
 			newMapGenerator.SetUpMap();
@@ -532,12 +532,27 @@ namespace WordJourney
 			}
 
 			MapMonster mm = bmCtr.GetComponent<MapMonster> ();
+
 			if (mm != null) {
-				int itemId = mm.dropItemID;
-				float dropProbability = mm.dropItemProbability;
-				if (Random.Range (0, 1.0f) <= dropProbability) {
-					newMapGenerator.SetUpRewardInMap (Item.NewItemWith (itemId, 1), mm.transform.position);
+
+				Item rewardItem = mm.GenerateRandomRewardItem ();
+
+				newMapGenerator.SetUpRewardInMap (rewardItem, trans.position);
+			}
+
+			MapNPC mn = bmCtr.GetComponent<MapNPC> ();
+
+			if (mn != null) {
+				
+				Item rewardItem = Item.NewItemWith (mn.fightReward.rewardValue,1);
+				if (rewardItem.itemType == ItemType.Equipment) {
+					Equipment eqp = rewardItem as Equipment;
+					EquipmentQuality quality = (EquipmentQuality)mn.fightReward.attachValue;
+					eqp.ResetPropertiesByQuality (quality);
 				}
+
+				newMapGenerator.SetUpRewardInMap (rewardItem, trans.position);
+
 			}
 
 			EnableInteractivity ();
@@ -556,7 +571,7 @@ namespace WordJourney
 		private void PlayLevelUpAnim(){
 			battlePlayerCtr.SetEffectAnim ("LevelUp");
 			expUICtr.GetComponent<BattlePlayerUIController> ().UpdateAgentStatusPlane ();
-			SoundManager.Instance.PlayAudioClip ("Other/sfx_LevelUp");
+			GameManager.Instance.soundManager.PlayAudioClip ("Other/sfx_LevelUp");
 		}
 
 		public void BattlePlayerLose(){
@@ -679,7 +694,7 @@ namespace WordJourney
 
 			this.gameObject.SetActive(false);
 
-			SoundManager.Instance.StopBgm ();
+			GameManager.Instance.soundManager.StopBgm ();
 
 			Camera.main.transform.Find ("Mask").gameObject.SetActive (false);
 

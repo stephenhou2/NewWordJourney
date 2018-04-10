@@ -15,6 +15,8 @@ namespace WordJourney{
 
 		public bool canShowNpcPlane;
 
+		[HideInInspector]public HLHNPCReward fightReward;
+
 		public override void InitMapItem ()
 		{
 			bc2d.enabled = true;
@@ -55,9 +57,8 @@ namespace WordJourney{
 				hasNpcDataLoaded = true;
 			}
 
-			if (npc.npcId == 1) {
-				InitNpcGoodsFromLevelData ();
-			}
+			GetComponent<Monster> ().InitializeWithMonsterData (npc.monsterData);
+
 
 			baCtr.PlayRoleAnim ("wait", 0, null);
 
@@ -134,6 +135,8 @@ namespace WordJourney{
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
+			
+
 			if (!canShowNpcPlane) {
 				return;
 			}
@@ -462,29 +465,8 @@ namespace WordJourney{
 		}
 
 
-		private void InitNpcGoodsFromLevelData(){
-
-			int currentLevel = Player.mainPlayer.currentLevelIndex;
-
-			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [currentLevel];
-
-			GenerateRandomGoods (levelData.goodsIdsListArray_0);
-			GenerateRandomGoods (levelData.goodsIdsListArray_1);
-			GenerateRandomGoods (levelData.goodsIdsListArray_2);
-			GenerateRandomGoods (levelData.goodsIdsListArray_3);
-			GenerateRandomGoods (levelData.goodsIdsListArray_4);
 
 
-		}
-
-		private void GenerateRandomGoods(List<int> goodsIds){
-			
-			int randomSeed = Random.Range (0, goodsIds.Count);
-
-			HLHNPCGoods goods = new HLHNPCGoods (goodsIds [randomSeed]);
-
-			npc.npcGoodsList.Add (goods);
-		}
 
 	}
 }

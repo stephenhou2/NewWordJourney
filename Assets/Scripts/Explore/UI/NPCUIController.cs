@@ -96,8 +96,6 @@ namespace WordJourney
 			SetUpDialogPlane (dialog,dg);
 			ResetTradeAndSpecialOperationPlane ();
 
-
-
 			gameObject.SetActive (true);
 
 		}
@@ -129,6 +127,8 @@ namespace WordJourney
 
 			bool hideDialogPlane = false;
 
+			int index = Player.mainPlayer.currentLevelIndex / 5;
+
 			if (choice.isHandInTaskTriggered) {
 				HLHTask task = npc.GetTask (choice.triggeredTaskId);
 				bool isTaskFinish = Player.mainPlayer.CheckTaskFinish (task);
@@ -155,6 +155,8 @@ namespace WordJourney
 			choiceText.text = choiceContent;
 
 			choiceButton.onClick.RemoveAllListeners ();
+
+			MapNPC mapNpc = ExploreManager.Instance.currentEnteredMapEvent.transform.GetComponent<MapNPC>();
 
 			choiceButton.onClick.AddListener (delegate {
 
@@ -189,11 +191,65 @@ namespace WordJourney
 				}
 				if(choice.isFightTriggered){
 					HideNPCPlane();
-					Transform mapNpc = ExploreManager.Instance.currentEnteredMapEvent.transform;
-					mapNpc.GetComponent<MapNPC>().EnterFight(ExploreManager.Instance.battlePlayerCtr);
+					mapNpc.fightReward = choice.rewards[index];
+					mapNpc.EnterFight(ExploreManager.Instance.battlePlayerCtr);
 					hideDialogPlane = true;
 				}
+
+				if(choice.isRobTriggered){
+					Player.mainPlayer.robTime++;
+				}
+
+				if(choice.isWeaponChangeTriggered){
+
+					List<Equipment> allEquipedEquipments = Player.mainPlayer.GetAllEquipedEquipment();
+
+					if(allEquipedEquipments.Count == 0){
+						Debug.Log("NO WEAPON");
+						return;
+					}
+
+					int randomSeed = Random.Range(0,allEquipedEquipments.Count);
+
+					Equipment eqp = allEquipedEquipments[randomSeed];
 					
+					List<EquipmentModel> sameGradeEquipments = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj) {
+						return obj.equipmentGrade == eqp.equipmentGrade;
+					});
+
+					randomSeed = Random.Range(0,sameGradeEquipments.Count);
+
+					Equipment newEqp = new Equipment(sameGradeEquipments[randomSeed],1);
+
+					Player.mainPlayer.RemoveItem(eqp,1);
+
+					newEqp.ResetPropertiesByQuality(eqp.quality);
+
+					Player.mainPlayer.AddItem(newEqp);
+				}
+
+				if(choice.isEquipmentLoseTriggered){
+					
+					List<Equipment> allEquipedEquipments = Player.mainPlayer.GetAllEquipedEquipment();
+
+					if(allEquipedEquipments.Count == 0){
+						Debug.Log("NO WEAPON");
+						return;
+					}
+
+					int randomSeed = Random.Range(0,allEquipedEquipments.Count);
+
+					Equipment eqp = allEquipedEquipments[randomSeed];
+
+					Player.mainPlayer.RemoveItem(eqp,1);
+				}
+
+				if(choice.isWordLearningTriggered){
+					QuitNPCPlane();
+					ExploreManager.Instance.ShowWordsChoosePlane(mapNpc.wordsArray);
+				}
+
+
 				if(choice.isEnd){
 
 					if(!dg.isMultiOff && choice.finishCurrentDialog){
@@ -232,7 +288,7 @@ namespace WordJourney
 
 		public void SetUpTrade(){
 
-			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Trader");
+			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Trader");
 
 			ClearItemDetail ();
 			UpdateGoodsDisplay ();
@@ -254,7 +310,7 @@ namespace WordJourney
 
 		public void SetUpSpecialOperation(){
 			
-			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Trader");
+			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Trader");
 
 			ClearItemDetail ();
 
@@ -274,15 +330,11 @@ namespace WordJourney
 			
 			goodsPool.AddChildInstancesToPool (goodsContainer);
 
-			List<HLHNPCGoods> itemsAsGoods = npc.npcGoodsList;
+			List<HLHNPCGoods> itemsAsGoods = npc.GetCurrentLevelGoods();
 
 			for (int i = 0; i < itemsAsGoods.Count; i++) {
 
 				HLHNPCGoods goods = itemsAsGoods [i];
-
-//				if (goods.totalCount == 0 && goods.isFixedCount) {
-//					continue;
-//				}
 
 				Transform goodsCell = goodsPool.GetInstance<Transform> (goodsModel.gameObject, goodsContainer);
 
@@ -314,7 +366,9 @@ namespace WordJourney
 
 			}
 
-			HLHNPCGoods goods = npc.npcGoodsList [selectedGoodsIndex];
+			List<HLHNPCGoods> goodsList = npc.GetCurrentLevelGoods ();
+
+			HLHNPCGoods goods = goodsList [selectedGoodsIndex];
 
 			Item itemAsGoods = goods.GetGoodsItem ();
 

@@ -8,20 +8,21 @@ namespace WordJourney
 
 	[System.Serializable]
 	public class HLHNPC {
-
-
+		
 		public int npcId;
 
 		public string npcName;
+
+		public bool isExcutor;
 
 		public List<HLHDialogGroup> dialogGroups = new List<HLHDialogGroup>();
 
 		// 注意HLHTask是结构体，非引用类型
 		public List<HLHTask> taskList = new List<HLHTask> ();
 
-		public List<HLHNPCGoods> npcGoodsList = new List<HLHNPCGoods> ();
+		public List<HLHNPCGoodsGroup> npcGoodsGroupList = new List<HLHNPCGoodsGroup> ();
 
-		public List<HLHDialogGroup> regularGreetings = new List<HLHDialogGroup>();
+		public List<HLHDialogGroup> regularGreetings = new List<HLHDialogGroup> ();
 
 		// 标示当npc数据变化时是否需要保存npc数据
 		public bool saveOnChange;
@@ -29,6 +30,9 @@ namespace WordJourney
 		// 本层触发的对话组的记录
 		private HLHDialogGroup dialogGroupRecord;
 
+		private List<HLHNPCGoods> goodsInSellRecord = new List<HLHNPCGoods>();
+
+		public MonsterData monsterData;
 
 		//******************************************************************************** start *************************************************************************//
 
@@ -45,9 +49,8 @@ namespace WordJourney
 				if (!dialogGroupRecord.isFinish) {
 					return dialogGroupRecord;
 				} else {
-					targetDg = regularGreetings.Find (delegate(HLHDialogGroup obj) {
-						return obj.dialogGroupId == dialogGroupRecord.dialogGroupId;
-					});
+					int randomSeed = Random.Range (0, regularGreetings.Count);
+					targetDg = regularGreetings[randomSeed];
 					dialogGroupRecord = targetDg;
 					return targetDg;
 				}
@@ -109,7 +112,8 @@ namespace WordJourney
 
 			if (targetDg == null) {
 				int randomSeed = Random.Range (0, regularGreetings.Count);
-				targetDg = regularGreetings [randomSeed];
+				targetDg = regularGreetings[randomSeed];
+				dialogGroupRecord = targetDg;
 			}
 
 			dialogGroupRecord = targetDg;
@@ -143,6 +147,33 @@ namespace WordJourney
 			return allTasksReceiveFromCurrentNpc;
 		}
 
+		public List<HLHNPCGoods> GetCurrentLevelGoods(){
+
+			if (goodsInSellRecord.Count != 0) {
+				return goodsInSellRecord;
+			}
+
+			int ggIndex = Player.mainPlayer.currentLevelIndex / 5;
+
+			goodsInSellRecord.Clear ();
+
+			HLHNPCGoodsGroup gg = npcGoodsGroupList[ggIndex];
+
+			goodsInSellRecord.Add (GetRandomGoods(gg.goodsList_1));
+			goodsInSellRecord.Add (GetRandomGoods(gg.goodsList_2));
+			goodsInSellRecord.Add (GetRandomGoods(gg.goodsList_3));
+			goodsInSellRecord.Add (GetRandomGoods(gg.goodsList_4));
+			goodsInSellRecord.Add (GetRandomGoods(gg.goodsList_5));
+
+			return goodsInSellRecord;
+		}
+
+		private HLHNPCGoods GetRandomGoods(List<HLHNPCGoods> possibleGoods){
+
+			int randomSeed = Random.Range (0, possibleGoods.Count);
+
+			return possibleGoods [randomSeed];
+		}
 
 
 		/// <summary>
@@ -152,20 +183,11 @@ namespace WordJourney
 		/// <param name="player">Player.</param>
 		public void SoldGoods(int goodsId){
 
-			int goodsDisplayIndex = npcGoodsList.FindIndex (delegate(HLHNPCGoods obj) {
+			int goodsDisplayIndex = goodsInSellRecord.FindIndex (delegate(HLHNPCGoods obj) {
 				return obj.goodsId == goodsId;
 			});
 
-			npcGoodsList.RemoveAt (goodsDisplayIndex);
-
-//			for (int i = 0; i < npcGoodsList.Count; i++) {
-//
-//				HLHNPCGoods goods = npcGoodsList [i];
-//
-//				if (goods.goodsId == goodsId && !goods.isFixedCount) {
-//					npcGoodsList [i].totalCount--;
-//				}
-//			}
+			goodsInSellRecord.RemoveAt (goodsDisplayIndex);
 
 		}
 
@@ -298,9 +320,9 @@ namespace WordJourney
 
 		public bool isHandInTaskTriggered;
 
-		public bool isRobTriggered;
-
 		public bool isAddSkillTriggered;
+
+		public bool isRobTriggered;
 
 		public List<HLHNPCReward> rewards;
 
@@ -368,9 +390,24 @@ namespace WordJourney
 	}
 
 	[System.Serializable]
+	public class HLHNPCGoodsGroup{
+
+		public List<HLHNPCGoods> goodsList_1= new List<HLHNPCGoods> ();
+		public List<HLHNPCGoods> goodsList_2= new List<HLHNPCGoods> ();
+		public List<HLHNPCGoods> goodsList_3= new List<HLHNPCGoods> ();
+		public List<HLHNPCGoods> goodsList_4= new List<HLHNPCGoods> ();
+		public List<HLHNPCGoods> goodsList_5= new List<HLHNPCGoods> ();
+
+	}
+		
+
+	[System.Serializable]
 	public class HLHNPCGoods{
 
 		public int goodsId;
+		public float priceFloat;
+		public int equipmentQuality;//0:灰色，1:蓝色，2:金色
+
 
 		//******************************************************************************* start *****************************************************************************//
 
@@ -385,9 +422,6 @@ namespace WordJourney
 
 		//********************************************************************************* end ***************************************************************************//
 
-		public HLHNPCGoods(int goodsId){
-			this.goodsId = goodsId;
-		}
 
 	}
 

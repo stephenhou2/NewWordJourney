@@ -19,7 +19,7 @@ namespace WordJourney
 		public void SetUpRecordView(){
 			currentTabIndex = 0;
 			recordView.SetUpRecordView (LearningInfo.Instance);
-//			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+//			e.PlayAudioClip ("UI/sfx_UI_Click");
 //			StartCoroutine ("SetUpViewAfterDataReady");
 		}
 

@@ -92,6 +92,7 @@ namespace WordJourney{
 		public static string learnCanvasBundleName = "learn/canvas";
 		public static string allMonstersBundleName = "explore/monsters";
 		public static string allMapNpcBundleName = "explore/npcs";
+		public static string allEffectsBundleName = "explore/effects";
 
 		public static string allEquipmentSpritesBundleName = "item/equipment_icons";
 		public static string allConsumablesSpritesBundleName = "item/consumables_icons";

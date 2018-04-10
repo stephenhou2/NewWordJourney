@@ -65,7 +65,7 @@ namespace WordJourney
 		/// 初始化拼写界面（制造）
 		/// </summary>
 		public void SetUpSpellViewForCreate(EquipmentModel itemModel,CallBack cb){
-//			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+//			e.PlayAudioClip ("UI/sfx_UI_Click");
 			itemToCreate = itemModel;
 //			IEnumerator coroutine = SetUpViewAfterDataReady (itemModel,cb);
 //			StartCoroutine (coroutine);

@@ -49,7 +49,7 @@ namespace WordJourney
 //
 //			gameObject.SetActive (true);
 //
-//			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Paper");
+//			e.PlayAudioClip ("UI/sfx_UI_Paper");
 //
 //			Time.timeScale = 0;
 //			

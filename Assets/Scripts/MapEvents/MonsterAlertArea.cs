@@ -5,29 +5,38 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	using DragonBones;
+
 	public class MonsterAlertArea : MonoBehaviour {
 
 		public MapEvent mapMonster;
 
-		private SpriteRenderer alertAreaTint;
+		private UnityArmatureComponent alertAreaTint;
+		private MeshRenderer mr;
 
 		private EdgeCollider2D ec2D;
 //		private BoxCollider2D bc2D;
 
 
 		public void InitializeAlertArea(){
-			alertAreaTint = GetComponent<SpriteRenderer> ();
+			alertAreaTint = GetComponent<UnityArmatureComponent> ();
+			mr = GetComponent<MeshRenderer> ();
 			ec2D = GetComponent<EdgeCollider2D> ();
+			alertAreaTint.animation.timeScale = 0.2f;
 			ec2D.enabled = false;
 		}
 
 		public void ShowAlerAreaTint(){
+			mr.enabled = true;
 			alertAreaTint.enabled = true;
+			alertAreaTint.animation.Play ("default", 0);
+
 			ec2D.enabled = true;
 		}
 
 		public void HideAlertAreaTint(){
 			alertAreaTint.enabled = false;
+			mr.enabled = false;
 			ec2D.enabled = false;
 		}
 

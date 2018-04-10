@@ -36,13 +36,19 @@ namespace WordJourney
 				return;
 			}
 
+			if (mapNPC.npc.isExcutor && Player.mainPlayer.robTime <= 0) {
+				return;
+			}
+
 			BattlePlayerController bp = ba as BattlePlayerController;
 
 			if (bp.isInFight) {
 				return;
 			}
-				
+
 			mapNPC.MapEventTriggered (true, bp);
+
+
 		}
 
 		public void OnTriggerExit2D(Collider2D col){

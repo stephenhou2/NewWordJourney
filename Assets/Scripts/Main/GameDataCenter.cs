@@ -23,6 +23,7 @@ namespace WordJourney
 			SkillSprites,
 			Monsters,
 			NPCs,
+			Effects
 		}
 
 		private GameSettings mGameSettings;
@@ -36,13 +37,14 @@ namespace WordJourney
 		private List<Sprite> mAllMapSprites = new List<Sprite> ();
 		private List<Skill> mAllSkills = new List<Skill>();
 		private List<Sprite> mAllSkillSprites = new List<Sprite>();
-//		private List<HLHNPC> mAllNpcs = new List<HLHNPC>();
+		private List<EffectAnim> mAllEffects = new List<EffectAnim>();
 
 
 		public void InitPersistentGameData(){
 			LoadEquipmentModels ();
 			LoadAllEquipmentSprites ();
 			LoadAllSkills ();
+			LoadAllEffects ();
 		}
 
 
@@ -438,6 +440,32 @@ namespace WordJourney
 
 		}
 
+		public List<EffectAnim> allEffects{
+			get {
+				if (mAllEffects.Count == 0) {
+					LoadAllEffects ();
+				}
+				return mAllEffects;
+			}
+		}
+
+		private void LoadAllEffects(){
+
+			if (mAllEffects.Count > 0) {
+				return;
+			}
+
+			GameObject[] effectCache = MyResourceManager.Instance.LoadAssets<GameObject> (CommonData.allEffectsBundleName);
+
+			Transform effectsContainer = TransformManager.FindOrCreateTransform ("AllEffects");
+
+			for (int i = 0; i < effectCache.Length; i++) {
+				GameObject effect = GameObject.Instantiate (effectCache [i]);
+				effect.name = effectCache [i].name;
+				effect.transform.SetParent (effectsContainer);
+				mAllEffects.Add(effect.GetComponent<EffectAnim>());
+			}
+		}
 
 
 		public void ReleaseDataWithDataTypes(GameDataType[] dataTypes){

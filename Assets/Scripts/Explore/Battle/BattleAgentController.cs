@@ -73,8 +73,8 @@ namespace WordJourney
 		public IEnumerator attackCoroutine;
 		// 等待角色动画结束协程
 		public IEnumerator waitRoleAnimEndCoroutine;
-		// 等待技能动画结束协程
-		public List<IEnumerator> allSkillEffectReuseCoroutines = new List<IEnumerator>();
+//		// 等待技能动画结束协程
+//		public List<IEnumerator> allSkillEffectReuseCoroutines = new List<IEnumerator>();
 
 		// 角色的普通攻击技能
 		public NormalAttack normalAttack;
@@ -449,88 +449,33 @@ namespace WordJourney
 		/// 设置角色特效动画，trigger 型触发器
 		/// </summary>
 		/// <param name="animName">触发器名称</param>
-		public void SetEffectAnim(string triggerName,CallBack cb = null){
+		public void SetEffectAnim(string effectName,CallBack cb = null){
 
-			if(triggerName != string.Empty && exploreManager != null){
+			if(effectName != string.Empty && exploreManager != null){
 
-				IEnumerator playEffectAnimCoroutine = LatelyPlayEffectAnim (triggerName, cb);
+//				IEnumerator playEffectAnimCoroutine = LatelyPlayEffectAnim (triggerName, cb);
+//
+//				StartCoroutine (playEffectAnimCoroutine);
+//
+//			}
+//		}
+//
+//		private IEnumerator LatelyPlayEffectAnim(string triggerName,CallBack cb){
+//
+//			yield return new WaitUntil (() => Time.timeScale == 1);
 
-				StartCoroutine (playEffectAnimCoroutine);
-
-			}
-		}
-
-		private IEnumerator LatelyPlayEffectAnim(string triggerName,CallBack cb){
-
-			yield return new WaitUntil (() => Time.timeScale == 1);
-
-			yield return null;
-
-			if (agent.health > 0) {
+				if (agent.health > 0) {
 				
-				Transform skillEffect = null;
-				Animator skillEffectAnim = null;
+					EffectAnim skillEffect = null;
+						
+					skillEffect = exploreManager.newMapGenerator.GetEffectAnim (effectName,effectAnimContainer);
 
-				skillEffect = exploreManager.GetComponent<MapGenerator> ().GetEffectAnim (transform);
+					skillEffect.PlayAnim ("effect2", 1, cb);
 
-				skillEffectAnim = skillEffect.GetComponent<Animator> ();
-
-				skillEffectAnim.transform.SetParent (effectAnimContainer);
-
-				skillEffectAnim.SetTrigger (triggerName);
-
-				IEnumerator skillEffectReuseCoroutine = AddSkillEffectToPoolAfterAnimEnd (skillEffect.transform, cb);
-
-				allSkillEffectReuseCoroutines.Add (skillEffectReuseCoroutine);
-
-				StartCoroutine (skillEffectReuseCoroutine);
+				}
 			}
-		}
-
-
-
-
-		/// <summary>
-		/// 技能特效动画结束后将特效显示器重置后（带SkillEffectAnimtor的游戏体）加入缓存池
-		/// </summary>
-		/// <returns>The skill effect to pool after animation end.</returns>
-		/// <param name="effectInfo">Effect info.</param>
-		protected IEnumerator AddSkillEffectToPoolAfterAnimEnd(Transform skillEffectTrans,CallBack cb){
-
-			yield return null;
-
-			Animator animator = skillEffectTrans.GetComponent<Animator> ();
-
-			AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo (0);
-
-//			Debug.Log (stateInfo.IsName ("Empty") + "----------------------");
-
-			while (stateInfo.normalizedTime < 1) {
-//				Debug.Log (stateInfo.normalizedTime);
-				yield return null;
-				stateInfo = animator.GetCurrentAnimatorStateInfo (0);
-			}
-//			yield return new WaitForSeconds (stateInfo.length);
-
-			animator.SetTrigger ("Empty");
-
-			yield return null;
-
-			exploreManager.GetComponent<MapGenerator> ().AddEffectAnimToPool (animator.transform);
-
-			if (cb != null) {
-				cb ();
-			}
-
-//			skillEffectDic.Remove (effectInfo.triggerName);
-
-//			animator.ResetTrigger (triggerName);
-
-//			Debug.LogFormat ("{0}回收技能特效", agent.agentName);
-
 		}
 			
-
 
 		/// <summary>
 		/// 使用技能
@@ -577,7 +522,7 @@ namespace WordJourney
 
 			AllEffectAnimsInfoPool ();
 
-			allSkillEffectReuseCoroutines.Clear ();
+//			allSkillEffectReuseCoroutines.Clear ();
 
 //			StopCoroutine ("PlayAgentShake");
 

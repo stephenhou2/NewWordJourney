@@ -23,15 +23,8 @@ namespace WordJourney
 
 		public bool isReadyToFight;
 
-//		private bool canMove;
+//		[HideInInspector] public Item rewardItem;
 
-//		private bool isInAutoWalk;
-
-		// 掉落物品的ID
-		public int dropItemID;
-
-		// 掉落物品的概率
-		public float dropItemProbability;
 
 		protected override void Awake ()
 		{
@@ -185,10 +178,6 @@ namespace WordJourney
 		{
 			BattleMonsterController baCtr = transform.GetComponent<BattleMonsterController> ();
 
-//			bool canTalk = bool.Parse(KVPair.GetPropertyStringWithKey ("canTalk", attachedInfo.properties));
-//			int monsterId = int.Parse (KVPair.GetPropertyStringWithKey ("monsterID", attachedInfo.properties));
-			int dropItemId = int.Parse (KVPair.GetPropertyStringWithKey ("dropItemID", attachedInfo.properties));
-
 			canMove = bool.Parse(KVPair.GetPropertyStringWithKey("canMove",attachedInfo.properties));
 
 			for (int i = 0; i < alertAreas.Length; i++) {
@@ -203,9 +192,9 @@ namespace WordJourney
 
 			transform.position = attachedInfo.position;
 
-			dropItemID = dropItemId;
 			gameObject.SetActive (true);
 
+			GetComponent<Monster> ().ResetBattleAgentProperties (true);
 
 			baCtr.SetAlive();
 
@@ -215,6 +204,8 @@ namespace WordJourney
 
 			bc2d.enabled = true;
 			isReadyToFight = false;
+
+
 
 		}
 
@@ -507,6 +498,13 @@ namespace WordJourney
 			baCtr.SetSortingOrder (order);
 		}
 			
+
+		public Item GenerateRandomRewardItem(){
+
+
+			return null;
+
+		}
 
 	}
 }

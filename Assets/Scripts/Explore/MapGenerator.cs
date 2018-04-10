@@ -26,8 +26,6 @@ namespace WordJourney
 		// 地图上npc模型
 		public Transform mapNpcModel;
 
-		public Transform effectModel;
-
 		// 地图上掉落的物品模型
 		public Transform rewardItemModel;
 
@@ -1230,12 +1228,24 @@ namespace WordJourney
 			}
 		}
 
-		public Transform GetEffectAnim(Transform agentTrans){
-			Transform effectAnim = effectAnimPool.GetInstance<Transform> (effectModel.gameObject, effectAnimContainer);
-			effectAnim.position = agentTrans.position;
-			effectAnim.localScale = agentTrans.localScale;
-			effectAnim.rotation = Quaternion.identity;
+		public EffectAnim GetEffectAnim(string effectName,Transform effectContainer){
+
+			EffectAnim effectAnim = effectAnimPool.GetInstanceWithName<EffectAnim> (effectName);
+
+			if (effectAnim == null) {
+
+				EffectAnim effectModel = GameManager.Instance.gameDataCenter.allEffects.Find (delegate(EffectAnim obj) {
+					return obj.effectName == effectName;
+				});
+
+				effectAnim = Instantiate (effectModel.gameObject,effectContainer).GetComponent<EffectAnim>();
+
+			}
+			effectAnim.transform.localPosition = new Vector3(effectAnim.localPos.x,effectAnim.localPos.y,0);
+			effectAnim.transform.localScale = Vector3.one;
+			effectAnim.transform.localRotation = Quaternion.identity;
 			effectAnim.gameObject.SetActive (true);
+
 			return effectAnim;
 		}
 

@@ -377,7 +377,7 @@ namespace WordJourney
 			// 如果还没有走到终点
 			if (!ArriveEndPoint ()) {
 
-				SoundManager.Instance.PlayAudioClip ("Other/sfx_Footstep");
+				GameManager.Instance.soundManager.PlayAudioClip ("Other/sfx_Footstep");
 
 				// 记录下一节点位置
 				singleMoveEndPos = nextPos;
@@ -641,7 +641,7 @@ namespace WordJourney
 			
 
 			// 播放技能对应的音效
-			SoundManager.Instance.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);
+			GameManager.Instance.soundManager.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);
 
 			MapMonster mm = enemy.GetComponent<MapMonster> ();
 			if (mm != null) {

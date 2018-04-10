@@ -33,8 +33,6 @@ namespace WordJourney
 
 		public PickableItem pickableItemModel;//可拾取物品模型
 
-		public Obstacle treeModel;//树模型
-
 		public Obstacle stoneModel;//石头模型
 
 		public ThornTrap thornTrapModel;// 陷阱模型
@@ -87,6 +85,7 @@ namespace WordJourney
 
 		public Transform rewardContainer;//奖励物品容器
 
+
 		//************ 缓存池 ************//
 		public InstancePool floorsPool;//地板缓存池
 
@@ -101,6 +100,8 @@ namespace WordJourney
 		public InstancePool npcsPool;//npc缓存池
 
 		public InstancePool rewardPool;//奖励物品缓存池
+
+		public InstancePool effectAnimPool;//技能效果缓存池
 
 
 		private List<Vector2> playerStartPosList = new List<Vector2> ();
@@ -387,10 +388,10 @@ namespace WordJourney
 					mapEvent = mapEventsPool.GetInstanceWithName<Obstacle> (stoneModel.name, stoneModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
 					break;
-				case "tree":
-					mapEvent = mapEventsPool.GetInstanceWithName<Obstacle> (treeModel.name, treeModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					break;
+//				case "tree":
+//					mapEvent = mapEventsPool.GetInstanceWithName<Obstacle> (treeModel.name, treeModel.gameObject, mapEventsContainer);
+//					mapWalkableInfoArray [posX, posY] = 0;
+//					break;
 				case "crystal":
 					mapEvent = mapEventsPool.GetInstanceWithName<Crystal> (crystalModel.name, crystalModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
@@ -827,22 +828,37 @@ namespace WordJourney
 
 		}
 
-//		public void DestroyInstancePools(){
-//
-//			Destroy (floorsPool.gameObject);
-//
-//			Destroy(wallsPool.gameObject);
-//
-//			Destroy(decorationsPool.gameObject);
-//
-//			Destroy(npcsPool.gameObject);
-//
-//			Destroy (mapEventsPool.gameObject);
-//
-//			Destroy (monstersPool.gameObject);
-//
-//			Destroy (rewardPool.gameObject);
-//		}
 
+
+		public EffectAnim GetEffectAnim(string effectName,Transform effectContainer){
+
+			EffectAnim effectAnim = effectAnimPool.GetInstanceWithName<EffectAnim> (effectName);
+
+			if (effectAnim == null) {
+
+				EffectAnim effectModel = GameManager.Instance.gameDataCenter.allEffects.Find (delegate(EffectAnim obj) {
+					return obj.effectName == effectName;
+				});
+
+				effectAnim = Instantiate (effectModel.gameObject).GetComponent<EffectAnim>();
+				effectAnim.name = effectModel.effectName;
+			}
+
+			effectAnim.transform.SetParent (effectContainer);
+
+//			Vector3 newPos = effectContainer.position + effectAnim.localPos;
+
+			effectAnim.transform.localPosition = new Vector3 (effectAnim.localPos.x, effectAnim.localPos.y, 0);
+			effectAnim.transform.localRotation = Quaternion.identity;
+			effectAnim.transform.localScale = Vector3.one;
+			effectAnim.gameObject.SetActive (true);
+
+			return effectAnim;
+		}
+
+		public void AddEffectAnimToPool(EffectAnim ea){
+			ea.gameObject.SetActive (false);
+			effectAnimPool.AddInstanceToPool (ea.gameObject);
+		}
 	}
 }

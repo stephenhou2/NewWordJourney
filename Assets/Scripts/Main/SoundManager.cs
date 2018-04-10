@@ -9,15 +9,15 @@ namespace WordJourney
 
 	public class SoundManager : MonoBehaviour {
 
-		private static SoundManager mInstance;
-		public static SoundManager Instance{
-			get{
-				if (mInstance == null) {
-					mInstance = TransformManager.FindTransform ("SoundManager").GetComponent<SoundManager> ();
-				}
-				return mInstance;
-			}
-		}
+//		private static SoundManager mInstance;
+//		public static SoundManager Instance{
+//			get{
+//				if (mInstance == null) {
+//					mInstance = TransformManager.FindTransform ("SoundManager").GetComponent<SoundManager> ();
+//				}
+//				return mInstance;
+//			}
+//		}
 
 	
 		public AudioSource bgmAS;

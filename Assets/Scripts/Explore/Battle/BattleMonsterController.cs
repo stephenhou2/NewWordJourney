@@ -143,7 +143,7 @@ namespace WordJourney
 		protected override void AgentExcuteHitEffect ()
 		{
 			
-			SoundManager.Instance.PlayAudioClip ("Skill/" + currentUsingActiveSkill.sfxName);
+			GameManager.Instance.soundManager.PlayAudioClip ("Skill/" + currentUsingActiveSkill.sfxName);
 
 			currentUsingActiveSkill.AffectAgents (this, enemy);
 
@@ -318,7 +318,7 @@ namespace WordJourney
 				GetComponent<MapWalkableEvent>().AddToPool(exploreManager.newMapGenerator.monstersPool);
 			});
 
-			agent.ResetBattleAgentProperties (true);
+//			agent.ResetBattleAgentProperties (true);
 		}
 
 		public override void TowardsLeft (bool andWait = true)

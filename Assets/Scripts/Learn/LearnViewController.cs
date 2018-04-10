@@ -129,10 +129,10 @@ namespace WordJourney
 		/// 初始化学习界面
 		/// </summary>
 		public void SetUpLearnView(){
-//			SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_Click");
+//			e.PlayAudioClip ("UI/sfx_UI_Click");
 			currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
 			Time.timeScale = 0;
-			SoundManager.Instance.PauseBgm ();
+			GameManager.Instance.soundManager.PauseBgm ();
 //			StartCoroutine ("SetUpViewAfterDataReady");
 //		}
 //
@@ -418,7 +418,7 @@ namespace WordJourney
 			if (selectWord.wordId == currentExamination.question.wordId) {
 //				Debug.Log ("选择正确");
 
-				SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_RightTint");
+				GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_RightTint");
 
 				correctWordCount++;
 
@@ -445,7 +445,7 @@ namespace WordJourney
 				// 如果选择错误
 //				Debug.Log ("选择错误");
 
-				SoundManager.Instance.PlayAudioClip ("UI/sfx_UI_WrongTint");
+				GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_WrongTint");
 
 				// 单词的背错次数+1
 				GetWordFromWordsToLearnArrayWith(currentExamination.question.wordId).ungraspTimes++;
@@ -567,7 +567,7 @@ namespace WordJourney
 
 			if (exploreManager != null) {
 				GameManager.Instance.UIManager.HideCanvas ("LearnCanvas");
-				SoundManager.Instance.ResumeBgm ();
+				GameManager.Instance.soundManager.ResumeBgm ();
 				if (finishLearning) {
 					exploreManager.ChangeCrystalStatus ();
 					exploreManager.expUICtr.UpdatePlayerStatusBar ();
