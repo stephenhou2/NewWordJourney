@@ -520,62 +520,62 @@ namespace WordJourney
 
 		}
 
-		public void PlayerPropertyChange(PropertyType type,float change){
+		public void PlayerPropertyChange(PropertyType type,int change){
 			switch (type) {
 			case PropertyType.MaxHealth:
 				int maxHealthRecord = maxHealth;
-				maxHealth += (int)change;
+				maxHealth += change;
 				health = (int)(health * (float) maxHealth / maxHealthRecord);
 				break;
 			case PropertyType.Health:
-				health += (int)change;
+				health += change;
 				break;
 			case PropertyType.MaxMana:
 				int maxManaRecord = maxMana;
-				maxMana += (int)change;
+				maxMana += change;
 				mana = (int)(mana * (float)maxMana / maxManaRecord);
 				break;
 			case PropertyType.Attack:
-				attack += (int)change;
+				attack += change;
 				break;
 			case PropertyType.MagicAttack:
-				magicAttack += (int)change;
+				magicAttack += change;
 				break;
 			case PropertyType.Armor:
-				armor += (int)change;
+				armor += change;
 				break;
 			case PropertyType.MagicResist:
-				magicResist += (int)change;
+				magicResist += change;
 				break;
 			case PropertyType.ArmorDecrease:
-				armorDecrease += (int)change;
+				armorDecrease += change;
 				break;
 			case PropertyType.MagicResistDecrease:
-				magicResistDecrease += (int)change;
+				magicResistDecrease += change;
 				break;
 			case PropertyType.MoveSpeed:
-				moveSpeed += (int)change;
+				moveSpeed += change;
 				break;
 			case PropertyType.Dodge:
-				dodge += change;
+				dodge += (float)change/100;
 				break;
 			case PropertyType.Crit:
-				crit += change;
+				crit += (float)change/100;
 				break;
 			case PropertyType.CritHurtScaler:
-				critHurtScaler += change;
+				critHurtScaler += (float)change/100;
 				break;
 			case PropertyType.ExtraGold:
-				extraGold += (int)change;
+				extraGold += change;
 				break;
 			case PropertyType.ExtraExperience:
-				extraExperience += (int)change;
+				extraExperience += change;
 				break;
 			case PropertyType.HealthRecovery:
-				healthRecovery += (int)change;
+				healthRecovery += change;
 				break;
 			case PropertyType.MagicRecovery:
-				magicRecovery += (int)change;
+				magicRecovery += change;
 				break;
 			}
 		}
@@ -719,19 +719,7 @@ namespace WordJourney
 			return index;
 		}
 
-//		/// <summary>
-//		/// 人物隐藏属性变化
-//		/// </summary>
-//		/// <param name="property">Property.</param>
-//		/// <param name="change">Change.</param>
-//		public void HiddenPropertyChange(int justiceChange,int powerChange){
-//			
-//			justice += justiceChange;
-//			totalJustice += justiceChange;
-//			power += powerChange;
-//			totalPower += powerChange;
-//
-//		}
+
 
 		/// <summary>
 		/// 收获奖励

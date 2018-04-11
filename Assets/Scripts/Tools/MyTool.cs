@@ -161,11 +161,23 @@ namespace WordJourney
 
 		public static string GetMonsterName(int monsterId){
 			if (monsterId < 50) {
-				return normalMonsterNames [monsterId];
+				return normalMonsterNames [monsterId - 1];
 			} else {
-				return bossNames [monsterId - 50];
+				return bossNames [monsterId - 51];
 			}
 		}
+
+		private static string[] npcNames = new string[]{
+
+		};
+
+		public static string GetNpcName(int npcId){
+			if (npcId == -1) {
+				npcId = Random.Range (2, 58);
+			}
+			return npcNames [npcId];
+		}
+
 
 		public static string GetPropertyName(PropertyType type){
 			string propertyName = string.Empty;

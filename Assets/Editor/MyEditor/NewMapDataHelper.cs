@@ -80,7 +80,7 @@ namespace WordJourney
 				MapData mapData = ReadMap (fi.FullName);
 
 				//保存新的地图数据
-				SaveNewMapData (mapData, "New"+fi.Name);
+				SaveNewMapData (mapData, fi.Name);
 			}
 
 

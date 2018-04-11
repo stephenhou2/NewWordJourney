@@ -8,13 +8,9 @@ namespace WordJourney
 
 	public class MapMonster : MapWalkableEvent {
 
-//		private BattleMonsterController baCtr;
-
 		public MonsterAlertArea[] alertAreas;
 
 		public SpriteRenderer alertToFightIcon;
-
-//		private IEnumerator moveCoroutine;
 
 		public LayerMask collisionLayer;
 
@@ -23,13 +19,21 @@ namespace WordJourney
 
 		public bool isReadyToFight;
 
-//		[HideInInspector] public Item rewardItem;
+		public bool isBoss;
+
+		// 触发机关的位置【如果没有触发的机关，则设置为（-1，-1，-1）】
+		public Vector3 pairEventPos;
+
+		private int mapHeight;
+
+		public void SetPosTransferSeed(int mapHeight){
+			this.mapHeight = mapHeight;
+		}
 
 
 		protected override void Awake ()
 		{
 			base.Awake ();
-//			baCtr = GetComponent<BattleMonsterController> ();
 			alertIconOffsetX = alertToFightIcon.transform.localPosition.x;
 			alertIconOffsetY = alertToFightIcon.transform.localPosition.y;
 		}
@@ -81,6 +85,10 @@ namespace WordJourney
 				return;
 			}
 
+			if (bp.isInFight) {
+				return;
+			}
+
 			isReadyToFight = true;
 
 			EnterMapEvent (bp);
@@ -103,26 +111,26 @@ namespace WordJourney
 
 		public void DetectPlayer(BattlePlayerController bp){
 
-			Vector3 lineCastEnd = Vector3.zero;
-			Vector3 lineCastStart = Vector3.zero;
-			switch (baCtr.towards) {
-			case MyTowards.Up:
-				lineCastStart = transform.position + new Vector3 (0, 0.25f, 0);
-				lineCastEnd = transform.position + new Vector3 (0, 1.5f, 0);
-				break;
-			case MyTowards.Down:
-				lineCastStart = transform.position + new Vector3 (0, -0.25f, 0);
-				lineCastEnd = transform.position + new Vector3 (0, -1.5f, 0);
-				break;
-			case MyTowards.Left:
-				lineCastStart = transform.position + new Vector3 (-0.25f, 0, 0);
-				lineCastEnd = transform.position + new Vector3 (-1.5f, 0, 0);
-				break;
-			case MyTowards.Right:
-				lineCastStart = transform.position + new Vector3 (0.25f, 0, 0);
-				lineCastEnd = transform.position + new Vector3 (1.5f, 0, 0);
-				break;
-			}
+//			Vector3 lineCastEnd = Vector3.zero;
+//			Vector3 lineCastStart = Vector3.zero;
+//			switch (baCtr.towards) {
+//			case MyTowards.Up:
+//				lineCastStart = transform.position + new Vector3 (0, 0.25f, 0);
+//				lineCastEnd = transform.position + new Vector3 (0, 1.5f, 0);
+//				break;
+//			case MyTowards.Down:
+//				lineCastStart = transform.position + new Vector3 (0, -0.25f, 0);
+//				lineCastEnd = transform.position + new Vector3 (0, -1.5f, 0);
+//				break;
+//			case MyTowards.Left:
+//				lineCastStart = transform.position + new Vector3 (-0.25f, 0, 0);
+//				lineCastEnd = transform.position + new Vector3 (-1.5f, 0, 0);
+//				break;
+//			case MyTowards.Right:
+//				lineCastStart = transform.position + new Vector3 (0.25f, 0, 0);
+//				lineCastEnd = transform.position + new Vector3 (1.5f, 0, 0);
+//				break;
+//			}
 
 //			RaycastHit2D[] r2ds = Physics2D.LinecastAll (lineCastStart, lineCastEnd ,collisionLayer);
 //
@@ -179,6 +187,20 @@ namespace WordJourney
 			BattleMonsterController baCtr = transform.GetComponent<BattleMonsterController> ();
 
 			canMove = bool.Parse(KVPair.GetPropertyStringWithKey("canMove",attachedInfo.properties));
+
+			string pairEventPosString = KVPair.GetPropertyStringWithKey ("pairEventPos", attachedInfo.properties);
+
+			if (pairEventPosString != string.Empty && pairEventPosString != "-1") {
+
+				string[] posXY = pairEventPosString.Split (new char[]{ '_' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+				int posX = int.Parse (posXY [0]);
+				int posY = mapHeight - int.Parse (posXY [1]) - 1;
+
+				pairEventPos = new Vector3 (posX, posY, transform.position.z);
+			} else {
+				pairEventPos = -Vector3.one;
+			}
 
 			for (int i = 0; i < alertAreas.Length; i++) {
 				alertAreas [i].InitializeAlertArea ();
@@ -286,10 +308,7 @@ namespace WordJourney
 			}
 		}
 
-		public override void InitMapItem ()
-		{
-			throw new System.NotImplementedException ();
-		}
+
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
@@ -501,9 +520,36 @@ namespace WordJourney
 
 		public Item GenerateRandomRewardItem(){
 
+			Item rewardItem = null;
 
-			return null;
+			int randomSeed = Random.Range (0, 100);
 
+			if (randomSeed >= 0 && randomSeed < 90) {
+				rewardItem = null;
+			} else {
+
+				randomSeed = Random.Range (0, 2);
+
+				if (randomSeed == 0) {
+					int index = 0;
+					if (!isBoss) {
+						index = Player.mainPlayer.currentLevelIndex / 5 + 1;
+					} else {
+						index = (Player.mainPlayer.currentLevelIndex / 5 + 1) * 10;
+					}
+					List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll (delegate(EquipmentModel obj) {
+						return obj.equipmentGrade == index;
+					});
+					randomSeed = Random.Range (0, ems.Count);
+					rewardItem = new Equipment (ems [randomSeed], 1);
+				} else {
+					randomSeed = Random.Range (300, 316);
+					rewardItem = Item.NewItemWith (randomSeed, 1);
+				}
+
+			}
+
+			return rewardItem;
 		}
 
 	}

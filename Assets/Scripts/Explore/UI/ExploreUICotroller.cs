@@ -112,7 +112,6 @@ namespace WordJourney
 
 		private IEnumerator TransitionMaskShowAndHide(CallBack cb){
 
-
 			float tempAlpha = 0;
 			float fadeSpeed = 3f;
 
@@ -122,11 +121,11 @@ namespace WordJourney
 				yield return null;
 			}
 
+			tempAlpha = 1;
+
 			if (cb != null) {
 				cb ();
 			}
-
-			tempAlpha = 1;
 
 			while (tempAlpha > 0) {
 				tempAlpha -= fadeSpeed * Time.deltaTime;
@@ -134,7 +133,9 @@ namespace WordJourney
 				yield return null;
 			}
 			transitionMask.gameObject.SetActive (false);
+
 			ExploreManager.Instance.AllWalkableEventsStartMove ();
+
 		}
 
 		public void UpdateTasksDescription(){

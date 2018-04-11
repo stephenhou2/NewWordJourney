@@ -638,7 +638,9 @@ namespace WordJourney
 
 		protected override void AgentExcuteHitEffect ()
 		{
-			
+			if (!isInFight) {
+				return;
+			}
 
 			// 播放技能对应的音效
 			GameManager.Instance.soundManager.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);

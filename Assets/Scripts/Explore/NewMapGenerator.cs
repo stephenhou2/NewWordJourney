@@ -335,15 +335,16 @@ namespace WordJourney
 					mapEvent = mapEventsPool.GetInstanceWithName<Exit> (exitModel.name, exitModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 1;
 					exitPos = new Vector2 (posX, posY);
+					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
 					break;
 				case "billboard":
 					#warning 这里先用告示牌位置来测试npc
-					mapEvent = GetMapNPC (eventTile);
-					mapWalkableInfoArray [posX, posY] = 0;
-					mapWalkableEventInfoArray [posX, posY] = 1;
-					allWalkableEventsInMap.Add (mapEvent as MapNPC);
-//					mapEvent = mapEventsPool.GetInstanceWithName<Billboard> (billboardModel.name, billboardModel.gameObject, mapEventsContainer);
+//					mapEvent = GetMapNPC (eventTile);
 //					mapWalkableInfoArray [posX, posY] = 0;
+//					mapWalkableEventInfoArray [posX, posY] = 1;
+//					allWalkableEventsInMap.Add (mapEvent as MapNPC);
+					mapEvent = mapEventsPool.GetInstanceWithName<Billboard> (billboardModel.name, billboardModel.gameObject, mapEventsContainer);
+					mapWalkableInfoArray [posX, posY] = 0;
 					break;
 				case "item":
 					mapEvent = mapEventsPool.GetInstanceWithName<PickableItem> (pickableItemModel.name, pickableItemModel.gameObject, mapEventsContainer);
@@ -358,9 +359,15 @@ namespace WordJourney
 					mapWalkableInfoArray [posX, posY] = 1;
 					break;
 				case "monster":
-//					LearnWord[] wordsArray = GetDifferentWords (words, unusedWordIndexList, 3);
-//					InitializeMonster (eventTile,posX,posY,wordsArray);
 					mapEvent = GetMonster (eventTile);
+					(mapEvent as MapMonster).SetPosTransferSeed (rows);
+					mapWalkableInfoArray [posX, posY] = 2;
+					mapWalkableEventInfoArray [posX, posY] = 1;
+					allWalkableEventsInMap.Add (mapEvent as MapMonster);
+					break;
+				case "boss":
+					mapEvent = GetBoss (eventTile);
+					(mapEvent as MapMonster).SetPosTransferSeed (rows);
 					mapWalkableInfoArray [posX, posY] = 2;
 					mapWalkableEventInfoArray [posX, posY] = 1;
 					allWalkableEventsInMap.Add (mapEvent as MapMonster);
@@ -388,10 +395,6 @@ namespace WordJourney
 					mapEvent = mapEventsPool.GetInstanceWithName<Obstacle> (stoneModel.name, stoneModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
 					break;
-//				case "tree":
-//					mapEvent = mapEventsPool.GetInstanceWithName<Obstacle> (treeModel.name, treeModel.gameObject, mapEventsContainer);
-//					mapWalkableInfoArray [posX, posY] = 0;
-//					break;
 				case "crystal":
 					mapEvent = mapEventsPool.GetInstanceWithName<Crystal> (crystalModel.name, crystalModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
@@ -404,21 +407,24 @@ namespace WordJourney
 					mapEvent = mapEventsPool.GetInstanceWithName<Door> (doorModel.name, doorModel.gameObject, mapEventsContainer);
 					(mapEvent as Door).SetPosTransferSeed (rows);
 					mapWalkableInfoArray [posX, posY] = 0;
+					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
 					break;
 				case "thornSwitch":
 					mapEvent = mapEventsPool.GetInstanceWithName<ThornTrapSwitch> (thornTrapSwitchModel.name, thornTrapSwitchModel.gameObject, mapEventsContainer);
 					(mapEvent as ThornTrapSwitch).SetPosTransferSeed (rows);
 					mapWalkableInfoArray [posX, posY] = 0;
+					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
 					break;
 				case "thornTrap":
 					mapEvent = mapEventsPool.GetInstanceWithName<ThornTrap> (thornTrapModel.name, thornTrapModel.gameObject, mapEventsContainer);
-//					allThornTrapsInMap.Add (mapEvent as ThornTrap);
 					mapWalkableInfoArray [posX, posY] = 0;
+					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
 					break;
 				case "pressSwitch":
 					mapEvent = mapEventsPool.GetInstanceWithName<PressSwitch> (pressSwitchModel.name, pressSwitchModel.gameObject, mapEventsContainer);
 					(mapEvent as PressSwitch).SetPosTransferSeed (rows);
 					mapWalkableInfoArray [posX, posY] = 10;
+					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
 					break;
 				case "downStair":
 					mapEvent = mapEventsPool.GetInstanceWithName<SecretStairs> (secrectStairsModel.name, secrectStairsModel.gameObject, mapEventsContainer);
@@ -461,9 +467,9 @@ namespace WordJourney
 					
 					mapEvent.InitializeWithAttachedInfo (eventTile);
 
-					if (layer.layerName.Equals ("GearEventLayer")) {
-						allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
-					}
+//					if (layer.layerName.Equals ("GearEventLayer")) {
+//						allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
+//					}
 				}
 
 			}
@@ -554,10 +560,18 @@ namespace WordJourney
 		/// <param name="info">Info.</param>
 		private MapEvent GetMonster(MapAttachedInfoTile info){
 
-			int monsterId = int.Parse (KVPair.GetPropertyStringWithKey ("monsterID", info.properties));
+			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];
+
+			int randomSeed = Random.Range (0, levelData.monsterIds.Count);
+
+			int monsterId = levelData.monsterIds [randomSeed];
+
+			levelData.monsterIds.RemoveAt (randomSeed);
 
 			Transform monster = null;
+
 			string monsterName = MyTool.GetMonsterName(monsterId);
+
 			for (int i = 0; i < monstersPool.transform.childCount; i++) {
 				Transform monsterInPool = monstersPool.transform.GetChild (i);
 				if(monsterInPool.name == monsterName){
@@ -577,14 +591,38 @@ namespace WordJourney
 			return monster.GetComponent<MapMonster> ();
 		}
 
+		/// <summary>
+		/// 按照id获取怪物
+		/// </summary>
+		/// <returns>The monster.</returns>
+		/// <param name="info">Info.</param>
+		private MapEvent GetBoss(MapAttachedInfoTile info){
+
+			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];
+
+			int bossId = levelData.bossId;
+
+			Transform boss = null;
+
+			string bossName = MyTool.GetMonsterName(bossId);
+
+			boss = GameManager.Instance.gameDataCenter.LoadMonster (bossName).transform;
+
+			boss.SetParent (monstersContainer);
+			boss.localScale = Vector3.one;
+			boss.localRotation = Quaternion.identity;
+
+			return boss.GetComponent<MapMonster> ();
+		}
+
+
 		private MapEvent GetMapNPC(MapAttachedInfoTile info){
+			
+			int npcId = int.Parse (KVPair.GetPropertyStringWithKey ("npcID", info.properties));
 
-//			int npcId = int.Parse (KVPair.GetPropertyStringWithKey ("npcID", info.properties));
-
-			int npcId = 1;
+			string npcName = MyTool.GetNpcName (npcId);
 
 			Transform mapNpc = null;
-			string npcName = string.Format ("NPC_{0}", npcId);
 
 			for (int i = 0; i < npcsPool.transform.childCount; i++) {
 				Transform npcInPool = npcsPool.transform.GetChild (i);
@@ -615,47 +653,7 @@ namespace WordJourney
 
 		}
 
-//		private void InitializeMonster(MapAttachedInfoTile info,int posX,int posY,LearnWord[] wordsArray){
-//
-//			bool canTalk = bool.Parse(KVPair.GetPropertyStringWithKey ("canTalk", info.properties));
-//			int monsterId = int.Parse (KVPair.GetPropertyStringWithKey ("monsterID", info.properties));
-//			int dropItemId = int.Parse (KVPair.GetPropertyStringWithKey ("dropItemID", info.properties));
-//
-//			Transform monster = null;
-//			string monsterName = MyTool.GetMonsterName(monsterId);
-//			for (int i = 0; i < monstersPool.transform.childCount; i++) {
-//				Transform monsterInPool = monstersPool.transform.GetChild (i);
-//				if(monsterInPool.name == monsterName){
-//					monster = monsterInPool;
-//					break;
-//				}
-//			}
-//
-//			if (monster == null) {
-//				monster = GameManager.Instance.gameDataCenter.LoadMonster (monsterName).transform;
-//			}
-//
-//			monster.SetParent (monstersContainer);
-//			monster.localScale = Vector3.one;
-//			monster.localRotation = Quaternion.identity;
-//
-//			mapWalkableInfoArray [posX, posY] = 0;
-//
-//			monster.position = info.position;
-//
-//			BattleMonsterController bm = monster.GetComponent<BattleMonsterController> ();
-//
-//			bm.canTalk = canTalk;
-//			bm.dropItemID = dropItemId;
-//			monster.gameObject.SetActive (true);
-//
-//			bm.wordsArray = wordsArray;
-//
-//			bm.SetAlive();
-//
-//
-//
-//		}
+
 
 		/// <summary>
 		/// 将人物放置在人物初始点
@@ -730,15 +728,19 @@ namespace WordJourney
 				Transform mapTile = mapTilesPool.GetInstance<Transform> (mapTileModel.gameObject, mapTilesContainer);
 
 				SpriteRenderer sr = mapTile.GetComponent<SpriteRenderer> ();
+
 				sr.sprite = tileSprite;
-				if (layer.layerName.Equals ("DecorationLayer")) {
-					sr.sortingOrder = -Mathf.RoundToInt (tile.position.y);
-				}
+
 
 				mapTile.position = tile.position;
 
 				int posX = Mathf.RoundToInt (tile.position.x);
 				int posY = Mathf.RoundToInt (tile.position.y);
+
+				if (layer.layerName.Equals ("DecorationLayer")) {
+					sr.sortingOrder = -posY;
+				}
+
 
 				if (mapWalkableInfoArray [posX, posY] == -2
 					|| mapWalkableInfoArray [posX, posY] == 1) {
@@ -839,6 +841,10 @@ namespace WordJourney
 				EffectAnim effectModel = GameManager.Instance.gameDataCenter.allEffects.Find (delegate(EffectAnim obj) {
 					return obj.effectName == effectName;
 				});
+
+				if (effectModel == null) {
+					return null;
+				}
 
 				effectAnim = Instantiate (effectModel.gameObject).GetComponent<EffectAnim>();
 				effectAnim.name = effectModel.effectName;

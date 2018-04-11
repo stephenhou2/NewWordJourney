@@ -23,16 +23,7 @@ namespace WordJourney
 
 		private bool hasFinishTest;
 
-		/// <summary>
-		/// 初始化开关
-		/// </summary>
-		public override void InitMapItem ()
-		{
-			bc2d.enabled = true;
-			mapItemRenderer.sprite = switchOffSprite;
-			switchStatusChangeCount = 0;
-			SetSortingOrder (-(int)transform.position.y);
-		}
+
 
 		public override void AddToPool (InstancePool pool)
 		{

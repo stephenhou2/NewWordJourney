@@ -22,12 +22,6 @@ namespace WordJourney
 //			}
 //		}
 
-		public override void InitMapItem ()
-		{
-			bc2d.enabled = true;
-			SetSortingOrder (1);
-		}
-
 		public override void AddToPool (InstancePool pool)
 		{
 			bc2d.enabled = false;

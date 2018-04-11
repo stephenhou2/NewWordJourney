@@ -153,7 +153,7 @@ namespace WordJourney
 				return goodsInSellRecord;
 			}
 
-			int ggIndex = Player.mainPlayer.currentLevelIndex / 5;
+			int ggIndex = Player.mainPlayer.currentLevelIndex -1 / 5;
 
 			goodsInSellRecord.Clear ();
 

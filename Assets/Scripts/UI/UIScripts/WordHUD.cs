@@ -28,9 +28,16 @@ namespace WordJourney
 
 		public Transform characterToFillCellModel;
 
+		public Transform newCharacterToFillCellModel;
+
 		public InstancePool characterToFillCellPool;
 
 		public Transform characterToFillCellContainer;
+
+		public Image lockStatusIcon;
+
+		public Sprite lockSprite;
+		public Sprite unlockSprite;
 
 		// ************* 选择正确释义的UI部分 *************** //
 
@@ -63,6 +70,8 @@ namespace WordJourney
 		private bool canQuitWhenClickBackground;
 
 
+
+
 		/// <summary>
 		/// 初始化单词选择弹出框
 		/// </summary>
@@ -90,19 +99,21 @@ namespace WordJourney
 
 			questionForCharacterFill.text = word.explaination;
 
+			lockStatusIcon.sprite = lockSprite;
+
 			for (int i = 0; i < realCharacters.Length; i++) {
 
-				CharacterFillCell characterFill = characterToFillCellPool.GetInstance<CharacterFillCell> (characterToFillCellModel.gameObject, characterToFillCellContainer);
+//				CharacterFillCell characterFill = characterToFillCellPool.GetInstance<CharacterFillCell> (characterToFillCellModel.gameObject, characterToFillCellContainer);
+
+				NewCharacterToFillCell characterFill = characterToFillCellPool.GetInstance<NewCharacterToFillCell> (newCharacterToFillCellModel.gameObject, characterToFillCellContainer);
 
 				char charInQuestion = answerCharacters [i];
 
 				char realChar = realCharacters [i];
 
-				answerCharacters [i] = characterFill.SetUpCharacterFill (i,charInQuestion,realChar,CharacterChange);
+				answerCharacters [i] = characterFill.SetUpCharacterFill (i,charInQuestion,realChar,CharacterChange,CharacterClick);
 					
 			}
-
-
 
 		}
 
@@ -145,6 +156,24 @@ namespace WordJourney
 			return characters;
 		}
 
+		private void CharacterClick(int characterCellIndex){
+			
+			for (int i = 0; i < characterToFillCellContainer.childCount; i++) {
+
+				if (i == characterCellIndex) {
+					continue;
+				}
+
+				NewCharacterToFillCell cfc = characterToFillCellContainer.GetChild (i).GetComponent<NewCharacterToFillCell>();
+
+				if (!cfc.isFoldout) {
+					cfc.HideCharacterToFillButtons ();
+					cfc.isFoldout = true;
+				}
+
+			}
+		}
+
 		private void CharacterChange(int characterCellIndex,char changeTo){
 
 			answerCharacters [characterCellIndex] = changeTo;
@@ -152,8 +181,11 @@ namespace WordJourney
 			bool isCharactersFillCorrect = CheckCharactersCorrect();
 
 			if (isCharactersFillCorrect) {
+				lockStatusIcon.sprite = unlockSprite;
 				StartCoroutine ("DelayWhenCharactersAllFillCorrect");
 			}
+
+
 		}
 
 		private IEnumerator DelayWhenCharactersAllFillCorrect(){

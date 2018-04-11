@@ -16,17 +16,8 @@ namespace WordJourney
 		public Sprite crystalExaustedSprite;
 
 		private PropertyType propertyType;
-		private float gainAmount;
+		private int gainAmount;
 
-		public override void InitMapItem ()
-		{
-			isExausted = false;
-			bc2d.enabled = true;
-//			mapItemAnimator.SetBool ("Play",false);
-			mapItemRenderer.sprite = crystalShiningSprite;
-			SetSortingOrder (-(int)transform.position.y);
-//			isDroppable = false;
-		}
 
 		public void CrystalExausted(){
 
@@ -134,13 +125,13 @@ namespace WordJourney
 				gainAmount = Random.Range (1, 3);
 			} else if (randomSeed >= 80 && randomSeed < 82) {
 				propertyType = PropertyType.Crit;//暴击率
-				gainAmount = Random.Range (0.01f, 0.03f);
+				gainAmount = Random.Range (1, 3);
 			} else if (randomSeed >= 82 && randomSeed < 84) {
 				propertyType = PropertyType.Dodge;//闪避率
-				gainAmount = Random.Range (0.01f, 0.03f);
+				gainAmount = Random.Range (1, 3);
 			} else if (randomSeed >= 84 && randomSeed < 86) {
 				propertyType = PropertyType.CritHurtScaler;//暴击倍率
-				gainAmount = Random.Range (0.01f, 0.03f);
+				gainAmount = Random.Range (1, 3);
 			} else if (randomSeed >= 86 && randomSeed < 91) {
 				propertyType = PropertyType.ExtraGold;//额外金钱
 				gainAmount = Random.Range (1, 3);

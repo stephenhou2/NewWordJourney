@@ -92,7 +92,8 @@ namespace WordJourney
 			}
 		}
 
-		public abstract void InitMapItem ();
+//		public abstract void InitMapItem ();
+
 		public abstract void AddToPool (InstancePool pool);
 
 		public virtual void SetSortingOrder(int order){

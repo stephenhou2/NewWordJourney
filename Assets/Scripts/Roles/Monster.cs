@@ -15,7 +15,7 @@ namespace WordJourney
 
 	public class Monster : Agent{
 
-//		public int monsterId;
+		public int monsterId;
 
 		public int rewardExperience;//奖励的经验值
 		public int rewardGold;//奖励的金钱
@@ -40,7 +40,7 @@ namespace WordJourney
 		public void InitializeWithMonsterData(MonsterData monsterData){
 
 			this.agentName = monsterData.monsterName;
-//			this.monsterId = monsterData.monsterId;
+			this.monsterId = monsterData.monsterId;
 
 			int index = Player.mainPlayer.currentLevelIndex / 5;
 			MonsterPropertyGain mpg = monsterData.monsterPropertyGainList [index];

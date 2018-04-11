@@ -15,7 +15,6 @@ namespace WordJourney
 		private MeshRenderer mr;
 
 		private EdgeCollider2D ec2D;
-//		private BoxCollider2D bc2D;
 
 
 		public void InitializeAlertArea(){
@@ -30,7 +29,6 @@ namespace WordJourney
 			mr.enabled = true;
 			alertAreaTint.enabled = true;
 			alertAreaTint.animation.Play ("default", 0);
-
 			ec2D.enabled = true;
 		}
 

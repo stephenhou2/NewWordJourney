@@ -39,12 +39,7 @@ namespace WordJourney
 			return false;
 		}
 
-		public override void InitMapItem ()
-		{
-			bc2d.enabled = true;
-//			mapItemRenderer.sprite = switchOnSprite;
-			SetSortingOrder (1);
-		}
+
 
 		public override void AddToPool (InstancePool pool)
 		{

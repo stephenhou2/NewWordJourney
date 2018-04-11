@@ -987,7 +987,7 @@ namespace WordJourney
 					allSleepingOtherItems.RemoveAt (i);
 					allAliveOtherItems.Add (sleepingOther);
 					sleepingOther.gameObject.SetActive (true);
-					sleepingOther.GetComponent<MapEvent> ().InitMapItem ();
+//					sleepingOther.GetComponent<MapEvent> ().InitMapItem ();
 					break;
 				}
 			}
@@ -1141,7 +1141,7 @@ namespace WordJourney
 			other.gameObject.SetActive (true);
 
 			if (other.GetComponent<MapEvent> () != null) {
-				other.GetComponent<MapEvent> ().InitMapItem ();
+//				other.GetComponent<MapEvent> ().InitMapItem ();
 			}
 
 			if (other.GetComponent<BattleMonsterController> () != null) {

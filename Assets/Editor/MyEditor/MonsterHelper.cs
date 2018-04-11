@@ -90,7 +90,7 @@ namespace WordJourney
 				Transform skillsContainer = mynewOther.transform.Find ("SkillsContainer");
 
 
-//				monsterScript.monsterId = mm.monsterId;
+				monsterScript.monsterId = mm.monsterId;
 				monsterScript.agentName = mm.monsterName;
 				monsterScript.agentLevel = 1;
 				monsterScript.rewardGold = mm.gold;

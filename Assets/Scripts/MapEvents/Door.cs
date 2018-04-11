@@ -9,7 +9,6 @@ namespace WordJourney
 
 	public class Door : TriggeredGear {
 
-
 		private int direction;
 
 		// 关闭的门图片数组（0:上 1:下 2:左 3:右）
@@ -28,24 +27,18 @@ namespace WordJourney
 		}
 
 		public void OpenTheDoor(){
-			mapItemRenderer.enabled = false;
+			mapItemRenderer.sprite = null;
 			isOpen = true;
-			bc2d.enabled = false;
+			ExploreManager.Instance.newMapGenerator.ChangeMapEventStatusAtPosition (pairDoorPos);
 		}
 
 		public void CloseTheDoor(){
 			mapItemRenderer.enabled = true;
 			mapItemRenderer.sprite = doorCloseSprites[direction];
 			isOpen = false;
-			bc2d.enabled = true;
 		}
 
-		public override void InitMapItem ()
-		{
-			bc2d.enabled = true;
-			isOpen = false;
-			SetSortingOrder (-(int)transform.position.y);
-		}
+
 
 		public override void AddToPool (InstancePool pool)
 		{
@@ -62,7 +55,6 @@ namespace WordJourney
 		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
 		{
 			transform.position = attachedInfo.position;
-
 
 			isWordTrigger = bool.Parse (KVPair.GetPropertyStringWithKey ("isWordTrigger", attachedInfo.properties));
 			isOpen = bool.Parse (KVPair.GetPropertyStringWithKey ("isOpen", attachedInfo.properties));
@@ -157,11 +149,6 @@ namespace WordJourney
 				
 				if (isOpen) {
 
-					// 从门内移动到门外
-//					bp.transform.position = pairDoorPos;
-//					bp.singleMoveEndPos = pairDoorPos;
-//					bp.moveDestination = pairDoorPos;
-
 					Vector3 continueMovePos = Vector3.zero;
 
 					switch (bp.towards) {
@@ -186,12 +173,8 @@ namespace WordJourney
 						bp.moveDestination = continueMovePos;
 					});
 
-					// 从门内移动到门外
-//					bp.MoveToPosition (continueMovePos, ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray);
-
 				} else {
-					isOpen = true;
-					mapItemRenderer.sprite = null;
+					OpenTheDoor ();
 				}
 			}
 		}

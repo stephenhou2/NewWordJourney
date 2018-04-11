@@ -26,19 +26,7 @@ namespace WordJourney
 
 		public bool isGoldTreasureBox;
 
-		/// <summary>
-		/// 初始化箱子类道具
-		/// </summary>
-		public override void InitMapItem ()
-		{
-			bc2d.enabled = true;
-			mapItemAnimator.gameObject.SetActive (false);
-			mapItemRenderer.enabled = true;
-			int sortingOrder = -(int)transform.position.y;
-			SetSortingOrder (sortingOrder);
-			SetAnimationSortingOrder (sortingOrder);
 
-		}
 
 		private void SetAnimationSortingOrder(int order){
 			mapItemAnimator.GetComponent<SpriteRenderer> ().sortingOrder = order;

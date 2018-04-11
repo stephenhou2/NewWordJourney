@@ -50,6 +50,8 @@ namespace WordJourney
 
 		public bool isExploreClickValid;
 
+		private bool detectFight;
+
 
 //		[HideInInspector]public bool clickForConsumablesPos;
 
@@ -95,12 +97,13 @@ namespace WordJourney
 			#endif
 			Material m = newMapGenerator.fogOfWarPlane.GetComponent<Renderer>().material;
 			m.shader = Resources.Load("FOWShader") as Shader;
-			Debug.Log (m.shader.isSupported);
+//			Debug.Log (m.shader.isSupported);
 		}
 			
 		//Initializes the game for each level.
 		public void SetUpExploreView()
 		{
+			detectFight = false;
 
 			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
 
@@ -363,6 +366,9 @@ namespace WordJourney
 		}
 
 		public void AllWalkableEventsStartMove(){
+			if (detectFight) {
+				return;
+			}
 			for (int i = 0; i < newMapGenerator.allWalkableEventsInMap.Count; i++) {
 				newMapGenerator.allWalkableEventsInMap [i].StartMove ();
 			}
@@ -375,6 +381,8 @@ namespace WordJourney
 		/// <param name="monsterTrans">Monster trans.</param>
 		public void EnterFight(Transform monsterTrans){
 
+			detectFight = true;
+
 			DisableInteractivity ();
 
 			battleMonsterCtr = monsterTrans.GetComponent<BattleMonsterController> ();
@@ -384,7 +392,7 @@ namespace WordJourney
 			battlePlayerCtr.SetEnemy (battleMonsterCtr);
 			battleMonsterCtr.SetEnemy (battlePlayerCtr);
 
-
+//			battlePlayerCtr.isInFight = true;
 		}
 
 	
@@ -531,13 +539,22 @@ namespace WordJourney
 				expUICtr.ShowLevelUpPlane ();
 			}
 
+			expUICtr.GetComponent<BattlePlayerUIController> ().UpdateAgentStatusPlane ();
+
 			MapMonster mm = bmCtr.GetComponent<MapMonster> ();
 
 			if (mm != null) {
 
 				Item rewardItem = mm.GenerateRandomRewardItem ();
 
-				newMapGenerator.SetUpRewardInMap (rewardItem, trans.position);
+				if (rewardItem != null) {
+					newMapGenerator.SetUpRewardInMap (rewardItem, trans.position);
+				}
+
+				if (mm.pairEventPos != -Vector3.one) {
+					newMapGenerator.ChangeMapEventStatusAtPosition (mm.pairEventPos);
+				}
+
 			}
 
 			MapNPC mn = bmCtr.GetComponent<MapNPC> ();
@@ -545,13 +562,17 @@ namespace WordJourney
 			if (mn != null) {
 				
 				Item rewardItem = Item.NewItemWith (mn.fightReward.rewardValue,1);
-				if (rewardItem.itemType == ItemType.Equipment) {
-					Equipment eqp = rewardItem as Equipment;
-					EquipmentQuality quality = (EquipmentQuality)mn.fightReward.attachValue;
-					eqp.ResetPropertiesByQuality (quality);
-				}
 
-				newMapGenerator.SetUpRewardInMap (rewardItem, trans.position);
+				if (rewardItem != null) {
+
+					if (rewardItem.itemType == ItemType.Equipment) {
+						Equipment eqp = rewardItem as Equipment;
+						EquipmentQuality quality = (EquipmentQuality)mn.fightReward.attachValue;
+						eqp.ResetPropertiesByQuality (quality);
+					}
+
+					newMapGenerator.SetUpRewardInMap (rewardItem, trans.position);
+				}
 
 			}
 
@@ -563,6 +584,8 @@ namespace WordJourney
 				expUICtr.ShowNPCPlane ();
 			}
 
+			detectFight = false;
+
 			AllWalkableEventsStartMove ();
 
 		}
@@ -570,11 +593,12 @@ namespace WordJourney
 
 		private void PlayLevelUpAnim(){
 			battlePlayerCtr.SetEffectAnim ("LevelUp");
-			expUICtr.GetComponent<BattlePlayerUIController> ().UpdateAgentStatusPlane ();
 			GameManager.Instance.soundManager.PlayAudioClip ("Other/sfx_LevelUp");
 		}
 
 		public void BattlePlayerLose(){
+
+			detectFight = false;
 
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);

@@ -38,12 +38,7 @@ namespace WordJourney
 			return false;
 		}
 
-		public override void InitMapItem ()
-		{
-			bc2d.enabled = true;
-			// 现在普通陷阱放在了地板层中，不会遮挡到人
-//			SetSortingOrder (-(int)transform.position.y - 1);//普通陷阱紧贴地面，不会挡住人，所以层级再下降一层，防止人在上面走的时候挡住人）
-		}
+
 
 		public override void AddToPool (InstancePool pool)
 		{

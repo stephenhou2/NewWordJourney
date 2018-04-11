@@ -164,7 +164,7 @@ namespace WordJourney
 
 			this.specProperties = equipmentModel.specProperties;
 
-			if (equipmentGrade == -1) {
+			if (equipmentGrade > 10) {
 				// 暗金装备初始化为暗金装备
 				ResetPropertiesByQuality (EquipmentQuality.DarkGold);
 			} else {

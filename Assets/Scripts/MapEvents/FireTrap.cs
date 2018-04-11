@@ -30,13 +30,6 @@ namespace WordJourney
 			return false;
 		}
 
-		public override void InitMapItem ()
-		{
-			bc2d.enabled = true;
-			SetTrapOn ();
-			SetSortingOrder (-(int)transform.position.y);
-		}
-
 
 		public override void AddToPool(InstancePool pool){
 			bc2d.enabled = false;

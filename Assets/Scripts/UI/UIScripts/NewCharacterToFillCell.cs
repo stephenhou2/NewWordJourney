@@ -5,19 +5,16 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	using DG.Tweening;
 	using UnityEngine.UI;
 
-	public delegate void CharacterFillChangeCallBack(int cellIndex,char changeTo);
+	public delegate void CharacterClickCallBack(int cellIndex);
 
-	public class CharacterFillCell : MonoBehaviour {
+	public class NewCharacterToFillCell : MonoBehaviour {
 
-		public Text characterText;
+		public Button characterText;
 
-		public Button upButton;
-
-		public Button downButton;
-
-		public Transform charactersToFillContainer;
+		public Transform[] characterToFillButtons;
 
 		public Text[] charactersToFillTexts;
 
@@ -25,13 +22,19 @@ namespace WordJourney
 
 		private CharacterFillChangeCallBack charChangeCallBack;
 
+		private CharacterClickCallBack charClickCallBack;
+
 		private bool[] validArray = new bool[3]{true,true,true};
 
-		private int characterToFillIndex;
+//		private int characterToFillIndex;
 
 		private char[] charactersToFillArray = new char[]{'?','?','?'};
 
-		private Vector3 characterOffsetVector = new Vector3(0,100,0);
+		private int characterOffset = 120;
+
+		private float characterFlyOutDuration = 0.2f;
+
+		public bool isFoldout;
 
 		/// <summary>
 		/// 初始化字母填充cell
@@ -40,12 +43,21 @@ namespace WordJourney
 		/// <param name="charInQuestion">Char in question.</param>
 		/// <param name="realChar">Real char.</param>
 		public char SetUpCharacterFill(int cellIndex, char charInQuestion, char realChar,
-			CharacterFillChangeCallBack charChangeCallBack)
+			CharacterFillChangeCallBack charChangeCallBack,CharacterClickCallBack charClickCallBack)
 		{
-			
+
 			this.cellIndex = cellIndex;
 
 			this.charChangeCallBack = charChangeCallBack;
+
+			this.charClickCallBack = charClickCallBack;
+
+			for (int i = 0; i < characterToFillButtons.Length; i++) {
+				characterToFillButtons [i].localPosition = Vector3.zero;
+			}
+
+			isFoldout = true;
+
 
 			if (charInQuestion == '?') {
 
@@ -55,7 +67,8 @@ namespace WordJourney
 
 				GenerateCharsToFill (realChar);
 
-				characterText.text = string.Empty;
+				characterText.GetComponentInChildren<Text>().text = string.Empty;
+				characterText.GetComponent<Image> ().color = Color.cyan;
 
 				for (int i = 0; i < charactersToFillTexts.Length; i++) {
 
@@ -63,40 +76,16 @@ namespace WordJourney
 
 				}
 
-				charactersToFillContainer.localPosition = Vector3.zero;
-
-				charactersToFillContainer.gameObject.SetActive (true);
-
-				if (!charactersToFillArray [0].Equals (realChar)) {
-					characterToFillIndex = 0;
-				} else {
-					int randomSeed = Random.Range (1, 3);
-					for (int i = 0; i < randomSeed; i++) {
-						OnDownButtonClick ();
-					}
-					characterToFillIndex = randomSeed;
-				}
-
-				upButton.gameObject.SetActive (characterToFillIndex != 0);
-
-				downButton.gameObject.SetActive (characterToFillIndex != 2);
-
-				return charactersToFillArray [characterToFillIndex];
+				return ' ';
 
 			} else {
 
-				characterText.text = charInQuestion.ToString ();
-
-				upButton.gameObject.SetActive (false);
-
-				downButton.gameObject.SetActive (false);
-
-				charactersToFillContainer.gameObject.SetActive (false);
-
+				characterText.GetComponentInChildren<Text>().text = charInQuestion.ToString ();
+				characterText.GetComponent<Image> ().color = Color.white;
 				return charInQuestion;
 
 			}
-				
+
 		}
 
 
@@ -109,7 +98,7 @@ namespace WordJourney
 			for (int i = 0; i < validArray.Length; i++) {
 				validArray [i] = true;
 			}
-				
+
 			int index = GetARandomValidIndex ();
 
 			charactersToFillArray [index] = realChar;
@@ -157,48 +146,50 @@ namespace WordJourney
 					exist = true;
 					break;
 				}
-
 			}
 
 			return exist;
 
 		}
 
+		public void OnCharacterButtonClick(){
 
-		public void OnUpButtonClick(){
+			isFoldout = !isFoldout;
 
-			if (characterToFillIndex == 0) {
-				return;
+			if (isFoldout) {
+				HideCharacterToFillButtons ();
+			} else {
+				ShowCharacterToFillButtons ();
 			}
-				
-			characterToFillIndex--;
 
-			upButton.gameObject.SetActive (characterToFillIndex != 0);
-
-			downButton.gameObject.SetActive (characterToFillIndex != 2);
-
-			charactersToFillContainer.localPosition -= characterOffsetVector;
-
-			charChangeCallBack (cellIndex, charactersToFillArray [characterToFillIndex]);
+			charClickCallBack (cellIndex);
 
 		}
 
-		public void OnDownButtonClick(){
-			
-			if (characterToFillIndex == 2) {
-				return;
+		public void HideCharacterToFillButtons(){
+			for (int i = 0; i < characterToFillButtons.Length; i++) {
+				characterToFillButtons [i].DOLocalMoveY (0, characterFlyOutDuration);
 			}
-
-			characterToFillIndex++;
-
-			upButton.gameObject.SetActive (characterToFillIndex != 0);
-
-			downButton.gameObject.SetActive (characterToFillIndex != 2);
-
-			charactersToFillContainer.localPosition += characterOffsetVector;
-
-			charChangeCallBack (cellIndex, charactersToFillArray [characterToFillIndex]);
 		}
+
+		public void ShowCharacterToFillButtons(){
+			for (int i = 0; i < characterToFillButtons.Length; i++) {
+				characterToFillButtons [i].DOLocalMoveY (-(i + 1) * characterOffset, characterFlyOutDuration);
+			}
+		}
+
+		public void OnCharacterToFillButtonClick(int index){
+
+			HideCharacterToFillButtons ();
+
+			char characterSelect = charactersToFillArray [index];
+
+			characterText.GetComponentInChildren<Text> ().text = characterSelect.ToString ();
+
+			charChangeCallBack (cellIndex, characterSelect);
+
+		}
+
 
 	}
 }

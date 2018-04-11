@@ -22,13 +22,7 @@ namespace WordJourney
 
 		private Sequence floatingSequence;
 
-		
 
-
-		public override void InitMapItem ()
-		{
-			bc2d.enabled = true;
-		}
 
 		public override void AddToPool (InstancePool pool)
 		{

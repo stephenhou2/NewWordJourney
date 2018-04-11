@@ -451,7 +451,7 @@ namespace WordJourney
 		/// <param name="animName">触发器名称</param>
 		public void SetEffectAnim(string effectName,CallBack cb = null){
 
-			if(effectName != string.Empty && exploreManager != null){
+//			if(effectName != string.Empty && exploreManager != null){
 
 //				IEnumerator playEffectAnimCoroutine = LatelyPlayEffectAnim (triggerName, cb);
 //
@@ -464,16 +464,21 @@ namespace WordJourney
 //
 //			yield return new WaitUntil (() => Time.timeScale == 1);
 
-				if (agent.health > 0) {
-				
-					EffectAnim skillEffect = null;
-						
-					skillEffect = exploreManager.newMapGenerator.GetEffectAnim (effectName,effectAnimContainer);
+			if (effectName == string.Empty || exploreManager == null) {
+				return;
+			}
 
-					skillEffect.PlayAnim ("effect2", 1, cb);
+			if (agent.health > 0) {
+			
+				EffectAnim skillEffect = null;
+					
+				skillEffect = exploreManager.newMapGenerator.GetEffectAnim (effectName,effectAnimContainer);
 
+				if (skillEffect != null) {
+					skillEffect.PlayAnim ("effect1", 1, cb);
 				}
 			}
+
 		}
 			
 

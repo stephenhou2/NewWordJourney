@@ -39,10 +39,7 @@ namespace WordJourney
 
 		}
 
-		public override void InitMapItem ()
-		{
-			throw new System.NotImplementedException ();
-		}
+
 
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{

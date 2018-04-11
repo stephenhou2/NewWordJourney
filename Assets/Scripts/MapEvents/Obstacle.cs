@@ -23,19 +23,7 @@ namespace WordJourney
 			}
 		}
 
-		/// <summary>
-		/// 初始化障碍物
-		/// </summary>
-		public override void InitMapItem ()
-		{
-			bc2d.enabled = true;
-			mapItemAnimator.gameObject.SetActive (false);
-			mapItemRenderer.enabled = true;
-			int sortingOrder = -(int)transform.position.y;
-			SetSortingOrder (sortingOrder);
-			SetAnimationSortingOrder (sortingOrder);
-//			isDroppable = false;
-		}
+
 
 		private void SetAnimationSortingOrder(int order){
 			mapItemAnimator.GetComponent<SpriteRenderer> ().sortingOrder = order;
@@ -54,12 +42,9 @@ namespace WordJourney
 
 			animEndCallBack = cb;
 
-			// 如果开启或破坏后是可以行走的，动画结束后将包围盒设置为not enabled
-			GetComponent<BoxCollider2D> ().enabled = false;
+			bc2d.enabled = false;
 
 			mapItemRenderer.enabled = false;
-
-//			isDroppable = true;
 
 			mapItemAnimator.gameObject.SetActive (true);
 			// 播放对应动画
@@ -95,7 +80,7 @@ namespace WordJourney
 		}
 
 
-		protected virtual void AnimEnd (){
+		protected void AnimEnd (){
 			if (animEndCallBack != null) {
 				animEndCallBack ();
 			}

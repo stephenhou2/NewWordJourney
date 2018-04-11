@@ -48,7 +48,7 @@ namespace WordJourney
 		// 判断概率性技能是否生效
 		protected virtual bool isEffective(float chance){
 			float randomNum = Random.Range (0, 100)/100f;
-			return randomNum <= chance;
+			return randomNum < chance;
 		}
 
 
