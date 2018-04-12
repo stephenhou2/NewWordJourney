@@ -24,6 +24,11 @@ namespace WordJourney
 
 		public List<HLHDialogGroup> regularGreetings = new List<HLHDialogGroup> ();
 
+		// 单词选择正确时的对话组
+		public HLHDialogGroup wordRightDialogGroup;
+		// 单词选择错误时的对话组
+		public HLHDialogGroup wordWrongDialogGroup;
+
 		// 标示当npc数据变化时是否需要保存npc数据
 		public bool saveOnChange;
 

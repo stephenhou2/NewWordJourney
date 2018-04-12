@@ -99,6 +99,39 @@ namespace WordJourney
 			gameObject.SetActive (true);
 
 		}
+
+		public void SetUpChooseRightDialog(HLHNPC npc){
+			
+			this.npc = npc;
+
+			npcName.text = npc.npcName;
+
+			HLHDialogGroup dg = npc.wordRightDialogGroup;
+
+			HLHDialog dialog = dg.dialogs [0];
+
+			SetUpDialogPlane (dialog,dg);
+			ResetTradeAndSpecialOperationPlane ();
+
+			gameObject.SetActive (true);
+		}
+
+		public void SetUpChooseWrongDialog(HLHNPC npc){
+			
+			this.npc = npc;
+
+			npcName.text = npc.npcName;
+
+			HLHDialogGroup dg = npc.wordWrongDialogGroup;
+
+			HLHDialog dialog = dg.dialogs [0];
+
+			SetUpDialogPlane (dialog,dg);
+			ResetTradeAndSpecialOperationPlane ();
+
+			gameObject.SetActive (true);
+		}
+
 			
 		public void SetUpDialogPlane(HLHDialog dialog,HLHDialogGroup dg){
 
@@ -612,7 +645,11 @@ namespace WordJourney
 
 			ExploreManager.Instance.AllWalkableEventsStartMove ();
 
-			(ExploreManager.Instance.currentEnteredMapEvent as MapNPC).EnableAllAlertAreas ();
+			MapNPC mn = ExploreManager.Instance.currentEnteredMapEvent as MapNPC;
+
+			mn.EnableAllAlertAreas ();
+
+			mn.isTriggered = false;
 
 			ExploreManager.Instance.EnableInteractivity ();
 

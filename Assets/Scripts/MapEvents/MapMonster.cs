@@ -26,6 +26,8 @@ namespace WordJourney
 
 		private int mapHeight;
 
+		private bool isTriggered;
+
 		public void SetPosTransferSeed(int mapHeight){
 			this.mapHeight = mapHeight;
 		}
@@ -227,7 +229,7 @@ namespace WordJourney
 			bc2d.enabled = true;
 			isReadyToFight = false;
 
-
+			isTriggered = false;
 
 		}
 
@@ -312,7 +314,11 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
-			
+
+			if (isTriggered) {
+				return;
+			}
+
 			bc2d.enabled = false;
 
 			if (!isReadyToFight) {
@@ -326,6 +332,8 @@ namespace WordJourney
 
 			StartCoroutine ("AlertToFightIconShining");
 			StartCoroutine ("ResetPositionAndStartFight", bp);
+
+			isTriggered = true;
 
 		}
 			

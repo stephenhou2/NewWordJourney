@@ -28,7 +28,7 @@ namespace WordJourney
 
 		public Transform characterToFillCellModel;
 
-		public Transform newCharacterToFillCellModel;
+		public Transform fillAndCodeModel;
 
 		public InstancePool characterToFillCellPool;
 
@@ -69,7 +69,7 @@ namespace WordJourney
 
 		private bool canQuitWhenClickBackground;
 
-
+		private List<FillAndCodeCell> fillAndCodeCells = new List<FillAndCodeCell> ();
 
 
 		/// <summary>
@@ -101,18 +101,24 @@ namespace WordJourney
 
 			lockStatusIcon.sprite = lockSprite;
 
+			fillAndCodeCells.Clear ();
+
 			for (int i = 0; i < realCharacters.Length; i++) {
-
-//				CharacterFillCell characterFill = characterToFillCellPool.GetInstance<CharacterFillCell> (characterToFillCellModel.gameObject, characterToFillCellContainer);
-
-				NewCharacterToFillCell characterFill = characterToFillCellPool.GetInstance<NewCharacterToFillCell> (newCharacterToFillCellModel.gameObject, characterToFillCellContainer);
 
 				char charInQuestion = answerCharacters [i];
 
 				char realChar = realCharacters [i];
 
-				answerCharacters [i] = characterFill.SetUpCharacterFill (i,charInQuestion,realChar,CharacterChange,CharacterClick);
+				FillAndCodeCell cell = characterToFillCellPool.GetInstance<FillAndCodeCell> (fillAndCodeModel.gameObject, characterToFillCellContainer);
+
+				answerCharacters [i] = cell.SetUpFillAndCodeCell (i,charInQuestion,realChar,CharacterChange,CharacterClick);
 					
+				fillAndCodeCells.Add (cell);
+
+//				FillAndCodeCell2 cell = characterToFillCellPool.GetInstance<FillAndCodeCell2> (characterToFillCellModel.gameObject, characterToFillCellContainer);
+//
+//				answerCharacters [i] = cell.SetUpFillAndCodeCell (i,charInQuestion,realChar,CharacterChange);
+
 			}
 
 		}
@@ -164,11 +170,11 @@ namespace WordJourney
 					continue;
 				}
 
-				NewCharacterToFillCell cfc = characterToFillCellContainer.GetChild (i).GetComponent<NewCharacterToFillCell>();
+				FillAndCodeCell cell = characterToFillCellContainer.GetChild (i).GetComponent<FillAndCodeCell>();
 
-				if (!cfc.isFoldout) {
-					cfc.HideCharacterToFillButtons ();
-					cfc.isFoldout = true;
+				if (!cell.isFoldout) {
+					cell.HideCodeButtons ();
+					cell.isFoldout = true;
 				}
 
 			}

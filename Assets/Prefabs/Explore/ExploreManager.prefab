@@ -634,7 +634,7 @@ GameObject:
   - component: {fileID: 212673727634515218}
   - component: {fileID: 61498850087127836}
   - component: {fileID: 50722457086727442}
-  - component: {fileID: 114260609388858810}
+  - component: {fileID: 114076928435606242}
   m_Layer: 11
   m_Name: PotModel
   m_TagString: Untagged
@@ -979,8 +979,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4529246417224974}
-  - component: {fileID: 95285311054687124}
   - component: {fileID: 212301232339871342}
+  - component: {fileID: 95285311054687124}
   m_Layer: 11
   m_Name: Animation
   m_TagString: Untagged
@@ -2001,7 +2001,7 @@ GameObject:
   - component: {fileID: 50649451926389112}
   - component: {fileID: 114392617202626492}
   m_Layer: 11
-  m_Name: LockedTreasureBoxModel
+  m_Name: TreasureBoxModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 477495632
@@ -2055,7 +2055,7 @@ GameObject:
   - component: {fileID: 212340648479342054}
   - component: {fileID: 61187701631057236}
   - component: {fileID: 50125289688654574}
-  - component: {fileID: 114417221171041782}
+  - component: {fileID: 114571386632990828}
   m_Layer: 11
   m_Name: BucketModel
   m_TagString: Untagged
@@ -5550,7 +5550,7 @@ Animator:
   m_GameObject: {fileID: 1916403107845798}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: fad0a9dc298d8482c8a6d9e50cbee7ce, type: 2}
+  m_Controller: {fileID: 9100000, guid: ece7c69a2f0b1472c931884e95611bc7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -6031,6 +6031,22 @@ MonoBehaviour:
   isExausted: 0
   crystalShiningSprite: {fileID: 0}
   crystalExaustedSprite: {fileID: 0}
+--- !u!114 &114076928435606242
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1255244897865684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7feba4fad72c647648839945bab718ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClipName: sfx_Pot
+  wordsArray: []
+  treasureType: 0
+  mapItemAnimator: {fileID: 95643809400924310}
+  dropItemOffsetY: 0
 --- !u!114 &114101742283772882
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6389,9 +6405,9 @@ MonoBehaviour:
   stoneModel: {fileID: 114029342013738704}
   thornTrapModel: {fileID: 114101742283772882}
   thornTrapSwitchModel: {fileID: 114951093725201586}
-  lockedTreasureBoxModel: {fileID: 114392617202626492}
-  bucketModel: {fileID: 114417221171041782}
-  potModel: {fileID: 114260609388858810}
+  treasureBoxModel: {fileID: 114392617202626492}
+  bucketModel: {fileID: 114571386632990828}
+  potModel: {fileID: 114076928435606242}
   exitModel: {fileID: 114489389015394450}
   doorModel: {fileID: 114933803167667620}
   billboardModel: {fileID: 114242207952554104}
@@ -6560,24 +6576,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_maskType: 0
---- !u!114 &114260609388858810
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1255244897865684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc8e6d811ca0e4ee69a80a880dbe7231, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioClipName: sfx_Pot
-  wordsArray: []
-  walkableAfterChangeStatus: 1
-  tbType: 0
-  mapItemAnimator: {fileID: 95643809400924310}
-  dropItemOffsetY: 0
-  isGoldTreasureBox: 0
 --- !u!114 &114274162668107810
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7078,11 +7076,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioClipName: sfx_LockedTreasureBox
   wordsArray: []
-  walkableAfterChangeStatus: 0
-  tbType: 1
+  treasureType: 0
   mapItemAnimator: {fileID: 95445099794565548}
   dropItemOffsetY: 0
   isGoldTreasureBox: 0
+  normalTbSprite: {fileID: 21300000, guid: 9b61adf8fcb2a4216bc9ebc0ab78347b, type: 3}
+  specialTbSprite: {fileID: 21300000, guid: dc267904756634daf9ca4138766ce5ff, type: 3}
 --- !u!114 &114409216951491766
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7207,24 +7206,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_maskType: 0
---- !u!114 &114417221171041782
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1925750850691676}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc8e6d811ca0e4ee69a80a880dbe7231, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioClipName: sfx_Buck
-  wordsArray: []
-  walkableAfterChangeStatus: 1
-  tbType: 0
-  mapItemAnimator: {fileID: 95151203434646276}
-  dropItemOffsetY: 0
-  isGoldTreasureBox: 0
 --- !u!114 &114417633782305498
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7637,6 +7618,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDirty: 0
+--- !u!114 &114571386632990828
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1925750850691676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7feba4fad72c647648839945bab718ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClipName: sfx_Buck
+  wordsArray: []
+  treasureType: 1
+  mapItemAnimator: {fileID: 95151203434646276}
+  dropItemOffsetY: 0
 --- !u!114 &114583873572161244
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7777,11 +7774,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioClipName: sfx_Pot
   wordsArray: []
-  walkableAfterChangeStatus: 1
-  tbType: 0
+  treasureType: 0
   mapItemAnimator: {fileID: 95961668787703746}
   dropItemOffsetY: 0
   isGoldTreasureBox: 0
+  normalTbSprite: {fileID: 0}
+  specialTbSprite: {fileID: 0}
 --- !u!114 &114654027421889532
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -8063,11 +8061,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioClipName: sfx_LockedTreasureBox
   wordsArray: []
-  walkableAfterChangeStatus: 0
-  tbType: 1
+  treasureType: 0
   mapItemAnimator: {fileID: 95006897548088234}
   dropItemOffsetY: 0
   isGoldTreasureBox: 0
+  normalTbSprite: {fileID: 0}
+  specialTbSprite: {fileID: 0}
 --- !u!114 &114801265395851178
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -8434,11 +8433,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioClipName: sfx_Buck
   wordsArray: []
-  walkableAfterChangeStatus: 1
-  tbType: 0
+  treasureType: 0
   mapItemAnimator: {fileID: 95863449838146402}
   dropItemOffsetY: 0
   isGoldTreasureBox: 0
+  normalTbSprite: {fileID: 0}
+  specialTbSprite: {fileID: 0}
 --- !u!212 &212006717336955232
 SpriteRenderer:
   m_ObjectHideFlags: 1

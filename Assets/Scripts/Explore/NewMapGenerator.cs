@@ -39,11 +39,11 @@ namespace WordJourney
 
 		public ThornTrapSwitch thornTrapSwitchModel;// 开关模型
 
-		public TreasureBox lockedTreasureBoxModel;// 宝箱模型
+		public TreasureBox treasureBoxModel;// 宝箱模型
 
-		public TreasureBox bucketModel;// 木桶模型
+		public Treasure bucketModel;// 木桶模型
 
-		public TreasureBox potModel;// 瓦罐模型
+		public Treasure potModel;// 瓦罐模型
 
 		public Exit exitModel;// 出口模型
 
@@ -377,19 +377,19 @@ namespace WordJourney
 					mapWalkableInfoArray [posX, posY] = 0;
 					break;
 				case "bucket":
-					mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox> (bucketModel.name, bucketModel.gameObject, mapEventsContainer);
+					mapEvent = mapEventsPool.GetInstanceWithName<Treasure> (bucketModel.name, bucketModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
-					(mapEvent as TreasureBox).tbType = TreasureBoxType.Bucket;
+					(mapEvent as Treasure).treasureType = TreasureType.Bucket;
 					break;
 				case "pot":
-					mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox> (potModel.name, potModel.gameObject, mapEventsContainer);
+					mapEvent = mapEventsPool.GetInstanceWithName<Treasure> (potModel.name, potModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
-					(mapEvent as TreasureBox).tbType = TreasureBoxType.Pot;
+					(mapEvent as Treasure).treasureType = TreasureType.Pot;
 					break;
 				case "treasure":
-					mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox> (lockedTreasureBoxModel.name, lockedTreasureBoxModel.gameObject, mapEventsContainer);
+					mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox> (treasureBoxModel.name, treasureBoxModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
-					(mapEvent as TreasureBox).tbType = TreasureBoxType.TreasuerBox;
+					(mapEvent as Treasure).treasureType = TreasureType.TreasuerBox;
 					break;
 				case "stone":
 					mapEvent = mapEventsPool.GetInstanceWithName<Obstacle> (stoneModel.name, stoneModel.gameObject, mapEventsContainer);

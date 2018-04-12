@@ -171,6 +171,8 @@ namespace WordJourney
 						bp.transform.position = continueMovePos;
 						bp.singleMoveEndPos = continueMovePos;
 						bp.moveDestination = continueMovePos;
+
+						bp.SetSortingOrder(-(int)continueMovePos.y);
 					});
 
 				} else {

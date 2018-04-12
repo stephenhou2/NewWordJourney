@@ -99,7 +99,12 @@ namespace WordJourney
 
 			string sourcePlayerDataPath = CommonData.persistDataPath + "/OriginalPlayerData.json";
 			string targetPlayerDataPath = CommonData.persistDataPath + "/PlayerData.json";
+
 			DataHandler.CopyFile (sourcePlayerDataPath, targetPlayerDataPath);
+
+			PlayerData pd = LoadPlayerData ();
+
+			Player.mainPlayer.SetUpPlayerWithPlayerData (pd);
 
 		}
 

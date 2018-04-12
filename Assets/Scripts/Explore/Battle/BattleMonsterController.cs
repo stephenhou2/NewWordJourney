@@ -315,7 +315,12 @@ namespace WordJourney
 			exploreManager.BattlePlayerWin (new Transform[]{ transform });
 
 			PlayRoleAnim ("death", 1, delegate {
-				GetComponent<MapWalkableEvent>().AddToPool(exploreManager.newMapGenerator.monstersPool);
+				MapWalkableEvent mwe = GetComponent<MapWalkableEvent>();
+				if(mwe is MapMonster){
+					mwe.AddToPool(exploreManager.newMapGenerator.monstersPool);
+				}else if (mwe is MapNPC){
+					mwe.AddToPool(exploreManager.newMapGenerator.npcsPool);
+				}
 			});
 
 //			agent.ResetBattleAgentProperties (true);

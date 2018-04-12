@@ -319,7 +319,16 @@ namespace WordJourney
 
 			MapEvent me = currentEnteredMapEvent.GetComponent<MapEvent> ();
 
-			me.MapEventTriggered (isChooseCorret, battlePlayerCtr);
+			if (me is MapNPC) {
+				MapNPC mn = me as MapNPC;
+				if (isChooseCorret) {
+					expUICtr.SetUpNPCWhenWordChooseRight (mn.npc);
+				} else {
+					expUICtr.SetUpNPCWhenWordChooseWrong (mn.npc);
+				}
+			} else {
+				me.MapEventTriggered (isChooseCorret, battlePlayerCtr);
+			}
 		}
 
 
@@ -441,7 +450,7 @@ namespace WordJourney
 
 		public void ShowNPCPlane(MapNPC mapNPC){
 			AllWalkableEventsStopMove ();
-			expUICtr.EnterNPC (mapNPC.npc, Player.mainPlayer.currentLevelIndex);
+			expUICtr.EnterNPC (mapNPC.npc);
 		}
 			
 

@@ -17,7 +17,7 @@ namespace WordJourney{
 
 		[HideInInspector]public HLHNPCReward fightReward;
 
-
+		public bool isTriggered;
 
 		public override void AddToPool (InstancePool pool)
 		{
@@ -61,6 +61,8 @@ namespace WordJourney{
 			bc2d.enabled = true;
 
 			canShowNpcPlane = true;
+
+			isTriggered = false;
 
 			for (int i = 0; i < alertAreas.Length; i++) {
 				alertAreas [i].InitializeAlertArea ();
@@ -131,8 +133,6 @@ namespace WordJourney{
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
-			
-
 			if (!canShowNpcPlane) {
 				return;
 			}
@@ -150,6 +150,8 @@ namespace WordJourney{
 			DisableAllAlertAreas ();
 
 			StartCoroutine ("AdjustPositionAndTowards",bp);
+
+			isTriggered = true;
 
 		}
 

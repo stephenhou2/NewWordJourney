@@ -56,7 +56,7 @@ namespace WordJourney
 //			}
 //		}
 
-		public IntroductionView introductionPlane;
+		public TransitionView transitionView;
 
 		public SimpleItemDetail simpleItemDetail;
 
@@ -98,8 +98,8 @@ namespace WordJourney
 			if (!Player.mainPlayer.isNewPlayer) {
 				HideMask ();
 			} else {
-				introductionPlane.InitIntroductionView (HideMask);
-				introductionPlane.PlayIntroductionTransition ();
+//				transitionView.InitIntroductionView (HideMask);
+				transitionView.PlayTransition (TransitionType.Introduce,HideMask);
 			}
 
 		}
@@ -226,11 +226,18 @@ namespace WordJourney
 //
 //		}
 
-		public void EnterNPC(HLHNPC npc,int currentLevelIndex){
-
+		public void EnterNPC(HLHNPC npc){
 			npcUIController.SetUpNpcPlane (npc);
-
 		}
+
+		public void SetUpNPCWhenWordChooseRight(HLHNPC npc){
+			npcUIController.SetUpChooseRightDialog (npc);
+		}
+
+		public void SetUpNPCWhenWordChooseWrong(HLHNPC npc){
+			npcUIController.SetUpChooseWrongDialog (npc);
+		}
+
 
 		public void ShowNPCPlane(){
 			npcUIController.ShowNPCPlane ();
@@ -394,8 +401,10 @@ namespace WordJourney
 
 		public void CancelBuyLife(){
 			HideBuyLifeQueryHUD ();
-			GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal ();
-			ExploreManager.Instance.QuitExploreScene (true);
+			transitionView.PlayTransition (TransitionType.Death, delegate {
+				GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal ();
+				ExploreManager.Instance.QuitExploreScene (true);
+			});
 		}
 			
 //		public void OnRefreshButtonClick(){

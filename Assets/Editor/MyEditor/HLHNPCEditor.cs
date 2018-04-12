@@ -71,6 +71,12 @@ namespace WordJourney
 		private bool[,] regularGreetingDialogFoldOutInfoArray;
 		private bool[,] regularGreetingChoiceFoldOutInfoArray;
 
+		private bool[,] wordRightDialogFoldoutInfoArray;
+		private bool[,] wordRightChoiceFoldoutInfoArray;
+
+		private bool[,] wordWrongDialogFoldoutInfoArray;
+		private bool[,] wordWrongChoiceFoldoutInfoArray;
+
 		private int dataResult = -1;
 
 
@@ -88,6 +94,10 @@ namespace WordJourney
 			editor.regularGreetingDgFoldoutInfoArray = new bool[10];
 			editor.regularGreetingDialogFoldOutInfoArray = new bool[50,50];
 			editor.regularGreetingChoiceFoldOutInfoArray = new bool[50,50];
+			editor.wordRightDialogFoldoutInfoArray = new bool[1,50];
+			editor.wordRightChoiceFoldoutInfoArray = new bool[1,50];
+			editor.wordWrongDialogFoldoutInfoArray = new bool[1,50];
+			editor.wordWrongChoiceFoldoutInfoArray = new bool[1,50];
 			editor.style.richText = true;
 
 		}
@@ -198,9 +208,103 @@ namespace WordJourney
 
 			DrawMonsterData ();
 
+			DrawWordRightDialogGroup ();
+
+			DrawWordWrongDialogGroup ();
+
 			EditorGUILayout.EndScrollView ();
 		}
 
+		private void DrawWordRightDialogGroup(){
+			
+			EditorGUILayout.BeginHorizontal ();
+			EditorGUILayout.LabelField ("***编辑单词正确的对话组", new GUILayoutOption[] {
+				GUILayout.Height (20),
+				GUILayout.Width (120)
+			});
+			EditorGUILayout.BeginVertical ();
+
+			HLHDialogGroup wordRightDg = npc.wordRightDialogGroup;
+
+			EditorGUILayout.BeginHorizontal ();
+			bool addWordRightDg = GUILayout.Button ("添加单词正确的对话组", buttonLayouts);
+			bool removeWordRightDg = GUILayout.Button ("删除单词正确的对话组", buttonLayouts);
+			EditorGUILayout.EndHorizontal ();
+
+			if (addWordRightDg && wordRightDg == null) {
+				npc.wordRightDialogGroup = new HLHDialogGroup ();
+				wordRightDg = npc.wordRightDialogGroup;
+			}
+
+			if (removeWordRightDg) {
+				npc.wordRightDialogGroup = null;
+				wordRightDg = null;
+			}
+
+			if (wordRightDg == null) {
+				EditorGUILayout.EndVertical ();
+				EditorGUILayout.EndHorizontal ();
+				EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
+				return;
+			}
+
+			wordRightDg.dialogGroupId = 0;
+			wordRightDg.triggerLevel = -1;
+			wordRightDg.isTaskTriggeredDg = false;
+
+			DrawDialogs (wordRightDg, wordRightDialogFoldoutInfoArray);
+			DrawChoices (wordRightDg, wordRightChoiceFoldoutInfoArray);
+
+			EditorGUILayout.EndVertical ();
+			EditorGUILayout.EndHorizontal ();
+			EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
+		}
+
+		private void DrawWordWrongDialogGroup(){
+
+			EditorGUILayout.BeginHorizontal ();
+			EditorGUILayout.LabelField ("***编辑单词错误的对话组", new GUILayoutOption[] {
+				GUILayout.Height (20),
+				GUILayout.Width (120)
+			});
+			EditorGUILayout.BeginVertical ();
+
+			HLHDialogGroup wordWrongDg = npc.wordWrongDialogGroup;
+
+			EditorGUILayout.BeginHorizontal ();
+			bool addWordWrongDg = GUILayout.Button ("添加单词错误的对话组", buttonLayouts);
+			bool removeWordWrongDg = GUILayout.Button ("删除单词错误的对话组", buttonLayouts);
+			EditorGUILayout.EndHorizontal ();
+
+			if (addWordWrongDg && wordWrongDg == null) {
+				npc.wordWrongDialogGroup = new HLHDialogGroup ();
+				wordWrongDg = npc.wordWrongDialogGroup;
+			}
+
+			if (removeWordWrongDg) {
+				npc.wordWrongDialogGroup = null;
+				wordWrongDg = null;
+			}
+
+			if (wordWrongDg == null) {
+				EditorGUILayout.EndVertical ();
+				EditorGUILayout.EndHorizontal ();
+				EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
+				return;
+			}
+
+			wordWrongDg.dialogGroupId = 0;
+			wordWrongDg.triggerLevel = -1;
+			wordWrongDg.isTaskTriggeredDg = false;
+
+			DrawDialogs (wordWrongDg, wordWrongDialogFoldoutInfoArray);
+			DrawChoices (wordWrongDg, wordWrongChoiceFoldoutInfoArray);
+
+
+			EditorGUILayout.EndVertical ();
+			EditorGUILayout.EndHorizontal ();
+			EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
+		}
 
 		private void DrawRegularGreetings (){
 
@@ -210,8 +314,6 @@ namespace WordJourney
 				GUILayout.Width (120)
 			});
 			EditorGUILayout.BeginVertical ();
-
-
 
 			EditorGUILayout.BeginHorizontal ();
 			bool createNewDialogGroup = GUILayout.Button ("添加新的对话组",buttonLayouts);
@@ -676,10 +778,12 @@ namespace WordJourney
 						
 
 					c.triggeredTaskId = EditorGUILayout.IntField ("触发的任务id", c.triggeredTaskId, shortLayouts);
+
 					EditorGUILayout.BeginHorizontal ();
 					c.isEnd = EditorGUILayout.Toggle ("是否退出当前对话组",c.isEnd, shortLayouts);
 					c.finishCurrentDialog = EditorGUILayout.Toggle ("是否将本对话组标记为已结束", c.finishCurrentDialog, shortLayouts);
 					EditorGUILayout.EndHorizontal ();
+
 					EditorGUILayout.Separator ();
 					EditorGUILayout.LabelField ("================================================================", seperatorLayouts);
 					EditorGUILayout.EndVertical ();
