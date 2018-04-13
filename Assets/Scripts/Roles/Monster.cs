@@ -40,6 +40,7 @@ namespace WordJourney
 		public void InitializeWithMonsterData(MonsterData monsterData){
 
 			this.agentName = monsterData.monsterName;
+			this.agentLevel = 1;
 			this.monsterId = monsterData.monsterId;
 
 			int index = Player.mainPlayer.currentLevelIndex / 5;

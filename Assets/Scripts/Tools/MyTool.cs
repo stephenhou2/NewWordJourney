@@ -168,14 +168,30 @@ namespace WordJourney
 		}
 
 		private static string[] npcNames = new string[]{
-
+			"wiseman",
+			"merchant",
+			"ranger",
+			"thief",
+			"knight",
+			"barbarian",
+			"scholar",
+			"wizard",
+			"warrior",
+			"goddess",
+			"samurai",
+			"assassin",
+			"berserker"
 		};
 
 		public static string GetNpcName(int npcId){
-			if (npcId == -1) {
-				npcId = Random.Range (2, 58);
+			string npcName = string.Empty;
+			if (npcId >= 2) {
+				int nameIndexInArray = (npcId - 2) / 5 + 2;
+				npcName = npcNames [nameIndexInArray];
+			} else {
+				npcName = npcNames [npcId];
 			}
-			return npcNames [npcId];
+			return npcName;
 		}
 
 

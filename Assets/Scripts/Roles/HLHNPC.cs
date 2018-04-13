@@ -54,8 +54,8 @@ namespace WordJourney
 				if (!dialogGroupRecord.isFinish) {
 					return dialogGroupRecord;
 				} else {
-					int randomSeed = Random.Range (0, regularGreetings.Count);
-					targetDg = regularGreetings[randomSeed];
+//					int randomSeed = Random.Range (0, regularGreetings.Count);
+					targetDg = regularGreetings[dialogGroupRecord.dialogGroupId];
 					dialogGroupRecord = targetDg;
 					return targetDg;
 				}

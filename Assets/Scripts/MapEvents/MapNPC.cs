@@ -8,6 +8,8 @@ namespace WordJourney{
 
 	public class MapNPC : MapWalkableEvent {
 
+		private int npcId;
+
 		[HideInInspector]public HLHNPC npc;
 		private bool hasNpcDataLoaded;
 
@@ -30,6 +32,9 @@ namespace WordJourney{
 			ExploreManager.Instance.newMapGenerator.allWalkableEventsInMap.Remove (this);
 		}
 
+		public void SetNpcId(int npcId){
+			this.npcId = npcId;
+		}
 
 
 		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
@@ -38,15 +43,7 @@ namespace WordJourney{
 
 			baCtr.SetSortingOrder (-(int)transform.position.y);
 
-
-//				int npcId = int.Parse (KVPair.GetPropertyStringWithKey ("npcID", attachedInfo.properties));
-
-//				int npcId = Random.Range (0, 13);
-//				#warning 这里暂时使用id为0的npc作为测试数据
-
 			if (!hasNpcDataLoaded) {
-				
-				int npcId = 2;
 
 				npc = GameManager.Instance.gameDataCenter.LoadNpc (npcId);
 
@@ -72,43 +69,7 @@ namespace WordJourney{
 		}
 
 
-//		private void InitFirstThreeGoodsGroup(string goodsDataString,List<Item> goodsList){
-//
-//			string[] goodsGroupStrings = goodsDataString.Split (new char[]{ '_' }, System.StringSplitOptions.RemoveEmptyEntries);
-//
-//			for (int i = 0; i < 3; i++) {
-//
-//				string[] goodsStrings = goodsGroupStrings [i].Split (new char[]{ '/' }, System.StringSplitOptions.RemoveEmptyEntries);
-//
-//				int randomSeed = Random.Range (0, goodsStrings.Length);
-//
-//				int randomGoodsId = int.Parse (goodsStrings [randomSeed]);
-//
-//				Item itemAsGoods = Item.NewItemWith (randomGoodsId, 1);
-//
-//				goodsList.Add (itemAsGoods);
-//
-//			}
-//
-//		}
-//
-//		private void InitLastTwoGoodsGroup(string goodsDataString,List<Item> goodsList){
-//
-//			string[] goodsGroupStrings = goodsDataString.Split (new char[]{ '_' }, System.StringSplitOptions.RemoveEmptyEntries);
-//
-//			for (int i = 0; i < 2; i++) {
-//
-//				int randomSeed = Random.Range (0, goodsGroupStrings.Length);
-//
-//				int randomGoodsId = int.Parse (goodsGroupStrings [randomSeed]);
-//
-//				Item itemAsGoods = Item.NewItemWith (randomGoodsId, 1);
-//
-//				goodsList.Add (itemAsGoods);
-//
-//			}
-//
-//		}
+
 
 		private void DisableAllAlertAreas(){
 			for (int i = 0; i < alertAreas.Length; i++) {

@@ -338,11 +338,7 @@ namespace WordJourney
 					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
 					break;
 				case "billboard":
-					#warning 这里先用告示牌位置来测试npc
-//					mapEvent = GetMapNPC (eventTile);
-//					mapWalkableInfoArray [posX, posY] = 0;
-//					mapWalkableEventInfoArray [posX, posY] = 1;
-//					allWalkableEventsInMap.Add (mapEvent as MapNPC);
+
 					mapEvent = mapEventsPool.GetInstanceWithName<Billboard> (billboardModel.name, billboardModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
 					break;
@@ -373,8 +369,13 @@ namespace WordJourney
 					allWalkableEventsInMap.Add (mapEvent as MapMonster);
 					break;
 				case "goldPack":
-					mapEvent = mapEventsPool.GetInstanceWithName<GoldPack> (goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
+					#warning 这里先用钱袋位置来测试npc
+					mapEvent = GetMapNPC (eventTile);
 					mapWalkableInfoArray [posX, posY] = 0;
+					mapWalkableEventInfoArray [posX, posY] = 1;
+					allWalkableEventsInMap.Add (mapEvent as MapNPC);
+//					mapEvent = mapEventsPool.GetInstanceWithName<GoldPack> (goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
+//					mapWalkableInfoArray [posX, posY] = 0;
 					break;
 				case "bucket":
 					mapEvent = mapEventsPool.GetInstanceWithName<Treasure> (bucketModel.name, bucketModel.gameObject, mapEventsContainer);
@@ -618,29 +619,39 @@ namespace WordJourney
 
 		private MapEvent GetMapNPC(MapAttachedInfoTile info){
 			
-			int npcId = int.Parse (KVPair.GetPropertyStringWithKey ("npcID", info.properties));
+//			int npcId = int.Parse (KVPair.GetPropertyStringWithKey ("npcID", info.properties));
+
+			int npcId = -1;
+
+			if (npcId == -1) {
+				npcId = Random.Range (2,57);
+			}
 
 			string npcName = MyTool.GetNpcName (npcId);
 
-			Transform mapNpc = null;
+			Transform mapNpcTrans = null;
 
 			for (int i = 0; i < npcsPool.transform.childCount; i++) {
 				Transform npcInPool = npcsPool.transform.GetChild (i);
 				if(npcInPool.name == npcName){
-					mapNpc = npcInPool;
+					mapNpcTrans = npcInPool;
 					break;
 				}
 			}
 
-			if (mapNpc == null) {
-				mapNpc = GameManager.Instance.gameDataCenter.LoadMapNpc (npcName).transform;
+			if (mapNpcTrans == null) {
+				mapNpcTrans = GameManager.Instance.gameDataCenter.LoadMapNpc (npcName).transform;
 			}
 
-			mapNpc.SetParent (npcsContainer);
-			mapNpc.localScale = Vector3.one;
-			mapNpc.localRotation = Quaternion.identity;
+			mapNpcTrans.SetParent (npcsContainer);
+			mapNpcTrans.localScale = Vector3.one;
+			mapNpcTrans.localRotation = Quaternion.identity;
 
-			return mapNpc.GetComponent<MapNPC> ();
+			MapNPC mapNpc= mapNpcTrans.GetComponent<MapNPC> ();
+
+			mapNpc.SetNpcId(npcId);
+
+			return mapNpc;
 		}
 
 

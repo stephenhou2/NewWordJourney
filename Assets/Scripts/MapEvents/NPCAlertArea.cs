@@ -10,20 +10,20 @@ namespace WordJourney
 
 		public MapNPC mapNPC;
 
-		private BoxCollider2D bc2D;
+		private EdgeCollider2D ec2D;
 
 
 		public void InitializeAlertArea(){
-			bc2D = GetComponent<BoxCollider2D> ();
+			ec2D = GetComponent<EdgeCollider2D> ();
 		}
 
 		public void EnableAlerAreaDetect(){
-			bc2D.enabled = true;
+			ec2D.enabled = true;
 		}
 			
 
 		public void DisableAlertDetect(){
-			bc2D.enabled = false;
+			ec2D.enabled = false;
 		}
 
 
