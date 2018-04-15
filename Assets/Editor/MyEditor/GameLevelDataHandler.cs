@@ -27,6 +27,7 @@ namespace WordJourney
 			string[] gameLevelDataStrings = gameDataSource.Split (new string[]{ "\n" },System.StringSplitOptions.RemoveEmptyEntries);
 
 			for(int i = 1;i<gameLevelDataStrings.Length;i++){
+				Debug.LogFormat ("第{0}层", i-1);
 				HLHGameLevelData gameLevelData = InitGameLevelDatas (gameLevelDataStrings [i]);
 				gameLevelDatas.Add (gameLevelData);
 			}
@@ -40,23 +41,31 @@ namespace WordJourney
 
 			int gameLevelIndex = int.Parse (dataStrings [0]);
 
+			Debug.LogFormat ("{0}####瓦罐", dataStrings [1]);
 			List<int> itemIdsInPot = InitIntArrayWithString (dataStrings [1]);
 
+			Debug.LogFormat ("{0}####木桶", dataStrings [2]);
 			List<int> itemIdsInBucket = InitIntArrayWithString (dataStrings [2]);
 
+			Debug.LogFormat ("{0}####箱子", dataStrings [3]);
 			List<int> itemIdsInTreasureBox = InitIntArrayWithString (dataStrings [3]);
 
+			Debug.LogFormat ("{0}####怪物", dataStrings [4]);
 			List<int> monsterIds = InitIntArrayWithString (dataStrings [4]);
 
 			int bossId = int.Parse (dataStrings [5]);
 
-			HLHGameLevelData levelData = new HLHGameLevelData (gameLevelIndex, itemIdsInPot, itemIdsInBucket, itemIdsInTreasureBox, monsterIds,bossId);
+			Debug.LogFormat ("{0}####钱袋", dataStrings [6]);
+			Count goldAmountRange = InitCountWithString (dataStrings [6]);
+
+			HLHGameLevelData levelData = new HLHGameLevelData (gameLevelIndex, itemIdsInPot, itemIdsInBucket, itemIdsInTreasureBox, monsterIds,bossId,goldAmountRange);
 
 			return levelData;
 
 		}
 
 		private List<int> InitIntArrayWithString(string dataString){
+			
 			string[] idStrings = dataString.Split (new char[]{ '_' }, System.StringSplitOptions.RemoveEmptyEntries);
 			List<int> idList = new List<int> ();
 			for (int i = 0; i < idStrings.Length; i++) {
@@ -69,6 +78,18 @@ namespace WordJourney
 				}
 			}
 			return idList;
+		}
+
+		private Count InitCountWithString(string dataString){
+
+			string[] countStrings = dataString.Split (new char[]{ '_' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+			int min = int.Parse (countStrings [0]);
+
+			int max = int.Parse (countStrings [1]);
+
+			return new Count (min, max);
+
 		}
 
 

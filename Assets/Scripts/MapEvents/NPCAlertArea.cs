@@ -5,22 +5,34 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	using DragonBones;
+
 	public class NPCAlertArea : MonoBehaviour {
 
 
 		public MapNPC mapNPC;
 
+		private UnityArmatureComponent alertAreaTint;
+		private MeshRenderer mr;
 		private EdgeCollider2D ec2D;
 
 
 		public void InitializeAlertArea(){
+			alertAreaTint = GetComponent<UnityArmatureComponent> ();
+			mr = GetComponent<MeshRenderer> ();
 			ec2D = GetComponent<EdgeCollider2D> ();
-		}
 
-		public void EnableAlerAreaDetect(){
+			mr.enabled = false;
+			alertAreaTint.enabled = false;
+
+			alertAreaTint.animation.timeScale = 0.2f;
 			ec2D.enabled = true;
 		}
 			
+
+		public void EnableAlertDetect(){
+			ec2D.enabled = true;
+		}
 
 		public void DisableAlertDetect(){
 			ec2D.enabled = false;
@@ -42,11 +54,15 @@ namespace WordJourney
 
 			BattlePlayerController bp = ba as BattlePlayerController;
 
-			if (bp.isInFight) {
+			if (bp.isInEvent) {
 				return;
 			}
 
-			mapNPC.MapEventTriggered (true, bp);
+			if (bp.isInFight) {
+				return;
+			}
+				
+			mapNPC.EnterMapEvent (bp);
 
 
 		}
@@ -59,7 +75,7 @@ namespace WordJourney
 				return;
 			}
 
-			mapNPC.canShowNpcPlane = true;
+//			mapNPC.canShowNpcPlane = true;
 		}
 
 

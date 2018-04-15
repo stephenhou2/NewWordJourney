@@ -24,15 +24,21 @@ namespace WordJourney
 		{
 			transform.position = attachedInfo.position;
 
-			isOpen = false;
+			direction = int.Parse(KVPair.GetPropertyStringWithKey("direction",attachedInfo.properties));
 
-			#warning 更新地图数据后打开
-//			direction = int.Parse(KVPair.GetPropertyStringWithKey("direction",attachedInfo.properties));
+			isOpen = bool.Parse(KVPair.GetPropertyStringWithKey("isOpen",attachedInfo.properties));
 
-			direction = 1;
+			if (!isOpen) {
+				mapItemRenderer.enabled = true;
+				mapItemRenderer.sprite = exitCloseSprites [direction];
+			} else {
+				mapItemRenderer.sprite = null;
+				mapItemRenderer.enabled = false;
+			}
 
-			mapItemRenderer.enabled = true;
-			mapItemRenderer.sprite = exitCloseSprites [direction];
+			bc2d.enabled = true;
+
+			SetSortingOrder (-(int)transform.position.y);
 
 
 		}

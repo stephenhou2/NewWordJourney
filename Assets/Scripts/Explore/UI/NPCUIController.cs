@@ -162,6 +162,7 @@ namespace WordJourney
 
 			int index = Player.mainPlayer.currentLevelIndex / 5;
 
+
 			if (choice.isHandInTaskTriggered) {
 				HLHTask task = npc.GetTask (choice.triggeredTaskId);
 				bool isTaskFinish = Player.mainPlayer.CheckTaskFinish (task);
@@ -185,6 +186,53 @@ namespace WordJourney
 				}
 			}
 
+
+			if(choice.isRewardTriggered){
+				HLHNPCReward reward = choice.rewards [index];
+				// 如果是惩罚的话
+				if (reward.rewardValue < 0 || reward.attachValue < 0) {
+					bool canHandout = Player.mainPlayer.CheckCanHandOut (reward.rewardType, reward.rewardValue, reward.attachValue);
+					if (!canHandout) {
+						choiceContent = string.Format ("<color=red>{0}</color>", choice.choiceContent);
+						choiceButton.interactable = false;
+					}
+
+					if (reward.rewardType == HLHRewardType.Property && reward.rewardValue == 17){
+						choiceContent = string.Format ("用{0}点生命忏悔", -reward.attachValue * Player.mainPlayer.robTime);
+					}
+
+					if (reward.rewardType == HLHRewardType.Property && reward.rewardValue == 18) {
+						choiceContent = string.Format ("用{0}点攻击忏悔", -reward.attachValue * Player.mainPlayer.robTime);
+					}
+
+				}
+
+
+			}
+
+			if(choice.isWeaponChangeTriggered){
+
+				List<Equipment> allEquipedEquipments = Player.mainPlayer.GetAllEquipedEquipment();
+
+				if(allEquipedEquipments.Count == 0){
+					choiceContent = string.Format ("<color=red>{0}</color>", choice.choiceContent);
+					choiceButton.interactable = false;
+				}
+
+			}
+
+			if(choice.isEquipmentLoseTriggered){
+
+				List<Equipment> allEquipedEquipments = Player.mainPlayer.GetAllEquipedEquipment();
+
+				if(allEquipedEquipments.Count == 0){
+					choiceContent = string.Format ("<color=red>{0}</color>", choice.choiceContent);
+					choiceButton.interactable = false;
+				}
+
+			}
+
+
 			choiceText.text = choiceContent;
 
 			choiceButton.onClick.RemoveAllListeners ();
@@ -196,6 +244,7 @@ namespace WordJourney
 				choiceButtonPool.AddChildInstancesToPool(choiceButtonContainer);
 
 				bool totallyQuitNPCPlane = true;
+				bool stillInTrigger = false;
 
 				if(choice.isReceiveTaskTriggered){
 					HLHTask task = npc.GetTask(choice.triggeredTaskId);
@@ -208,9 +257,10 @@ namespace WordJourney
 					ExploreManager.Instance.expUICtr.UpdateTasksDescription();
 				}
 				if(choice.isRewardTriggered){
-					int randomSeed = Random.Range(0,choice.rewards.Count);
-					HLHNPCReward reward = choice.rewards[randomSeed];
-					Player.mainPlayer.GainFromNPCReward(reward);
+					HLHNPCReward reward = choice.rewards[index];
+					if(!choice.isFightTriggered){
+						PlayerGainFromNPCReward(reward);
+					}
 				}
 				if(choice.isTradeTriggered){
 					SetUpTrade();
@@ -223,10 +273,10 @@ namespace WordJourney
 					totallyQuitNPCPlane = false;
 				}
 				if(choice.isFightTriggered){
-					HideNPCPlane();
 					mapNpc.fightReward = choice.rewards[index];
 					mapNpc.EnterFight(ExploreManager.Instance.battlePlayerCtr);
 					hideDialogPlane = true;
+					stillInTrigger = true;
 				}
 
 				if(choice.isRobTriggered){
@@ -236,11 +286,6 @@ namespace WordJourney
 				if(choice.isWeaponChangeTriggered){
 
 					List<Equipment> allEquipedEquipments = Player.mainPlayer.GetAllEquipedEquipment();
-
-					if(allEquipedEquipments.Count == 0){
-						Debug.Log("NO WEAPON");
-						return;
-					}
 
 					int randomSeed = Random.Range(0,allEquipedEquipments.Count);
 
@@ -265,11 +310,6 @@ namespace WordJourney
 					
 					List<Equipment> allEquipedEquipments = Player.mainPlayer.GetAllEquipedEquipment();
 
-					if(allEquipedEquipments.Count == 0){
-						Debug.Log("NO WEAPON");
-						return;
-					}
-
 					int randomSeed = Random.Range(0,allEquipedEquipments.Count);
 
 					Equipment eqp = allEquipedEquipments[randomSeed];
@@ -278,7 +318,7 @@ namespace WordJourney
 				}
 
 				if(choice.isWordLearningTriggered){
-					QuitNPCPlane();
+					stillInTrigger = true;
 					ExploreManager.Instance.ShowWordsChoosePlane(mapNpc.wordsArray);
 				}
 
@@ -290,7 +330,7 @@ namespace WordJourney
 					}
 
 					if(totallyQuitNPCPlane){
-						QuitNPCPlane();
+						QuitNPCPlane(stillInTrigger);
 					}else{
 						QuitDialogPlane();
 					}
@@ -462,7 +502,7 @@ namespace WordJourney
 					
 			}
 
-			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().SetUpConsumablesButtons ();
+			ExploreManager.Instance.expUICtr.UpdateBottomBar ();
 
 			currentSelectedItem = null;
 
@@ -488,7 +528,7 @@ namespace WordJourney
 
 //			npc.BuyGoods (currentSelectedItem.itemId);
 
-			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().SetUpConsumablesButtons ();
+			ExploreManager.Instance.expUICtr.UpdateBottomBar();
 
 			if (totallyRemoveFromBag) {
 				currentSelectedItem = null;
@@ -555,53 +595,56 @@ namespace WordJourney
 			specialOperationHUD.transform.DOLocalMoveX (specialOperationHUDStartPos.x, flyDuration);
 			bagItemsDisplay.transform.DOLocalMoveY (bagItemsPlaneStartPos.y, flyDuration);
 		}
+			
 
+		private void PlayerGainFromNPCReward(HLHNPCReward reward){
+			Player player = Player.mainPlayer;
+			string tint = string.Empty;
+			switch(reward.rewardType){
+			case HLHRewardType.Gold:
+				player.totalGold += reward.rewardValue;
+				tint = string.Format("金钱+{0}",reward.rewardValue);
+				break;
+			case HLHRewardType.Experience:
+				player.experience += reward.rewardValue;
+				ExploreManager.Instance.UpdatePlayerStatusPlane ();
+				tint = string.Format("经验+{0}",reward.rewardValue);
+				break;
+			case HLHRewardType.Item:
+				if (reward.attachValue > 0) {
+					Item rewardItem = Item.NewItemWith (reward.rewardValue,1);
+					if (rewardItem.itemType == ItemType.Equipment) {
+						Equipment eqp = rewardItem as Equipment;
+						EquipmentQuality quality = (EquipmentQuality)reward.attachValue;
+						eqp.ResetPropertiesByQuality (quality);
+					}
+					player.AddItem (rewardItem);
+					ExploreManager.Instance.expUICtr.SetUpSimpleItemDetail (rewardItem);
+				} else {
+					Item removeItem = Item.NewItemWith (reward.rewardValue,1);
+					player.RemoveItem (removeItem,removeItem.itemCount);
+				}
+				break;
+			case HLHRewardType.Property:
+				PropertyType pt = (PropertyType)reward.rewardValue;
+				player.PlayerPropertyChange (pt, reward.attachValue);
+				ExploreManager.Instance.UpdatePlayerStatusPlane ();
+				if (pt == PropertyType.Dodge || pt == PropertyType.Crit || pt == PropertyType.CritHurtScaler) {
+					tint = string.Format ("{0} +{1}%", MyTool.GetPropertyName (pt), (float)reward.attachValue / 100);
+				} else if (pt == PropertyType.HealthPunish) {
+					tint = string.Format ("最大生命 -{0}%", -reward.attachValue);
+				} else if (pt == PropertyType.AttackPunish) {
+					tint = string.Format ("攻击 -{0}%", MyTool.GetPropertyName (pt), -reward.attachValue);
+				} else {
+					tint = string.Format ("{0} +{1}", MyTool.GetPropertyName(pt), reward.attachValue);
+				}
+				break;
+			}
 
-//		private void ShowDialogPlane(){
-//			dialogPlane.gameObject.SetActive (true);
-//		}
-//
-//		private void HideDialogPlane(){
-//			dialogPlane.gameObject.SetActive (false);
-//		}
-//
-//
-//
-//		private void ShowItemDetail(){
-//			itemDetail.transform.localPosition = itemDetailPlaneStartPos;
-//			itemDetail.transform.DOLocalMoveX (itemDetailMoveEndX, flyDuration);
-//		}
-//
-//		private void HideItemDetail(){
-//			itemDetail.transform.DOLocalMoveX (itemDetailPlaneStartPos.x, flyDuration);
-//		}
-//
-//		private void ShowGoodsDisplayPlane(){
-//			goodsDisplayPlane.transform.localPosition = goodsPlaneStartPos;
-//			goodsDisplayPlane.transform.DOLocalMoveY (goodsPlaneMoveEndY, flyDuration);
-//		}
-//
-//		private void HideGoodsDisplayPlane(){
-//			goodsDisplayPlane.transform.DOLocalMoveY (goodsPlaneStartPos.y, flyDuration);
-//		}
-//
-//		private void ShowSpecialOperationHUD(){
-//			specialOperationHUD.transform.localPosition = specialOperationHUDStartPos;
-//			specialOperationHUD.transform.DOLocalMoveX (specialOpeartionHUDMoveEndX, flyDuration);
-//		}
-//
-//		private void HideSpecialOperationHUD(){
-//			specialOperationHUD.transform.DOLocalMoveX (specialOperationHUDStartPos.x, flyDuration);
-//		}
-//
-//		private void ShowBagItemsPlane(){
-//			bagItemsDisplay.transform.localPosition = bagItemsPlaneStartPos;
-//			bagItemsDisplay.transform.DOLocalMoveY (bagItemsPlaneMoveEndY, flyDuration);
-//		}
-//
-//		private void HideBagItemPlane(){
-//			bagItemsDisplay.transform.DOLocalMoveY (bagItemsPlaneStartPos.y, flyDuration);
-//		}
+			if (tint != string.Empty) {
+				ExploreManager.Instance.ShowTint (tint, null);
+			}
+		}
 
 		private void ResetTradeAndSpecialOperationPlane(){
 			itemDetail.transform.localPosition = itemDetailPlaneStartPos;
@@ -614,21 +657,21 @@ namespace WordJourney
 
 			goodsPool.AddChildInstancesToPool(goodsContainer);
 
-			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().SetUpConsumablesButtons ();
+			ExploreManager.Instance.expUICtr.UpdateBottomBar();
 
 			currentSelectedItem = null;
 
 			QuitTradeDisplay ();
 
-			QuitNPCPlane ();
+			QuitNPCPlane (false);
 		}
 
 		public void QuitSpecialOperationPlane(){
 			QuitSpecialOperationDisplay ();
-			QuitNPCPlane ();
+			QuitNPCPlane (false);
 		}
 
-		public void QuitNPCPlane(){
+		public void QuitNPCPlane(bool stillInTrigger){
 
 			if (npc == null) {
 				return;
@@ -643,13 +686,17 @@ namespace WordJourney
 
 			npc = null;
 
-			ExploreManager.Instance.AllWalkableEventsStartMove ();
-
 			MapNPC mn = ExploreManager.Instance.currentEnteredMapEvent as MapNPC;
 
-			mn.EnableAllAlertAreas ();
+	
+			mn.isTriggered = stillInTrigger;
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = stillInTrigger;
 
 			mn.isTriggered = false;
+
+			ExploreManager.Instance.AllWalkableEventsStartMove ();
+
+			mn.EnableTalk ();
 
 			ExploreManager.Instance.EnableInteractivity ();
 

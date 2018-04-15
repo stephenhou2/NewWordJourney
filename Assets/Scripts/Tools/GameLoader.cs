@@ -111,6 +111,7 @@ namespace WordJourney
 			Directory.CreateDirectory(Application.persistentDataPath + "/Data");
 			Directory.CreateDirectory(Application.persistentDataPath + "/Data/MapData");
 			Directory.CreateDirectory(Application.persistentDataPath + "/Data/NPCs");
+			Directory.CreateDirectory(Application.persistentDataPath + "/Data/GameItems");
 
 			//循环拷贝文件
 			for (int i = 0; i < CommonData.originDataArr.Length; i++)

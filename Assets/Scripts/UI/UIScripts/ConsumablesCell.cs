@@ -46,9 +46,9 @@ namespace WordJourney
 		public void OnConsumablesClick(){
 			switch (cons.type) {
 			case ConsumablesType.ShuXingTiSheng:
-				Player.mainPlayer.health += cons.healthGain;
-				Player.mainPlayer.mana += cons.manaGain;
-				Player.mainPlayer.experience += cons.experienceGain;
+				Player.mainPlayer.health += cons.healthGain + Player.mainPlayer.healthRecovery;
+				Player.mainPlayer.mana += cons.manaGain + Player.mainPlayer.magicRecovery;
+				Player.mainPlayer.experience += cons.experienceGain + Player.mainPlayer.extraExperience;
 				Player.mainPlayer.RemoveItem (cons, 1);
 				break;  
 			case ConsumablesType.ChongZhuShi:

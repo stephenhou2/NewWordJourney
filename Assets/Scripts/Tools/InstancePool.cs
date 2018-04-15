@@ -158,7 +158,7 @@ namespace WordJourney
 			for(int i = 0;i<transform.childCount;i++){
 				GameObject instance = transform.GetChild (i).gameObject;
 //				mInstancePool.Remove (instance);
-				Destroy (instance);
+				Destroy (instance,0.3f);
 			}
 			transform.DetachChildren ();
 		}

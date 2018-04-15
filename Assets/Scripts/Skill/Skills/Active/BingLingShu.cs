@@ -14,7 +14,7 @@ namespace WordJourney
 		protected override void ExcuteActiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
 
-			int hurt = (int)((self.agent.magicAttack + self.agent.magicResistDecrease) * skillSourceValue) - enemy.agent.magicResist / 4;
+			int hurt = (int)((self.agent.magicAttack + self.agent.magicResistDecrease / 4) * skillSourceValue) - enemy.agent.magicResist / 4;
 
 			enemy.AddHurtAndShow (hurt, HurtType.Magical,self.towards);
 

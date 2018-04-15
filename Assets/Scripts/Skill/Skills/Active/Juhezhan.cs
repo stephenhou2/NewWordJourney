@@ -18,7 +18,7 @@ namespace WordJourney
 
 			float crit = self.agent.crit + critScalerGain;
 
-			int hurt = (int)((self.agent.attack  + self.agent.armorDecrease) * (1 + hurtScaler));
+			int hurt = (int)((self.agent.attack  + self.agent.armorDecrease / 4) * (1 + hurtScaler));
 
 			if (isEffective (crit)) {
 				hurt = (int)(hurt * self.agent.critHurtScaler);

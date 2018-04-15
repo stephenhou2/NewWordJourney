@@ -26,12 +26,16 @@ namespace WordJourney
 
 			ExploreManager.Instance.AllWalkableEventsStartMove ();
 
-			MapMonster mm = enemy.GetComponent<MapMonster> ();
+			MapWalkableEvent mwe = enemy.GetComponent<MapWalkableEvent> ();
 
-			mm.StopMoveImmidiately ();
+			mwe.StopMoveImmidiately ();
 
-			mm.WalkToPosition (monsterFixedPosition,delegate{
-				mm.QuitFightAndDelayMove(10);
+			mwe.WalkToPosition (monsterFixedPosition,delegate{
+				if(mwe is MapMonster){
+					(mwe as MapMonster).QuitFightAndDelayMove(10);
+				}else if(mwe is MapNPC){
+					(mwe as MapNPC).QuitFightAndDelayMove(10);
+				}
 			},false);
 				
 			self.PlayRoleAnim ("wait", 0, null);

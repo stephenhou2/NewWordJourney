@@ -41,6 +41,17 @@ namespace WordJourney
 
 		//******************************************************************************** start *************************************************************************//
 
+		public void RefreshNPC(){
+
+			for (int i = 0; i < dialogGroups.Count; i++) {
+				dialogGroups [i].isFinish = false;
+			}
+
+			dialogGroupRecord = null;
+
+		}
+
+
 		/// <summary>
 		/// 查找人物当前触发的对话组
 		/// </summary>
@@ -54,11 +65,16 @@ namespace WordJourney
 				if (!dialogGroupRecord.isFinish) {
 					return dialogGroupRecord;
 				} else {
-//					int randomSeed = Random.Range (0, regularGreetings.Count);
 					targetDg = regularGreetings[dialogGroupRecord.dialogGroupId];
 					dialogGroupRecord = targetDg;
 					return targetDg;
 				}
+			}
+
+			if (isExcutor && player.robTime == 0) {
+				targetDg = regularGreetings [0];
+				dialogGroupRecord = targetDg;
+				return targetDg;
 			}
 
 			for (int i = 0; i < dialogGroups.Count; i++) {
@@ -158,26 +174,33 @@ namespace WordJourney
 				return goodsInSellRecord;
 			}
 
-			int ggIndex = Player.mainPlayer.currentLevelIndex -1 / 5;
+			int ggIndex = Player.mainPlayer.currentLevelIndex / 5;
 
 			goodsInSellRecord.Clear ();
 
 			HLHNPCGoodsGroup gg = npcGoodsGroupList[ggIndex];
 
-			goodsInSellRecord.Add (GetRandomGoods(gg.goodsList_1));
-			goodsInSellRecord.Add (GetRandomGoods(gg.goodsList_2));
-			goodsInSellRecord.Add (GetRandomGoods(gg.goodsList_3));
-			goodsInSellRecord.Add (GetRandomGoods(gg.goodsList_4));
-			goodsInSellRecord.Add (GetRandomGoods(gg.goodsList_5));
+			GenerateRandomGoods(gg.goodsList_1);
+			GenerateRandomGoods(gg.goodsList_2);
+			GenerateRandomGoods(gg.goodsList_3);
+			GenerateRandomGoods(gg.goodsList_4);
+			GenerateRandomGoods(gg.goodsList_5);
 
 			return goodsInSellRecord;
 		}
 
-		private HLHNPCGoods GetRandomGoods(List<HLHNPCGoods> possibleGoods){
+		private void GenerateRandomGoods(List<HLHNPCGoods> possibleGoods){
+			
+			if (possibleGoods.Count == 0) {
+				return;
+			}
 
 			int randomSeed = Random.Range (0, possibleGoods.Count);
 
-			return possibleGoods [randomSeed];
+			HLHNPCGoods goods = possibleGoods [randomSeed];
+
+			goodsInSellRecord.Add (goods);
+
 		}
 
 

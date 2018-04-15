@@ -5652,7 +5652,7 @@ Animator:
   m_GameObject: {fileID: 1753326503079082}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: fad0a9dc298d8482c8a6d9e50cbee7ce, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -6590,6 +6590,7 @@ MonoBehaviour:
   audioClipName: 
   wordsArray: []
   canMove: 0
+  isTriggered: 0
   npc:
     npcId: 0
     npcName: 
@@ -6598,6 +6599,22 @@ MonoBehaviour:
     taskList: []
     npcGoodsGroupList: []
     regularGreetings: []
+    wordRightDialogGroup:
+      dialogGroupId: 0
+      triggerLevel: 0
+      dialogs: []
+      choices: []
+      isFinish: 0
+      isMultiOff: 0
+      isTaskTriggeredDg: 0
+    wordWrongDialogGroup:
+      dialogGroupId: 0
+      triggerLevel: 0
+      dialogs: []
+      choices: []
+      isFinish: 0
+      isMultiOff: 0
+      isTaskTriggeredDg: 0
     saveOnChange: 0
     monsterData:
       monsterName: 
@@ -12343,7 +12360,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1462219167248208}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 224521533471922956}

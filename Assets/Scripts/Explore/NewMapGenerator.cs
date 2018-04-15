@@ -85,6 +85,8 @@ namespace WordJourney
 
 		public Transform rewardContainer;//奖励物品容器
 
+//		public Transform effectAnimContainer;//
+
 
 		//************ 缓存池 ************//
 		public InstancePool floorsPool;//地板缓存池
@@ -104,15 +106,14 @@ namespace WordJourney
 		public InstancePool effectAnimPool;//技能效果缓存池
 
 
-		private List<Vector2> playerStartPosList = new List<Vector2> ();
-
 		// 行走提示动画
 		public Transform destinationAnimation;
 
 		// 数据库处理助手
 		private MySQLiteHelper mySql;
 
-//		private HLHGameLevelData currentLevelData;
+		// 记录玩家所有可能初始位置的列表
+		private List<Vector2> playerStartPosList = new List<Vector2> ();
 
 		private List<TriggeredGear> allTriggeredMapEvents = new List<TriggeredGear> ();
 		public List<MapWalkableEvent> allWalkableEventsInMap = new List<MapWalkableEvent> ();
@@ -140,7 +141,48 @@ namespace WordJourney
 		public void SetUpMap()
 		{
 
-//			currentLevelData = levelData;
+			Reset ();
+
+			// 绘制地图
+			DrawMap ();
+
+			mySql = MySQLiteHelper.Instance;
+			mySql.GetConnectionWith (CommonData.dataBaseName);
+
+			// 初始化地图事件
+			InitializeMapEvents ();
+
+			mySql.CloseConnection (CommonData.dataBaseName);
+
+			InitializePlayerAndSetCamera ();
+
+			DestroyUnusedMonsterAndNpc ();
+
+			#if UNITY_EDITOR || UNITY_IOS 
+			fogOfWarPlane.gameObject.SetActive(true);
+			InitFogOfWarPlane ();
+			#elif UNITY_ANDROID
+			fogOfWarPlane.gameObject.SetActive(false);
+			#endif
+
+		}
+
+		private void DestroyUnusedMonsterAndNpc(){
+			monstersPool.ClearInstancePool ();
+			npcsPool.ClearInstancePool ();
+			mapEventsPool.ClearInstancePool ();
+		}
+
+		/// <summary>
+		/// 重置地图初始化工具
+		/// </summary>
+		private void Reset(){
+			
+			allTriggeredMapEvents.Clear ();
+
+			allWalkableEventsInMap.Clear ();
+
+			playerStartPosList.Clear ();
 
 			mapData = MapData.GetMapDataOfLevel (Player.mainPlayer.currentLevelIndex);
 
@@ -152,23 +194,8 @@ namespace WordJourney
 			mapWalkableEventInfoArray = new int[columns, rows];
 			InitMapWalkableInfoAndMonsterPosInfo ();
 
-			// 绘制地图
-			DrawMap ();
-
-			mySql = MySQLiteHelper.Instance;
-			mySql.GetConnectionWith (CommonData.dataBaseName);
-
-			// 初始化地图事件
-			InitializeMapEvents ();
-
-			InitFogOfWarPlane ();
-
-			mySql.CloseConnection (CommonData.dataBaseName);
-
-			InitializePlayerAndSetCamera ();
-
+			AllMapInstancesToPool ();
 		}
-
 
 		/// <summary>
 		/// 初始化地图迷雾
@@ -180,8 +207,6 @@ namespace WordJourney
 			fogOfWarPlane.position = new Vector3 ((float)columns / 2, (float)rows / 2, -5);
 			fogOfWarPlane.localRotation = Quaternion.Euler (new Vector3 (-90, 0, 0));
 			fogOfWarPlane.localScale = new Vector3 (fowPlaneScaler, 1, fowPlaneScaler);
-
-			Camera.main.transform.Find ("Mask").gameObject.SetActive (true);
 
 		}
 
@@ -369,13 +394,8 @@ namespace WordJourney
 					allWalkableEventsInMap.Add (mapEvent as MapMonster);
 					break;
 				case "goldPack":
-					#warning 这里先用钱袋位置来测试npc
-					mapEvent = GetMapNPC (eventTile);
+					mapEvent = mapEventsPool.GetInstanceWithName<GoldPack> (goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
-					mapWalkableEventInfoArray [posX, posY] = 1;
-					allWalkableEventsInMap.Add (mapEvent as MapNPC);
-//					mapEvent = mapEventsPool.GetInstanceWithName<GoldPack> (goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
-//					mapWalkableInfoArray [posX, posY] = 0;
 					break;
 				case "bucket":
 					mapEvent = mapEventsPool.GetInstanceWithName<Treasure> (bucketModel.name, bucketModel.gameObject, mapEventsContainer);
@@ -619,12 +639,12 @@ namespace WordJourney
 
 		private MapEvent GetMapNPC(MapAttachedInfoTile info){
 			
-//			int npcId = int.Parse (KVPair.GetPropertyStringWithKey ("npcID", info.properties));
+			int npcId = int.Parse (KVPair.GetPropertyStringWithKey ("npcID", info.properties));
 
-			int npcId = -1;
 
 			if (npcId == -1) {
 				npcId = Random.Range (2,57);
+//				npcId = 11;
 			}
 
 			string npcName = MyTool.GetNpcName (npcId);
@@ -690,23 +710,33 @@ namespace WordJourney
 			bp.StopMoveAndWait ();
 			bp.isInFight = false;
 
-			bp.transform.Find ("FowBrush").gameObject.SetActive (true);
-
 			Camera mainCamera = Camera.main;
 			mainCamera.transform.SetParent (player,false);
 			mainCamera.transform.localPosition = new Vector3 (0, 0, -10);
 			mainCamera.transform.localScale = Vector3.one;
 			mainCamera.transform.localRotation = Quaternion.identity;
 
+			#if UNITY_EDITOR || UNITY_IOS
+			bp.transform.Find ("FowBrush").gameObject.SetActive (true);
 			// 初始化迷雾相机的视窗大小
 			Camera fowCamera = TransformManager.FindTransform ("FogOfWarBrushCamera").GetComponent<Camera> ();
+			fowCamera.gameObject.SetActive(true);
 			fowCamera.orthographicSize = (float)Mathf.Max (rows, columns) / 2;
 			fowCamera.transform.position = new Vector3 (columns / 2, rows / 2, -5);
-
 			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController> ().RefreshMiniMap ();
+			UpdateFogOfWar ();
+			#elif UNITY_ANDROID 
+			bp.transform.Find ("FowBrush").gameObject.SetActive (false);
+			Transform fowCamera = TransformManager.FindTransform ("FogOfWarBrushCamera");
+			if(fowCamera != null){
+				fowCamera.gameObject.SetActive(false);
+			}
+
+			#endif
+
 
 			mainCamera.transform.Find ("Mask").gameObject.SetActive (true);
-			UpdateFogOfWar ();
+
 		}
 
 
@@ -828,6 +858,7 @@ namespace WordJourney
 			rewardInMap.RewardFlyToPlayer (delegate{
 				rewardPool.AddInstanceToPool (rewardInMap.gameObject);
 				rewardInMap.gameObject.SetActive (false);
+				ExploreManager.Instance.expUICtr.UpdateBottomBar();
 			});
 
 		}
@@ -877,5 +908,52 @@ namespace WordJourney
 			ea.gameObject.SetActive (false);
 			effectAnimPool.AddInstanceToPool (ea.gameObject);
 		}
+
+
+
+
+
+
+		/// <summary>
+		/// 将场景中的地板，npc，地图物品，怪物加入缓存池中
+		/// </summary>
+		private void AllMapInstancesToPool(){
+
+			floorsPool.AddChildInstancesToPool (floorsContainer);
+
+			wallsPool.AddChildInstancesToPool (wallsContainer);
+
+			decorationsPool.AddChildInstancesToPool (decorationsContainer);
+
+			AllMapEventsToPool ();
+
+			rewardPool.AddChildInstancesToPool (rewardContainer);
+
+		}
+
+		private void AllMapEventsToPool(){
+			while (mapEventsContainer.childCount > 0) {
+				MapEvent me = mapEventsContainer.GetChild (0).GetComponent<MapEvent>();
+				me.AddToPool (mapEventsPool);
+			}
+			AllMonstersToPool ();
+			AllNpcsToPool ();
+		}
+
+		private void AllMonstersToPool(){
+			while (monstersContainer.childCount > 0) {
+				MapMonster mm = monstersContainer.GetChild (0).GetComponent<MapMonster>();
+				mm.AddToPool (monstersPool);
+			}
+		}
+
+		private void AllNpcsToPool(){
+			while (npcsContainer.childCount > 0) {
+				MapNPC mn = npcsContainer.GetChild (0).GetComponent<MapNPC>();
+				mn.AddToPool (npcsPool);
+			}
+		}
+
+	
 	}
 }

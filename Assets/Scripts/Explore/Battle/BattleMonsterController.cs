@@ -284,9 +284,9 @@ namespace WordJourney
 			SetRoleAnimTimeScale (1.0f);
 			agent.ResetBattleAgentProperties (false);
 			boxCollider.enabled = false;
-			if (!agent.isDead) {
-				PlayRoleAnim ("wait", 0, null);
-			}
+//			if (!agent.isDead) {
+//				PlayRoleAnim ("wait", 0, null);
+//			}
 		}
 
 		/// <summary>

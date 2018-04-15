@@ -43,9 +43,9 @@ namespace WordJourney{
 			new KVPair("GameLevelDatas","/Data/GameLevelDatas.json"),
 			new KVPair("GameSettings","/Data/GameSettings.json"),
 			new KVPair("MyGameDB","/Data/MyGameDB.db"),
-			new KVPair("EquipmentDatas","/Data/EquipmentDatas.json"),
-			new KVPair("ConsumablesDatas","/Data/ConsumablesDatas.json"),
-			new KVPair("SkillGemstoneDatas","/Data/SkillGemstoneDatas.json"),
+			new KVPair("EquipmentDatas","/Data/GameItems/EquipmentDatas.json"),
+			new KVPair("ConsumablesDatas","/Data/GameItems/ConsumablesDatas.json"),
+			new KVPair("SkillGemstoneDatas","/Data/GameItems/SkillGemstoneDatas.json"),
 			new KVPair("OriginalPlayerData","/Data/OriginalPlayerData.json"),
 			new KVPair("Level","/Data/MapData/Level"),
 			new KVPair("NPC","/Data/NPCs"),
@@ -56,9 +56,9 @@ namespace WordJourney{
 
 		public static string effectsDataFilePath = persistDataPath + "/TestEffectString.txt";
 		public static string gameLevelDataFilePath = persistDataPath + "/GameLevelDatas.json";
-		public static string equipmentDataFilePath = persistDataPath + "/EquipmentDatas.json";
-		public static string consumablesDataFilePath = persistDataPath + "/ConsumablesDatas.json";
-		public static string skillGemstoneDataFilePath = persistDataPath + "/SkillGemstoneDatas.json";
+		public static string equipmentDataFilePath = persistDataPath + "/GameItems/EquipmentDatas.json";
+		public static string consumablesDataFilePath = persistDataPath + "/GameItems/ConsumablesDatas.json";
+		public static string skillGemstoneDataFilePath = persistDataPath + "/GameItems/SkillGemstoneDatas.json";
 		public static string materialsDataFilePath = persistDataPath + "/Materials.json";
 		public static string npcsDataDirPath = persistDataPath + "/NPCs";
 
@@ -179,6 +179,12 @@ namespace WordJourney{
 			minimum = min;
 			maximum = max;
 		}
+
+		public int GetAValueWithinRange(){
+			int value = Random.Range (minimum, maximum + 1);
+			return value;
+		}
+
 	}
 
 

@@ -486,15 +486,15 @@ namespace WordJourney
 			}
 
 			if (oriCritGain > 0) {
-				sb.AppendFormat ("暴击 +{0}%\n", (int)(critGain * 100));
+				sb.AppendFormat ("暴击 +{0}%\n", (critGain * 100).ToString("F1"));
 			} else if (oriCritGain == 0 && critGain > 0) {
-				attachedSb.AppendFormat ("暴击 +{0}%\n", (int)(critGain * 100));
+				attachedSb.AppendFormat ("暴击 +{0}%\n", (critGain * 100).ToString("F1"));
 			}
 
 			if (oriDodgeGain > 0) {
-				sb.AppendFormat ("闪避 +{0}%\n", (int)(dodgeGain * 100));
+				sb.AppendFormat ("闪避 +{0}%\n", (dodgeGain * 100).ToString("F1"));
 			} else if (oriDodgeGain == 0 && dodgeGain > 0) {
-				attachedSb.AppendFormat ("闪避 +{0}%\n", (int)(dodgeGain * 100));
+				attachedSb.AppendFormat ("闪避 +{0}%\n", (dodgeGain * 100).ToString("F1"));
 			}
 
 			if (oriCritHurtScalerGain > 0) {

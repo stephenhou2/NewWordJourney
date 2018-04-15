@@ -13,8 +13,6 @@ namespace WordJourney
 	public class ExploreUICotroller : MonoBehaviour {
 
 		public TintHUD tintHUD;
-//		public UnlockScrollDetailHUD unlockScrollDetail;
-//		public CraftingRecipesHUD craftingRecipesDetail;
 		public PauseHUD pauseHUD;
 		public WordHUD wordHUD;
 
@@ -66,10 +64,8 @@ namespace WordJourney
 
 		public void SetUpExploreCanvas(){
 
+			transitionMask.gameObject.SetActive (true);
 
-//			unlockScrollDetail.InitUnlockScrollDetailHUD (true, null, UnlockItemCallBack, ResolveScrollCallBack);
-//			craftingRecipesDetail.InitCraftingRecipesHUD (true, UpdateBottomBar, CraftItemCallBack);
-//			npcUIController.InitNPCHUD (gameLevelIndex);
 			pauseHUD.InitPauseHUD (true, null, null, null, null);
 
 			wordHUD.InitWordHUD (true, ExploreManager.Instance.AllWalkableEventsStartMove,ChooseAnswerInWordHUD,ConfirmCharacterFillInWordHUD);
@@ -82,8 +78,7 @@ namespace WordJourney
 				}, false,true);
 					
 			}
-				
-//			string gameLevelInCurrentLocation = MyTool.NumberToChinese(gameLevelIndex % 5 + 1);
+
 			gameLevelLocationText.text = string.Format("第 {0} 层",Player.mainPlayer.currentLevelIndex + 1);
 
 
@@ -93,13 +88,15 @@ namespace WordJourney
 
 			GetComponent<Canvas> ().enabled = true;
 			transitionMask.color = Color.black;
-			transitionMask.gameObject.SetActive (false);
+
 
 			if (!Player.mainPlayer.isNewPlayer) {
-				HideMask ();
+				ShowExploreSceneSlowly ();
 			} else {
-//				transitionView.InitIntroductionView (HideMask);
-				transitionView.PlayTransition (TransitionType.Introduce,HideMask);
+				Player.mainPlayer.isNewPlayer = false;
+				GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
+				ExploreManager.Instance.AllWalkableEventsStopMove ();
+				transitionView.PlayTransition (TransitionType.Introduce,ShowExploreSceneSlowly);
 			}
 
 		}
@@ -176,6 +173,16 @@ namespace WordJourney
 
 		public void HideMask(){
 			mask.gameObject.SetActive (false);
+		}
+
+		private void ShowExploreSceneSlowly(){
+			transitionMask.gameObject.SetActive (true);
+			transitionMask.color = Color.black;
+			transitionMask.DOFade (0, 1f).OnComplete (delegate {
+				HideMask();
+				transitionMask.gameObject.SetActive(false);
+				ExploreManager.Instance.AllWalkableEventsStartMove();
+			});
 		}
 
 		public void ShowFightPlane(){
@@ -402,6 +409,8 @@ namespace WordJourney
 		public void CancelBuyLife(){
 			HideBuyLifeQueryHUD ();
 			transitionView.PlayTransition (TransitionType.Death, delegate {
+				transitionMask.gameObject.SetActive(true);
+				transitionMask.color = Color.black;
 				GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal ();
 				ExploreManager.Instance.QuitExploreScene (true);
 			});

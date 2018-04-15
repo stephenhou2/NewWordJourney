@@ -15,16 +15,17 @@ namespace WordJourney{
 
 		public NPCAlertArea[] alertAreas;
 
-		public bool canShowNpcPlane;
+//		public bool canShowNpcPlane;
 
 		[HideInInspector]public HLHNPCReward fightReward;
 
-		public bool isTriggered;
+
 
 		public override void AddToPool (InstancePool pool)
 		{
 			bc2d.enabled = false;
-			DisableAllAlertAreas ();
+			DisableAllDetect ();
+			StopCoroutine ("DelayedMovement");
 			pool.AddInstanceToPool (this.gameObject);
 			StopMoveImmidiately ();
 			gameObject.SetActive (false);
@@ -34,6 +35,45 @@ namespace WordJourney{
 
 		public void SetNpcId(int npcId){
 			this.npcId = npcId;
+		}
+
+		public void QuitFightAndDelayMove(int delay){
+
+			StopCoroutine ("DelayedMovement");
+
+			StartCoroutine ("DelayedMovement",delay);
+
+		}
+
+
+		private IEnumerator DelayedMovement(int delay){
+
+			DisableAllDetect ();
+
+			yield return new WaitForSeconds (delay);
+
+			StartMove ();
+
+		}
+
+
+		public void EnableTalk(){
+			bc2d.enabled = true;
+		}
+
+		public void DisableAllDetect(){
+
+			DisableAllAlertAreaDetect ();
+
+			bc2d.enabled = false;
+
+		}
+
+
+		private void DisableAllAlertAreaDetect(){
+			for (int i = 0; i < alertAreas.Length; i++) {
+				alertAreas [i].DisableAlertDetect ();
+			}
 		}
 
 
@@ -50,16 +90,27 @@ namespace WordJourney{
 				hasNpcDataLoaded = true;
 			}
 
+			npc.RefreshNPC ();
+
 			GetComponent<Monster> ().InitializeWithMonsterData (npc.monsterData);
 
+			gameObject.SetActive (true);
+
+			for (int i = 0; i < alertAreas.Length; i++) {
+				alertAreas [i].InitializeAlertArea ();
+			}
+
+//			EnableAllAlertAreaDetect ();
 
 			baCtr.PlayRoleAnim ("wait", 0, null);
 
 			bc2d.enabled = true;
 
-			canShowNpcPlane = true;
+//			canShowNpcPlane = true;
 
 			isTriggered = false;
+
+			isInAutoWalk = false;
 
 			for (int i = 0; i < alertAreas.Length; i++) {
 				alertAreas [i].InitializeAlertArea ();
@@ -67,36 +118,57 @@ namespace WordJourney{
 
 			StartMove ();
 		}
+			
 
+		public void OnTriggerEnter2D(Collider2D col){
 
+			BattlePlayerController bp = col.GetComponent<BattlePlayerController> ();
 
-
-		private void DisableAllAlertAreas(){
-			for (int i = 0; i < alertAreas.Length; i++) {
-				alertAreas [i].DisableAlertDetect ();
+			if (bp == null) {
+				return;
 			}
+
+			if (bp.isInFight) {
+				return;
+			}
+
+			if (bp.isInEvent) {
+				return;
+			}
+
+			MapEventTriggered (false, bp);
 		}
 
-		public void EnableAllAlertAreas(){
-			for (int i = 0; i < alertAreas.Length; i++) {
-				alertAreas [i].EnableAlerAreaDetect ();
-			}
-		}
+		public void OnTriggerExit2D(Collider2D col){
 
+			BattleAgentController ba = col.GetComponent<BattleAgentController> ();
+
+			if (!(ba is BattlePlayerController)) {
+				return;
+			}
+
+//			canShowNpcPlane = true;
+
+		}
 
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
-			canShowNpcPlane = true;
+//			canShowNpcPlane = true;
 
 			MapEventTriggered (true, bp);
-
 		}
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
-			if (!canShowNpcPlane) {
+			if (isTriggered) {
 				return;
 			}
+
+//			if (!canShowNpcPlane) {
+//				return;
+//			}
+
+			DisableAllAlertAreaDetect ();
 
 			ExploreManager.Instance.DisableInteractivity ();
 
@@ -108,8 +180,6 @@ namespace WordJourney{
 
 			bp.StopMoveAtEndOfCurrentStep ();
 
-			DisableAllAlertAreas ();
-
 			StartCoroutine ("AdjustPositionAndTowards",bp);
 
 			isTriggered = true;
@@ -119,13 +189,14 @@ namespace WordJourney{
 		public override void ResetWhenDie ()
 		{
 			StopAllCoroutines ();
-			DisableAllAlertAreas ();
+			DisableAllDetect ();
 		}
 
 		public void EnterFight(BattlePlayerController bp){
 
 			StartCoroutine ("AdjustPositionAndTowardsAndFight", bp);
 		}
+
 
 
 		private IEnumerator AdjustPositionAndTowardsAndFight(BattlePlayerController battlePlayerCtr){
@@ -210,15 +281,17 @@ namespace WordJourney{
 
 				}
 
+//				canShowNpcPlane = false;
+
 				RunToPosition (npcFightPos, delegate {
 					ExploreManager.Instance.EnterFight(this.transform);
 					ExploreManager.Instance.PlayerAndMonsterStartFight();
+//					DisableAllAlertAreaDetect ();
 				});
 
-				canShowNpcPlane = false;
-
+				
 		}
-
+			
 
 		private IEnumerator AdjustPositionAndTowards(BattlePlayerController battlePlayerCtr){
 
@@ -238,7 +311,7 @@ namespace WordJourney{
 				}
 
 				ExploreManager.Instance.ShowNPCPlane (this);
-				canShowNpcPlane = false;
+
 			} else {
 
 				Vector3 playerOriPos = battlePlayerCtr.transform.position;
@@ -255,7 +328,7 @@ namespace WordJourney{
 
 				if (posOffsetX > 0) {
 
-					battlePlayerCtr.TowardsLeft (false);
+					battlePlayerCtr.TowardsLeft (true);
 					baCtr.TowardsRight ();
 
 					if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
@@ -275,7 +348,7 @@ namespace WordJourney{
 
 						baCtr.TowardsLeft ();
 
-						battlePlayerCtr.TowardsRight (false);
+						battlePlayerCtr.TowardsRight (true);
 
 						npcFightPos = new Vector3 (playerOriPos.x + 1, playerOriPos.y, 0);
 
@@ -283,7 +356,7 @@ namespace WordJourney{
 
 						baCtr.TowardsRight ();
 
-						battlePlayerCtr.TowardsLeft (false);
+						battlePlayerCtr.TowardsLeft (true);
 
 						npcFightPos = new Vector3 (playerOriPos.x - 1, playerOriPos.y, 0);
 
@@ -291,7 +364,7 @@ namespace WordJourney{
 
 						baCtr.TowardsLeft ();
 
-						battlePlayerCtr.TowardsRight (false);
+						battlePlayerCtr.TowardsRight (true);
 
 						npcFightPos = new Vector3 (playerOriPos.x + 0.5f, playerOriPos.y, 0);
 						battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
@@ -300,7 +373,7 @@ namespace WordJourney{
 
 				} else if (posOffsetX < 0) {
 
-					battlePlayerCtr.TowardsRight (false);
+					battlePlayerCtr.TowardsRight (true);
 					baCtr.TowardsLeft ();
 
 					if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
@@ -319,11 +392,15 @@ namespace WordJourney{
 
 				}
 
+//				canShowNpcPlane = false;
+
+
 				RunToPosition (npcFightPos, delegate {
 					ExploreManager.Instance.ShowNPCPlane (this);
+//					DisableAllAlertAreaDetect();
 				});
 
-				canShowNpcPlane = false;
+
 			}
 		}
 
@@ -340,6 +417,8 @@ namespace WordJourney{
 				return;
 			}
 
+
+
 			baCtr.PlayRoleAnim ("walk", 0, null);
 
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
@@ -350,6 +429,9 @@ namespace WordJourney{
 
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
+
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
 
 			if (targetPosY == oriPosY) {
 				if (targetPosX >= oriPosX) {
@@ -367,7 +449,7 @@ namespace WordJourney{
 			}
 				
 
-			SetSortingOrder (-Mathf.RoundToInt (position.y));
+
 
 			if (moveCoroutine != null) {
 				StopCoroutine (moveCoroutine);
@@ -375,11 +457,11 @@ namespace WordJourney{
 
 			moveCoroutine = MoveTo (position,3f,delegate{
 				baCtr.PlayRoleAnim("wait",0,null);
-				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
-				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 2;
+
 				if(cb != null){
 					cb();
 				}
+				SetSortingOrder (-Mathf.RoundToInt (position.y));
 			});
 
 			StartCoroutine (moveCoroutine);
@@ -389,7 +471,7 @@ namespace WordJourney{
 
 		protected override void RunToPosition(Vector3 position,CallBack cb){
 
-			if (MyTool.ApproximatelySamePosition2D (position, transform.position)) {
+			if (position.Equals(transform.position)) {
 
 				if(cb != null){
 					cb();
@@ -410,22 +492,24 @@ namespace WordJourney{
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
 
-			SetSortingOrder (-Mathf.RoundToInt (position.y));
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
+
+
 
 			moveCoroutine = MoveTo (position,1f,delegate{
 				baCtr.PlayRoleAnim("wait",0,null);
+
 				if(cb != null){
 					cb();
 				}
+
+				SetSortingOrder (-Mathf.RoundToInt (position.y));
 			});
 
 			StartCoroutine (moveCoroutine);
 
 		}
-
-
-
-
 
 	}
 }

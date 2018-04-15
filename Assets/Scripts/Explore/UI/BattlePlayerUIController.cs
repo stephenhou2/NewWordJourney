@@ -37,7 +37,7 @@ namespace WordJourney
 		}
 
 
-		public Transform miniMap;
+//		public Transform miniMap;
 
 		public Transform directionArrow;
 
@@ -64,7 +64,7 @@ namespace WordJourney
 
 			SetUpConsumablesButtons ();
 
-			miniMap.gameObject.SetActive (player.hasCompass);
+//			miniMap.gameObject.SetActive (player.hasCompass);
 		}
 
 
@@ -95,9 +95,9 @@ namespace WordJourney
 
 		public void RefreshMiniMap(){
 
-			if (!Player.mainPlayer.hasCompass) {
-				return;
-			}
+//			if (!Player.mainPlayer.hasCompass) {
+//				return;
+//			}
 			
 			Vector3 directionVector = ExploreManager.Instance.newMapGenerator.GetDirectionVectorTowardsExit ();
 
@@ -140,7 +140,7 @@ namespace WordJourney
 
 			bpCtr.UseSkill (skill);
 
-			player.mana -= skill.manaConsume;
+//			player.mana -= skill.manaConsume;
 
 		}
 

@@ -24,13 +24,16 @@ namespace WordJourney
 
 		public int bossId;
 
-		public HLHGameLevelData(int gameLevelIndex, List<int> itemIdsInPot,List<int> itemIdsInBucket,List<int> itemIdsInTreasureBox,List<int> monsterIds,int bossId){
+		public Count goldAmountRange;
+
+		public HLHGameLevelData(int gameLevelIndex, List<int> itemIdsInPot,List<int> itemIdsInBucket,List<int> itemIdsInTreasureBox,List<int> monsterIds,int bossId,Count goldAmountRange){
 			this.gameLevelIndex = gameLevelIndex;
 			this.itemIdsInPot = itemIdsInPot;
 			this.itemIdsInBucket = itemIdsInBucket;
 			this.itemIdsInTreasureBox = itemIdsInTreasureBox;
 			this.monsterIds = monsterIds;
 			this.bossId = bossId;
+			this.goldAmountRange = goldAmountRange;
 		}
 
 

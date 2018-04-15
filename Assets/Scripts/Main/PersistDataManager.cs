@@ -66,7 +66,8 @@ namespace WordJourney
 		/// 从本地加载玩家游戏数据
 		/// </summary>
 		public PlayerData LoadPlayerData(){
-			
+
+
 			string playerDataPath = Path.Combine (CommonData.persistDataPath, "PlayerData.json");
 
 			if (!File.Exists (playerDataPath)) {
@@ -79,7 +80,9 @@ namespace WordJourney
 				return null;
 			}
 
-			return DataHandler.LoadDataToSingleModelWithPath<PlayerData> (playerDataPath);
+			PlayerData pd = DataHandler.LoadDataToSingleModelWithPath<PlayerData> (playerDataPath);
+
+			return pd;
 
 		}
 
@@ -98,13 +101,20 @@ namespace WordJourney
 		public void ResetPlayerDataToOriginal(){
 
 			string sourcePlayerDataPath = CommonData.persistDataPath + "/OriginalPlayerData.json";
+
 			string targetPlayerDataPath = CommonData.persistDataPath + "/PlayerData.json";
 
-			DataHandler.CopyFile (sourcePlayerDataPath, targetPlayerDataPath);
+			PlayerData resetPd = DataHandler.LoadDataToSingleModelWithPath<PlayerData> (sourcePlayerDataPath);
 
-			PlayerData pd = LoadPlayerData ();
+			PlayerData oriPd = DataHandler.LoadDataToSingleModelWithPath<PlayerData> (targetPlayerDataPath);
 
-			Player.mainPlayer.SetUpPlayerWithPlayerData (pd);
+			resetPd.isNewPlayer = oriPd.isNewPlayer;
+
+			Player.mainPlayer.SetUpPlayerWithPlayerData (resetPd);
+
+			Player.mainPlayer.isDead = false;
+
+			SaveCompletePlayerData ();
 
 		}
 

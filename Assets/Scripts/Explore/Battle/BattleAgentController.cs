@@ -424,8 +424,6 @@ namespace WordJourney
 		/// <param name="cb">动画完成回调.</param>
 		public void PlayRoleAnim (string animName, int playTimes, CallBack cb)
 		{
-
-
 			isIdle = animName == "wait";
 
 			// 如果还有等待上个角色动作结束的协程存在，则结束该协程
@@ -443,6 +441,21 @@ namespace WordJourney
 				StartCoroutine(waitRoleAnimEndCoroutine);
 			}
 		}
+
+
+		/// <summary>
+		/// 当前动画结束之后播发角色等待动画（战斗结束时，等待攻击动作完成后再播放等待动画）
+		/// </summary>
+		public void ResetToWaitAfterCurrentRoleAnimEnd(){
+
+			waitRoleAnimEndCoroutine = ExcuteCallBackAtEndOfRoleAnim (delegate {
+				PlayRoleAnim("wait",0,null);	
+			});
+
+			StartCoroutine(waitRoleAnimEndCoroutine);
+
+		}
+			
 
 
 		/// <summary>

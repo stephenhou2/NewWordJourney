@@ -39,6 +39,8 @@ namespace WordJourney
 		public Sprite lockSprite;
 		public Sprite unlockSprite;
 
+		public Image mask;
+
 		// ************* 选择正确释义的UI部分 *************** //
 
 		// 退出WordHUD时的回调
@@ -72,6 +74,8 @@ namespace WordJourney
 		private List<FillAndCodeCell> fillAndCodeCells = new List<FillAndCodeCell> ();
 
 
+
+
 		/// <summary>
 		/// 初始化单词选择弹出框
 		/// </summary>
@@ -88,6 +92,8 @@ namespace WordJourney
 		public void SetUpWordHUDAndShow(LearnWord word){
 
 			gameObject.SetActive (true);
+
+			EnableClick ();
 
 			canQuitWhenClickBackground = true;
 
@@ -187,6 +193,8 @@ namespace WordJourney
 			bool isCharactersFillCorrect = CheckCharactersCorrect();
 
 			if (isCharactersFillCorrect) {
+				DisableClick ();
+				canQuitWhenClickBackground = false;
 				lockStatusIcon.sprite = unlockSprite;
 				StartCoroutine ("DelayWhenCharactersAllFillCorrect");
 			}
@@ -227,8 +235,12 @@ namespace WordJourney
 		/// <param name="wordsArray">Words array.</param>
 		public void SetUpWordHUDAndShow(LearnWord[] wordsArray){
 
+			gameObject.SetActive (true);
+
 			explainationSelectPlane.gameObject.SetActive (true);
 			characterFillPlane.gameObject.SetActive (false);
+
+			EnableClick ();
 
 			questionWord = null;
 			canQuitWhenClickBackground = true;
@@ -260,9 +272,7 @@ namespace WordJourney
 				choiceTexts [randomIndex].color = Color.white;
 
 			}
-
-			gameObject.SetActive (true);
-
+				
 		}
 
 
@@ -299,8 +309,23 @@ namespace WordJourney
 				explainationChooseCallBack (false);
 			}
 
-//			QuitWordHUD ();
+			DisableClick ();
 
+		}
+
+		/// <summary>
+		/// 禁止屏幕点击响应
+		/// </summary>
+		private void DisableClick(){
+			mask.enabled = true;
+		}
+
+
+		/// <summary>
+		/// 开始接收屏幕点击
+		/// </summary>
+		private void EnableClick(){
+			mask.enabled = false;
 		}
 
 		public void OnBackgroundClicked(){

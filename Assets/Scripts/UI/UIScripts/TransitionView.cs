@@ -158,26 +158,27 @@ namespace WordJourney
 						yield return null;
 
 					}
-
 				}
 
-				alpha = 0;
-
-				while (alpha < 1) {
-
-					transitionPlaneMask.color = new Color (0, 0, 0, alpha);
-
-					alpha += alphaChangeSpeed * Time.deltaTime;
-
-					yield return null;
-				}
 				break;
 			case TransitionType.Death:
 				break;
 			}
-			this.gameObject.SetActive (false);
+				
+			alpha = 0;
+
+			while (alpha < 1) {
+
+				transitionPlaneMask.color = new Color (0, 0, 0, alpha);
+
+				alpha += alphaChangeSpeed * Time.deltaTime;
+
+				yield return null;
+			}
 
 			finishTransitionCallBack ();
+
+			this.gameObject.SetActive (false);
 
 			for (int i = 0; i < transitionTextContainer.childCount; i++) {
 				Destroy (transitionTextContainer.GetChild (i).gameObject,0.3f);

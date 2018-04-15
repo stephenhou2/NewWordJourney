@@ -10,7 +10,9 @@ namespace WordJourney
 
 		public bool canMove;
 
-		protected bool isInAutoWalk;
+		public bool isInAutoWalk;
+
+		public bool isTriggered;
 
 		protected IEnumerator moveCoroutine;
 
@@ -34,9 +36,17 @@ namespace WordJourney
 			if (isInAutoWalk) {
 				return;
 			}
+
+			if (isTriggered) {
+				return;
+			}
+				
 			StartCoroutine ("AutoWalk");
 			isInAutoWalk = true;
 		}
+
+
+
 
 		public void StopMoveImmidiately(){
 			if (moveCoroutine != null) {
@@ -108,17 +118,18 @@ namespace WordJourney
 
 		protected IEnumerator MoveTo(Vector3 position,float timeScale,CallBack cb){
 
-			int oriPosX = Mathf.RoundToInt (transform.position.x);
-			int oriPosY = Mathf.RoundToInt (transform.position.y);
+//			int oriPosX = Mathf.RoundToInt (transform.position.x);
+//			int oriPosY = Mathf.RoundToInt (transform.position.y);
 
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
-			float distance = Mathf.Sqrt ((targetPosX - oriPosX) * (targetPosX - oriPosX) + (targetPosY - oriPosY) * (targetPosY - oriPosY));
+			float distance = Mathf.Sqrt ((targetPosX - transform.position.x) * (targetPosX - transform.position.x) + 
+				(targetPosY - transform.position.y) * (targetPosY - transform.position.y));
 
 			float moveDuration = baCtr.moveDuration * distance * timeScale;
 
-			Vector3 moveVector = new Vector3((targetPosX - oriPosX) / moveDuration,(targetPosY - oriPosY) / moveDuration,0);
+			Vector3 moveVector = new Vector3((targetPosX - transform.position.x) / moveDuration,(targetPosY - transform.position.y) / moveDuration,0);
 
 			float timer = 0;
 

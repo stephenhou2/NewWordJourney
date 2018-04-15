@@ -11,6 +11,10 @@ namespace WordJourney
 		TriggeredPassive
 	}
 
+	public enum HurtType{
+		Physical,
+		Magical
+	}
 
 	public abstract class Skill:MonoBehaviour {
 

@@ -12,7 +12,7 @@ namespace WordJourney
 
 		protected override void ExcuteActiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			int hurt = (int)((self.agent.attack + self.agent.armorDecrease) * hurtScaler - enemy.agent.armor / 4);
+			int hurt = (int)((self.agent.attack + self.agent.armorDecrease / 4) * hurtScaler - enemy.agent.armor / 4);
 
 			int healthGain = (int)(hurt * absorbScaler + self.agent.healthRecovery);
 

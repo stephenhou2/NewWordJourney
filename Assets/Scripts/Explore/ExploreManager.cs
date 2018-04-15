@@ -48,9 +48,9 @@ namespace WordJourney
 
 		public MapEvent currentEnteredMapEvent;
 
-		public bool isExploreClickValid;
+//		public bool isExploreClickValid;
 
-		private bool detectFight;
+//		private bool detectFight;
 
 
 //		[HideInInspector]public bool clickForConsumablesPos;
@@ -92,18 +92,19 @@ namespace WordJourney
 				}
 				renderers [i].material.shader = Shader.Find (renderers [i].sharedMaterial.shader.name);
 			}
-//			Material m = newMapGenerator.fogOfWarPlane.GetComponent<Renderer>().material;
-//			m.shader = Resources.Load("FOWShader") as Shader;
 			#endif
+
+			#if UNITY_EDITOR || UNITY_IOS 
 			Material m = newMapGenerator.fogOfWarPlane.GetComponent<Renderer>().material;
 			m.shader = Resources.Load("FOWShader") as Shader;
-//			Debug.Log (m.shader.isSupported);
+			#endif
+
 		}
 			
 		//Initializes the game for each level.
 		public void SetUpExploreView()
 		{
-			detectFight = false;
+//			detectFight = false;
 
 			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
 
@@ -125,7 +126,6 @@ namespace WordJourney
 			battlePlayerCtr.InitBattlePlayer ();
 
 			EnableInteractivity ();
-
 
 		}
 
@@ -194,9 +194,9 @@ namespace WordJourney
 
 		private void Update(){
 
-			if (!isExploreClickValid) {
-				return;
-			}
+//			if (!isExploreClickValid) {
+//				return;
+//			}
 
 #if UNITY_STANDALONE || UNITY_EDITOR
 
@@ -352,12 +352,12 @@ namespace WordJourney
 
 		public void DisableInteractivity(){
 			expUICtr.ShowMask ();
-			isExploreClickValid = false;
+//			isExploreClickValid = false;
 		}
 
 		public void EnableInteractivity(){
 			expUICtr.HideMask ();
-			isExploreClickValid = true;
+//			isExploreClickValid = true;
 		}
 
 		public void ObtainReward(Item reward){
@@ -375,7 +375,7 @@ namespace WordJourney
 		}
 
 		public void AllWalkableEventsStartMove(){
-			if (detectFight) {
+			if (battlePlayerCtr.isInEvent) {
 				return;
 			}
 			for (int i = 0; i < newMapGenerator.allWalkableEventsInMap.Count; i++) {
@@ -390,7 +390,7 @@ namespace WordJourney
 		/// <param name="monsterTrans">Monster trans.</param>
 		public void EnterFight(Transform monsterTrans){
 
-			detectFight = true;
+//			detectFight = true;
 
 			DisableInteractivity ();
 
@@ -520,6 +520,8 @@ namespace WordJourney
 
 			mapGenerator.AddAllEffectAnimToPool ();
 
+			battlePlayerCtr.ResetToWaitAfterCurrentRoleAnimEnd ();
+
 			if (monsterTransArray.Length <= 0) {
 				return;
 			}
@@ -532,13 +534,13 @@ namespace WordJourney
 
 			newMapGenerator.mapWalkableInfoArray [monsterPosX, monsterPosY] = 1;
 
-			player.totalGold += monster.rewardGold;//更新玩家金钱
+			player.totalGold += monster.rewardGold + player.extraGold;//更新玩家金钱
 
 			string tint = string.Format ("+{0}", monster.rewardGold);
 
 			ShowTint (tint, null);
 
-			player.experience += monster.rewardExperience;//更新玩家经验值
+			player.experience += monster.rewardExperience + player.extraExperience;//更新玩家经验值
 
 			bool isLevelUp = player.LevelUpIfExperienceEnough ();//判断是否升级
 
@@ -589,13 +591,9 @@ namespace WordJourney
 
 			battlePlayerCtr.isInFight = false;
 
-			if (bmCtr.GetComponent<MapNPC> () != null) {
-				expUICtr.ShowNPCPlane ();
-			}
-
-			detectFight = false;
-
 			AllWalkableEventsStartMove ();
+
+			battlePlayerCtr.isInEvent = false;
 
 		}
 
@@ -607,7 +605,7 @@ namespace WordJourney
 
 		public void BattlePlayerLose(){
 
-			detectFight = false;
+//			detectFight = false;
 
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);
@@ -620,9 +618,14 @@ namespace WordJourney
 
 			FightEndCallBacks ();
 
+			battleMonsterCtr.ResetToWaitAfterCurrentRoleAnimEnd ();
+
 			expUICtr.QuitFight ();
 
 			expUICtr.ShowBuyLifeQueryHUD ();
+
+			battlePlayerCtr.isInEvent = false;
+
 		}
 
 
@@ -711,8 +714,7 @@ namespace WordJourney
 			}
 
 			GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
-				
-
+	
 
 			SetUpExploreView ();
 
@@ -729,24 +731,15 @@ namespace WordJourney
 
 			GameManager.Instance.soundManager.StopBgm ();
 
-			Camera.main.transform.Find ("Mask").gameObject.SetActive (false);
-
 			if (saveData) {
 				GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
 			}
-				
-//			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
-//
-//			Player.mainPlayer.SetUpPlayerWithPlayerData (playerData);
 
-//			Camera.main.transform.Find ("Background").gameObject.SetActive (false);
 			Camera.main.transform.SetParent (null);
 			Camera.main.transform.Find ("Mask").gameObject.SetActive (false);
 
 			battlePlayerCtr.QuitExplore ();
 			battlePlayerCtr.isInExplore = false;
-		
-//			newMapGenerator.DestroyInstancePools ();
 
 			TransformManager.DestroyTransfromWithName (CommonData.exploreScenePoolContainerName);
 

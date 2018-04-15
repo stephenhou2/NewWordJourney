@@ -64,6 +64,9 @@ namespace WordJourney
 			if (!isOpen) {
 				mapItemRenderer.enabled = true;
 				mapItemRenderer.sprite = doorCloseSprites [direction];
+			}else{
+				mapItemRenderer.sprite = null;
+				mapItemRenderer.enabled = false;
 			}
 
 			string pairDoorPosString = KVPair.GetPropertyStringWithKey ("pairDoorPos", attachedInfo.properties);

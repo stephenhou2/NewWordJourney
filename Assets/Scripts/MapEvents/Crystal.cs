@@ -41,16 +41,14 @@ namespace WordJourney
 		{
 			transform.position = attachedInfo.position;
 
-//			propertyType = (PermenantPropertyType)(int.Parse (KVPair.GetPropertyStringWithKey ("propertyType", attachedInfo.properties)));
-//
-//			gainAmount = int.Parse (KVPair.GetPropertyStringWithKey ("gainAmount", attachedInfo.properties));
+			propertyType = (PropertyType)Random.Range (0, 16);
+
+			gainAmount = Random.Range (1, 4);
 
 			isExausted = false;
 			bc2d.enabled = true;
-//			mapItemAnimator.SetBool ("Play",false);
 			mapItemRenderer.sprite = crystalShiningSprite;
 			SetSortingOrder (-(int)transform.position.y);
-//			isDroppable = false;
 
 			CheckIsWordTriggeredAndShow ();
 		}

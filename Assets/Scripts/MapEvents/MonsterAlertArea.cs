@@ -55,6 +55,10 @@ namespace WordJourney
 
 			BattlePlayerController bp = ba as BattlePlayerController;
 
+			if (bp.isInEvent) {
+				return;
+			}
+
 			if (bp.isInFight) {
 				return;
 			}

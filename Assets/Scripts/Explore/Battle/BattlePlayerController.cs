@@ -28,8 +28,6 @@ namespace WordJourney
 		public List<Vector3> pathPosList;
 
 
-//		private Vector3 lastPathSingleMoveEndRecord;
-
 		// 正在前往的节点位置
 		public Vector3 singleMoveEndPos;
 
@@ -45,6 +43,7 @@ namespace WordJourney
 		private NavigationHelper navHelper;
 
 		public bool isInFight;
+		public bool isInEvent; //是否在一个事件触发过程中
 		public bool isInExplore;
 
 
@@ -185,7 +184,9 @@ namespace WordJourney
 		/// <param name="targetPos">Target position.</param>
 		private void MoveToPosition(Vector3 targetPos){
 
+			#if UNITY_EDITOR || UNITY_IOS
 			exploreManager.newMapGenerator.UpdateFogOfWar ();
+			#endif
 
 			moveTweener =  transform.DOMove (targetPos, moveDuration).OnComplete (() => {
 
@@ -443,10 +444,12 @@ namespace WordJourney
 		public void StopMoveAndWait(){
 			StopCoroutine ("MoveWithNewPath");
 			moveTweener.Kill (false);
-//			backgroundMoveTweener.Kill (false);
 			inSingleMoving = false;
 			PlayRoleAnim ("wait", 0, null);
 			SetSortingOrder (-(int)transform.position.y);
+			Vector3 currentPos = new Vector3(Mathf.RoundToInt(transform.position.x),Mathf.RoundToInt(transform.position.y),0);
+			moveDestination = currentPos;
+			singleMoveEndPos = currentPos;
 		}
 
 		public override void TowardsLeft(bool andWait = true){
@@ -793,9 +796,9 @@ namespace WordJourney
 
 			agent.ResetBattleAgentProperties (false);
 
-			if (!agent.isDead) {
-				PlayRoleAnim ("wait", 0, null);
-			}
+//			if (!agent.isDead) {
+//				PlayRoleAnim ("wait", 0, null);
+//			}
 		}
 
 		/// <summary>
@@ -822,8 +825,6 @@ namespace WordJourney
 					exploreManager.expUICtr.ShowBuyLifeQueryHUD();
 				}
 			});
-
-			agent.isDead = true;
 
 			ActiveBattlePlayer (false, false, true);
 

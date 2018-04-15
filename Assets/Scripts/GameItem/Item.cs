@@ -104,6 +104,7 @@ namespace WordJourney{
 //			itemPropertyDescription = itemModel.itemPropertyDescription;
 			spriteName = itemModel.spriteName;
 			itemType = itemModel.itemType;
+			price = itemModel.price;
 
 		}
 			

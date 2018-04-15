@@ -16,7 +16,6 @@ namespace WordJourney
 
 		public override void AddToPool (InstancePool pool)
 		{
-//			StopFloating ();
 			bc2d.enabled = false;
 			pool.AddInstanceToPool (this.gameObject);
 		}
@@ -25,12 +24,10 @@ namespace WordJourney
 		{
 			transform.position = attachedInfo.position;
 
-			goldAmount = int.Parse (KVPair.GetPropertyStringWithKey ("gainAmount", attachedInfo.properties));
-
-			if (goldAmount == -1) {
-				goldAmount = 100;
-			}
-
+			Count goldAmountRange = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex].goldAmountRange;
+				
+			goldAmount = goldAmountRange.GetAValueWithinRange ();
+				
 			bc2d.enabled = true;
 			mapItemAnimator.gameObject.SetActive (false);
 			mapItemRenderer.enabled = true;
@@ -39,33 +36,9 @@ namespace WordJourney
 
 			SetAnimationSortingOrder (-(int)transform.position.y);
 
-//			oriPosY = goldpackTrans.localPosition.y;
-		
-//			BeginFloating ();
-
 			CheckIsWordTriggeredAndShow ();
 		}
 			
-//		private void BeginFloating(){
-//
-//			floatingSequence = DOTween.Sequence ();
-//
-//			float floatingTop = oriPosY + floatingDistance;
-//
-//			floatingSequence.Append (goldpackTrans.DOLocalMoveY (floatingTop, floatingInterval))
-//				.Append (goldpackTrans.DOLocalMoveY (oriPosY, floatingInterval));
-//
-//			floatingSequence.SetLoops (-1);
-//			floatingSequence.Play ();
-//		}
-//
-//		private void StopFloating(){
-//
-//			floatingSequence.Kill (false);
-//
-//			goldpackTrans.localPosition = new Vector3 (goldpackTrans.localPosition.x, oriPosY, goldpackTrans.localPosition.z);
-//
-//		}
 
 		private void SetAnimationSortingOrder(int order){
 			mapItemAnimator.GetComponent<SpriteRenderer> ().sortingOrder = order;
@@ -110,11 +83,14 @@ namespace WordJourney
 			}
 
 			if (isSuccess) {
-				(bp.agent as Player).totalGold += goldAmount;
+				(bp.agent as Player).totalGold += goldAmount + bp.agent.extraGold;
 				ExploreManager.Instance.UpdatePlayerStatusPlane ();
 				string tintText = string.Format ("+{0}", goldAmount);
 				ExploreManager.Instance.ShowTint (tintText, null);
 			}
+			int posX = Mathf.RoundToInt (transform.position.x);
+			int posY = Mathf.RoundToInt (transform.position.y);
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [posX, posY] = 1;
 
 			AddToPool (ExploreManager.Instance.newMapGenerator.mapEventsPool);
 		}

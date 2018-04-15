@@ -41,9 +41,11 @@ namespace WordJourney
 			this.skill = activeSkill;
 
 			mask.enabled = false;
-			button.interactable = true;
 
-			manaConsume.color = Player.mainPlayer.mana >= skill.manaConsume ? Color.blue : Color.red;
+
+			bool isManaEnough = Player.mainPlayer.mana >= skill.manaConsume;
+			manaConsume.color = isManaEnough ? Color.blue : Color.red;
+			button.interactable = isManaEnough;
 
 
 		}

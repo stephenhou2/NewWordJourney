@@ -18,15 +18,15 @@ namespace WordJourney
 		private Item itemToAddWhenBagFull;
 
 		void Awake(){
-			for (int i = 1; i < 33; i++) {
-				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
-			}
-			for(int i = 300;i<316;i++){
-				Player.mainPlayer.AddItem (Item.NewItemWith (i, 3));
-			}
-			for (int i = 401; i < 403; i++) {
-				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
-			}
+//			for (int i = 1; i < 33; i++) {
+//				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
+//			}
+//			for(int i = 300;i<316;i++){
+//				Player.mainPlayer.AddItem (Item.NewItemWith (i, 3));
+//			}
+//			for (int i = 401; i < 403; i++) {
+//				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
+//			}
 		}
 
 		public void AddBagItemWhenBagFull(Item item){
@@ -223,9 +223,9 @@ namespace WordJourney
 			switch (consumables.type) {
 			case ConsumablesType.ShuXingTiSheng:
 
-				player.health += consumables.healthGain;
-				player.mana += consumables.manaGain;
-				player.experience += consumables.experienceGain;
+				player.health += consumables.healthGain + player.healthRecovery;
+				player.mana += consumables.manaGain + player.magicRecovery;
+				player.experience += consumables.experienceGain + player.extraExperience;
 
 				clearItemDetail = player.RemoveItem (consumables, 1);
 

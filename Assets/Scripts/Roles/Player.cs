@@ -107,7 +107,7 @@ namespace WordJourney
 		// 是否是新建的玩家
 		public bool isNewPlayer = true;
 
-		public bool hasCompass = false;
+//		public bool hasCompass = false;
 
 		private int maxBagCount{ get{ return BuyRecord.Instance.extraBagUnlocked ? 4 : 3; } }
 //		private int singleBagVolume = 24;
@@ -156,6 +156,9 @@ namespace WordJourney
 			//初始化实际信息
 			this.maxHealth = playerData.maxHealth;
 			this.maxMana = playerData.maxMana;
+
+			this.health = playerData.health;
+			this.mana = playerData.mana;
 
 			this.attack = playerData.attack;
 			this.magicAttack = playerData.magicAttack;
@@ -230,12 +233,12 @@ namespace WordJourney
 			this.experience = playerData.experience;
 
 			this.isNewPlayer = playerData.isNewPlayer;
-			this.hasCompass = playerData.hasCompass;
+//			this.hasCompass = playerData.hasCompass;
 
 			this.attachedTriggeredSkills.Clear ();
 			this.allStatus.Clear ();
 
-			ResetBattleAgentProperties (true);
+			ResetBattleAgentProperties (false);
 
 
 			allItemsInBag = new List<Item> ();
@@ -385,27 +388,23 @@ namespace WordJourney
 				healthRecovery += eqp.healthRecoveryGain;
 				magicRecovery += eqp.magicRecoveryGain;
 
-				#warning 测试永久性被动技能，测试完后打开
-//				Skill equipmentAttachedSkill = eqp.attachedSkill;
-//				if(equipmentAttachedSkill != null && equipmentAttachedSkill.skillType == SkillType.PermanentPassive){
-//					PermanentPassiveSkill pps = equipmentAttachedSkill as PermanentPassiveSkill;
-//					pps.AffectAgents (battleAgentCtr, null);
-//				}
+
+				Skill equipmentAttachedSkill = eqp.attachedSkill;
+				if(equipmentAttachedSkill != null && equipmentAttachedSkill.skillType == SkillType.PermanentPassive){
+					PermanentPassiveSkill pps = equipmentAttachedSkill as PermanentPassiveSkill;
+					pps.AffectAgents (battleAgentCtr, null);
+				}
 
 			}
 
-			#warning 测试永久性被动技能，测试完删除
-			for (int i = 0; i < attachedPermanentPassiveSkills.Count; i++) {
-				attachedPermanentPassiveSkills [i].AffectAgents (battleAgentCtr, null);
-			}
 
 			if (toOriginalState) {
 				health = maxHealth;
 				mana = maxMana;
 				isDead = false;
 			} else {
-				health = (int)(healthRecord * (float)maxHealth / maxHealthRecord);
-				mana = (int)(manaRecord * (float)maxMana / maxManaRecord);
+				health = Mathf.RoundToInt(healthRecord * (float)maxHealth / maxHealthRecord);
+				mana = Mathf.RoundToInt(manaRecord * (float)maxMana / maxManaRecord);
 			}
 
 			int maxHealthChange = maxHealth - maxHealthRecord;
@@ -524,6 +523,7 @@ namespace WordJourney
 			switch (type) {
 			case PropertyType.MaxHealth:
 				int maxHealthRecord = maxHealth;
+				originalMaxHealth += change;
 				maxHealth += change;
 				health = (int)(health * (float) maxHealth / maxHealthRecord);
 				break;
@@ -532,50 +532,80 @@ namespace WordJourney
 				break;
 			case PropertyType.MaxMana:
 				int maxManaRecord = maxMana;
+				originalMaxMana += change;
 				maxMana += change;
 				mana = (int)(mana * (float)maxMana / maxManaRecord);
 				break;
 			case PropertyType.Attack:
+				originalAttack += change;
 				attack += change;
 				break;
 			case PropertyType.MagicAttack:
+				originalMagicAttack += change;
 				magicAttack += change;
 				break;
 			case PropertyType.Armor:
+				originalArmor += change;
 				armor += change;
 				break;
 			case PropertyType.MagicResist:
+				originalMagicResist += change;
 				magicResist += change;
 				break;
 			case PropertyType.ArmorDecrease:
+				originalArmorDecrease += change;
 				armorDecrease += change;
 				break;
 			case PropertyType.MagicResistDecrease:
+				originalMagicResistDecrease += change;
 				magicResistDecrease += change;
 				break;
 			case PropertyType.MoveSpeed:
+				originalMoveSpeed += change;
 				moveSpeed += change;
 				break;
 			case PropertyType.Dodge:
-				dodge += (float)change/100;
+				float changeInFloat = (float)change / 100;
+				originalDodge += changeInFloat;
+				dodge += changeInFloat;
 				break;
 			case PropertyType.Crit:
-				crit += (float)change/100;
+				changeInFloat = (float)change / 100;
+				originalCrit += changeInFloat;
+				crit += changeInFloat;
 				break;
 			case PropertyType.CritHurtScaler:
-				critHurtScaler += (float)change/100;
+				changeInFloat = (float)change / 100;
+				originalCritHurtScaler += changeInFloat;
+				critHurtScaler += changeInFloat;
 				break;
 			case PropertyType.ExtraGold:
+				originalExtraGold += change;
 				extraGold += change;
 				break;
 			case PropertyType.ExtraExperience:
+				originalExtraExperience += change;
 				extraExperience += change;
 				break;
 			case PropertyType.HealthRecovery:
+				originalHealthRecovery += change;
 				healthRecovery += change;
 				break;
 			case PropertyType.MagicRecovery:
+				originalMagicRecovery += change;
 				magicRecovery += change;
+				break;
+			case PropertyType.HealthPunish:
+				maxHealthRecord = maxHealth;
+				originalMaxHealth += change * robTime;
+				maxHealth += change * robTime;
+				health = (int)(health * (float)maxHealth / maxHealthRecord);
+				robTime = 0;
+				break;
+			case PropertyType.AttackPunish:
+				originalAttack += change * robTime;
+				attack += change * robTime;
+				robTime = 0;
 				break;
 			}
 		}
@@ -719,41 +749,39 @@ namespace WordJourney
 			return index;
 		}
 
-
-
 		/// <summary>
-		/// 收获奖励
+		/// NPC的奖励如果是惩罚的话，检验是否可以满足惩罚的要求（为了方便，惩罚的数据也写在了奖励里面，数值为负的）
 		/// </summary>
-		/// <param name="reward">Reward.</param>
-		public void GainFromNPCReward(HLHNPCReward reward){
+		/// <returns><c>true</c>, if can hand out was checked, <c>false</c> otherwise.</returns>
+		/// <param name="type">惩罚类型.</param>
+		/// <param name="value">【如果是金钱惩罚，对应交付的金钱】【如果是物品惩罚，对应交付物品的id】.</param>
+		/// <param name="attachValue">【如果是物品惩罚，对应交付物品的数量】.</param>
+		public bool CheckCanHandOut(HLHRewardType type,int value,int attachValue){
 
-			switch(reward.rewardType){
-			case HLHRewardType.Gold:
-				totalGold += reward.rewardValue;
-				break;
+			bool canHandOut = true;
+
+			switch (type) {
+			case HLHRewardType.Property:
 			case HLHRewardType.Experience:
-				experience += reward.rewardValue;
+				break;
+			case HLHRewardType.Gold:
+				canHandOut = totalGold + value >= 0;
 				break;
 			case HLHRewardType.Item:
-				if (reward.attachValue > 0) {
-					Item rewardItem = Item.NewItemWith (reward.rewardValue,1);
-					if (rewardItem.itemType == ItemType.Equipment) {
-						Equipment eqp = rewardItem as Equipment;
-						EquipmentQuality quality = (EquipmentQuality)reward.attachValue;
-						eqp.ResetPropertiesByQuality (quality);
-					}
-					AddItem (rewardItem);
+				Item itemInBag = allItemsInBag.Find (delegate(Item obj) {
+					return obj.itemId == value;
+				});
+				if (itemInBag == null) {
+					canHandOut = false;
 				} else {
-					Item removeItem = Item.NewItemWith (reward.rewardValue,1);
-					RemoveItem (removeItem,removeItem.itemCount);
+					canHandOut = itemInBag.itemCount + attachValue >= 0;
 				}
 				break;
-			case HLHRewardType.Property:
-				PropertyType pt = (PropertyType)reward.rewardValue;
-				PlayerPropertyChange(pt,reward.attachValue);
-				break;
 			}
+			return canHandOut;
 		}
+
+
 
 
 		public bool CheckTaskExistFromTaskId(int taskId){
@@ -1368,7 +1396,7 @@ namespace WordJourney
 		public int totalGold;//人物金币数量
 
 		public bool isNewPlayer;
-		public bool hasCompass;
+//		public bool hasCompass;
 
 
 		public PlayerData(Player player){
@@ -1407,6 +1435,9 @@ namespace WordJourney
 
 			this.maxHealth = player.maxHealth;
 			this.maxMana = player.maxMana;
+
+			this.health = player.health;
+			this.mana = player.mana;
 
 			this.attack = player.attack;
 			this.magicAttack = player.magicAttack;
@@ -1453,7 +1484,7 @@ namespace WordJourney
 			this.experience = player.experience;
 
 			this.isNewPlayer = player.isNewPlayer;
-			this.hasCompass = player.hasCompass;
+//			this.hasCompass = player.hasCompass;
 
 			ClearAllEquipmentAttachedSkills ();
 

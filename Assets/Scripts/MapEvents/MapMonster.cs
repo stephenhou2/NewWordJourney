@@ -26,7 +26,7 @@ namespace WordJourney
 
 		private int mapHeight;
 
-		private bool isTriggered;
+//		private bool isTriggered;
 
 		public void SetPosTransferSeed(int mapHeight){
 			this.mapHeight = mapHeight;
@@ -52,13 +52,6 @@ namespace WordJourney
 			ExploreManager.Instance.newMapGenerator.allWalkableEventsInMap.Remove (this);
 		}
 
-		public void QuitFightAndDelayMove(int delay){
-
-			StopCoroutine ("DelayedMovement");
-
-			StartCoroutine ("DelayedMovement",delay);
-
-		}
 
 		public override void ResetWhenDie(){
 
@@ -67,6 +60,16 @@ namespace WordJourney
 			alertToFightIcon.enabled = false;
 
 		}
+
+
+		public void QuitFightAndDelayMove(int delay){
+
+			StopCoroutine ("DelayedMovement");
+
+			StartCoroutine ("DelayedMovement",delay);
+
+		}
+
 
 		private IEnumerator DelayedMovement(int delay){
 
@@ -77,13 +80,50 @@ namespace WordJourney
 			StartMove ();
 
 		}
-			
+
+
+		public void ShowAlertAreaTint(){
+			MyTowards towards = baCtr.towards;
+			for (int i = 0; i < alertAreas.Length; i++) {
+				if (i == (int)towards) {
+					alertAreas [i].ShowAlerAreaTint ();
+				} else {
+					alertAreas [i].HideAlertAreaTint ();
+				}
+			}
+		}
+
+		public void DisableAllDetect(){
+
+			for (int i = 0; i < alertAreas.Length; i++) {
+				alertAreas [i].DisableAlertDetect ();
+			}
+
+			bc2d.enabled = false;
+
+		}
+
+		/// <summary>
+		/// 隐藏所有的警示区域
+		/// </summary>
+		public void HideAllAlertAreas(){
+			for (int i = 0; i < alertAreas.Length; i++) {
+				alertAreas [i].HideAlertAreaTint ();
+			}
+		}
+
+
+
 
 		public void OnTriggerEnter2D (Collider2D col){
 
 			BattlePlayerController bp = col.GetComponent<BattlePlayerController> ();
 
 			if (bp == null) {
+				return;
+			}
+
+			if (bp.isInEvent) {
 				return;
 			}
 
@@ -113,43 +153,6 @@ namespace WordJourney
 
 		public void DetectPlayer(BattlePlayerController bp){
 
-//			Vector3 lineCastEnd = Vector3.zero;
-//			Vector3 lineCastStart = Vector3.zero;
-//			switch (baCtr.towards) {
-//			case MyTowards.Up:
-//				lineCastStart = transform.position + new Vector3 (0, 0.25f, 0);
-//				lineCastEnd = transform.position + new Vector3 (0, 1.5f, 0);
-//				break;
-//			case MyTowards.Down:
-//				lineCastStart = transform.position + new Vector3 (0, -0.25f, 0);
-//				lineCastEnd = transform.position + new Vector3 (0, -1.5f, 0);
-//				break;
-//			case MyTowards.Left:
-//				lineCastStart = transform.position + new Vector3 (-0.25f, 0, 0);
-//				lineCastEnd = transform.position + new Vector3 (-1.5f, 0, 0);
-//				break;
-//			case MyTowards.Right:
-//				lineCastStart = transform.position + new Vector3 (0.25f, 0, 0);
-//				lineCastEnd = transform.position + new Vector3 (1.5f, 0, 0);
-//				break;
-//			}
-
-//			RaycastHit2D[] r2ds = Physics2D.LinecastAll (lineCastStart, lineCastEnd ,collisionLayer);
-//
-//			for (int i = 0; i < r2ds.Length; i++) {
-//
-//				RaycastHit2D r2d = r2ds [i];
-//
-//				if (r2d.transform != null) {
-//
-//					bool isBlocked = CheckIsBlocked (r2d.transform.position,bp.transform.position);
-//
-//					if (isBlocked) {
-//						return;
-//					}
-//				}
-//			}
-				
 			ExploreManager.Instance.DisableInteractivity ();
 
 			DisableAllDetect ();
@@ -211,7 +214,7 @@ namespace WordJourney
 			HideAllAlertAreas ();
 
 			if (canMove) {
-				ShowAlertAreaTint (baCtr.towards);
+				ShowAlertAreaTint ();
 			}
 
 			transform.position = attachedInfo.position;
@@ -276,41 +279,7 @@ namespace WordJourney
 
 			}
 		}
-
-		/// <summary>
-		/// 根据怪物朝向显示警示区域
-		/// </summary>
-		/// <param name="towards">Towards.</param>
-		private void ShowAlertAreaTint(MyTowards towards){
-			for (int i = 0; i < alertAreas.Length; i++) {
-				if (i == (int)towards) {
-					alertAreas [i].ShowAlerAreaTint ();
-				} else {
-					alertAreas [i].HideAlertAreaTint ();
-				}
-			}
-		}
-
-		private void DisableAllDetect(){
-
-			for (int i = 0; i < alertAreas.Length; i++) {
-				alertAreas [i].DisableAlertDetect ();
-			}
-
-			bc2d.enabled = false;
-
-		}
-
-		/// <summary>
-		/// 隐藏所有的警示区域
-		/// </summary>
-		private void HideAllAlertAreas(){
-			for (int i = 0; i < alertAreas.Length; i++) {
-				alertAreas [i].HideAlertAreaTint ();
-			}
-		}
-
-
+			
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
@@ -318,6 +287,8 @@ namespace WordJourney
 			if (isTriggered) {
 				return;
 			}
+
+			bp.isInEvent = true;
 
 			bc2d.enabled = false;
 
@@ -426,6 +397,8 @@ namespace WordJourney
 
 			}
 
+			battlePlayerCtr.isInEvent = true;
+
 			RunToPosition (monsterFightPos, delegate {
 				if (!battlePlayerCtr.isInFight) {
 					ExploreManager.Instance.PlayerAndMonsterStartFight ();
@@ -451,6 +424,9 @@ namespace WordJourney
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
 
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
+
 			if (targetPosY == oriPosY) {
 				if (targetPosX >= oriPosX) {
 					baCtr.TowardsRight ();
@@ -469,22 +445,21 @@ namespace WordJourney
 			}
 
 			if (showAlertArea) {
-				ShowAlertAreaTint (baCtr.towards);
+				ShowAlertAreaTint ();
 			}
-
-			SetSortingOrder (-Mathf.RoundToInt (position.y));
-
+				
 			if (moveCoroutine != null) {
 				StopCoroutine (moveCoroutine);
 			}
 
 			moveCoroutine = MoveTo (position,3f,delegate{
 				baCtr.PlayRoleAnim("wait",0,null);
-				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
-				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 2;
+
 				if(cb != null){
 					cb();
 				}
+
+				SetSortingOrder (-Mathf.RoundToInt (position.y));
 			});
 
 			StartCoroutine (moveCoroutine);
@@ -506,13 +481,19 @@ namespace WordJourney
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
 
-			SetSortingOrder (-Mathf.RoundToInt (position.y));
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
+
+
 
 			moveCoroutine = MoveTo (position,1f,delegate{
 				baCtr.PlayRoleAnim("wait",0,null);
+
 				if(cb != null){
 					cb();
 				}
+
+				SetSortingOrder (-Mathf.RoundToInt (position.y));
 			});
 
 			StartCoroutine (moveCoroutine);
