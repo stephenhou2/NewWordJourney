@@ -69,11 +69,13 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
+			bp.isInEvent = false;
+
 			if (isSuccess) {
 				(bp.agent as Player).PlayerPropertyChange (propertyType,gainAmount);
 				string propertyName = MyTool.GetPropertyName (propertyType);
 				string tintText = string.Format("{0}+{1}",propertyName,gainAmount);
-				ExploreManager.Instance.ShowTint(tintText,null);
+				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(tintText);
 			} 
 
 			isExausted = true;

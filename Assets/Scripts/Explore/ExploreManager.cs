@@ -243,31 +243,16 @@ namespace WordJourney
 			int targetY = 0;
 			Vector3 targetPos = Vector3.zero;
 
-//			if (clickForConsumablesPos) {
-//				targetX = (int)(clickPos.x + 0.5f);
-//				targetY = (int)(clickPos.y + 0.5f);
-//				// 以地图左下角为坐标原点时的点击位置
-//				targetPos = new Vector3(targetX, targetY, 0);
-//				mapGenerator.ClickConsumablesPosAt (targetPos);
-//				clickForConsumablesPos = false;
-//				return;
-//			}
-
-
-//			// 点击位置在地图有效区之外，直接返回
-//			if(clickPos.x + 0.5f >= newMapGenerator.columns 
-//				|| clickPos.y + 0.5f >= newMapGenerator.rows
-//				|| clickPos.x + 0.5f < 0 
-//				|| clickPos.y + 0.5f < 0){
-//				Debug.Log ("点击在地图有效区外部");
-//				return;
-//			}
-
-
 			// 由于地图贴图 tile时是以中心点为参考，宽高为1，所以如果以实际拼出的地图左下角为坐标原点，则点击位置需要进行如下坐标转换
 			targetX = (int)(clickPos.x + 0.5f);
 
 			targetY = (int)(clickPos.y + 0.5f);
+
+			if (targetX >= newMapGenerator.columns || targetY >= newMapGenerator.rows
+				|| targetX <= 0 || targetY <= 0) {
+				return;
+			}
+
 
 			// 以地图左下角为坐标原点时的点击位置
 			targetPos = new Vector3(targetX, targetY, 0);
@@ -329,6 +314,9 @@ namespace WordJourney
 			} else {
 				me.MapEventTriggered (isChooseCorret, battlePlayerCtr);
 			}
+
+			AllWalkableEventsStartMove ();
+
 		}
 
 
@@ -338,26 +326,21 @@ namespace WordJourney
 
 			me.MapEventTriggered (true, battlePlayerCtr);
 
+			AllWalkableEventsStartMove ();
+
 		}
 
-		public void ShowTint(string tintText,Sprite tintIcon){
-			expUICtr.SetUpTintHUD (tintText, tintIcon);
-		}
-
-
-
-//		public void ChangeMapEventStatusAtPosition(Vector3 position){
-//			newMapGenerator.
+//		public void ShowTint(string tintText){
+//			expUICtr.SetUpSingleTextTintHUD (tintText);
 //		}
+
 
 		public void DisableInteractivity(){
 			expUICtr.ShowMask ();
-//			isExploreClickValid = false;
 		}
 
 		public void EnableInteractivity(){
 			expUICtr.HideMask ();
-//			isExploreClickValid = true;
 		}
 
 		public void ObtainReward(Item reward){
@@ -495,6 +478,10 @@ namespace WordJourney
 
 		public void BattlePlayerWin(Transform[] monsterTransArray){
 
+			if (monsterTransArray.Length <= 0) {
+				return;
+			}
+
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);
 
@@ -522,12 +509,7 @@ namespace WordJourney
 
 			battlePlayerCtr.ResetToWaitAfterCurrentRoleAnimEnd ();
 
-			if (monsterTransArray.Length <= 0) {
-				return;
-			}
-
-
-			Vector3 monsterPos = bmCtr.originalPos;
+			Vector3 monsterPos = trans.position;
 
 			int monsterPosX = Mathf.RoundToInt(monsterPos.x);
 			int monsterPosY = Mathf.RoundToInt(monsterPos.y);
@@ -536,9 +518,11 @@ namespace WordJourney
 
 			player.totalGold += monster.rewardGold + player.extraGold;//更新玩家金钱
 
-			string tint = string.Format ("+{0}", monster.rewardGold);
+//			string tint = string.Format ("+{0}", monster.rewardGold);
 
-			ShowTint (tint, null);
+//			ShowTint (tint);
+
+			expUICtr.SetUpGoldGainTintHUD (monster.rewardGold);
 
 			player.experience += monster.rewardExperience + player.extraExperience;//更新玩家经验值
 
@@ -591,9 +575,9 @@ namespace WordJourney
 
 			battlePlayerCtr.isInFight = false;
 
-			AllWalkableEventsStartMove ();
-
 			battlePlayerCtr.isInEvent = false;
+
+			AllWalkableEventsStartMove ();
 
 		}
 

@@ -7,8 +7,6 @@ namespace WordJourney
 {
 	public class Block : MapEvent {
 
-
-//		private List<Sprite> mAllDocorationSprites = new List<Sprite>();
 		public List<Sprite> allDocorationSprites;
 
 
@@ -30,12 +28,12 @@ namespace WordJourney
 
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
-			throw new System.NotImplementedException ();
+			bp.isInEvent = false;
 		}
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
-			throw new System.NotImplementedException ();
+			bp.isInEvent = false;
 		}
 	}
 }

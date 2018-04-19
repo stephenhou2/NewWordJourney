@@ -185,12 +185,12 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
+			bp.isInEvent = false;
+
 			if (isSuccess) {
 
 				isOpen = true;
 				tmPro.enabled = false;
-
-//				mapItemRenderer.sprite = null;
 
 				bp.transform.position = pairStairsPos;
 				bp.singleMoveEndPos = pairStairsPos;

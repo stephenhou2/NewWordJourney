@@ -37,9 +37,9 @@ namespace WordJourney
 		private void OnPurchaseSucceed(){
 
 			if(currentPurchasingItemId.Equals(PurchaseManager.extra_bag_id)){
-				tintHUD.SetUpTintHUD ("成功解锁装备槽7", null);
+				tintHUD.SetUpSingleTextTintHUD ("成功解锁装备槽7");
 			}else if(currentPurchasingItemId.Equals(PurchaseManager.extra_equipmentSlot_id)){
-				tintHUD.SetUpTintHUD ("解锁成功背包4", null);
+				tintHUD.SetUpSingleTextTintHUD ("解锁成功背包4");
 			}else if (currentPurchasingItemId.Equals(PurchaseManager.new_life_id)){
 				
 			}
@@ -52,7 +52,7 @@ namespace WordJourney
 
 		private void OnPurchaseFail(){
 
-			tintHUD.SetUpTintHUD ("购买失败，请稍后重试", null);
+			tintHUD.SetUpSingleTextTintHUD ("购买失败，请稍后重试");
 
 			QuitPurchasePendingHUD ();
 

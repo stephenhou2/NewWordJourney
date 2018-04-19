@@ -24,7 +24,13 @@ namespace WordJourney
 		private int indexInPanel;
 		private ActiveSkill skill;
 
+		private Tweener maskTweener;
+
 		public void SetUpActiveSkillButton(ActiveSkill activeSkill, int index, Transform skilButtonContainer){
+
+			if (maskTweener != null) {
+				maskTweener.Kill ();
+			}
 
 			Sprite skillSprite = GameManager.Instance.gameDataCenter.allSkillSprites.Find (delegate(Sprite obj) {
 				return obj.name == activeSkill.skillIconName;
@@ -36,17 +42,21 @@ namespace WordJourney
 
 			manaConsume.text = activeSkill.manaConsume.ToString ();
 
-
 			this.indexInPanel = index;
+
 			this.skill = activeSkill;
 
 			mask.enabled = false;
 
-
 			bool isManaEnough = Player.mainPlayer.mana >= skill.manaConsume;
+
 			manaConsume.color = isManaEnough ? Color.blue : Color.red;
+
 			button.interactable = isManaEnough;
 
+			mask.fillAmount = 1;
+
+			mask.enabled = false;
 
 		}
 
@@ -56,10 +66,11 @@ namespace WordJourney
 				mask.fillAmount = 1.0f;
 				mask.enabled = true;
 				button.interactable = false;
-				mask.DOFillAmount(0,skill.skillCoolenTime).OnComplete(delegate{
+				maskTweener = mask.DOFillAmount(0,skill.skillCoolenTime).OnComplete(delegate{
 					mask.enabled = false;
-					button.interactable = true;
-					manaConsume.color = Player.mainPlayer.mana >= skill.manaConsume ? Color.blue : Color.red;
+					bool isManaEnough = Player.mainPlayer.mana >= skill.manaConsume;
+					manaConsume.color = isManaEnough ? Color.blue : Color.red;
+					button.interactable = isManaEnough;
 				});
 				cb(indexInPanel);
 			});

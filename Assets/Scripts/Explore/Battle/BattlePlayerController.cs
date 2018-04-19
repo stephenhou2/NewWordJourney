@@ -135,7 +135,7 @@ namespace WordJourney
 						fadeStepsLeft--;
 					}
 					inSingleMoving = false;
-					PlayRoleAnim ("wait", 0, null);
+					PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 				});
 
 				Debug.Log ("无有效路径");
@@ -266,8 +266,8 @@ namespace WordJourney
 
 				nextPos = pathPosList [0];
 
-				if (ArriveEndPoint() && armatureCom.animation.lastAnimationName != "wait") {
-					PlayRoleAnim ("wait", 0, null);
+				if (ArriveEndPoint() && armatureCom.animation.lastAnimationName != CommonData.roleIdleAnimName) {
+					PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 					return;
 				}
 
@@ -317,7 +317,7 @@ namespace WordJourney
 				}
 
 				if (resetWalkAnim) {
-					PlayRoleAnim ("walk", 0, null);
+					PlayRoleAnim (CommonData.roleWalkAnimName, 0, null);
 				} 
 			}
 
@@ -349,6 +349,8 @@ namespace WordJourney
 					if (me != null) {
 						exploreManager.currentEnteredMapEvent = me;
 
+						isInEvent = true;
+
 						me.EnterMapEvent (this);
 					}
 
@@ -366,7 +368,7 @@ namespace WordJourney
 				if (ArriveEndPoint ()) {
 					moveTweener.Kill (true);
 //					backgroundMoveTweener.Kill (true);
-					PlayRoleAnim ("wait", 0, null);
+					PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 //					Debug.Log ("到达终点");
 				} else {
 					Debug.Log (string.Format("actual pos:{0}/ntarget pos:{1},predicat pos{2}",transform.position,moveDestination,singleMoveEndPos));
@@ -392,7 +394,7 @@ namespace WordJourney
 			} else {
 				moveTweener.Kill (true);
 //				backgroundMoveTweener.Kill (true);
-				PlayRoleAnim ("wait", 0, null);
+				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			}
 
 		}
@@ -445,7 +447,7 @@ namespace WordJourney
 			StopCoroutine ("MoveWithNewPath");
 			moveTweener.Kill (false);
 			inSingleMoving = false;
-			PlayRoleAnim ("wait", 0, null);
+			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			SetSortingOrder (-(int)transform.position.y);
 			Vector3 currentPos = new Vector3(Mathf.RoundToInt(transform.position.x),Mathf.RoundToInt(transform.position.y),0);
 			moveDestination = currentPos;
@@ -455,7 +457,7 @@ namespace WordJourney
 		public override void TowardsLeft(bool andWait = true){
 			ActiveBattlePlayer (false, false, true);
 			if (andWait) {
-				PlayRoleAnim ("wait", 0, null);
+				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			}
 			armatureCom.armature.flipX = true;
 			towards = MyTowards.Left;
@@ -464,7 +466,7 @@ namespace WordJourney
 		public override void TowardsRight(bool andWait = true){
 			ActiveBattlePlayer (false, false, true);
 			if (andWait) {
-				PlayRoleAnim ("wait", 0, null);
+				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			}
 			armatureCom.armature.flipX = false;
 			towards = MyTowards.Right;
@@ -473,7 +475,7 @@ namespace WordJourney
 		public override void TowardsUp(bool andWait = true){
 			ActiveBattlePlayer (false, true, false);
 			if (andWait) {
-				PlayRoleAnim ("wait", 0, null);
+				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			}
 			towards = MyTowards.Up;
 		}
@@ -482,7 +484,7 @@ namespace WordJourney
 		{
 			ActiveBattlePlayer (true, false, false);
 			if (andWait) {
-				PlayRoleAnim ("wait", 0, null);
+				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			}
 			towards = MyTowards.Down;
 			
@@ -587,7 +589,7 @@ namespace WordJourney
 				currentUsingActiveSkill = normalAttack;
 				UseSkill (currentUsingActiveSkill);
 			} else {
-				PlayRoleAnim ("wait", 0, null);
+				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			}
 
 		}
@@ -600,7 +602,7 @@ namespace WordJourney
 		/// </summary>
 		public override void Fight(){
 			if (!autoFight) {
-				PlayRoleAnim ("wait", 0, null);
+				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			} else {
 				currentUsingActiveSkill = normalAttack;
 				attackCoroutine = InvokeAttack (currentUsingActiveSkill);
@@ -631,7 +633,7 @@ namespace WordJourney
 			// 播放技能对应的角色动画，角色动画结束后播放攻击间隔动画
 			this.PlayRoleAnim (skill.selfRoleAnimName, 1, () => {
 				// 播放等待动画
-				this.PlayRoleAnim("interval",0,null);
+				this.PlayRoleAnim(CommonData.roleAttackIntervalAnimName,0,null);
 			});
 
 		}
@@ -655,6 +657,9 @@ namespace WordJourney
 
 			// 技能效果影响玩家和怪物
 			currentUsingActiveSkill.AffectAgents(this,enemy);
+
+			UpdateStatusPlane ();
+			enemy.UpdateStatusPlane ();
 
 //			isAttackActionFinish = true;
 
@@ -729,6 +734,36 @@ namespace WordJourney
 
 		}
 
+
+
+		public HLHRoleAnimInfo GetCurrentRoleAnimInfo(){
+			string currentAnimName = armatureCom.animation.lastAnimationName;
+			AnimationState state = armatureCom.animation.GetState (currentAnimName);
+			float animTime = state.currentTime;
+			int playTimes = state.playTimes;
+			return new HLHRoleAnimInfo (currentAnimName, playTimes, animTime, animEndCallBack);
+		}
+
+
+		public void PlayRoleAnimByTime(string animName,float animBeginTime,int playTimes,CallBack cb){
+			
+			isIdle = animName == CommonData.roleIdleAnimName;
+
+			// 如果还有等待上个角色动作结束的协程存在，则结束该协程
+			if (waitRoleAnimEndCoroutine != null) {
+				StopCoroutine (waitRoleAnimEndCoroutine);
+			}
+
+
+			// 播放新的角色动画
+			armatureCom.animation.GotoAndPlayByTime(animName,animBeginTime,playTimes);
+
+			// 如果有角色动画结束后要执行的回调，则开启一个新的等待角色动画结束的协程，等待角色动画结束后执行回调
+			if (cb != null) {
+				waitRoleAnimEndCoroutine = ExcuteCallBackAtEndOfRoleAnim (cb);
+				StartCoroutine(waitRoleAnimEndCoroutine);
+			}
+		}
 
 
 		/// <summary>
@@ -818,7 +853,7 @@ namespace WordJourney
 
 			QuitFight ();
 
-			PlayRoleAnim ("die", 1, () => {
+			PlayRoleAnim (CommonData.roleDieAnimName, 1, () => {
 				if(fromFight){
 					exploreManager.BattlePlayerLose ();
 				}else{
@@ -835,7 +870,7 @@ namespace WordJourney
 
 		public void RecomeToLife(){
 			agent.ResetBattleAgentProperties (true);
-			PlayRoleAnim ("wait", 0, null);
+			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			isInFight = false;
 			isInExplore = true;
 			inSingleMoving = false;

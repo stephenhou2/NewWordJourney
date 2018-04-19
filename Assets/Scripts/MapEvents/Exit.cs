@@ -46,7 +46,8 @@ namespace WordJourney
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
 			if (!isOpen) {
-				ExploreManager.Instance.ShowTint ("这里被一股奇怪的魔力封印了",null);
+				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("这里被一股奇怪的魔力封印了");
+				bp.isInEvent = false;
 			} else {
 				MapEventTriggered (true, bp);
 			}

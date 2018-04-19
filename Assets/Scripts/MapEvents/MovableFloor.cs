@@ -97,7 +97,7 @@ namespace WordJourney
 
 			bp.ActiveBattlePlayer (false, false, true);
 
-			bp.PlayRoleAnim ("wait", 0, null);
+			bp.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 
 			float moveDuration = Mathf.Sqrt((endPos - startPos).sqrMagnitude) / moveSpeed;
 

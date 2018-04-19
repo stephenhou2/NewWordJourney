@@ -131,6 +131,8 @@ namespace WordJourney
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
 
+			bp.isInEvent = false;
+
 			if (isSuccess) {
 				ExploreManager.Instance.ObtainReward (item);
 			}

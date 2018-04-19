@@ -27,13 +27,24 @@ namespace WordJourney
 //			for (int i = 401; i < 403; i++) {
 //				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
 //			}
+
+			Equipment eqp = Item.NewItemWith (0, 1) as Equipment;
+
+			eqp.attachedSkillId = 1;
+
+			Player.mainPlayer.AddItem (eqp);
+
+			Equipment eqp2 = Item.NewItemWith (1, 1) as Equipment;
+
+			Player.mainPlayer.AddItem (eqp2);
+
 		}
 
 		public void AddBagItemWhenBagFull(Item item){
 
 			SetUpBagView (true);
 
-			bagView.SetUpTintHUD ("背包已满，请先整理背包", null);
+			bagView.SetUpSingleTextTintHUD ("背包已满，请先整理背包");
 
 			itemToAddWhenBagFull = item;
 
@@ -135,6 +146,10 @@ namespace WordJourney
 
 			bagView.itemDetail.SetUpOperationButtons (false, true, false);
 
+			if (ExploreManager.Instance.battlePlayerCtr.isInFight) {
+				ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons ();
+			}
+
 		}
 
 
@@ -182,7 +197,7 @@ namespace WordJourney
 			}
 
 			if (Player.mainPlayer.CheckBagFull (currentSelectItem)) {
-				bagView.SetUpTintHUD ("背包已满",null);
+				bagView.SetUpSingleTextTintHUD ("背包已满,请先整理背包");
 				return;
 			}
 
@@ -201,7 +216,9 @@ namespace WordJourney
 
 			bagView.ClearItemDetail ();
 
-	
+			if (ExploreManager.Instance.battlePlayerCtr.isInFight) {
+				ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons ();
+			}
 		}
 			
 

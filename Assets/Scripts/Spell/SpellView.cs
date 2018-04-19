@@ -164,7 +164,7 @@ namespace WordJourney
 
 		public void SetUpTintHUD(string tint,Sprite sprite){
 
-			tintHUD.SetUpTintHUD (tint,sprite);
+			tintHUD.SetUpSingleTextTintHUD (tint);
 
 		}
 

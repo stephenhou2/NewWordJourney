@@ -88,8 +88,7 @@ namespace WordJourney
 				excutor.triggeredCallback (enemy, self);
 			}
 
-			self.UpdateStatusPlane ();
-			enemy.UpdateStatusPlane ();
+
 
 		}
 

@@ -46,15 +46,13 @@ namespace WordJourney
 
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
-			if (isWordTriggered) {
-				ExploreManager.Instance.ShowWordsChoosePlane (wordsArray);
-			} else {
-				MapEventTriggered (true, bp);
-			}
+			ExploreManager.Instance.ShowWordsChoosePlane (wordsArray);
 		}
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
+			bp.isInEvent = false;
+
 			bc2d.enabled = false;
 
 			mapItemRenderer.enabled = false;
@@ -66,6 +64,8 @@ namespace WordJourney
 			IEnumerator openGoldPackCoroutine = LatelyOpenGoldPack (isSuccess, bp);
 
 			StartCoroutine (openGoldPackCoroutine);
+
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 		}
 
 		private IEnumerator LatelyOpenGoldPack(bool isSuccess,BattlePlayerController bp){
@@ -83,10 +83,10 @@ namespace WordJourney
 			}
 
 			if (isSuccess) {
-				(bp.agent as Player).totalGold += goldAmount + bp.agent.extraGold;
+				int goldGain = goldAmount + bp.agent.extraGold;
+				(bp.agent as Player).totalGold += goldGain;
 				ExploreManager.Instance.UpdatePlayerStatusPlane ();
-				string tintText = string.Format ("+{0}", goldAmount);
-				ExploreManager.Instance.ShowTint (tintText, null);
+				ExploreManager.Instance.expUICtr.SetUpGoldGainTintHUD(goldGain);
 			}
 			int posX = Mathf.RoundToInt (transform.position.x);
 			int posY = Mathf.RoundToInt (transform.position.y);

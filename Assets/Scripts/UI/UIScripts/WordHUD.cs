@@ -121,10 +121,6 @@ namespace WordJourney
 					
 				fillAndCodeCells.Add (cell);
 
-//				FillAndCodeCell2 cell = characterToFillCellPool.GetInstance<FillAndCodeCell2> (characterToFillCellModel.gameObject, characterToFillCellContainer);
-//
-//				answerCharacters [i] = cell.SetUpFillAndCodeCell (i,charInQuestion,realChar,CharacterChange);
-
 			}
 
 		}
@@ -185,6 +181,8 @@ namespace WordJourney
 
 			}
 		}
+
+
 
 		private void CharacterChange(int characterCellIndex,char changeTo){
 
@@ -272,6 +270,8 @@ namespace WordJourney
 				choiceTexts [randomIndex].color = Color.white;
 
 			}
+
+			canQuitWhenClickBackground = false;
 				
 		}
 
@@ -302,16 +302,31 @@ namespace WordJourney
 
 			if (index == answerIndex) {
 				choiceTexts [index].color = Color.green;
-				explainationChooseCallBack (true);
+				StartCoroutine ("ShowChooseResultForAWhile", true);
 			} else {
 				choiceTexts [index].color = Color.red;
 				choiceTexts [answerIndex].color = Color.green;
-				explainationChooseCallBack (false);
+				StartCoroutine ("ShowChooseResultForAWhile", false);
 			}
 
 			DisableClick ();
 
 		}
+
+
+		private IEnumerator ShowChooseResultForAWhile(bool isChooseCorrect){
+
+			yield return new WaitForSeconds (1.0f);
+
+//			ExploreManager.Instance.DisableInteractivity ();
+
+			QuitWordHUD ();
+
+			explainationChooseCallBack (isChooseCorrect);
+
+		}
+
+
 
 		/// <summary>
 		/// 禁止屏幕点击响应

@@ -100,25 +100,5 @@ namespace WordJourney
 
 		}
 
-
-//		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
-//		{
-//
-//			bc2d.enabled = false;
-//
-//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [(int)transform.position.x, (int)transform.position.y] = 1;
-//
-//			Vector3 droppedItemPos = transform.position + new Vector3 (0, dropItemOffsetY, 0);
-//
-//			PlayTreasureBoxAnimAndAudio (delegate {
-//				if (isSuccess) {
-//					ExploreManager.Instance.newMapGenerator.SetUpRewardInMap (rewardItem,droppedItemPos);
-//				}else{
-//					Debug.Log("wrong answer");
-//				}
-//			});
-//
-//			AddToPool (ExploreManager.Instance.newMapGenerator.mapEventsPool);
-//		}
 	}
 }

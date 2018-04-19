@@ -58,6 +58,8 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
+			bp.isInEvent = false;
+
 			bp.agent.health += cureAmount > 0 ? cureAmount : (int)(curePercentage * bp.agent.maxHealth);
 
 			bp.SetEffectAnim ("Healing", null);
@@ -69,6 +71,8 @@ namespace WordJourney
 			isExausted = true;
 
 			mapItemRenderer.sprite = curePointExausted;
+
+
 		}
 
 	}

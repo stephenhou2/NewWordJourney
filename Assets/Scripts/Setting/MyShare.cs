@@ -49,14 +49,14 @@ namespace WordJourney
 	        if (state == ResponseState.Success)
 	        {
 				QuitShareHUD ();
-				string tintStr = "分享成功，获得水晶x30";
-				tintHUD.SetUpTintHUD (tintStr, null);
+				string tintStr = "分享成功，获得金币x30";
+				tintHUD.SetUpSingleTextTintHUD (tintStr);
 				DataHandler.DeleteFile (Application.persistentDataPath + "/tempPics/shareImage.png");
 	        }else if (state == ResponseState.Fail)
 			{
 				QuitShareHUD ();
 				string tintStr = "打开客户端失败";
-				tintHUD.SetUpTintHUD (tintStr, null);
+				tintHUD.SetUpSingleTextTintHUD (tintStr);
 				DataHandler.DeleteFile (Application.persistentDataPath + "/tempPics/shareImage.png");
 	        }else if (state == ResponseState.Cancel)
 	        {

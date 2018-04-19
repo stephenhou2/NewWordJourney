@@ -28,7 +28,7 @@ namespace WordJourney
 //		private BattlePlayerController bpCtr;
 
 
-		public Vector3 originalPos;
+//		public Vector3 originalPos;
 
 		// 是否可以交谈
 //		public bool canTalk;
@@ -58,9 +58,8 @@ namespace WordJourney
 
 		public void SetAlive(){
 			boxCollider.enabled = true;
-			PlayRoleAnim ("wait", 0, null);
+			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			SetSortingOrder (-Mathf.RoundToInt(transform.position.y));
-//			originalPos = transform.position;
 		}
 
 
@@ -133,7 +132,7 @@ namespace WordJourney
 			// 播放技能对应的角色动画，角色动画结束后播放攻击间隔动画
 			this.PlayRoleAnim (skill.selfRoleAnimName, 1, () => {
 				// 播放等待动画
-				this.PlayRoleAnim("interval",0,null);
+				this.PlayRoleAnim(CommonData.roleAttackIntervalAnimName,0,null);
 			});
 
 		}
@@ -146,6 +145,9 @@ namespace WordJourney
 			GameManager.Instance.soundManager.PlayAudioClip ("Skill/" + currentUsingActiveSkill.sfxName);
 
 			currentUsingActiveSkill.AffectAgents (this, enemy);
+
+			UpdateStatusPlane ();
+			enemy.UpdateStatusPlane ();
 
 //			isAttackActionFinish = true;
 
@@ -314,7 +316,7 @@ namespace WordJourney
 
 			exploreManager.BattlePlayerWin (new Transform[]{ transform });
 
-			PlayRoleAnim ("death", 1, delegate {
+			PlayRoleAnim (CommonData.roleDieAnimName, 1, delegate {
 				MapWalkableEvent mwe = GetComponent<MapWalkableEvent>();
 				if(mwe is MapMonster){
 					mwe.AddToPool(exploreManager.newMapGenerator.monstersPool);

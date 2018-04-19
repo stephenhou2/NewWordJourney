@@ -107,6 +107,13 @@ namespace WordJourney{
 		public static string monstersContainerName = CommonData.instanceContainerName + "/AllMonsters";
 
 
+		public static string roleIdleAnimName = "wait";
+		public static string roleWalkAnimName = "walk";
+		public static string roleRunAnimName = "run";
+		public static string roleAttackAnimName = "attack";
+		public static string roleAttackIntervalAnimName = "interval";
+		public static string roleDieAnimName = "death";
+
 		public static int aInASCII = (int)('a');
 
 		// 当前屏幕分辨率和预设屏幕分辨率之间的转换比例

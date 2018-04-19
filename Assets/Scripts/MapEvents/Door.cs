@@ -112,7 +112,8 @@ namespace WordJourney
 			}
 
 			if (!isOpen && !isWordTrigger) {
-				ExploreManager.Instance.ShowTint ("隐约听到齿轮转动的声音,应该需要通过机关才能打开", null);
+				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("隐约听到齿轮转动的声音,应该需要通过机关才能打开");
+				bp.isInEvent = false;
 			}
 		}
 		private LearnWord GetAValidWord(){
@@ -148,6 +149,8 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
+			bp.isInEvent = false;
+
 			if (isSuccess) {
 				
 				if (isOpen) {

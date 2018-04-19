@@ -480,8 +480,8 @@ namespace WordJourney
 
 
 			if (Player.mainPlayer.totalGold < currentSelectedItem.price) {
-				tint = "水晶不足";
-				tintHUD.SetUpTintHUD (tint,null);
+				tint = "金钱不足";
+				tintHUD.SetUpSingleTextTintHUD (tint);
 				return;
 			}
 
@@ -603,12 +603,13 @@ namespace WordJourney
 			switch(reward.rewardType){
 			case HLHRewardType.Gold:
 				player.totalGold += reward.rewardValue;
-				tint = string.Format("金钱+{0}",reward.rewardValue);
+				ExploreManager.Instance.expUICtr.SetUpGoldGainTintHUD (reward.rewardValue);
 				break;
 			case HLHRewardType.Experience:
 				player.experience += reward.rewardValue;
 				ExploreManager.Instance.UpdatePlayerStatusPlane ();
 				tint = string.Format("经验+{0}",reward.rewardValue);
+				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD (tint);
 				break;
 			case HLHRewardType.Item:
 				if (reward.attachValue > 0) {
@@ -638,12 +639,13 @@ namespace WordJourney
 				} else {
 					tint = string.Format ("{0} +{1}", MyTool.GetPropertyName(pt), reward.attachValue);
 				}
+				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD (tint);
 				break;
 			}
 
-			if (tint != string.Empty) {
-				ExploreManager.Instance.ShowTint (tint, null);
-			}
+//			if (tint != string.Empty) {
+//				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD (tint);
+//			}
 		}
 
 		private void ResetTradeAndSpecialOperationPlane(){

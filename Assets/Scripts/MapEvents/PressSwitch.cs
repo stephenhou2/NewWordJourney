@@ -136,6 +136,8 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
+			bp.isInEvent = false;
+
 			if (hasTriggered) {
 				return;
 			}

@@ -66,6 +66,8 @@ namespace WordJourney
 		public override void OnTriggerEnter2D (Collider2D col)
 		{
 
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+
 			if (!isTrapOn) {
 				return;
 			}
@@ -160,7 +162,7 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
-			
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 		}
 
 		public override void ChangeStatus ()

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	using DragonBones;
 
 	public class MapMonster : MapWalkableEvent {
 
@@ -168,25 +169,6 @@ namespace WordJourney
 
 		}
 
-//		private bool CheckIsBlocked(Vector3 collisionPos,Vector3 playerPos){
-//
-//			bool isBlocked = true;
-//
-//			int posX = Mathf.RoundToInt (collisionPos.x);
-//			int posY = Mathf.RoundToInt (collisionPos.y);
-//
-//			isBlocked = ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [posX, posY] != 1;
-//
-//			if (posX == Mathf.RoundToInt (transform.position.x)) {
-//				isBlocked = (transform.position.y - posY) * (playerPos.y - posY) < 0;
-//			} else if (posY == Mathf.RoundToInt (transform.position.y)) {
-//				isBlocked = (transform.position.x - posX) * (playerPos.x - posX) < 0;
-//			}
-//				
-//			return isBlocked;
-//
-//		}
-
 		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
 		{
 			BattleMonsterController baCtr = transform.GetComponent<BattleMonsterController> ();
@@ -294,10 +276,6 @@ namespace WordJourney
 
 			if (!isReadyToFight) {
 
-				if (bp.towards == MyTowards.Up || bp.towards == MyTowards.Down) {
-					bp.TowardsLeft ();
-				}
-
 				ExploreManager.Instance.PlayerStartFight ();
 			}
 
@@ -313,7 +291,7 @@ namespace WordJourney
 
 			yield return new WaitUntil (() => isReadyToFight);
 
-			baCtr.PlayRoleAnim ("wait", 0, null);
+			baCtr.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 
 			yield return new WaitForSeconds (1f);
 
@@ -331,9 +309,11 @@ namespace WordJourney
 
 			Vector3 monsterFightPos = Vector3.zero;
 
-			if (posOffsetX > 0) {
+			HLHRoleAnimInfo playerCurrentAnimInfo = battlePlayerCtr.GetCurrentRoleAnimInfo ();
 
-				battlePlayerCtr.TowardsLeft (!battlePlayerCtr.isInFight);
+			if (posOffsetX > 0) {
+				
+				battlePlayerCtr.TowardsLeft ();
 				baCtr.TowardsRight ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
@@ -353,7 +333,7 @@ namespace WordJourney
 
 					baCtr.TowardsLeft ();
 
-					battlePlayerCtr.TowardsRight (!battlePlayerCtr.isInFight);
+					battlePlayerCtr.TowardsRight ();
 
 					monsterFightPos = new Vector3 (playerOriPos.x+ 1, playerOriPos.y, 0);
 
@@ -361,7 +341,7 @@ namespace WordJourney
 
 					baCtr.TowardsRight ();
 
-					battlePlayerCtr.TowardsLeft (!battlePlayerCtr.isInFight);
+					battlePlayerCtr.TowardsLeft ();
 
 					monsterFightPos = new Vector3 (playerOriPos.x - 1, playerOriPos.y, 0);
 
@@ -369,8 +349,8 @@ namespace WordJourney
 
 					baCtr.TowardsLeft ();
 
-					battlePlayerCtr.TowardsRight (!battlePlayerCtr.isInFight);
-						
+					battlePlayerCtr.TowardsRight ();
+
 					monsterFightPos = new Vector3 (playerOriPos.x + 0.5f, playerOriPos.y, 0);
 					battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
 
@@ -378,7 +358,7 @@ namespace WordJourney
 
 			} else if (posOffsetX < 0) {
 
-				battlePlayerCtr.TowardsRight (!battlePlayerCtr.isInFight);
+				battlePlayerCtr.TowardsRight ();
 				baCtr.TowardsLeft ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
@@ -386,7 +366,7 @@ namespace WordJourney
 					monsterFightPos = new Vector3 (playerOriPos.x + 1, playerOriPos.y, 0);
 
 				} else if (playerPosX + 1 == monsterPosX && playerPosY == monsterPosY) {
-					
+
 					monsterFightPos = new Vector3 (playerOriPos.x + 1, playerOriPos.y, 0);
 
 				} else {
@@ -397,8 +377,9 @@ namespace WordJourney
 
 			}
 
-			battlePlayerCtr.isInEvent = true;
-
+			battlePlayerCtr.PlayRoleAnimByTime (playerCurrentAnimInfo.roleAnimName,playerCurrentAnimInfo.roleAnimTime,
+				playerCurrentAnimInfo.playTimes, playerCurrentAnimInfo.animEndCallback);
+				
 			RunToPosition (monsterFightPos, delegate {
 				if (!battlePlayerCtr.isInFight) {
 					ExploreManager.Instance.PlayerAndMonsterStartFight ();
@@ -413,7 +394,7 @@ namespace WordJourney
 
 		public override void WalkToPosition(Vector3 position,CallBack cb,bool showAlertArea = true){
 
-			baCtr.PlayRoleAnim ("walk", 0, null);
+			baCtr.PlayRoleAnim (CommonData.roleWalkAnimName, 0, null);
 
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
 			int oriPosY = Mathf.RoundToInt (transform.position.y);
@@ -453,7 +434,7 @@ namespace WordJourney
 			}
 
 			moveCoroutine = MoveTo (position,3f,delegate{
-				baCtr.PlayRoleAnim("wait",0,null);
+				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName,0,null);
 
 				if(cb != null){
 					cb();
@@ -470,7 +451,7 @@ namespace WordJourney
 
 		protected override void RunToPosition(Vector3 position,CallBack cb){
 
-			baCtr.PlayRoleAnim ("run", 0, null);
+			baCtr.PlayRoleAnim (CommonData.roleRunAnimName, 0, null);
 
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
 			int oriPosY = Mathf.RoundToInt (transform.position.y);
@@ -487,7 +468,7 @@ namespace WordJourney
 
 
 			moveCoroutine = MoveTo (position,1f,delegate{
-				baCtr.PlayRoleAnim("wait",0,null);
+				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName,0,null);
 
 				if(cb != null){
 					cb();

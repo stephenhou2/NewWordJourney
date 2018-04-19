@@ -91,6 +91,10 @@ namespace WordJourney
 
 
 			if (!Player.mainPlayer.isNewPlayer) {
+				bool playerDataExist = DataHandler.FileExist (CommonData.persistDataPath + "PlayerData.json");
+				if (!playerDataExist) {
+					GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
+				}
 				ShowExploreSceneSlowly ();
 			} else {
 				Player.mainPlayer.isNewPlayer = false;
@@ -193,8 +197,12 @@ namespace WordJourney
 
 			battlePlane.gameObject.SetActive (true);
 
-			bpUICtr.SetUpFightPlane ();
+			bpUICtr.SetUpActiveSkillButtons ();
 
+		}
+
+		public void UpdateActiveSkillButtons(){
+			bpUICtr.SetUpActiveSkillButtons ();
 		}
 
 		public void HideFightPlane(){
@@ -208,8 +216,12 @@ namespace WordJourney
 			bpUICtr.ShowLevelUpPlane ();
 		}
 
-		public void SetUpTintHUD(string tint,Sprite sprite){
-			tintHUD.SetUpTintHUD (tint,sprite);
+		public void SetUpSingleTextTintHUD(string tint){
+			tintHUD.SetUpSingleTextTintHUD (tint);
+		}
+
+		public void SetUpGoldGainTintHUD(int goldGain){
+			tintHUD.SetUpGoldTintHUD (goldGain);
 		}
 
 		/// <summary>
@@ -265,6 +277,7 @@ namespace WordJourney
 		/// </summary>
 		public void QuitBillboard(){
 			billboardPlane.gameObject.SetActive (false);
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 			ExploreManager.Instance.AllWalkableEventsStartMove ();
 		}
 
@@ -352,24 +365,11 @@ namespace WordJourney
 
 		private void ChooseAnswerInWordHUD(bool isChooseCorrect){
 
-			ShowMask ();
-
-			StartCoroutine ("ShowChooseResultForAWhile",isChooseCorrect);
-
-//			exploreManager.ChooseAnswerInWordHUD (isChooseCorrect);
-		}
-
-		private IEnumerator ShowChooseResultForAWhile(bool isChooseCorrect){
-
-			yield return new WaitForSeconds (1.0f);
-
-			HideMask ();
-
-			wordHUD.QuitWordHUD ();
-
 			ExploreManager.Instance.ChooseAnswerInWordHUD (isChooseCorrect);
 
 		}
+
+
 
 		public void SetUpSimpleItemDetail(Item item){
 			simpleItemDetail.SetupSimpleItemDetail (item);
@@ -386,10 +386,12 @@ namespace WordJourney
 		public void ConfirmEnterNextLevel(){
 			HideEnterNextLevelQueryHUD ();
 			ExploreManager.Instance.EnterNextLevel ();
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 		}
 
 		public void CancelEnterNextLevel(){
 			HideEnterNextLevelQueryHUD ();
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 		}
 
 

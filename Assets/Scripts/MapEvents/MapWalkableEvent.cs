@@ -55,7 +55,7 @@ namespace WordJourney
 			StopCoroutine("AutoWalk");
 			isInAutoWalk = false;
 			if (!baCtr.isIdle) {
-				baCtr.PlayRoleAnim ("wait", 0, null);
+				baCtr.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			}
 		}
 
@@ -164,6 +164,12 @@ namespace WordJourney
 
 			int[,] mapWalkableInfo = ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray;
 			int[,] mapWalkableEventsLayoutInfo = ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray;
+
+			if (posX >= ExploreManager.Instance.newMapGenerator.columns || posX <= 0
+			   || posY >= ExploreManager.Instance.newMapGenerator.rows || posY <= 0) {
+				return false;
+			}
+
 			return mapWalkableInfo [posX, posY] == 1 && mapWalkableEventsLayoutInfo [posX, posY] == 0;
 		}
 

@@ -89,7 +89,7 @@ namespace WordJourney
 				if (Player.mainPlayer.CheckBagFull (draggedItem)) {
 					SetDropResult (eventData, false);
 					tintImage.enabled = false;
-					bagView.SetUpTintHUD ("背包已满",null);
+					bagView.SetUpSingleTextTintHUD ("背包已满,请先整理背包");
 					return;
 				}
 	
@@ -121,7 +121,7 @@ namespace WordJourney
 				if (Player.mainPlayer.CheckBagFull (draggedItem)) {
 					SetDropResult (eventData, false);
 					tintImage.enabled = false;
-					bagView.SetUpTintHUD ("背包已满",null);
+					bagView.SetUpSingleTextTintHUD ("背包已满,请先整理背包");
 					return;
 				}
 

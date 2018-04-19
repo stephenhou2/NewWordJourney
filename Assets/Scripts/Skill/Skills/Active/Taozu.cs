@@ -38,7 +38,7 @@ namespace WordJourney
 				}
 			},false);
 				
-			self.PlayRoleAnim ("wait", 0, null);
+			self.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 
 			ExploreManager.Instance.expUICtr.QuitFight ();
 

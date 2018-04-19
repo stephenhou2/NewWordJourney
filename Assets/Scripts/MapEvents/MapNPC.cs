@@ -102,7 +102,7 @@ namespace WordJourney{
 
 //			EnableAllAlertAreaDetect ();
 
-			baCtr.PlayRoleAnim ("wait", 0, null);
+			baCtr.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 
 			bc2d.enabled = true;
 
@@ -147,8 +147,7 @@ namespace WordJourney{
 				return;
 			}
 
-//			canShowNpcPlane = true;
-
+//			(ba as BattlePlayerController).isInEvent = false;
 		}
 
 		public override void EnterMapEvent(BattlePlayerController bp)
@@ -164,9 +163,7 @@ namespace WordJourney{
 				return;
 			}
 
-//			if (!canShowNpcPlane) {
-//				return;
-//			}
+			bp.isInEvent = true;
 
 			DisableAllAlertAreaDetect ();
 
@@ -419,7 +416,7 @@ namespace WordJourney{
 
 
 
-			baCtr.PlayRoleAnim ("walk", 0, null);
+			baCtr.PlayRoleAnim (CommonData.roleWalkAnimName, 0, null);
 
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
 			int oriPosY = Mathf.RoundToInt (transform.position.y);
@@ -456,7 +453,7 @@ namespace WordJourney{
 			}
 
 			moveCoroutine = MoveTo (position,3f,delegate{
-				baCtr.PlayRoleAnim("wait",0,null);
+				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName,0,null);
 
 				if(cb != null){
 					cb();
@@ -481,7 +478,7 @@ namespace WordJourney{
 			}
 
 
-			baCtr.PlayRoleAnim ("run", 0, null);
+			baCtr.PlayRoleAnim (CommonData.roleRunAnimName, 0, null);
 
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
 			int oriPosY = Mathf.RoundToInt (transform.position.y);
@@ -498,7 +495,7 @@ namespace WordJourney{
 
 
 			moveCoroutine = MoveTo (position,1f,delegate{
-				baCtr.PlayRoleAnim("wait",0,null);
+				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName,0,null);
 
 				if(cb != null){
 					cb();

@@ -119,14 +119,14 @@ namespace WordJourney
 		public MovableBox movableBoxModel;
 
 
-		// 植物模型
-		public Plant plantModel;
+//		// 植物模型
+//		public Plant plantModel;
 
 		// 压力开关模型
 		public PressSwitch pressSwitchModel;
 
 		// 装饰用障碍物模型
-		public Block blockModel;
+//		public Block blockModel;
 
 
 		private Vector3 transportPositionInMap;
@@ -804,7 +804,7 @@ namespace WordJourney
 
 			bpCtr.TowardsDown ();
 			// 默认进入关卡后播放的角色动画
-			bpCtr.PlayRoleAnim ("wait", 0, null);
+			bpCtr.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 
 			bpCtr.isInFight = false;
 
@@ -817,7 +817,7 @@ namespace WordJourney
 			yield return null;
 			bpCtr.ActiveBattlePlayer (false, false, true);
 			// 默认进入关卡后播放的角色动画
-			bpCtr.PlayRoleAnim ("wait", 0, null);
+			bpCtr.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 		}
 
 		/// <summary>

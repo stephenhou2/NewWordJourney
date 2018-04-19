@@ -105,9 +105,9 @@ namespace WordJourney
 
 		}
 
-		public void SetUpFightPlane(){
-			SetUpActiveSkillButtons ();
-		}
+//		public void SetUpFightPlane(){
+//			SetUpActiveSkillButtons ();
+//		}
 
 		/// <summary>
 		/// 退出战斗时重用物体进缓存池
@@ -120,7 +120,8 @@ namespace WordJourney
 		/// <summary>
 		/// 初始化主动技能按钮
 		/// </summary>
-		private void SetUpActiveSkillButtons(){
+		public void SetUpActiveSkillButtons(){
+			activeSkillButtonPool.AddChildInstancesToPool (activeSkillButtonContainer);
 			for (int i = 0; i < player.attachedActiveSkills.Count; i++) {
 				ActiveSkill skill = player.attachedActiveSkills [i];
 				ActiveSkillButton activeSkillButton = activeSkillButtonPool.GetInstance<ActiveSkillButton> (activeSkillButtonModel.gameObject, activeSkillButtonContainer);
@@ -139,8 +140,6 @@ namespace WordJourney
 			ActiveSkill skill = player.attachedActiveSkills [index];
 
 			bpCtr.UseSkill (skill);
-
-//			player.mana -= skill.manaConsume;
 
 		}
 
@@ -162,12 +161,12 @@ namespace WordJourney
 
 
 
-		public void OnProduceButtonClick(){
-			Time.timeScale = 0f;
-			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.spellCanvasBundleName, "SpellCanvas", () => {
-				TransformManager.FindTransform("SpellCanvas").GetComponent<SpellViewController>().SetUpSpellViewForCreate(null,null);
-			}, false, true);
-		}
+//		public void OnProduceButtonClick(){
+//			Time.timeScale = 0f;
+//			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.spellCanvasBundleName, "SpellCanvas", () => {
+//				TransformManager.FindTransform("SpellCanvas").GetComponent<SpellViewController>().SetUpSpellViewForCreate(null,null);
+//			}, false, true);
+//		}
 
 		public void SetUpConsumablesButtons(){
 			consDisplay.SetUpConsumablesButtons ();

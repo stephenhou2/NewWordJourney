@@ -73,17 +73,15 @@ namespace WordJourney
 		public IEnumerator attackCoroutine;
 		// 等待角色动画结束协程
 		public IEnumerator waitRoleAnimEndCoroutine;
-//		// 等待技能动画结束协程
-//		public List<IEnumerator> allSkillEffectReuseCoroutines = new List<IEnumerator>();
+
+		protected CallBack animEndCallBack;
 
 		// 角色的普通攻击技能
 		public NormalAttack normalAttack;
 
 		protected ActiveSkill currentUsingActiveSkill;
 
-//		public List<ActiveSkill> activeSkills= new List<ActiveSkill>();
 
-//		[HideInInspector]public bool isAttackActionFinish;
 
 		// 移动速度
 		public float moveDuration{ get{return 1 / (agent.moveSpeed * 0.025f + 2.5f); }}
@@ -125,8 +123,13 @@ namespace WordJourney
 			if (this is BattleMonsterController ) {
 				armatureCom.AddEventListener (DragonBones.EventObject.FRAME_EVENT, keyFrameListener);
 			} else if (this is BattlePlayerController) {
-				UnityArmatureComponent playerArmature = transform.Find ("PlayerSide").GetComponent<UnityArmatureComponent> ();
-				playerArmature.AddEventListener(DragonBones.EventObject.FRAME_EVENT, keyFrameListener);
+				BattlePlayerController bpctr = this as BattlePlayerController;
+				UnityArmatureComponent playerSideArmature = bpctr.playerSide.GetComponent<UnityArmatureComponent> ();
+				UnityArmatureComponent playerForwardArmature = bpctr.playerForward.GetComponent<UnityArmatureComponent> ();
+				UnityArmatureComponent playerBackwardArmature = bpctr.playerBackWard.GetComponent<UnityArmatureComponent> ();
+				playerSideArmature.AddEventListener(DragonBones.EventObject.FRAME_EVENT, keyFrameListener);
+				playerForwardArmature.AddEventListener(DragonBones.EventObject.FRAME_EVENT, keyFrameListener);
+				playerBackwardArmature.AddEventListener(DragonBones.EventObject.FRAME_EVENT, keyFrameListener);
 			}
 
 			isIdle = true;
@@ -424,7 +427,7 @@ namespace WordJourney
 		/// <param name="cb">动画完成回调.</param>
 		public void PlayRoleAnim (string animName, int playTimes, CallBack cb)
 		{
-			isIdle = animName == "wait";
+			isIdle = animName == CommonData.roleIdleAnimName;
 
 			// 如果还有等待上个角色动作结束的协程存在，则结束该协程
 			if (waitRoleAnimEndCoroutine != null) {
@@ -435,6 +438,8 @@ namespace WordJourney
 			// 播放新的角色动画
 			armatureCom.animation.Play (animName,playTimes);
 				
+			this.animEndCallBack = cb;
+
 			// 如果有角色动画结束后要执行的回调，则开启一个新的等待角色动画结束的协程，等待角色动画结束后执行回调
 			if (cb != null) {
 				waitRoleAnimEndCoroutine = ExcuteCallBackAtEndOfRoleAnim (cb);
@@ -449,7 +454,7 @@ namespace WordJourney
 		public void ResetToWaitAfterCurrentRoleAnimEnd(){
 
 			waitRoleAnimEndCoroutine = ExcuteCallBackAtEndOfRoleAnim (delegate {
-				PlayRoleAnim("wait",0,null);	
+				PlayRoleAnim(CommonData.roleIdleAnimName,0,null);	
 			});
 
 			StartCoroutine(waitRoleAnimEndCoroutine);
@@ -668,4 +673,21 @@ namespace WordJourney
 			
 
 	}
+
+	public class HLHRoleAnimInfo{
+
+		public string roleAnimName;
+		public int playTimes;
+		public float roleAnimTime;
+		public CallBack animEndCallback;
+
+		public HLHRoleAnimInfo(string roleAnimName,int playTimes,float roleAnimTime,CallBack animEndCallback){
+			this.roleAnimName = roleAnimName;
+			this.playTimes = playTimes;
+			this.roleAnimTime = roleAnimTime;
+			this.animEndCallback = animEndCallback;
+		}
+
+	}
+
 }

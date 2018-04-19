@@ -325,19 +325,19 @@ namespace WordJourney
 
 		public void SetUpResolveGainHUD(List<char> characters){
 
-			StringBuilder tint = new StringBuilder();
-
-			tint.Append ("获得字母碎片<color=orange>");
-
-			for (int i = 0; i < characters.Count; i++) {
-
-				tint.Append (" " + characters [i]);
-
-			}
-
-			tint.Append ("</color>");
-
-			tintHUD.SetUpTintHUD (tint.ToString(),null);
+//			StringBuilder tint = new StringBuilder();
+//
+//			tint.Append ("获得字母碎片<color=orange>");
+//
+//			for (int i = 0; i < characters.Count; i++) {
+//
+//				tint.Append (" " + characters [i]);
+//
+//			}
+//
+//			tint.Append ("</color>");
+//
+//			tintHUD.SetUpTintHUD (tint.ToString(),null);
 
 		}
 			
@@ -352,8 +352,8 @@ namespace WordJourney
 
 
 
-		public void SetUpTintHUD(string tint,Sprite sprite){
-			tintHUD.SetUpTintHUD (tint,sprite);
+		public void SetUpSingleTextTintHUD(string tint){
+			tintHUD.SetUpSingleTextTintHUD (tint);
 		}
 			
 		public void SetUpPurchasePlane(string productID){

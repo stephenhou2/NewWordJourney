@@ -122,6 +122,9 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
+
+			bp.isInEvent = false;
+
 			DestroyObstacle (delegate() {
 				if(isSuccess && isItemDropped){
 					Item itemDropped = Item.NewItemWith(dropItemId,1);
@@ -130,9 +133,6 @@ namespace WordJourney
 				ExploreManager.Instance.ResetMapWalkableInfo(transform.position,1);
 				AddToPool (ExploreManager.Instance.newMapGenerator.mapEventsPool);
 			});
-
-
-
 		}
 
 	}

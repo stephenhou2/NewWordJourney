@@ -9,27 +9,32 @@ namespace WordJourney
 	public class TintHUD : MonoBehaviour {
 
 		public Text tintText;
-		public Image tintImage;
+		public Image goldIcon;
 		public Text singleTextTint;
 		public float tintHUDShowDuration = 1f;
 		private IEnumerator tintHUDCoroutine;
 
-		public void SetUpTintHUD(string tint,Sprite sprite){
-
+		public void SetUpSingleTextTintHUD(string tint){
 			gameObject.SetActive (true);
-
-			if (sprite != null) {
-				tintText.enabled = true;
-				tintImage.enabled = true;
-				singleTextTint.enabled = false;
-				tintText.text = tint;
-				tintImage.sprite = sprite;
-			} else {
-				tintText.enabled = false;
-				tintImage.enabled = false;
-				singleTextTint.enabled = true;
-				singleTextTint.text = tint;
+			tintText.enabled = false;
+			goldIcon.enabled = false;
+			singleTextTint.enabled = true;
+			singleTextTint.text = tint;
+			if (tintHUDCoroutine != null) {
+				StopCoroutine (tintHUDCoroutine);
 			}
+
+			tintHUDCoroutine = TintHUDLatelyDisappear ();
+
+			StartCoroutine (tintHUDCoroutine);
+		}
+
+		public void SetUpGoldTintHUD(int goldGain){
+			gameObject.SetActive (true);
+			tintText.enabled = true;
+			goldIcon.enabled = true;
+			singleTextTint.enabled = false;
+			tintText.text = string.Format ("+{0}", goldGain);
 
 			if (tintHUDCoroutine != null) {
 				StopCoroutine (tintHUDCoroutine);
@@ -40,7 +45,7 @@ namespace WordJourney
 			StartCoroutine (tintHUDCoroutine);
 
 		}
-
+			
 		private IEnumerator TintHUDLatelyDisappear(){
 
 			yield return new WaitForSecondsRealtime (tintHUDShowDuration);
