@@ -97,6 +97,8 @@ namespace WordJourney
 
 			bool validPositionAround = false;
 
+			int count = 0;
+
 			while (!validPositionAround) {
 
 				randomPositionAround = GetRandomPositionAround (transform.position);
@@ -104,6 +106,13 @@ namespace WordJourney
 				int posY = Mathf.RoundToInt (randomPositionAround.y);
 				validPositionAround = mapWalkableInfo [posX, posY] == 1 
 					&& mapWalkableEventInfoArray[posX,posY] == 0;
+
+				count++;
+
+				if (count >= 100) {
+					randomPositionAround = transform.position;
+					break;
+				}
 			}
 
 			WalkToPosition (randomPositionAround,null);
@@ -184,16 +193,24 @@ namespace WordJourney
 
 			switch (directionSeed) {
 			case 0:
-				randomPosition = new Vector3 (posX, posY + 1, position.z);
+				if (posY + 1 < ExploreManager.Instance.newMapGenerator.rows) {
+					randomPosition = new Vector3 (posX, posY + 1, position.z);
+				}
 				break;
 			case 1:
-				randomPosition = new Vector3 (posX, posY - 1, position.z);
+				if (posY - 1 > 0) {
+					randomPosition = new Vector3 (posX, posY - 1, position.z);
+				}
 				break;
 			case 2:
-				randomPosition = new Vector3 (posX - 1, posY, position.z);
+				if (posX - 1 > 0) {
+					randomPosition = new Vector3 (posX - 1, posY, position.z);
+				}
 				break;
 			case 3:
-				randomPosition = new Vector3 (posX + 1, posY, position.z);
+				if (posX + 1 < ExploreManager.Instance.newMapGenerator.columns) {
+					randomPosition = new Vector3 (posX + 1, posY, position.z);
+				}
 				break;
 
 			}

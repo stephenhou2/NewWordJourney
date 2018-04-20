@@ -29,16 +29,24 @@ namespace WordJourney
 
 		}
 
-
+		/// <summary>
+		/// 两个点是否近似重合（x，y方向各0.1的容差）
+		/// </summary>
+		/// <returns><c>true</c>, if same position2 d was approximatelyed, <c>false</c> otherwise.</returns>
+		/// <param name="pos1">Pos1.</param>
+		/// <param name="pos2">Pos2.</param>
 		public static bool ApproximatelySamePosition2D(Vector3 pos1,Vector3 pos2){
 
-			int pos1_x = Mathf.RoundToInt (pos1.x);
-			int pos1_y = Mathf.RoundToInt (pos1.y);
+			bool posXApproximate = pos1.x >= pos2.x - 0.1f && pos1.x <= pos2.x + 0.1f;
+			bool posYApproximate = pos1.y >= pos2.y - 0.1f && pos1.y <= pos2.y + 0.1f;
 
-			int pos2_x = Mathf.RoundToInt (pos2.x);
-			int pos2_y = Mathf.RoundToInt (pos2.y);
+//			int pos1_x = Mathf.RoundToInt (pos1.x);
+//			int pos1_y = Mathf.RoundToInt (pos1.y);
+//
+//			int pos2_x = Mathf.RoundToInt (pos2.x);
+//			int pos2_y = Mathf.RoundToInt (pos2.y);
 
-			return pos1_x == pos2_x && pos1_y == pos2_y;
+			return posXApproximate && posYApproximate;
 
 		}
 

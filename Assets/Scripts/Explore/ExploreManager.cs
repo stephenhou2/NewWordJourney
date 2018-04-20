@@ -505,8 +505,6 @@ namespace WordJourney
 
 			battlePlayerCtr.FixPosition ();
 
-			mapGenerator.AddAllEffectAnimToPool ();
-
 			battlePlayerCtr.ResetToWaitAfterCurrentRoleAnimEnd ();
 
 			Vector3 monsterPos = trans.position;
@@ -515,12 +513,11 @@ namespace WordJourney
 			int monsterPosY = Mathf.RoundToInt(monsterPos.y);
 
 			newMapGenerator.mapWalkableInfoArray [monsterPosX, monsterPosY] = 1;
+			newMapGenerator.mapWalkableEventInfoArray [monsterPosX, monsterPosY] = 0;
+
+//			Debug.LogFormat ("{0}/{1}", monsterPosX, monsterPos);
 
 			player.totalGold += monster.rewardGold + player.extraGold;//更新玩家金钱
-
-//			string tint = string.Format ("+{0}", monster.rewardGold);
-
-//			ShowTint (tint);
 
 			expUICtr.SetUpGoldGainTintHUD (monster.rewardGold);
 
@@ -693,13 +690,8 @@ namespace WordJourney
 				return;
 			}
 
-			if (player.currentLevelIndex > player.maxUnlockLevelIndex) {
-				player.maxUnlockLevelIndex = player.currentLevelIndex;
-			}
-
 			GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
 	
-
 			SetUpExploreView ();
 
 //			EnableInteractivity ();

@@ -100,7 +100,7 @@ namespace WordJourney
 
 		public int robTime;
 
-		public int maxUnlockLevelIndex;
+//		public int maxUnlockLevelIndex;
 
 		public int currentLevelIndex;
 
@@ -216,24 +216,17 @@ namespace WordJourney
 
 			}
 
-			this.maxUnlockLevelIndex = playerData.maxUnlockLevelIndex;
+//			this.maxUnlockLevelIndex = playerData.maxUnlockLevelIndex;
 //			this.currentLevelIndex = playerData.currentLevelIndex;
+			this.currentLevelIndex = 0;
 
 			this.inProgressTasks = playerData.inProgressTasks;
 
-
-//			this.justice = playerData.justice;
-//			this.totalJustice = playerData.totalJustice;
-//
-//			this.power = playerData.power;
-//			this.totalPower = playerData.totalPower;
-
-
 			this.totalGold = playerData.totalGold;
 			this.experience = playerData.experience;
+			this.robTime = playerData.robTime;
 
 			this.isNewPlayer = playerData.isNewPlayer;
-//			this.hasCompass = playerData.hasCompass;
 
 			this.attachedTriggeredSkills.Clear ();
 			this.allStatus.Clear ();
@@ -1380,23 +1373,18 @@ namespace WordJourney
 //		public List<UnlockScroll> allUnlockScrollsInBag;
 		public List<CraftingRecipe> allCraftRecipesInBag;
 
-		public int maxUnlockLevelIndex;//最大解锁关卡序号
-//		public int currentLevelIndex;//当前所在关卡序号
+//		public int maxUnlockLevelIndex;//最大解锁关卡序号
+		public int currentLevelIndex;//当前所在关卡序号
 
 
 		public List<HLHTask> inProgressTasks;
 
-//		public int justice;
-//		public int totalJustice;
-//
-//		public int power;
-//		public int totalPower;
 
 		public int experience;//人物经验值
 		public int totalGold;//人物金币数量
+		public int robTime;//玩家抢劫次数
 
 		public bool isNewPlayer;
-//		public bool hasCompass;
 
 
 		public PlayerData(Player player){
@@ -1469,22 +1457,18 @@ namespace WordJourney
 //			this.allUnlockScrollsInBag = player.allUnlockScrollsInBag;
 			this.allCraftRecipesInBag = player.allCraftingRecipesInBag;
 
-			this.maxUnlockLevelIndex = player.maxUnlockLevelIndex;
-//			this.currentLevelIndex = player.currentLevelIndex;
+//			this.maxUnlockLevelIndex = player.maxUnlockLevelIndex;
+			this.currentLevelIndex = player.currentLevelIndex;
 
 			this.inProgressTasks = player.inProgressTasks;
 
-//			this.justice = player.justice;
-//			this.totalJustice = player.totalJustice;
-//
-//			this.power = player.power;
-//			this.totalPower = player.totalPower;
+
 
 			this.totalGold = player.totalGold;
 			this.experience = player.experience;
+			this.robTime = player.robTime;
 
 			this.isNewPlayer = player.isNewPlayer;
-//			this.hasCompass = player.hasCompass;
 
 			ClearAllEquipmentAttachedSkills ();
 

@@ -368,6 +368,9 @@ namespace WordJourney
 		public abstract bool CheckFightEnd ();
 
 		public void PlayShakeAnim(){
+			if (agent.health <= 0) {
+				return;
+			}
 			StartCoroutine ("PlayAgentShake");
 		}
 
@@ -382,7 +385,7 @@ namespace WordJourney
 
 			float timer = 0f;
 
-			float deltaX = 0.2f;
+			float deltaX = 0.15f;
 
 			float backwardSpeed = deltaX / backwardTime;
 			float forwardSpeed = deltaX / forwardTime;
@@ -413,10 +416,12 @@ namespace WordJourney
 				yield return null;
 
 			}
+
 			if (this is BattlePlayerController) {
-				modelActive.transform.localPosition = Vector3.zero;
+				modelActive.transform.localPosition = Vector3.zero;	
+			} else {
+				modelActive.transform.position = originPos;
 			}
-				
 		}
 
 		/// <summary>
@@ -674,20 +679,6 @@ namespace WordJourney
 
 	}
 
-	public class HLHRoleAnimInfo{
 
-		public string roleAnimName;
-		public int playTimes;
-		public float roleAnimTime;
-		public CallBack animEndCallback;
-
-		public HLHRoleAnimInfo(string roleAnimName,int playTimes,float roleAnimTime,CallBack animEndCallback){
-			this.roleAnimName = roleAnimName;
-			this.playTimes = playTimes;
-			this.roleAnimTime = roleAnimTime;
-			this.animEndCallback = animEndCallback;
-		}
-
-	}
 
 }

@@ -13,6 +13,7 @@ namespace WordJourney
 	public class FillAndCodeCell : MonoBehaviour {
 
 		public Image fillBackground;
+		public Button fillButton;
 		public Text fillText;
 
 		public Transform[] codeButtons;
@@ -70,11 +71,10 @@ namespace WordJourney
 
 				fillText.text = string.Empty;
 				fillBackground.color = Color.cyan;
+				fillButton.interactable = true;
 
 				for (int i = 0; i < codeTexts.Length; i++) {
-
 					codeTexts [i].text = codeArray [i].ToString ();
-
 				}
 
 				return ' ';
@@ -83,6 +83,7 @@ namespace WordJourney
 
 				fillText.text = charInQuestion.ToString ();
 				fillBackground.color = Color.white;
+				fillButton.interactable = false;
 				return charInQuestion;
 
 			}

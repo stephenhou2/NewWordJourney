@@ -165,7 +165,7 @@ namespace WordJourney{
 
 			bp.isInEvent = true;
 
-			DisableAllAlertAreaDetect ();
+//			DisableAllAlertAreaDetect ();
 
 			ExploreManager.Instance.DisableInteractivity ();
 
@@ -224,7 +224,7 @@ namespace WordJourney{
 					} else if (playerPosX - 1 == npcPosX && playerPosY == npcPosY) {
 						npcFightPos = new Vector3 (playerOriPos.x - 1, playerOriPos.y, 0);
 					} else {
-						npcFightPos = new Vector3 (playerOriPos.x - 0.5f, playerOriPos.y, 0);
+						npcFightPos = new Vector3 (playerOriPos.x - 0.4f, playerOriPos.y, 0);
 						battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x + 0.3f, playerOriPos.y, 0);
 					}
 
@@ -252,14 +252,14 @@ namespace WordJourney{
 
 						battlePlayerCtr.TowardsRight (false);
 
-						npcFightPos = new Vector3 (playerOriPos.x + 0.5f, playerOriPos.y, 0);
+						npcFightPos = new Vector3 (playerOriPos.x + 0.4f, playerOriPos.y, 0);
 						battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
 
 					}
 
 				} else if (posOffsetX < 0) {
 
-					battlePlayerCtr.TowardsRight (false);
+					battlePlayerCtr.TowardsRight(false);
 					baCtr.TowardsLeft ();
 
 					if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
@@ -271,7 +271,7 @@ namespace WordJourney{
 						npcFightPos = new Vector3 (playerOriPos.x + 1, playerOriPos.y, 0);
 
 					} else {
-						npcFightPos = new Vector3 (playerOriPos.x + 0.5f, playerOriPos.y, 0);
+						npcFightPos = new Vector3 (playerOriPos.x + 0.4f, playerOriPos.y, 0);
 						battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerOriPos.y, 0);
 
 					}
@@ -335,8 +335,10 @@ namespace WordJourney{
 					} else if (playerPosX - 1 == npcPosX && playerPosY == npcPosY) {
 						npcFightPos = new Vector3 (playerOriPos.x - 1, playerOriPos.y, 0);
 					} else {
-						npcFightPos = new Vector3 (playerOriPos.x - 0.5f, playerOriPos.y, 0);
+						npcFightPos = new Vector3 (playerOriPos.x - 0.45f, playerOriPos.y, 0);
+
 						battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x + 0.3f, playerOriPos.y, 0);
+						battlePlayerCtr.SetNavigationOrigin (playerOriPos + new Vector3 (1, 0, 0));
 					}
 
 				} else if (posOffsetX == 0) {
@@ -363,8 +365,9 @@ namespace WordJourney{
 
 						battlePlayerCtr.TowardsRight (true);
 
-						npcFightPos = new Vector3 (playerOriPos.x + 0.5f, playerOriPos.y, 0);
+						npcFightPos = new Vector3 (playerOriPos.x + 0.45f, playerOriPos.y, 0);
 						battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
+						battlePlayerCtr.SetNavigationOrigin (playerOriPos + new Vector3 (-1, 0, 0));
 
 					}
 
@@ -382,9 +385,9 @@ namespace WordJourney{
 						npcFightPos = new Vector3 (playerOriPos.x + 1, playerOriPos.y, 0);
 
 					} else {
-						npcFightPos = new Vector3 (playerOriPos.x + 0.5f, playerOriPos.y, 0);
+						npcFightPos = new Vector3 (playerOriPos.x + 0.45f, playerOriPos.y, 0);
 						battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerOriPos.y, 0);
-
+						battlePlayerCtr.SetNavigationOrigin (playerOriPos + new Vector3 (-1, 0, 0));
 					}
 
 				}
@@ -414,8 +417,6 @@ namespace WordJourney{
 				return;
 			}
 
-
-
 			baCtr.PlayRoleAnim (CommonData.roleWalkAnimName, 0, null);
 
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
@@ -444,15 +445,15 @@ namespace WordJourney{
 					baCtr.TowardsDown ();
 				}
 			}
-				
-
-
 
 			if (moveCoroutine != null) {
 				StopCoroutine (moveCoroutine);
 			}
 
 			moveCoroutine = MoveTo (position,3f,delegate{
+
+				this.transform.position = position;
+
 				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName,0,null);
 
 				if(cb != null){
@@ -476,8 +477,7 @@ namespace WordJourney{
 
 				return;
 			}
-
-
+				
 			baCtr.PlayRoleAnim (CommonData.roleRunAnimName, 0, null);
 
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
@@ -495,6 +495,9 @@ namespace WordJourney{
 
 
 			moveCoroutine = MoveTo (position,1f,delegate{
+				
+				this.transform.position = position;
+
 				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName,0,null);
 
 				if(cb != null){

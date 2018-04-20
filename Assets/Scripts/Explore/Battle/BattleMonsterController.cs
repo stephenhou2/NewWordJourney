@@ -300,6 +300,15 @@ namespace WordJourney
 				return;
 			}
 
+			agent.isDead = true;
+
+			StartCoroutine ("LatelyDie");
+		}
+
+		private IEnumerator LatelyDie(){
+
+			yield return new WaitForSeconds (0.1f);
+
 			ExploreUICotroller expUICtr = bmUICtr.GetComponent<ExploreUICotroller> ();
 
 			GetComponent<MapWalkableEvent> ().ResetWhenDie ();
@@ -307,8 +316,6 @@ namespace WordJourney
 			expUICtr.QuitFight ();
 
 			enemy.QuitFight();
-
-			agent.isDead = true;
 
 			QuitFight ();
 
@@ -324,8 +331,6 @@ namespace WordJourney
 					mwe.AddToPool(exploreManager.newMapGenerator.npcsPool);
 				}
 			});
-
-//			agent.ResetBattleAgentProperties (true);
 		}
 
 		public override void TowardsLeft (bool andWait = true)

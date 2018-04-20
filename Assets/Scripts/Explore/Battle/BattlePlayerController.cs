@@ -106,6 +106,10 @@ namespace WordJourney
 			playerSide.GetComponent<UnityArmatureComponent> ().sortingOrder = order;
 		}
 
+		public void SetNavigationOrigin(Vector3 position){
+			singleMoveEndPos = position;
+			moveDestination = position;
+		}
 
 		/// <summary>
 		/// 按照指定路径 pathPosList 移动到终点 moveDestination
@@ -847,6 +851,14 @@ namespace WordJourney
 
 			agent.isDead = true;
 
+			StartCoroutine ("LatelyDie");
+
+		}
+
+		private IEnumerator LatelyDie(){
+
+			yield return new WaitForSeconds (0.5f);
+
 			bool fromFight = isInFight;
 
 			enemy.QuitFight ();
@@ -864,7 +876,6 @@ namespace WordJourney
 			ActiveBattlePlayer (false, false, true);
 
 			ExploreManager.Instance.DisableInteractivity ();
-
 		}
 
 

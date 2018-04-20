@@ -143,7 +143,7 @@ namespace WordJourney
 
 			StopMoveImmidiately ();
 
-			DisableAllDetect ();
+//			DisableAllDetect ();
 
 			bp.StopMoveAndWait ();
 
@@ -156,9 +156,10 @@ namespace WordJourney
 
 			ExploreManager.Instance.DisableInteractivity ();
 
-			DisableAllDetect ();
+//			DisableAllDetect ();
 
 			ExploreManager.Instance.AllWalkableEventsStopMove ();
+
 			StopMoveImmidiately ();
 
 			bp.StopMoveAtEndOfCurrentStep ();
@@ -317,13 +318,11 @@ namespace WordJourney
 				baCtr.TowardsRight ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
-
 					monsterFightPos = new Vector3 (playerOriPos.x - 1, playerOriPos.y, 0);
-
 				} else if (playerPosX - 1 == monsterPosX && playerPosY == monsterPosY) {
 					monsterFightPos = new Vector3 (playerOriPos.x - 1, playerOriPos.y, 0);
 				} else {
-					monsterFightPos = new Vector3 (playerOriPos.x - 0.5f, playerOriPos.y, 0);
+					monsterFightPos = new Vector3 (playerOriPos.x - 0.4f, playerOriPos.y, 0);
 					battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x + 0.3f, playerOriPos.y, 0);
 				}
 
@@ -335,7 +334,7 @@ namespace WordJourney
 
 					battlePlayerCtr.TowardsRight ();
 
-					monsterFightPos = new Vector3 (playerOriPos.x+ 1, playerOriPos.y, 0);
+					monsterFightPos = new Vector3 (playerOriPos.x + 1, playerOriPos.y, 0);
 
 				} else if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 
@@ -351,7 +350,7 @@ namespace WordJourney
 
 					battlePlayerCtr.TowardsRight ();
 
-					monsterFightPos = new Vector3 (playerOriPos.x + 0.5f, playerOriPos.y, 0);
+					monsterFightPos = new Vector3 (playerOriPos.x + 0.4f, playerOriPos.y, 0);
 					battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
 
 				}
@@ -370,7 +369,7 @@ namespace WordJourney
 					monsterFightPos = new Vector3 (playerOriPos.x + 1, playerOriPos.y, 0);
 
 				} else {
-					monsterFightPos = new Vector3 (playerOriPos.x + 0.5f, playerOriPos.y, 0);
+					monsterFightPos = new Vector3 (playerOriPos.x + 0.4f, playerOriPos.y, 0);
 					battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerOriPos.y, 0);
 
 				}
@@ -381,6 +380,7 @@ namespace WordJourney
 				playerCurrentAnimInfo.playTimes, playerCurrentAnimInfo.animEndCallback);
 				
 			RunToPosition (monsterFightPos, delegate {
+				this.transform.position = monsterFightPos;
 				if (!battlePlayerCtr.isInFight) {
 					ExploreManager.Instance.PlayerAndMonsterStartFight ();
 					battlePlayerCtr.isInFight = true;
@@ -468,6 +468,9 @@ namespace WordJourney
 
 
 			moveCoroutine = MoveTo (position,1f,delegate{
+
+				this.transform.position = position;
+
 				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName,0,null);
 
 				if(cb != null){

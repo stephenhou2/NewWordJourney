@@ -24,11 +24,7 @@ namespace WordJourney
 		[MenuItem("EditHelper/TempHelper")]
 		public static void TempHelper(){
 
-			Transform plane = TransformManager.FindTransform ("Plane");
-
-			MeshRenderer mr = plane.GetComponent<MeshRenderer> ();
-
-			Debug.Log (mr.sharedMaterial.shader.isSupported);
+			Debug.Log (Mathf.RoundToInt (11.5f));
 
 
 		}
