@@ -61,8 +61,17 @@ namespace WordJourney
 			if (bp.isInFight) {
 				return;
 			}
+
+			if (mapNPC.isInPosFix) {
+				return;
+			}
+
+			if (bp.isInPosFix) {
+				return;
+			}
+
 				
-			mapNPC.EnterMapEvent (bp);
+			mapNPC.DetectPlayer (bp);
 
 
 		}

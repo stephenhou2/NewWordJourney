@@ -73,7 +73,7 @@ namespace WordJourney
 
 			battlePlayerCtr = Player.mainPlayer.GetComponentInChildren<BattlePlayerController> ();
 
-			battlePlayerCtr.isInExplore = true;
+//			battlePlayerCtr.isInExplore = true;
 			battlePlayerCtr.ActiveBattlePlayer (false, false, false);
 
 			Transform exploreCanvas = TransformManager.FindTransform ("ExploreCanvas");
@@ -249,7 +249,7 @@ namespace WordJourney
 			targetY = (int)(clickPos.y + 0.5f);
 
 			if (targetX >= newMapGenerator.columns || targetY >= newMapGenerator.rows
-				|| targetX <= 0 || targetY <= 0) {
+				|| targetX < 0 || targetY < 0) {
 				return;
 			}
 
@@ -290,9 +290,9 @@ namespace WordJourney
 		}
 
 
-		public void ShowWordsChoosePlane(LearnWord[] wordsArray){
+		public void ShowWordsChoosePlane(LearnWord[] wordsArray,string extraInfo = null){
 			AllWalkableEventsStopMove ();
-			expUICtr.SetUpWordHUD (wordsArray);
+			expUICtr.SetUpWordHUD (wordsArray,extraInfo);
 		}
 
 		public void ShowCharacterFillPlane(LearnWord word){
@@ -491,6 +491,8 @@ namespace WordJourney
 
 			Monster monster = trans.GetComponent<Monster> ();
 
+			MapWalkableEvent walkableEvent = trans.GetComponent<MapWalkableEvent> ();
+
 			Player player = Player.mainPlayer;
 
 			player.DestroyEquipmentInBagAttachedSkills ();
@@ -509,13 +511,18 @@ namespace WordJourney
 
 			Vector3 monsterPos = trans.position;
 
-			int monsterPosX = Mathf.RoundToInt(monsterPos.x);
-			int monsterPosY = Mathf.RoundToInt(monsterPos.y);
+			int monsterOriPosX = Mathf.RoundToInt(walkableEvent.moveOrigin.x);
+			int monsterOriPosY = Mathf.RoundToInt(walkableEvent.moveOrigin.y);
 
-			newMapGenerator.mapWalkableInfoArray [monsterPosX, monsterPosY] = 1;
-			newMapGenerator.mapWalkableEventInfoArray [monsterPosX, monsterPosY] = 0;
+			int monsterDestPosX = Mathf.RoundToInt (walkableEvent.moveDestination.x);
+			int monsterDestPosY = Mathf.RoundToInt (walkableEvent.moveDestination.y);
 
-//			Debug.LogFormat ("{0}/{1}", monsterPosX, monsterPos);
+			newMapGenerator.mapWalkableInfoArray [monsterOriPosX, monsterOriPosY] = 1;
+			newMapGenerator.mapWalkableEventInfoArray [monsterOriPosX, monsterOriPosY] = 0;
+
+			newMapGenerator.mapWalkableInfoArray [monsterDestPosX, monsterDestPosY] = 1;
+			newMapGenerator.mapWalkableEventInfoArray [monsterDestPosX, monsterDestPosY] = 0;
+
 
 			player.totalGold += monster.rewardGold + player.extraGold;//更新玩家金钱
 
@@ -715,7 +722,7 @@ namespace WordJourney
 			Camera.main.transform.Find ("Mask").gameObject.SetActive (false);
 
 			battlePlayerCtr.QuitExplore ();
-			battlePlayerCtr.isInExplore = false;
+//			battlePlayerCtr.isInExplore = false;
 
 			TransformManager.DestroyTransfromWithName (CommonData.exploreScenePoolContainerName);
 

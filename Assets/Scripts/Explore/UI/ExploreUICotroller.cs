@@ -349,8 +349,8 @@ namespace WordJourney
 //		}
 
 
-		public void SetUpWordHUD(LearnWord[] words){
-			wordHUD.SetUpWordHUDAndShow (words);
+		public void SetUpWordHUD(LearnWord[] words,string extraInfo = null){
+			wordHUD.SetUpWordHUDAndShow (words,extraInfo);
 		}
 
 		public void SetUpWordHUD(LearnWord word){

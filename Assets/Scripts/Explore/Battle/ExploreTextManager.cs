@@ -147,12 +147,14 @@ namespace WordJourney
 
 			switch(et.towards){
 			case MyTowards.Left:
+			case MyTowards.Up:
 				originHurtPos = et.basePosition + new Vector3 (-50f, 50f, 0);
 				firstHurtPos = originHurtPos + new Vector3 (-Random.Range(80,100), Random.Range(0,10), 0);
 				secondHurtPos = firstHurtPos + new Vector3 (-Random.Range(20,30), Random.Range(0,2), 0);
 				originTintPos = originHurtPos + new Vector3 (-100f, 100f, 0);
 				break;
 			case MyTowards.Right:
+			case MyTowards.Down:
 				originHurtPos = et.basePosition + new Vector3 (50f, 50f, 0);
 				firstHurtPos = originHurtPos + new Vector3 (Random.Range(80,100), Random.Range(0,10), 0);
 				secondHurtPos = firstHurtPos + new Vector3 (Random.Range(20,30), Random.Range(0,2), 0);

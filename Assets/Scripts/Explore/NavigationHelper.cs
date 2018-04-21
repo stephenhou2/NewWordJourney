@@ -114,6 +114,8 @@ namespace WordJourney
 
 						}
 
+						pathPos.Add (startPos);
+
 						pathPos.Reverse ();
 
 //						pathPos.RemoveAt (0);

@@ -141,6 +141,8 @@ namespace WordJourney
 
 			HLHChoice[] choices = dg.GetChoices (dialog);
 
+			choiceButtonPool.AddChildInstancesToPool(choiceButtonContainer);
+
 			for (int i = 0; i < choices.Length; i++) {
 				Button choiceButton = choiceButtonPool.GetInstance<Button> (choiceButtonModel.gameObject, choiceButtonContainer);
 				HLHChoice choice = choices [i];
@@ -161,6 +163,8 @@ namespace WordJourney
 			bool hideDialogPlane = false;
 
 			int index = Player.mainPlayer.currentLevelIndex / 5;
+
+			bool dialogHideAndShow = false;
 
 
 			if (choice.isHandInTaskTriggered) {
@@ -301,9 +305,19 @@ namespace WordJourney
 
 					Player.mainPlayer.RemoveItem(eqp,1);
 
+					string tint = string.Format("失去{0}x1",eqp.itemName);
+
+					ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(tint);
+
 					newEqp.ResetPropertiesByQuality(eqp.quality);
 
 					Player.mainPlayer.AddItem(newEqp);
+
+					tint = string.Format("获得{0}x1",newEqp.itemName);
+
+					ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(tint);
+
+					dialogHideAndShow = true;
 				}
 
 				if(choice.isEquipmentLoseTriggered){
@@ -315,6 +329,12 @@ namespace WordJourney
 					Equipment eqp = allEquipedEquipments[randomSeed];
 
 					Player.mainPlayer.RemoveItem(eqp,1);
+
+					string tint = string.Format("失去{0}x1",eqp.itemName);
+
+					ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(tint);
+
+					dialogHideAndShow = true;
 				}
 
 				if(choice.isWordLearningTriggered){
@@ -342,9 +362,14 @@ namespace WordJourney
 
 				SetUpDialogPlane(newDialog,dg);
 
-				if(hideDialogPlane){
+				if(dialogHideAndShow){
+					QuitDialogPlane();
+					Invoke("EnterDialogDisplay",1.1f);
+				} else if (hideDialogPlane){
 					QuitDialogPlane();
 				}
+
+//				SetUpDialogPlane(newDialog,dg);
 
 			});
 
@@ -576,7 +601,7 @@ namespace WordJourney
 		}
 
 		private void QuitDialogPlane(){
-			choiceButtonPool.AddChildInstancesToPool (choiceButtonContainer);
+//			choiceButtonPool.AddChildInstancesToPool (choiceButtonContainer);
 			dialogPlane.gameObject.SetActive (false);
 		}
 

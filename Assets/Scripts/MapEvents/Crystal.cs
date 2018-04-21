@@ -18,6 +18,7 @@ namespace WordJourney
 		private PropertyType propertyType;
 		private int gainAmount;
 
+		private string extraInfo;
 
 		public void CrystalExausted(){
 
@@ -57,14 +58,14 @@ namespace WordJourney
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
 			if (isExausted) {
+				bp.isInEvent = false;
 				return;
 			}
 
-			if (isWordTriggered) {
-				ExploreManager.Instance.ShowWordsChoosePlane (wordsArray);
-			} else {
-				MapEventTriggered (true, bp);
-			}
+			string propertyName = MyTool.GetPropertyName (propertyType);
+			extraInfo = string.Format("{0}+{1}",propertyName,gainAmount);
+			ExploreManager.Instance.ShowWordsChoosePlane (wordsArray,extraInfo);
+
 		}
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
@@ -73,9 +74,8 @@ namespace WordJourney
 
 			if (isSuccess) {
 				(bp.agent as Player).PlayerPropertyChange (propertyType,gainAmount);
-				string propertyName = MyTool.GetPropertyName (propertyType);
-				string tintText = string.Format("{0}+{1}",propertyName,gainAmount);
-				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(tintText);
+
+				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(extraInfo);
 			} 
 
 			isExausted = true;

@@ -16,6 +16,9 @@ namespace WordJourney
 
 		protected IEnumerator moveCoroutine;
 
+		public Vector3 moveOrigin;
+		public Vector3 moveDestination;
+
 		protected BattleMonsterController mBaCtr;
 		protected BattleMonsterController baCtr{
 			get{
@@ -102,16 +105,23 @@ namespace WordJourney
 			while (!validPositionAround) {
 
 				randomPositionAround = GetRandomPositionAround (transform.position);
-				int posX = Mathf.RoundToInt (randomPositionAround.x);
-				int posY = Mathf.RoundToInt (randomPositionAround.y);
-				validPositionAround = mapWalkableInfo [posX, posY] == 1 
-					&& mapWalkableEventInfoArray[posX,posY] == 0;
 
-				count++;
+				if ((randomPositionAround - transform.position).magnitude < 0.9f) {
+					validPositionAround = true;
+				} else {
 
-				if (count >= 100) {
-					randomPositionAround = transform.position;
-					break;
+					int posX = Mathf.RoundToInt (randomPositionAround.x);
+					int posY = Mathf.RoundToInt (randomPositionAround.y);
+
+					validPositionAround = mapWalkableInfo [posX, posY] == 1
+					&& mapWalkableEventInfoArray [posX, posY] == 0;
+
+					count++;
+
+					if (count >= 100) {
+						randomPositionAround = transform.position;
+						break;
+					}
 				}
 			}
 
@@ -127,8 +137,6 @@ namespace WordJourney
 
 		protected IEnumerator MoveTo(Vector3 position,float timeScale,CallBack cb){
 
-//			int oriPosX = Mathf.RoundToInt (transform.position.x);
-//			int oriPosY = Mathf.RoundToInt (transform.position.y);
 
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
@@ -186,6 +194,12 @@ namespace WordJourney
 
 			int posX = Mathf.RoundToInt (position.x);
 			int posY = Mathf.RoundToInt (position.y);
+
+			Vector3 oriIntergerPos = new Vector3 (posX, posY, 0);
+
+			if(!MyTool.ApproximatelySamePosition2D(position,oriIntergerPos)){
+				return oriIntergerPos;
+			}
 
 			int directionSeed = Random.Range (0, 4);
 

@@ -93,7 +93,7 @@ namespace WordJourney
 		public List<Consumables> allConsumablesInBag = new List<Consumables> ();
 		public List<TaskItem> allTaskItemsInBag = new List<TaskItem> ();
 //		public List<UnlockScroll> allUnlockScrollsInBag = new List<UnlockScroll>();//所有背包中的解锁卷轴
-		public List<CraftingRecipe> allCraftingRecipesInBag = new List<CraftingRecipe>();//所有背包中的合成配方
+//		public List<CraftingRecipe> allCraftingRecipesInBag = new List<CraftingRecipe>();//所有背包中的合成配方
 		public List<SkillGemstone> allSkillGemstonesInBag = new List<SkillGemstone>();//背包中所有的技能宝石
 
 		public List<HLHTask> inProgressTasks = new List<HLHTask> ();
@@ -187,8 +187,9 @@ namespace WordJourney
 
 			this.allEquipmentsInBag = playerData.allEquipmentsInBag;
 			this.allConsumablesInBag = playerData.allConsumablesInBag;
+			this.allSkillGemstonesInBag = playerData.allSkillGemstonesInBag;
 //			this.allUnlockScrollsInBag = playerData.allUnlockScrollsInBag;
-			this.allCraftingRecipesInBag = playerData.allCraftRecipesInBag;
+//			this.allCraftingRecipesInBag = playerData.allCraftRecipesInBag;
 
 
 
@@ -217,8 +218,8 @@ namespace WordJourney
 			}
 
 //			this.maxUnlockLevelIndex = playerData.maxUnlockLevelIndex;
-//			this.currentLevelIndex = playerData.currentLevelIndex;
-			this.currentLevelIndex = 0;
+			this.currentLevelIndex = playerData.currentLevelIndex;
+//			this.currentLevelIndex = 0;
 
 			this.inProgressTasks = playerData.inProgressTasks;
 
@@ -246,15 +247,19 @@ namespace WordJourney
 				allItemsInBag.Add(allConsumablesInBag[i]);
 			}
 
+			for (int i = 0; i < allSkillGemstonesInBag.Count; i++) {
+				allItemsInBag.Add (allSkillGemstonesInBag [i]);
+			}
+
 //			for (int i = 0; i < allUnlockScrollsInBag.Count; i++) {
 //				if (!allUnlockScrollsInBag [i].unlocked) {
 //					allItemsInBag.Add (allUnlockScrollsInBag [i]);
 //				}
 //			}
 
-			for (int i = 0; i < allCraftingRecipesInBag.Count; i++) {
-				allItemsInBag.Add(allCraftingRecipesInBag[i]);
-			}
+//			for (int i = 0; i < allCraftingRecipesInBag.Count; i++) {
+//				allItemsInBag.Add(allCraftingRecipesInBag[i]);
+//			}
 
 			for(int i = 0;i<skillsContainer.childCount;i++) {
 				Destroy (skillsContainer.GetChild (i).gameObject);
@@ -1369,9 +1374,10 @@ namespace WordJourney
 		public List<Equipment> allEquipmentsInBag;//背包中所有装备信息
 		public Equipment[] allEquipedEquipments;//已装备的所有装备信息
 		public List<Consumables> allConsumablesInBag;//背包中所有消耗品信息
+		public List<SkillGemstone> allSkillGemstonesInBag;//背包中所有的技能宝石
 //		public List<Item> allItemsInBag;
 //		public List<UnlockScroll> allUnlockScrollsInBag;
-		public List<CraftingRecipe> allCraftRecipesInBag;
+//		public List<CraftingRecipe> allCraftRecipesInBag;
 
 //		public int maxUnlockLevelIndex;//最大解锁关卡序号
 		public int currentLevelIndex;//当前所在关卡序号
@@ -1454,8 +1460,9 @@ namespace WordJourney
 			this.allEquipmentsInBag = player.allEquipmentsInBag;
 			this.allEquipedEquipments = player.allEquipedEquipments;
 			this.allConsumablesInBag = player.allConsumablesInBag;
+			this.allSkillGemstonesInBag = player.allSkillGemstonesInBag;
 //			this.allUnlockScrollsInBag = player.allUnlockScrollsInBag;
-			this.allCraftRecipesInBag = player.allCraftingRecipesInBag;
+//			this.allCraftRecipesInBag = player.allCraftingRecipesInBag;
 
 //			this.maxUnlockLevelIndex = player.maxUnlockLevelIndex;
 			this.currentLevelIndex = player.currentLevelIndex;

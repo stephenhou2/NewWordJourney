@@ -15,7 +15,14 @@ namespace WordJourney
 
 		public Text questionForExplainationSelect;
 
+		public Text exampleSentenceText;
+
 		public Text[] choiceTexts;
+
+		public Image extraInfoBackground;
+
+		public Text extraInfoText;
+
 		// ************* 选择正确释义的UI部分 *************** //
 
 
@@ -26,7 +33,7 @@ namespace WordJourney
 
 		public Text questionForCharacterFill;
 
-		public Transform characterToFillCellModel;
+//		public Transform characterToFillCellModel;
 
 		public Transform fillAndCodeModel;
 
@@ -231,7 +238,7 @@ namespace WordJourney
 		/// 初始化单词【单词数据规定：数组首项为测试的单词，剩余为混淆用单词】
 		/// </summary>
 		/// <param name="wordsArray">Words array.</param>
-		public void SetUpWordHUDAndShow(LearnWord[] wordsArray){
+		public void SetUpWordHUDAndShow(LearnWord[] wordsArray,string extraInfo = null){
 
 			gameObject.SetActive (true);
 
@@ -269,6 +276,15 @@ namespace WordJourney
 				choiceTexts [randomIndex].text = word.explaination;
 				choiceTexts [randomIndex].color = Color.white;
 
+			}
+
+			if (extraInfo != null) {
+				extraInfoBackground.enabled = true;
+				extraInfoText.enabled = true;
+				extraInfoText.text = extraInfo;
+			} else {
+				extraInfoBackground.enabled = false;
+				extraInfoText.enabled = false;
 			}
 
 			canQuitWhenClickBackground = false;
@@ -346,6 +362,7 @@ namespace WordJourney
 		public void OnBackgroundClicked(){
 			
 			if (quitWhenClickBackground && canQuitWhenClickBackground) {
+				ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 				QuitWordHUD ();
 			}
 		}

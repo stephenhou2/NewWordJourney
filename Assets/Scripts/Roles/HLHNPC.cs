@@ -41,15 +41,15 @@ namespace WordJourney
 
 		//******************************************************************************** start *************************************************************************//
 
-		public void RefreshNPC(){
-
-			for (int i = 0; i < dialogGroups.Count; i++) {
-				dialogGroups [i].isFinish = false;
-			}
-
-			dialogGroupRecord = null;
-
-		}
+//		public void RefreshNPC(){
+//
+//			for (int i = 0; i < dialogGroups.Count; i++) {
+//				dialogGroups [i].isFinish = false;
+//			}
+//
+//			dialogGroupRecord = null;
+//
+//		}
 
 
 		/// <summary>

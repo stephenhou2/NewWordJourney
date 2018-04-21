@@ -8,6 +8,8 @@ namespace WordJourney
 	using DG.Tweening;
 	using UnityEngine.UI;
 
+	public delegate void CharacterFillChangeCallBack(int cellIndex,char changeTo);
+
 	public delegate void CharacterClickCallBack(int cellIndex);
 
 	public class FillAndCodeCell : MonoBehaviour {

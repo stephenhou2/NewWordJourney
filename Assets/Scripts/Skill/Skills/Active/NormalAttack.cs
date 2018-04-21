@@ -11,8 +11,6 @@ namespace WordJourney
 	public class NormalAttack: ActiveSkill {
 
 
-
-
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy){
 
 			// 执行攻击触发事件回调

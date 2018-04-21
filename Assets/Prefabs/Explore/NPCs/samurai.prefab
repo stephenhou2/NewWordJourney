@@ -2071,7 +2071,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.9, y: 0.9}
+  m_Size: {x: 0.4, y: 0.4}
   m_EdgeRadius: 0
 --- !u!114 &114403635971983344
 MonoBehaviour:
@@ -2161,7 +2161,6 @@ MonoBehaviour:
   currentTriggeredEffectAnim: []
   towards: 0
   effectAnimContainer: {fileID: 4393125479911838}
-  originalPos: {x: 0, y: 0, z: 0}
 --- !u!114 &114604337376082204
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2236,6 +2235,10 @@ MonoBehaviour:
   audioClipName: 
   wordsArray: []
   canMove: 1
+  isInAutoWalk: 0
+  isTriggered: 0
+  moveOrigin: {x: 0, y: 0, z: 0}
+  moveDestination: {x: 0, y: 0, z: 0}
   npc:
     npcId: 0
     npcName: 
@@ -2290,9 +2293,8 @@ MonoBehaviour:
       poisonHurtScaler: 1
       monsterPropertyGainList: []
   alertAreas: []
-  canShowNpcPlane: 0
   fightReward:
     rewardType: 0
     rewardValue: 0
     attachValue: 0
-  isTriggered: 0
+  isInPosFix: 0

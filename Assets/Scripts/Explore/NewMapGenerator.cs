@@ -358,12 +358,11 @@ namespace WordJourney
 					break;
 				case "exit":
 					mapEvent = mapEventsPool.GetInstanceWithName<Exit> (exitModel.name, exitModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 1;
+					mapWalkableInfoArray [posX, posY] = 5;
 					exitPos = new Vector2 (posX, posY);
 					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
 					break;
 				case "billboard":
-
 					mapEvent = mapEventsPool.GetInstanceWithName<Billboard> (billboardModel.name, billboardModel.gameObject, mapEventsContainer);
 					mapWalkableInfoArray [posX, posY] = 0;
 					break;
@@ -382,14 +381,14 @@ namespace WordJourney
 				case "monster":
 					mapEvent = GetMonster (eventTile);
 					(mapEvent as MapMonster).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 2;
+					mapWalkableInfoArray [posX, posY] = 5;
 					mapWalkableEventInfoArray [posX, posY] = 1;
 					allWalkableEventsInMap.Add (mapEvent as MapMonster);
 					break;
 				case "boss":
 					mapEvent = GetBoss (eventTile);
 					(mapEvent as MapMonster).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 2;
+					mapWalkableInfoArray [posX, posY] = 5;
 					mapWalkableEventInfoArray [posX, posY] = 1;
 					allWalkableEventsInMap.Add (mapEvent as MapMonster);
 					break;
@@ -427,7 +426,7 @@ namespace WordJourney
 				case "doorGear":
 					mapEvent = mapEventsPool.GetInstanceWithName<Door> (doorModel.name, doorModel.gameObject, mapEventsContainer);
 					(mapEvent as Door).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 0;
+					mapWalkableInfoArray [posX, posY] = 5;
 					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
 					break;
 				case "thornSwitch":
@@ -444,18 +443,18 @@ namespace WordJourney
 				case "pressSwitch":
 					mapEvent = mapEventsPool.GetInstanceWithName<PressSwitch> (pressSwitchModel.name, pressSwitchModel.gameObject, mapEventsContainer);
 					(mapEvent as PressSwitch).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 10;
+					mapWalkableInfoArray [posX, posY] = 5;
 					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
 					break;
 				case "downStair":
 					mapEvent = mapEventsPool.GetInstanceWithName<SecretStairs> (secrectStairsModel.name, secrectStairsModel.gameObject, mapEventsContainer);
 					(mapEvent as SecretStairs).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 0;
+					mapWalkableInfoArray [posX, posY] = 5;
 					break;
 				case "upStair":
 					mapEvent = mapEventsPool.GetInstanceWithName<SecretStairs> (secrectStairsModel.name, secrectStairsModel.gameObject, mapEventsContainer);
 					(mapEvent as SecretStairs).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 0;
+					mapWalkableInfoArray [posX, posY] = 5;
 					break;
 				case "fireTrap":
 					mapEvent = mapEventsPool.GetInstanceWithName<FireTrap> (fireTrapModel.name, fireTrapModel.gameObject, mapEventsContainer);
@@ -463,7 +462,7 @@ namespace WordJourney
 					break;
 				case "npc":
 					mapEvent = GetMapNPC (eventTile);
-					mapWalkableInfoArray [posX, posY] = 0;
+					mapWalkableInfoArray [posX, posY] = 5;
 					mapWalkableEventInfoArray [posX, posY] = 1;
 					allWalkableEventsInMap.Add (mapEvent as MapNPC);
 					break;

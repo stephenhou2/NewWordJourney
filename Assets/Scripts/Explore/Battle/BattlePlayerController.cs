@@ -44,7 +44,9 @@ namespace WordJourney
 
 		public bool isInFight;
 		public bool isInEvent; //是否在一个事件触发过程中
-		public bool isInExplore;
+//		public bool isInExplore;
+
+		public bool isInPosFix;
 
 
 		public TextMeshPro stepCount;
@@ -78,7 +80,7 @@ namespace WordJourney
 
 			isInFight = false;
 
-			isInExplore = false;
+//			isInExplore = false;
 
 //			isAttackActionFinish = true;
 
@@ -106,6 +108,10 @@ namespace WordJourney
 			playerSide.GetComponent<UnityArmatureComponent> ().sortingOrder = order;
 		}
 
+		/// <summary>
+		/// 设置寻路起点
+		/// </summary>
+		/// <param name="position">Position.</param>
 		public void SetNavigationOrigin(Vector3 position){
 			singleMoveEndPos = position;
 			moveDestination = position;
@@ -119,6 +125,10 @@ namespace WordJourney
 		public bool MoveToPosition(Vector3 moveDestination,int[,] mapWalkableInfoArray){
 
 			if (isInFight) {
+				return false;
+			}
+
+			if (isInEvent) {
 				return false;
 			}
 
@@ -192,7 +202,11 @@ namespace WordJourney
 			exploreManager.newMapGenerator.UpdateFogOfWar ();
 			#endif
 
-			moveTweener =  transform.DOMove (targetPos, moveDuration).OnComplete (() => {
+			float distance = (targetPos - transform.position).sqrMagnitude;
+
+			isInPosFix = distance < 0.9f;
+
+			moveTweener =  transform.DOMove (targetPos, moveDuration * distance).OnComplete (() => {
 
 				bpUICtr.RefreshMiniMap();
 
@@ -242,6 +256,25 @@ namespace WordJourney
 
 		public void ActiveBattlePlayer(bool forward,bool backward,bool side){
 
+
+			bool lastRoleAnimStop = false;
+
+			if (forward && towards != MyTowards.Down) {
+				lastRoleAnimStop = true;
+			}
+
+			if (backward && towards != MyTowards.Up) {
+				lastRoleAnimStop = true;
+			}
+
+			if (side && towards != MyTowards.Left && towards != MyTowards.Right) {
+				lastRoleAnimStop = true;
+			}
+
+			if (lastRoleAnimStop && modelActive != null) {
+				armatureCom.animation.Stop ();
+			}
+
 			playerForward.SetActive (forward);
 			playerBackWard.SetActive (backward);
 			playerSide.SetActive (side);
@@ -253,6 +286,7 @@ namespace WordJourney
 			} else if (side) {
 				modelActive = playerSide;
 			}
+
 		}
 
 
@@ -278,6 +312,13 @@ namespace WordJourney
 				bool resetWalkAnim = false;
 
 				if(MyTool.ApproximatelySamePosition2D(nextPos,transform.position)){
+					pathPosList.RemoveAt (0);
+					MoveToNextPosition ();
+					return;
+				}
+
+				if (pathPosList.Count >= 2 && MyTool.ApproximatelySamePosition2D(pathPosList[1],transform.position)) {
+					pathPosList.Clear ();
 					return;
 				}
 
@@ -452,10 +493,9 @@ namespace WordJourney
 			moveTweener.Kill (false);
 			inSingleMoving = false;
 			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-			SetSortingOrder (-(int)transform.position.y);
+//			SetSortingOrder (-(int)transform.position.y);
 			Vector3 currentPos = new Vector3(Mathf.RoundToInt(transform.position.x),Mathf.RoundToInt(transform.position.y),0);
-			moveDestination = currentPos;
-			singleMoveEndPos = currentPos;
+			SetNavigationOrigin (currentPos);
 		}
 
 		public override void TowardsLeft(bool andWait = true){
@@ -650,6 +690,8 @@ namespace WordJourney
 			if (!isInFight) {
 				return;
 			}
+
+
 
 			// 播放技能对应的音效
 			GameManager.Instance.soundManager.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);
@@ -883,7 +925,7 @@ namespace WordJourney
 			agent.ResetBattleAgentProperties (true);
 			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			isInFight = false;
-			isInExplore = true;
+//			isInExplore = true;
 			inSingleMoving = false;
 			moveDestination = transform.position;
 			singleMoveEndPos = transform.position;

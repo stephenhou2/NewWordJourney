@@ -79,6 +79,8 @@ namespace WordJourney
 
 			agentUICtr = ExploreManager.Instance.expUICtr.GetComponent<BattleMonsterUIController> ();
 
+
+
 		}
 			
 

@@ -282,7 +282,6 @@ namespace WordJourney
 
 			if (frameObject.name == "hit") {
 				AgentExcuteHitEffect ();
-//				Debug.LogFormat ("hit---{0}", agent.name);
 			} else {
 				Debug.LogError ("事件帧消息名称必须是hit");
 			}
@@ -548,7 +547,7 @@ namespace WordJourney
 
 			CancelInvoke ();
 
-			AllEffectAnimsInfoPool ();
+			AllEffectAnimsIntoPool ();
 
 //			allSkillEffectReuseCoroutines.Clear ();
 
@@ -557,13 +556,13 @@ namespace WordJourney
 //			modelActive.transform.localPosition = Vector3.zero;
 		}
 
-		private void AllEffectAnimsInfoPool(){
+		private void AllEffectAnimsIntoPool(){
 
 			for (int i = 0; i < effectAnimContainer.childCount; i++) {
 
-				Transform effectAnim = effectAnimContainer.GetChild (i);
+				EffectAnim effectAnim = effectAnimContainer.GetChild (i).GetComponent<EffectAnim>();
 
-				exploreManager.GetComponent<MapGenerator> ().AddEffectAnimToPool (effectAnim);
+				exploreManager.newMapGenerator.AddEffectAnimToPool (effectAnim);
 
 				i--;
 

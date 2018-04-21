@@ -2764,7 +2764,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.9, y: 0.9}
+  m_Size: {x: 0.4, y: 0.4}
   m_EdgeRadius: 0
 --- !u!68 &68260128652726514
 EdgeCollider2D:
@@ -3004,6 +3004,8 @@ MonoBehaviour:
   canMove: 1
   isInAutoWalk: 0
   isTriggered: 0
+  moveOrigin: {x: 0, y: 0, z: 0}
+  moveDestination: {x: 0, y: 0, z: 0}
   npc:
     npcId: 0
     npcName: 
@@ -3066,6 +3068,7 @@ MonoBehaviour:
     rewardType: 0
     rewardValue: 0
     attachValue: 0
+  isInPosFix: 0
 --- !u!114 &114569540823167662
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3100,7 +3103,6 @@ MonoBehaviour:
   currentTriggeredEffectAnim: []
   towards: 0
   effectAnimContainer: {fileID: 4686621905301748}
-  originalPos: {x: 0, y: 0, z: 0}
 --- !u!114 &114735122202382948
 MonoBehaviour:
   m_ObjectHideFlags: 1
