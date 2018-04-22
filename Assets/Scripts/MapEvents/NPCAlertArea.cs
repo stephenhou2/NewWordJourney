@@ -62,11 +62,11 @@ namespace WordJourney
 				return;
 			}
 
-			if (mapNPC.isInPosFix) {
+			if (mapNPC.needPosFix) {
 				return;
 			}
 
-			if (bp.isInPosFix) {
+			if (bp.needPosFix) {
 				return;
 			}
 

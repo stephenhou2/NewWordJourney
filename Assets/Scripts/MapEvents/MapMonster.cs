@@ -138,6 +138,8 @@ namespace WordJourney
 
 		public override void EnterMapEvent (BattlePlayerController bp)
 		{
+			bp.isInEvent = true;
+
 			ExploreManager.Instance.AllWalkableEventsStopMove ();
 
 			StopMoveImmidiately ();
@@ -153,9 +155,9 @@ namespace WordJourney
 
 		public void DetectPlayer(BattlePlayerController bp){
 
-			ExploreManager.Instance.DisableInteractivity ();
+			bp.isInEvent = true;
 
-//			DisableAllDetect ();
+			ExploreManager.Instance.DisableInteractivity ();
 
 			ExploreManager.Instance.AllWalkableEventsStopMove ();
 
@@ -270,7 +272,7 @@ namespace WordJourney
 				return;
 			}
 
-			bp.isInEvent = true;
+		
 
 			bc2d.enabled = false;
 
@@ -442,12 +444,6 @@ namespace WordJourney
 
 			float timeScale = 3f;
 
-//			if (position.x >= transform.position.x) {
-//				baCtr.TowardsRight ();
-//			} else {
-//				baCtr.TowardsLeft ();
-//			}
-
 			if (showAlertArea) {
 				ShowAlertAreaTint ();
 			}
@@ -490,9 +486,9 @@ namespace WordJourney
 
 			float timeScale = 1f;
 
-			if (position.x >= transform.position.x) {
+			if (position.x >= transform.position.x + 0.2f) {
 				baCtr.TowardsRight ();
-			} else {
+			} else if(position.x <= transform.position.x - 0.2f){
 				baCtr.TowardsLeft ();
 			}
 

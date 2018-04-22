@@ -147,7 +147,7 @@ namespace WordJourney
 			this.oriCritGain= equipmentModel.critGain;
 			this.oriDodgeGain = equipmentModel.dodgeGain;
 
-			this.oriCritHurtScalerGain += equipmentModel.critHurtScalerGain;
+			this.oriCritHurtScalerGain = equipmentModel.critHurtScalerGain;
 			this.oriPhysicalHurtScalerGain = equipmentModel.physicalHurtScalerGain;
 			this.oriMagicalHurtScalerGain = equipmentModel.magicalHurtScalerGain;
 
@@ -233,7 +233,7 @@ namespace WordJourney
 					break;
 				}
 
-				GameObject.Destroy (attachedSkill.gameObject);
+				GameObject.Destroy (attachedSkill.gameObject,0.3f);
 				attachedSkill = null;
 			}
 
@@ -623,7 +623,7 @@ namespace WordJourney
 				attachedSkill = null;
 			}
 
-			InitDescription ();
+//			InitDescription ();
 
 			return addSuccess;
 		}

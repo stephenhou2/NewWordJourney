@@ -138,15 +138,43 @@ namespace WordJourney
 		protected IEnumerator MoveTo(Vector3 position,float timeScale,CallBack cb){
 
 
-			int targetPosX = Mathf.RoundToInt (position.x);
-			int targetPosY = Mathf.RoundToInt (position.y);
+//			int targetPosX = Mathf.RoundToInt (position.x);
+//			int targetPosY = Mathf.RoundToInt (position.y);
+//
+//			float distance = Mathf.Sqrt ((targetPosX - transform.position.x) * (targetPosX - transform.position.x) + 
+//				(targetPosY - transform.position.y) * (targetPosY - transform.position.y));
+//
+//			float moveDuration = baCtr.moveDuration * distance * timeScale;
+//
+//			Vector3 moveVector = new Vector3((targetPosX - transform.position.x) / moveDuration,(targetPosY - transform.position.y) / moveDuration,0);
+//
+//			float timer = 0;
+//
+//			while (timer < moveDuration) {
+//
+//				transform.position += moveVector * Time.deltaTime;
+//
+//				timer += Time.deltaTime;
+//
+//				yield return null;
+//
+//			}
+//
+//			transform.position = position;
+//
+//			if (cb != null) {
+//				cb ();
+//			}
 
-			float distance = Mathf.Sqrt ((targetPosX - transform.position.x) * (targetPosX - transform.position.x) + 
-				(targetPosY - transform.position.y) * (targetPosY - transform.position.y));
+//			int targetPosX = Mathf.RoundToInt (position.x);
+//			int targetPosY = Mathf.RoundToInt (position.y);
+
+			float distance = Mathf.Sqrt ((position.x - transform.position.x) * (position.x - transform.position.x) + 
+				(position.y - transform.position.y) * (position.y - transform.position.y));
 
 			float moveDuration = baCtr.moveDuration * distance * timeScale;
 
-			Vector3 moveVector = new Vector3((targetPosX - transform.position.x) / moveDuration,(targetPosY - transform.position.y) / moveDuration,0);
+			Vector3 moveVector = new Vector3((position.x - transform.position.x) / moveDuration,(position.y - transform.position.y) / moveDuration,0);
 
 			float timer = 0;
 

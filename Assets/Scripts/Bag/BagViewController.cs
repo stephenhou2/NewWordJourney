@@ -18,26 +18,24 @@ namespace WordJourney
 		private Item itemToAddWhenBagFull;
 
 		void Awake(){
-//			for (int i = 1; i < 33; i++) {
+			
+//			for (int i = 1; i < 12; i++) {
 //				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
 //			}
-//			for(int i = 300;i<316;i++){
-//				Player.mainPlayer.AddItem (Item.NewItemWith (i, 3));
-//			}
-//			for (int i = 401; i < 403; i++) {
-//				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
-//			}
+//
+//			Player.mainPlayer.AddItem (Item.NewItemWith (305, 20));
+//
+			for (int i = 401; i < 403; i++) {
+				Player.mainPlayer.AddItem (Item.NewItemWith (416, 1));
+			}
 
-			Equipment eqp = Item.NewItemWith (0, 1) as Equipment;
+			Equipment eqp = Item.NewItemWith (1, 1) as Equipment;
 
-			eqp.attachedSkillId = 1;
+			eqp.SetToGoldQuality ();
 
 			Player.mainPlayer.AddItem (eqp);
 
-			Equipment eqp2 = Item.NewItemWith (1, 1) as Equipment;
-
-			Player.mainPlayer.AddItem (eqp2);
-
+			Player.mainPlayer.totalGold = 2000;
 		}
 
 		public void AddBagItemWhenBagFull(Item item){

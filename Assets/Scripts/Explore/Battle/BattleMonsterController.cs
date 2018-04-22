@@ -284,7 +284,6 @@ namespace WordJourney
 			isIdle = true;
 			enemy = null;
 			currentUsingActiveSkill = null;
-			boxCollider.enabled = true;
 			SetRoleAnimTimeScale (1.0f);
 			agent.ResetBattleAgentProperties (false);
 			boxCollider.enabled = false;

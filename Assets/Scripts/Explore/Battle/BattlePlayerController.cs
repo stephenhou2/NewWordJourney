@@ -46,7 +46,9 @@ namespace WordJourney
 		public bool isInEvent; //是否在一个事件触发过程中
 //		public bool isInExplore;
 
-		public bool isInPosFix;
+//		public Vector3 tempStoredDestination;//行走目的地备份（如果是和npc碰撞相遇，暂时存储目的地，对话结束后自动向目的地移动）
+
+		public bool needPosFix;
 
 
 		public TextMeshPro stepCount;
@@ -202,11 +204,13 @@ namespace WordJourney
 			exploreManager.newMapGenerator.UpdateFogOfWar ();
 			#endif
 
-			float distance = (targetPos - transform.position).sqrMagnitude;
-
-			isInPosFix = distance < 0.9f;
+			float distance = (targetPos - transform.position).magnitude;
 
 			moveTweener =  transform.DOMove (targetPos, moveDuration * distance).OnComplete (() => {
+
+				if(needPosFix){
+					needPosFix = false;
+				}
 
 				bpUICtr.RefreshMiniMap();
 
@@ -462,26 +466,27 @@ namespace WordJourney
 
 				moveTweener.OnComplete (() => {
 
-					if(fadeStepsLeft > 0){
+					if (fadeStepsLeft > 0) {
 						fadeStepsLeft--;
 					}
 
 					// 动画结束时已经移动到指定节点位置，标记单步行动结束
 					inSingleMoving = false;
 
-					SetSortingOrder(-(int)transform.position.y);
+					SetSortingOrder (-(int)transform.position.y);
 
-					if(pathPosList.Count > 0){
+					if (pathPosList.Count > 0) {
 
 						// 将当前节点从路径点中删除
-						pathPosList.RemoveAt(0);
+						pathPosList.RemoveAt (0);
 
 						// 移动到下一个节点位置
-						MoveToNextPosition();
+						MoveToNextPosition ();
 
 					}
-
 				});
+			} else {
+				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			}
 
 		}
@@ -690,8 +695,6 @@ namespace WordJourney
 			if (!isInFight) {
 				return;
 			}
-
-
 
 			// 播放技能对应的音效
 			GameManager.Instance.soundManager.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);

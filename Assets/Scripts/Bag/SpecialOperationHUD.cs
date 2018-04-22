@@ -23,10 +23,16 @@ namespace WordJourney
 		public void OnAddSkillButtonClick(){
 
 			if (Player.mainPlayer.totalGold < 200) {
+				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("金币不足");
 				return;
 			}
 
 			Equipment equipment = equipmentCell.soDragControl.item as Equipment;
+
+			if (equipment.attachedSkillId > 0) {
+				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("不能重复附魔");
+				return;
+			}
 
 			SkillGemstone gemstone = functionalItemCell.soDragControl.item as SkillGemstone;
 
