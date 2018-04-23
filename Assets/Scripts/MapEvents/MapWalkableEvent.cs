@@ -261,6 +261,45 @@ namespace WordJourney
 
 		}
 
+		public void RefreshWalkableInfoWhenStartMove(){
+
+			int walkableEventOriPosX = Mathf.RoundToInt(moveOrigin.x);
+			int walkableEventOriPosY = Mathf.RoundToInt(moveOrigin.y);
+
+			int walkableEventDestPosX = Mathf.RoundToInt (moveDestination.x);
+			int walkableEventDestPosY = Mathf.RoundToInt (moveDestination.y);
+
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventOriPosX, walkableEventOriPosY] = 1;
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 5;
+
+			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventOriPosX, walkableEventOriPosY] = 0;
+			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 1;
+
+		}
+			
+
+		/// <summary>
+		/// 当和地图上的可行走事件（怪物／npc）交互（战斗，交谈等）结束后，重置行走信息和可行走事件位置信息
+		/// </summary>
+		public void RefreshWalkableInfoWhenQuit(bool walkableEventDie){
+
+			int walkableEventOriPosX = Mathf.RoundToInt(moveOrigin.x);
+			int walkableEventOriPosY = Mathf.RoundToInt(moveOrigin.y);
+
+			int walkableEventDestPosX = Mathf.RoundToInt (moveDestination.x);
+			int walkableEventDestPosY = Mathf.RoundToInt (moveDestination.y);
+
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventOriPosX, walkableEventOriPosY] = 1;
+			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventOriPosX, walkableEventOriPosY] = 0;
+
+			if (walkableEventDie) {
+				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 1;
+				ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 0;
+			}
+
+		}
+
+
 
 	}
 }

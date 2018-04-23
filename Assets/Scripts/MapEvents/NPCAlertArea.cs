@@ -25,17 +25,20 @@ namespace WordJourney
 			mr.enabled = false;
 			alertAreaTint.enabled = false;
 
-			alertAreaTint.animation.timeScale = 0.2f;
+//			alertAreaTint.animation.timeScale = 0.2f;
+//			alertAreaTint.animation.Play ();
 			ec2D.enabled = true;
 		}
 			
 
 		public void EnableAlertDetect(){
 			ec2D.enabled = true;
+//			alertAreaTint.animation.Play ();
 		}
 
 		public void DisableAlertDetect(){
 			ec2D.enabled = false;
+//			alertAreaTint.animation.Stop ();
 		}
 
 

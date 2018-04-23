@@ -88,6 +88,11 @@ namespace WordJourney
 //		}
 
 		public void OnExploreButtonClick(){
+			
+			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
+
+			Player.mainPlayer.SetUpPlayerWithPlayerData (playerData);
+
 
 			if (Player.mainPlayer.isNewPlayer) {
 

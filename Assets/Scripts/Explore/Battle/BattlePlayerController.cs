@@ -321,9 +321,18 @@ namespace WordJourney
 					return;
 				}
 
-				if (pathPosList.Count >= 2 && MyTool.ApproximatelySamePosition2D(pathPosList[1],transform.position)) {
-					pathPosList.Clear ();
-					return;
+				if (pathPosList.Count >= 2) {
+
+					Vector3 firstFollowingPos = pathPosList [0];
+					Vector3 secondFollowingPos = pathPosList [1];
+
+					if ((firstFollowingPos.x - transform.position.x) * (secondFollowingPos.x - transform.position.x) < 0
+						&& Mathf.RoundToInt(firstFollowingPos.y) == Mathf.RoundToInt(transform.position.y)
+						&& Mathf.RoundToInt(firstFollowingPos.y) == Mathf.RoundToInt(secondFollowingPos.y)) {
+						pathPosList.RemoveAt (0);
+						MoveToNextPosition ();
+						return;
+					}
 				}
 
 				if (Mathf.RoundToInt(nextPos.x) == Mathf.RoundToInt(transform.position.x)) {

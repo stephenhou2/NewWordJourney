@@ -29,32 +29,32 @@ namespace WordJourney
 
 		public string attachedPropertyDescription;
 
-		private int oriMaxHealthGain;//最大生命增益
-		private int oriMaxManaGain;//最大魔法增益
+		public int oriMaxHealthGain;//最大生命增益
+		public int oriMaxManaGain;//最大魔法增益
 
-		private int oriAttackGain;//攻击力增益
-		private int oriMagicAttackGain;//魔法攻击增益
+		public int oriAttackGain;//攻击力增益
+		public int oriMagicAttackGain;//魔法攻击增益
 
-		private int oriArmorGain;//护甲增益
-		private int oriMagicResistGain;//魔抗增益
+		public int oriArmorGain;//护甲增益
+		public int oriMagicResistGain;//魔抗增益
 
-		private int oriArmorDecreaseGain;//护甲穿刺增益
-		private int oriMagicResistDecreaseGain;//抗性穿刺增益
+		public int oriArmorDecreaseGain;//护甲穿刺增益
+		public int oriMagicResistDecreaseGain;//抗性穿刺增益
 
-		private int oriMoveSpeedGain;//地图行走速度增益
+		public int oriMoveSpeedGain;//地图行走速度增益
 
-		private float oriCritGain;//暴击增益
-		private float oriDodgeGain;//闪避增益
+		public float oriCritGain;//暴击增益
+		public float oriDodgeGain;//闪避增益
 
-		private float oriCritHurtScalerGain;//暴击倍率加成
-		private float oriPhysicalHurtScalerGain;//物理伤害加成
-		private float oriMagicalHurtScalerGain;//魔法伤害加成
+		public float oriCritHurtScalerGain;//暴击倍率加成
+		public float oriPhysicalHurtScalerGain;//物理伤害加成
+		public float oriMagicalHurtScalerGain;//魔法伤害加成
 
-		private int oriExtraGoldGain;//额外金钱增益
-		private int oriExtraExperienceGain;//额外经验增益
+		public int oriExtraGoldGain;//额外金钱增益
+		public int oriExtraExperienceGain;//额外经验增益
 
-		private int oriHealthRecoveryGain;//生命回复效果增益
-		private int oriMagicRecoveryGain;//魔法回复效果增益
+		public int oriHealthRecoveryGain;//生命回复效果增益
+		public int oriMagicRecoveryGain;//魔法回复效果增益
 
 
 
@@ -95,7 +95,7 @@ namespace WordJourney
 
 		public Skill attachedSkill;//附带的技能
 
-		private List<PropertySet> specProperties;
+		public List<PropertySet> specProperties;//装备的特殊属性（蓝色/金色/暗金装备会增加1/2/2个特殊属性）
 
 
 //		public EquipmentModel.ItemInfoForProduce[] itemInfosForProduce;
@@ -171,6 +171,9 @@ namespace WordJourney
 				// 非暗金装备初始化为灰色装备
 				ResetPropertiesByQuality (EquipmentQuality.Gray);
 			}
+
+			attachedSkillId = itemId;
+
 			InitDescription ();
 		}
 
@@ -205,39 +208,21 @@ namespace WordJourney
 		}
 
 
+		public void DestroyAttachedSkillGameObject(){
+			if (attachedSkill != null) {
+				GameObject.Destroy (attachedSkill.gameObject);
+				attachedSkill = null;
+			}
+		}
+
 		/// <summary>
 		/// 清除装备附加技能
 		/// </summary>
 		public void RemoveAttachedSkill(){
 
-			if (attachedSkill != null) {
-
-				switch (attachedSkill.skillType) {
-				case SkillType.Active:
-					ActiveSkill aSkill = attachedSkill as ActiveSkill;
-					if (Player.mainPlayer.attachedActiveSkills.Contains (aSkill)) {
-						Player.mainPlayer.attachedActiveSkills.Remove (aSkill);
-					}
-					break;
-				case SkillType.PermanentPassive:
-					PermanentPassiveSkill ppSkill = attachedSkill as PermanentPassiveSkill;
-					if(Player.mainPlayer.attachedPermanentPassiveSkills.Contains(ppSkill)){
-						Player.mainPlayer.attachedPermanentPassiveSkills.Remove (attachedSkill as PermanentPassiveSkill);
-					}
-					break;
-				case SkillType.TriggeredPassive:
-					TriggeredPassiveSkill tpSkill = attachedSkill as TriggeredPassiveSkill;
-					if (Player.mainPlayer.attachedTriggeredSkills.Contains (tpSkill)) {
-						Player.mainPlayer.attachedTriggeredSkills.Remove (attachedSkill as TriggeredPassiveSkill);
-					}
-					break;
-				}
-
-				GameObject.Destroy (attachedSkill.gameObject,0.3f);
-				attachedSkill = null;
-			}
-
 			attachedSkillId = 0;
+
+			DestroyAttachedSkillGameObject ();
 
 		}
 
@@ -365,7 +350,9 @@ namespace WordJourney
 				attachedSkill = SkillGenerator.GenerateTriggeredSkill (attachedSkillId);
 			}
 
-			Player.mainPlayer.ResetBattleAgentProperties (false);
+			if (equiped) {
+				Player.mainPlayer.ResetBattleAgentProperties (false);
+			}
 
 			InitDescription ();
 
@@ -619,11 +606,11 @@ namespace WordJourney
 			addSuccess = true;
 
 			if (attachedSkill != null) {
-				GameObject.Destroy (attachedSkill);
-				attachedSkill = null;
+				if (attachedSkillId != skillId) {
+					GameObject.Destroy (attachedSkill);
+					attachedSkill = SkillGenerator.GenerateTriggeredSkill (skillId);
+				}
 			}
-
-//			InitDescription ();
 
 			return addSuccess;
 		}

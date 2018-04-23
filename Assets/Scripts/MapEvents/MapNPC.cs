@@ -53,26 +53,45 @@ namespace WordJourney{
 
 			yield return new WaitForSeconds (delay);
 
+			EnableAllDetect ();
 			StartMove ();
 
 		}
 
 
-		public void EnableTalk(){
-			bc2d.enabled = true;
-		}
+//		public void ReenableDetect(){
+//			if (npc.isExcutor) {
+//				bc2d.enabled = true;
+//				EnableAllAlertAreaDetect ();
+//			} else {
+//				bc2d.enabled = true;
+//			}
+//		}
 
-		public void DisableAllDetect(){
+
+
+		private void DisableAllDetect(){
 
 			DisableAllAlertAreaDetect ();
 
 			bc2d.enabled = false;
 
 		}
+
+		private void EnableAllDetect(){
+			EnableAllAlertAreaDetect ();
+			bc2d.enabled = true;
+		}
 			
 		private void InitAllAlertAreaDetect(){
 			for (int i = 0; i < alertAreas.Length; i++) {
 				alertAreas [i].InitializeAlertArea ();
+			}
+		}
+
+		private void EnableAllAlertAreaDetect(){
+			for (int i = 0; i < alertAreas.Length; i++) {
+				alertAreas [i].EnableAlertDetect ();
 			}
 		}
 
@@ -167,7 +186,9 @@ namespace WordJourney{
 				return;
 			}
 
-			DisableAllDetect ();
+			if (!npc.isExcutor) {
+				DisableAllAlertAreaDetect ();
+			}
 
 			ExploreManager.Instance.DisableInteractivity ();
 
@@ -288,6 +309,10 @@ namespace WordJourney{
 					npcFightPos = new Vector3 (playerOriPos.x - 1, playerPosY, 0);
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
+				} else if(playerPosX - 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y)){
+					npcFightPos = new Vector3 (playerOriPos.x - 1, playerPosY, 0);
+					needPosFix = false;
+					battlePlayerCtr.needPosFix = false;
 				} else {
 					npcFightPos = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
 					battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x + 0.3f, playerPosY, 0);
@@ -352,6 +377,12 @@ namespace WordJourney{
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 
+				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+					npcFightPos = new Vector3 (playerOriPos.x + 1, playerPosY, 0);
+
+					needPosFix = false;
+					battlePlayerCtr.needPosFix = false;
+
 				} else {
 					npcFightPos = new Vector3 (playerOriPos.x + 0.3f, playerPosY, 0);
 					battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
@@ -379,7 +410,6 @@ namespace WordJourney{
 
 			yield return new WaitUntil (()=>battlePlayerCtr.isIdle);
 
-
 			Vector3 playerOriPos = battlePlayerCtr.transform.position;
 			Vector3 npcOriPos = transform.position;
 
@@ -399,6 +429,10 @@ namespace WordJourney{
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 				} else if (playerPosX - 1 == npcPosX && playerPosY == npcPosY) {
+					npcFightPos = new Vector3 (playerPosX - 1, playerOriPos.y, 0);
+					needPosFix = false;
+					battlePlayerCtr.needPosFix = false;
+				} else if (playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 					npcFightPos = new Vector3 (playerPosX - 1, playerOriPos.y, 0);
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
@@ -433,6 +467,10 @@ namespace WordJourney{
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 				} else if (playerPosX + 1 == npcPosX && playerPosY == npcPosY) {
+					npcFightPos = new Vector3 (playerPosX + 1, playerOriPos.y, 0);
+					needPosFix = false;
+					battlePlayerCtr.needPosFix = false;
+				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 					npcFightPos = new Vector3 (playerPosX + 1, playerOriPos.y, 0);
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
@@ -476,11 +514,16 @@ namespace WordJourney{
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
-			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
-			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
+//
+//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
 
-			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
-			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
+			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
+			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
+
+			RefreshWalkableInfoWhenStartMove ();
 
 //			if (targetPosY == oriPosY) {
 //				if (targetPosX >= oriPosX) {
@@ -550,14 +593,16 @@ namespace WordJourney{
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
-			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
-			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
-
-			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
-			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
+//
+//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
 
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
  			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
+
+			RefreshWalkableInfoWhenStartMove ();
 
 			float timeScale = 1f;
 

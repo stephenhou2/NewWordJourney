@@ -637,7 +637,7 @@ namespace WordJourney
 				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD (tint);
 				break;
 			case HLHRewardType.Item:
-				if (reward.attachValue > 0) {
+				if (reward.attachValue >= 0) {
 					Item rewardItem = Item.NewItemWith (reward.rewardValue,1);
 					if (rewardItem.itemType == ItemType.Equipment) {
 						Equipment eqp = rewardItem as Equipment;
@@ -646,9 +646,11 @@ namespace WordJourney
 					}
 					player.AddItem (rewardItem);
 					ExploreManager.Instance.expUICtr.SetUpSimpleItemDetail (rewardItem);
+					ExploreManager.Instance.expUICtr.UpdateBottomBar ();
 				} else {
 					Item removeItem = Item.NewItemWith (reward.rewardValue,1);
 					player.RemoveItem (removeItem,removeItem.itemCount);
+					ExploreManager.Instance.expUICtr.UpdateBottomBar ();
 				}
 				break;
 			case HLHRewardType.Property:
@@ -721,11 +723,13 @@ namespace WordJourney
 
 			mn.isTriggered = false;
 
-			ExploreManager.Instance.AllWalkableEventsStartMove ();
+			ExploreManager exploreManager = ExploreManager.Instance;
 
-			mn.EnableTalk ();
+			exploreManager.AllWalkableEventsStartMove ();
 
-			ExploreManager.Instance.EnableInteractivity ();
+			mn.RefreshWalkableInfoWhenQuit (false);
+
+			exploreManager.EnableInteractivity ();
 
 		}
 

@@ -322,6 +322,8 @@ namespace WordJourney
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
 				} else if (playerPosX - 1 == monsterPosX && playerPosY == monsterPosY) {
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
+				} else if (playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
 				} else {
 					monsterFightPos = new Vector3 (playerPosX - 0.45f,playerPosY, 0);
 					battlePlayerCtr.transform.position = new Vector3 (playerPosX + 0.3f, playerPosY, 0);
@@ -362,19 +364,15 @@ namespace WordJourney
 //				baCtr.TowardsLeft ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
-
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
-
 				} else if (playerPosX + 1 == monsterPosX && playerPosY == monsterPosY) {
-
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
-
+				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
 				} else {
 					monsterFightPos = new Vector3 (playerPosX + 0.45f, playerPosY, 0);
 					battlePlayerCtr.transform.position = new Vector3 (playerPosX - 0.4f, playerPosY, 0);
-
 				}
-
 			}
 
 			battlePlayerCtr.PlayRoleAnimByTime (playerCurrentAnimInfo.roleAnimName,playerCurrentAnimInfo.roleAnimTime,
@@ -411,14 +409,16 @@ namespace WordJourney
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
-			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
-			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
-
-			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
-			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
+//
+//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
 
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
 			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
+
+			RefreshWalkableInfoWhenStartMove ();
 
 			if (targetPosY == oriPosY) {
 				if (targetPosX >= oriPosX) {
@@ -475,14 +475,16 @@ namespace WordJourney
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
-			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
-			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
-
-			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
-			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
+//
+//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
+//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
 
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
 			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
+
+			RefreshWalkableInfoWhenStartMove ();
 
 			float timeScale = 1f;
 

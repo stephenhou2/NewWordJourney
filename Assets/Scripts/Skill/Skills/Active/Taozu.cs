@@ -13,6 +13,8 @@ namespace WordJourney
 			self.QuitFight ();
 			enemy.QuitFight ();
 
+		
+
 			ExploreManager.Instance.EnableInteractivity ();
 
 			ExploreManager.Instance.currentEnteredMapEvent = null;
@@ -27,6 +29,8 @@ namespace WordJourney
 			ExploreManager.Instance.AllWalkableEventsStartMove ();
 
 			MapWalkableEvent mwe = enemy.GetComponent<MapWalkableEvent> ();
+
+			mwe.RefreshWalkableInfoWhenQuit (false);
 
 			mwe.StopMoveImmidiately ();
 

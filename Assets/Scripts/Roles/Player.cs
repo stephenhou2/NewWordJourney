@@ -114,6 +114,8 @@ namespace WordJourney
 
 		public void SetUpPlayerWithPlayerData(PlayerData playerData){
 
+			Debug.Log ("set up player data");
+
 			if (playerData == null) {
 				return;
 			}
@@ -232,9 +234,6 @@ namespace WordJourney
 			this.attachedTriggeredSkills.Clear ();
 			this.allStatus.Clear ();
 
-			ResetBattleAgentProperties (false);
-
-
 			allItemsInBag = new List<Item> ();
 
 			for (int i = 0; i < allEquipmentsInBag.Count; i++) {
@@ -263,6 +262,9 @@ namespace WordJourney
 
 			for(int i = 0;i<skillsContainer.childCount;i++) {
 				Destroy (skillsContainer.GetChild (i).gameObject);
+				attachedActiveSkills.Clear ();
+				attachedTriggeredSkills.Clear ();
+				attachedPermanentPassiveSkills.Clear ();
 			}
 
 			for (int i = 0; i < allEquipedEquipments.Length; i++) {
@@ -273,26 +275,18 @@ namespace WordJourney
 					continue;
 				}
 
-				Skill attachedSkill = GameManager.Instance.gameDataCenter.allSkills.Find (delegate(Skill obj) {
-					return obj.skillId == equipment.attachedSkillId;
-				});
+				if (equipment.attachedSkillId <= 0) {
+					continue;
+				}
+					
+				Skill skill = SkillGenerator.GenerateTriggeredSkill (equipment.attachedSkillId);
 
-				equipment.attachedSkill = attachedSkill;
+				AddSkill (skill);
 
-//				for (int j = 0; j < equipment.attachedSkillInfos.Length; j++) {
-//
-//					TriggeredPassiveSkill attachedSkill = SkillGenerator.Instance.GenerateTriggeredSkill (equipment, equipment.attachedSkillInfos [j], triggeredPassiveSkillsContainer);
-//
-//					equipment.attachedSkills.Add (attachedSkill);
-//
-//					Debug.LogFormat ("{0}-{1}", equipment.itemName, attachedSkill.name);
-//
-//					attachedTriggeredSkills.Add (attachedSkill);
-//				}
-
-
+				equipment.attachedSkill = skill;
 			}
 
+			ResetBattleAgentProperties (false);
 
 		}
 
@@ -477,10 +471,11 @@ namespace WordJourney
 			Skill attachedSkill = equipment.attachedSkill;
 
 			if (attachedSkill != null) {
-				RemoveSkill (attachedSkill);
 				if (!bpCtr.isInFight) {
-					equipment.attachedSkill = null;
-					Destroy (attachedSkill.gameObject);
+					RemoveSkill (attachedSkill);
+					equipment.DestroyAttachedSkillGameObject ();
+				} else {
+					RemoveSkill (attachedSkill);
 				}
 			}
 				
@@ -510,8 +505,8 @@ namespace WordJourney
 				Equipment equipment = allEquipmentsInBag [j];
 				if (!equipment.equiped && equipment.attachedSkill != null) {
 					Skill attachedSkill = equipment.attachedSkill;
-					equipment.attachedSkill = null;
 					Destroy (attachedSkill.gameObject);
+					equipment.attachedSkill = null;
 				}
 			}
 
@@ -686,13 +681,22 @@ namespace WordJourney
 		public void AddSkill(Skill skill){
 			switch (skill.skillType) {
 			case SkillType.Active:
-				attachedActiveSkills.Add (skill as ActiveSkill);
+				ActiveSkill activeSkl = skill as ActiveSkill;
+				if(!attachedActiveSkills.Contains(activeSkl)){
+					attachedActiveSkills.Add (activeSkl);
+				}
 				break;
 			case SkillType.PermanentPassive:
-				attachedPermanentPassiveSkills.Add (skill as PermanentPassiveSkill);
+				PermanentPassiveSkill ppSkl = skill as PermanentPassiveSkill;
+				if (!attachedPermanentPassiveSkills.Contains (ppSkl)) {
+					attachedPermanentPassiveSkills.Add (ppSkl);
+				}
 				break;
 			case SkillType.TriggeredPassive:
-				attachedTriggeredSkills.Add (skill as TriggeredPassiveSkill);
+				TriggeredPassiveSkill tpSkl = skill as TriggeredPassiveSkill;
+				if (!attachedTriggeredSkills.Contains (tpSkl)) {
+					attachedTriggeredSkills.Add (tpSkl);
+				}
 				break;
 			}
 
@@ -1477,21 +1481,6 @@ namespace WordJourney
 
 			this.isNewPlayer = player.isNewPlayer;
 
-			ClearAllEquipmentAttachedSkills ();
-
-		}
-
-		private void ClearAllEquipmentAttachedSkills(){
-			
-			for (int i = 0; i < allEquipedEquipments.Length; i++) {
-				
-				Equipment equipment = allEquipedEquipments [i];
-
-				if (equipment == null || equipment.attachedSkill == null) {
-					continue;
-				}
-				allEquipedEquipments [i].attachedSkill = null;
-			}
 		}
 			
 	}

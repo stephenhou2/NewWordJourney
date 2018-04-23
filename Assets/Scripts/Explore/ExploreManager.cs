@@ -104,11 +104,6 @@ namespace WordJourney
 		//Initializes the game for each level.
 		public void SetUpExploreView()
 		{
-//			detectFight = false;
-
-			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
-
-			Player.mainPlayer.SetUpPlayerWithPlayerData (playerData);
 
 			DisableInteractivity ();
 
@@ -511,18 +506,7 @@ namespace WordJourney
 
 			Vector3 monsterPos = trans.position;
 
-			int monsterOriPosX = Mathf.RoundToInt(walkableEvent.moveOrigin.x);
-			int monsterOriPosY = Mathf.RoundToInt(walkableEvent.moveOrigin.y);
-
-			int monsterDestPosX = Mathf.RoundToInt (walkableEvent.moveDestination.x);
-			int monsterDestPosY = Mathf.RoundToInt (walkableEvent.moveDestination.y);
-
-			newMapGenerator.mapWalkableInfoArray [monsterOriPosX, monsterOriPosY] = 1;
-			newMapGenerator.mapWalkableEventInfoArray [monsterOriPosX, monsterOriPosY] = 0;
-
-			newMapGenerator.mapWalkableInfoArray [monsterDestPosX, monsterDestPosY] = 1;
-			newMapGenerator.mapWalkableEventInfoArray [monsterDestPosX, monsterDestPosY] = 0;
-
+			walkableEvent.RefreshWalkableInfoWhenQuit (true);
 
 			player.totalGold += monster.rewardGold + player.extraGold;//更新玩家金钱
 
@@ -581,9 +565,12 @@ namespace WordJourney
 
 			battlePlayerCtr.isInEvent = false;
 
+			battlePlayerCtr.boxCollider.enabled = true;
+
 			AllWalkableEventsStartMove ();
 
 		}
+
 
 
 		private void PlayLevelUpAnim(){
@@ -692,7 +679,7 @@ namespace WordJourney
 
 			player.currentLevelIndex++;
 
-			if (player.currentLevelIndex >= 50) {
+			if (player.currentLevelIndex >= 5) {
 				Debug.Log ("通关");
 				return;
 			}

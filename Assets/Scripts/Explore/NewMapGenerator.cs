@@ -141,6 +141,7 @@ namespace WordJourney
 		public void SetUpMap()
 		{
 
+
 			Reset ();
 
 			// 绘制地图

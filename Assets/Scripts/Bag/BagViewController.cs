@@ -19,23 +19,29 @@ namespace WordJourney
 
 		void Awake(){
 			
-//			for (int i = 1; i < 12; i++) {
-//				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
-//			}
+			for (int i = 1; i < 33; i++) {
+				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
+			}
 //
 //			Player.mainPlayer.AddItem (Item.NewItemWith (305, 20));
 //
-			for (int i = 401; i < 403; i++) {
-				Player.mainPlayer.AddItem (Item.NewItemWith (416, 1));
-			}
-
-			Equipment eqp = Item.NewItemWith (1, 1) as Equipment;
-
-			eqp.SetToGoldQuality ();
-
-			Player.mainPlayer.AddItem (eqp);
-
-			Player.mainPlayer.totalGold = 2000;
+//			for (int i = 401; i < 433; i++) {
+//				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
+//			}
+//
+//			Equipment eqp = Item.NewItemWith (1, 1) as Equipment;
+//
+//			eqp.SetToGoldQuality ();
+//
+//			Player.mainPlayer.AddItem (eqp);
+//
+//			for (int i = 0; i < 5; i++) {
+//				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
+//			}
+//
+//			Player.mainPlayer.AddItem (Item.NewItemWith (305, 5));
+//
+//			Player.mainPlayer.totalGold = 2000;
 		}
 
 		public void AddBagItemWhenBagFull(Item item){

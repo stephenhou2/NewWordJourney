@@ -73,7 +73,8 @@ namespace WordJourney
 
 			if (isExcutor && player.robTime == 0) {
 				targetDg = regularGreetings [0];
-				dialogGroupRecord = targetDg;
+				dialogGroupRecord = null;
+//				dialogGroupRecord = targetDg;
 				return targetDg;
 			}
 
