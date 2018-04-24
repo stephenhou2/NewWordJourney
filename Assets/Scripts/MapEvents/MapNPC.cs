@@ -38,7 +38,12 @@ namespace WordJourney{
 			this.npcId = npcId;
 		}
 
-		public void QuitFightAndDelayMove(int delay){
+		public override void QuitFightAndDelayMove(int delay){
+
+			StopMoveImmidiately ();
+
+			isInAutoWalk = false;
+			isTriggered = false;
 
 			StopCoroutine ("DelayedMovement");
 
@@ -153,9 +158,18 @@ namespace WordJourney{
 			if (needPosFix) {
 				return;
 			}
-				
 
-//			bp.tempStoredDestination = bp.moveDestination;
+			if (baCtr.agent.isDead) {
+				return;
+			}
+
+//			if (bp.escapeFromFight) {
+//				return;
+//			}
+
+			if (bp.isInPosFixAfterFight) {
+				return;
+			}
 
 			MapEventTriggered (false, bp);
 		}
@@ -222,7 +236,8 @@ namespace WordJourney{
 		}
 
 		public void EnterFight(BattlePlayerController bp){
-
+			bp.escapeFromFight = false;
+			bp.isInEscaping = false;
 			StartCoroutine ("AdjustPositionAndTowardsAndFight", bp);
 		}
 
@@ -395,13 +410,26 @@ namespace WordJourney{
 			}
 
 			RunToPosition (npcFightPos, delegate {
-				if(transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x){
-					baCtr.TowardsRight();
+
+				if(!battlePlayerCtr.escapeFromFight){
+					if(transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x){
+						baCtr.TowardsRight();
+					}else{
+						baCtr.TowardsLeft();
+					}
+					if(!battlePlayerCtr.isInEscaping){
+						ExploreManager.Instance.EnterFight(this.transform);
+						ExploreManager.Instance.PlayerAndMonsterStartFight();
+					}else{
+						ExploreManager.Instance.EnterFight(this.transform);
+						ExploreManager.Instance.MonsterStartFight();
+					}
 				}else{
-					baCtr.TowardsLeft();
+					bool monsterDie = baCtr.agent.health <= 0;
+					RefreshWalkableInfoWhenQuit(monsterDie);
+					QuitFightAndDelayMove(5);
+					battlePlayerCtr.escapeFromFight = false;
 				}
-				ExploreManager.Instance.EnterFight(this.transform);
-				ExploreManager.Instance.PlayerAndMonsterStartFight();
 			});
 		}
 			

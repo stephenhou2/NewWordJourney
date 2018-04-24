@@ -44,11 +44,14 @@ namespace WordJourney
 
 		public bool isInFight;
 		public bool isInEvent; //是否在一个事件触发过程中
-//		public bool isInExplore;
-
-//		public Vector3 tempStoredDestination;//行走目的地备份（如果是和npc碰撞相遇，暂时存储目的地，对话结束后自动向目的地移动）
 
 		public bool needPosFix;
+
+		public bool escapeFromFight;//是否从战斗中逃脱
+
+		public bool isInEscaping;//是否正在脱离战斗中
+
+		public bool isInPosFixAfterFight;
 
 
 		public TextMeshPro stepCount;
@@ -82,9 +85,15 @@ namespace WordJourney
 
 			isInFight = false;
 
-//			isInExplore = false;
+			isInEvent = false;
 
-//			isAttackActionFinish = true;
+			needPosFix = false;
+
+			escapeFromFight = false;
+
+			isInEscaping = false;
+
+			isInPosFixAfterFight = false;
 
 			base.Awake ();
 
@@ -552,9 +561,15 @@ namespace WordJourney
 			Vector3 fixedPosition = new Vector3 (Mathf.RoundToInt (transform.position.x), 
 				Mathf.RoundToInt (transform.position.y), 
 				transform.position.z);
-			transform.position = fixedPosition;
+//			transform.position = fixedPosition;
 			singleMoveEndPos = fixedPosition;
 			moveDestination = fixedPosition;
+			isInPosFixAfterFight = true;
+			transform.DOMove (fixedPosition, 0.1f).OnComplete (() => {
+				isInPosFixAfterFight = false;
+				escapeFromFight = false;
+				isInEscaping = false;
+			});
 		}
 
 		/// <summary>
@@ -669,11 +684,6 @@ namespace WordJourney
 
 
 
-//		public void UseDefaultSkill(){
-//			currentSkill = InteligentAttackSkill ();
-//			UseSkill (currentSkill);
-//		}
-
 		/// <summary>
 		/// 使用技能
 		/// </summary>
@@ -701,6 +711,10 @@ namespace WordJourney
 
 		protected override void AgentExcuteHitEffect ()
 		{
+			Debug.Log (armatureCom.animation.lastAnimationName);
+
+			Debug.LogFormat ("{0}-0",isInFight);
+
 			if (!isInFight) {
 				return;
 			}
@@ -709,19 +723,26 @@ namespace WordJourney
 			GameManager.Instance.soundManager.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);
 
 			MapMonster mm = enemy.GetComponent<MapMonster> ();
+
 			if (mm != null) {
 				mm.isReadyToFight = true;
 			}
 
+			Debug.Log (currentUsingActiveSkill.skillName);
 			// 技能效果影响玩家和怪物
 			currentUsingActiveSkill.AffectAgents(this,enemy);
 
+			Debug.LogFormat ("{0}-1",isInFight);
+		
 			UpdateStatusPlane ();
-			enemy.UpdateStatusPlane ();
-
-//			isAttackActionFinish = true;
 
 			if (enemy == null) {
+				return;
+			}
+				
+			enemy.UpdateStatusPlane ();
+
+			if (!isInFight) {
 				return;
 			}
 
@@ -802,6 +823,11 @@ namespace WordJourney
 			return new HLHRoleAnimInfo (currentAnimName, playTimes, animTime, animEndCallBack);
 		}
 
+		public override void PlayRoleAnim (string animName, int playTimes, CallBack cb)
+		{
+			animName = RoleAnimNameAdapt (animName);
+			base.PlayRoleAnim (animName, playTimes, cb);
+		}
 
 		public void PlayRoleAnimByTime(string animName,float animBeginTime,int playTimes,CallBack cb){
 			
@@ -811,7 +837,8 @@ namespace WordJourney
 			if (waitRoleAnimEndCoroutine != null) {
 				StopCoroutine (waitRoleAnimEndCoroutine);
 			}
-
+				
+			animName = RoleAnimNameAdapt (animName);
 
 			// 播放新的角色动画
 			armatureCom.animation.GotoAndPlayByTime(animName,animBeginTime,playTimes);
@@ -821,6 +848,132 @@ namespace WordJourney
 				waitRoleAnimEndCoroutine = ExcuteCallBackAtEndOfRoleAnim (cb);
 				StartCoroutine(waitRoleAnimEndCoroutine);
 			}
+		}
+
+		private bool IsInAttackAnim(string animName){
+			return animName == CommonData.roleAttackAnimName
+			|| animName == CommonData.playerAttackBareHandName
+			|| animName == CommonData.playerAttackWithSwordName
+			|| animName == CommonData.playerAttackWithStaffName
+			|| animName == CommonData.playerAttackWithAxeName
+			|| animName == CommonData.playerAttackWithDraggerName;
+
+		}
+
+		private bool IsInIntervalAnim(string animName){
+			return animName == CommonData.roleAttackIntervalAnimName
+			|| animName == CommonData.playerIntervalBareHandName
+			|| animName == CommonData.playerIntervalWithSwordName
+			|| animName == CommonData.playerIntervalWithStaffName
+			|| animName == CommonData.playerIntervalWithAxeName
+			|| animName == CommonData.playerIntervalWithDraggerName;
+		}
+
+		private bool IsInPhysicalSkillAnim(string animName){
+			return animName == CommonData.rolePhysicalSkillAnimName
+			|| animName == CommonData.playerPhysicalSkillBareHandName
+			|| animName == CommonData.playerPhysicalSkillWithSwordName
+			|| animName == CommonData.playerPhysicalSkillWithStaffName
+			|| animName == CommonData.playerPhysicalSkillWithAxeName
+			|| animName == CommonData.playerPhysicalSkillWithDraggerName;
+		}
+
+		private bool IsInMagiclSkillAnim(string animName){
+			return animName == CommonData.roleMagicalSkillAnimName
+			|| animName == CommonData.playerMagicalSkillBareHandName
+			|| animName == CommonData.playerMagicalSkillWithSwordName
+			|| animName == CommonData.playerMagicalSkillWithStaffName
+			|| animName == CommonData.playerMagicalSkillWithAxeName
+			|| animName == CommonData.playerMagicalSkillWithDraggerName;
+
+		}
+
+		private string RoleAnimNameAdapt(string animName){
+
+			string adaptName = animName;
+
+			bool adaptException = animName ==CommonData.roleWalkAnimName
+			                 || animName == CommonData.roleIdleAnimName
+			                 || animName == CommonData.roleDieAnimName;
+
+			if (!adaptException && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+				
+				Equipment playerWeapon = Player.mainPlayer.allEquipedEquipments [0];
+
+				switch (playerWeapon.weaponType) {
+				case WeaponType.None:
+					if (IsInAttackAnim(animName)) {
+						adaptName = CommonData.playerAttackBareHandName;
+					} else if (IsInPhysicalSkillAnim(animName)) {
+						adaptName = CommonData.playerPhysicalSkillBareHandName;
+					} else if (IsInMagiclSkillAnim(animName)) {
+						adaptName = CommonData.playerMagicalSkillBareHandName;
+					} else if (IsInIntervalAnim(animName)) {
+						adaptName = CommonData.playerIntervalBareHandName;
+					}
+					break;
+				case WeaponType.Sword:
+					if (IsInAttackAnim(animName)) {
+						adaptName = CommonData.playerAttackWithSwordName;
+					} else if (IsInPhysicalSkillAnim(animName)) {
+						adaptName = CommonData.playerPhysicalSkillWithSwordName;
+					} else if (IsInMagiclSkillAnim(animName)) {
+						adaptName = CommonData.playerMagicalSkillWithSwordName;
+					} else if (IsInIntervalAnim(animName)) {
+						adaptName = CommonData.playerIntervalWithSwordName;
+					}
+					break;
+				case WeaponType.Staff:
+					if (IsInAttackAnim(animName)) {
+						adaptName = CommonData.playerAttackWithStaffName;
+					} else if (IsInPhysicalSkillAnim(animName)) {
+						adaptName = CommonData.playerPhysicalSkillWithStaffName;
+					} else if (IsInMagiclSkillAnim(animName)) {
+						adaptName = CommonData.playerMagicalSkillWithStaffName;
+					} else if (IsInIntervalAnim(animName)) {
+						adaptName = CommonData.playerIntervalWithStaffName;
+					}
+					break;
+				case WeaponType.Axe:
+					if (IsInAttackAnim(animName)) {
+						adaptName = CommonData.playerAttackWithAxeName;
+					} else if (IsInPhysicalSkillAnim(animName)) {
+						adaptName = CommonData.playerPhysicalSkillWithAxeName;
+					} else if (IsInMagiclSkillAnim(animName)) {
+						adaptName = CommonData.playerMagicalSkillWithAxeName;
+					} else if (IsInIntervalAnim(animName)) {
+						adaptName = CommonData.playerIntervalWithAxeName;
+					}
+					break;
+				case WeaponType.Dragger:
+					if (IsInAttackAnim(animName)) {
+						adaptName = CommonData.playerAttackWithDraggerName;
+					} else if (IsInPhysicalSkillAnim(animName)) {
+						adaptName = CommonData.playerPhysicalSkillWithDraggerName;
+					} else if (IsInMagiclSkillAnim(animName)) {
+						adaptName = CommonData.playerMagicalSkillWithDraggerName;
+					} else if (IsInIntervalAnim(animName)) {
+						adaptName = CommonData.playerIntervalWithDraggerName;
+					}
+					break;
+				}
+
+			}
+
+			if (towards == MyTowards.Up || towards == MyTowards.Down) {
+				if (IsInAttackAnim (animName)) {
+					adaptName = CommonData.roleAttackAnimName;
+				} else if (IsInIntervalAnim (animName)) {
+					adaptName = CommonData.roleAttackIntervalAnimName;
+				} else if (IsInPhysicalSkillAnim (animName)) {
+					adaptName = CommonData.roleAttackAnimName;
+				} else if (IsInMagiclSkillAnim (animName)) {
+					adaptName = CommonData.roleAttackAnimName;
+				}
+			}
+
+			return adaptName;
+
 		}
 
 
@@ -840,25 +993,9 @@ namespace WordJourney
 		/// </summary>
 		public void ClearReference(){
 
-//			enterMonster = null;
-//			enterNpc = null;
-//			enterCrystal = null;
-//			enterTreasureBox = null;
-//			enterObstacle = null;
-//			enterTrapSwitch = null;
-//			enterDoor = null;
-//			enterBillboard = null;
-//			enterHole = null;
-//			enterMovableBox = null;
-//			enterTransport = null;
-//			enterPlant = null;
-
 			ClearAllEffectStatesAndSkillCallBacks ();
 
-//			trapTriggered = null;
 			enemy = null;
-
-//			playerLoseCallBack = null;
 
 			bpUICtr = null;
 
@@ -882,16 +1019,17 @@ namespace WordJourney
 
 			enemy = null;
 			isInFight = false;
-			isIdle = true;
+			isInEvent = false;
+			escapeFromFight = false;
+			isInEscaping = false;
 			currentUsingActiveSkill = null;
+
+			boxCollider.enabled = true;
 
 			SetRoleAnimTimeScale (1.0f);
 
 			agent.ResetBattleAgentProperties (false);
 
-//			if (!agent.isDead) {
-//				PlayRoleAnim ("wait", 0, null);
-//			}
 		}
 
 		/// <summary>
@@ -905,31 +1043,29 @@ namespace WordJourney
 
 			agent.isDead = true;
 
-			StartCoroutine ("LatelyDie");
-
-		}
-
-		private IEnumerator LatelyDie(){
-
-			yield return new WaitForSeconds (0.5f);
-
-			bool fromFight = isInFight;
+			ExploreManager.Instance.DisableInteractivity ();
 
 			enemy.QuitFight ();
 
 			QuitFight ();
 
 			PlayRoleAnim (CommonData.roleDieAnimName, 1, () => {
-				if(fromFight){
-					exploreManager.BattlePlayerLose ();
-				}else{
-					exploreManager.expUICtr.ShowBuyLifeQueryHUD();
-				}
+				StartCoroutine ("LatelyDie");
 			});
 
-			ActiveBattlePlayer (false, false, true);
+		}
+			
+		private IEnumerator LatelyDie(){
 
-			ExploreManager.Instance.DisableInteractivity ();
+			bool fromFight = isInFight;
+
+			yield return new WaitForSeconds (1f);
+
+			if(fromFight){
+				exploreManager.BattlePlayerLose ();
+			}else{
+				exploreManager.expUICtr.ShowBuyLifeQueryHUD();
+			}
 		}
 
 
@@ -937,8 +1073,9 @@ namespace WordJourney
 			agent.ResetBattleAgentProperties (true);
 			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			isInFight = false;
-//			isInExplore = true;
 			inSingleMoving = false;
+			isInEvent = false;
+			needPosFix = false;
 			moveDestination = transform.position;
 			singleMoveEndPos = transform.position;
 			pathPosList.Clear ();

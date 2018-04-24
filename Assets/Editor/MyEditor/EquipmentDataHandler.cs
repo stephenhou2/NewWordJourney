@@ -24,7 +24,7 @@ namespace WordJourney
 
 			loader.LoadAllItemsWithFullDataString (newItemDataString);
 
-			string newItemModelsDataPath = CommonData.originDataPath + "/EquipmentDatas.json";
+			string newItemModelsDataPath = CommonData.originDataPath + "GameItems/EquipmentDatas.json";
 
 			DataHandler.SaveInstanceListToFile<EquipmentModel> (loader.newItemModels, newItemModelsDataPath);
 
@@ -46,11 +46,11 @@ namespace WordJourney
 
 				for (int i = 2; i < seperateItemDataArray.Length; i++) {
 
-					string itemDataString = seperateItemDataArray [i].Replace("\r","");
+					string equipmentDataString = seperateItemDataArray [i].Replace("\r","");
 
-					string[] itemDataArray = itemDataString.Split (new char[]{ ',' }, StringSplitOptions.None);
+					string[] equipmentDataArray = equipmentDataString.Split (new char[]{ ',' }, StringSplitOptions.None);
 
-					int dataLength = itemDataArray.Length;
+					int dataLength = equipmentDataArray.Length;
 
 //					TempItemModel tempItemModel = new TempItemModel ();
 
@@ -60,135 +60,137 @@ namespace WordJourney
 
 					newItemModels.Add (em);
 
-					em.itemId = FromStringToInt16 (itemDataArray [0]);
+					em.itemId = FromStringToInt16 (equipmentDataArray [0]);
 
-					em.itemName = itemDataArray [1];
+					em.itemName = equipmentDataArray [1];
 
 					em.itemType = ItemType.Equipment;
 
-					em.equipmentType = (EquipmentType) (FromStringToInt16(itemDataArray [2]));
+					em.equipmentType = (EquipmentType) (FromStringToInt16(equipmentDataArray [2]));
 
-					em.spriteName = itemDataArray [4];
+					em.spriteName = equipmentDataArray [4];
 
-					em.equipmentGrade = FromStringToInt16(itemDataArray [6]);
+					em.equipmentGrade = FromStringToInt16(equipmentDataArray [6]);
 
-					em.price = FromStringToInt16(itemDataArray [7]);
+					em.price = FromStringToInt16(equipmentDataArray [7]);
 
-					em.attachedSkillId = FromStringToInt16 (itemDataArray [8]);
+					em.attachedSkillId = FromStringToInt16 (equipmentDataArray [8]);
 
-					if (!IsSpecialProperty (itemDataArray [9])) {
-						em.maxHealthGain = FromStringToInt16 (itemDataArray [9]);
+					if (!IsSpecialProperty (equipmentDataArray [9])) {
+						em.maxHealthGain = FromStringToInt16 (equipmentDataArray [9]);
 					} else {
-						int maxHealthGain = FromStringToInt16(itemDataArray [9].Remove (0, 1));
+						int maxHealthGain = FromStringToInt16(equipmentDataArray [9].Remove (0, 1));
 						em.specProperties.Add(new PropertySet(PropertyType.MaxHealth,maxHealthGain));
 					}
-					if (!IsSpecialProperty (itemDataArray [10])) {
-						em.maxManaGain = FromStringToInt16 (itemDataArray [10]);
+					if (!IsSpecialProperty (equipmentDataArray [10])) {
+						em.maxManaGain = FromStringToInt16 (equipmentDataArray [10]);
 					} else {
-						int maxManaGain = FromStringToInt16 (itemDataArray [10].Remove (0, 1));
+						int maxManaGain = FromStringToInt16 (equipmentDataArray [10].Remove (0, 1));
 						em.specProperties.Add(new PropertySet(PropertyType.MaxMana,maxManaGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [11])) {
-						em.attackGain = FromStringToInt16 (itemDataArray [11]);
+					if (!IsSpecialProperty (equipmentDataArray [11])) {
+						em.attackGain = FromStringToInt16 (equipmentDataArray [11]);
 					} else {
-						int attackGain = FromStringToInt16 (itemDataArray [11].Remove (0, 1));
+						int attackGain = FromStringToInt16 (equipmentDataArray [11].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.Attack, attackGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [12])) {
-						em.magicAttackGain = FromStringToInt16 (itemDataArray [12]);
+					if (!IsSpecialProperty (equipmentDataArray [12])) {
+						em.magicAttackGain = FromStringToInt16 (equipmentDataArray [12]);
 					} else {
-						int magicAttackGain = FromStringToInt16 (itemDataArray [12].Remove (0, 1));
+						int magicAttackGain = FromStringToInt16 (equipmentDataArray [12].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.MagicAttack, magicAttackGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [13])) {
-						em.armorGain = FromStringToInt16 (itemDataArray [13]);
+					if (!IsSpecialProperty (equipmentDataArray [13])) {
+						em.armorGain = FromStringToInt16 (equipmentDataArray [13]);
 					} else {
-						int armorGain = FromStringToInt16 (itemDataArray [13].Remove (0, 1));
+						int armorGain = FromStringToInt16 (equipmentDataArray [13].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.Armor, armorGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [14])) {
-						em.magicResistGain = FromStringToInt16 (itemDataArray [14]);
+					if (!IsSpecialProperty (equipmentDataArray [14])) {
+						em.magicResistGain = FromStringToInt16 (equipmentDataArray [14]);
 					} else {
-						int magicResistGain = FromStringToInt16 (itemDataArray [14].Remove (0, 1));
+						int magicResistGain = FromStringToInt16 (equipmentDataArray [14].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.MagicResist, magicResistGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [15])) {
-						em.armorDecreaseGain = FromStringToInt16 (itemDataArray [15]);
+					if (!IsSpecialProperty (equipmentDataArray [15])) {
+						em.armorDecreaseGain = FromStringToInt16 (equipmentDataArray [15]);
 					} else {
-						int armorDecreaseGain = FromStringToInt16 (itemDataArray [15].Remove (0, 1));
+						int armorDecreaseGain = FromStringToInt16 (equipmentDataArray [15].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.ArmorDecrease, armorDecreaseGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [16])) {
-						em.magicResistDecreaseGain = FromStringToInt16 (itemDataArray [16]);
+					if (!IsSpecialProperty (equipmentDataArray [16])) {
+						em.magicResistDecreaseGain = FromStringToInt16 (equipmentDataArray [16]);
 					} else {
-						int magicResistDecreaseGain = FromStringToInt16 (itemDataArray [16].Remove (0, 1));
+						int magicResistDecreaseGain = FromStringToInt16 (equipmentDataArray [16].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.MagicResistDecrease, magicResistDecreaseGain));
 					}
 
 
-					em.attackSpeed = FromStringToAttackSpeed (itemDataArray [17]);
+					em.attackSpeed = FromStringToAttackSpeed (equipmentDataArray [17]);
 			
 
-					if (!IsSpecialProperty (itemDataArray [18])) {
-						em.moveSpeedGain = FromStringToInt16 (itemDataArray [18]);
+					if (!IsSpecialProperty (equipmentDataArray [18])) {
+						em.moveSpeedGain = FromStringToInt16 (equipmentDataArray [18]);
 					} else {
-						int moveSpeedGain = FromStringToInt16 (itemDataArray [18].Remove (0, 1));
+						int moveSpeedGain = FromStringToInt16 (equipmentDataArray [18].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.MoveSpeed, moveSpeedGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [19])) {
-						em.critGain = FromStringToSingle (itemDataArray [19]);
+					if (!IsSpecialProperty (equipmentDataArray [19])) {
+						em.critGain = FromStringToSingle (equipmentDataArray [19]);
 					} else {
-						float critGain = FromStringToSingle (itemDataArray [19].Remove (0, 1));
+						float critGain = FromStringToSingle (equipmentDataArray [19].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.Crit, critGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [20])) {
-						em.dodgeGain = FromStringToSingle (itemDataArray [20]);
+					if (!IsSpecialProperty (equipmentDataArray [20])) {
+						em.dodgeGain = FromStringToSingle (equipmentDataArray [20]);
 					} else {
-						float dodgeGain = FromStringToSingle (itemDataArray [20].Remove (0, 1));
+						float dodgeGain = FromStringToSingle (equipmentDataArray [20].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.Dodge, dodgeGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [21])) {
-						em.critHurtScalerGain = FromStringToSingle (itemDataArray [21]);
+					if (!IsSpecialProperty (equipmentDataArray [21])) {
+						em.critHurtScalerGain = FromStringToSingle (equipmentDataArray [21]);
 					} else {
-						float critHurtScalerGain = FromStringToSingle (itemDataArray [21].Remove (0, 1));
+						float critHurtScalerGain = FromStringToSingle (equipmentDataArray [21].Remove (0, 1));
 						em.specProperties.Add(new PropertySet(PropertyType.CritHurtScaler,critHurtScalerGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [24])) {
-						em.extraGoldGain = FromStringToInt16 (itemDataArray [24]);
+					if (!IsSpecialProperty (equipmentDataArray [24])) {
+						em.extraGoldGain = FromStringToInt16 (equipmentDataArray [24]);
 					} else {
-						int extraGoldGain = FromStringToInt16 (itemDataArray [24].Remove (0, 1));
+						int extraGoldGain = FromStringToInt16 (equipmentDataArray [24].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.ExtraGold, extraGoldGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [25])) {
-						em.extraExperienceGain = FromStringToInt16 (itemDataArray [25]);
+					if (!IsSpecialProperty (equipmentDataArray [25])) {
+						em.extraExperienceGain = FromStringToInt16 (equipmentDataArray [25]);
 					} else {
-						int extraExperienceGain = FromStringToInt16 (itemDataArray [25].Remove (0, 1));
+						int extraExperienceGain = FromStringToInt16 (equipmentDataArray [25].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.ExtraExperience, extraExperienceGain));
 					}
 
-					if (!IsSpecialProperty (itemDataArray [26])) {
-						em.healthRecoveryGain = FromStringToInt16 (itemDataArray [26]);
+					if (!IsSpecialProperty (equipmentDataArray [26])) {
+						em.healthRecoveryGain = FromStringToInt16 (equipmentDataArray [26]);
 					} else {
-						int healthRecoveryGain = FromStringToInt16 (itemDataArray [26].Remove (0, 1));
+						int healthRecoveryGain = FromStringToInt16 (equipmentDataArray [26].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.HealthRecovery, healthRecoveryGain));
 					}
-					if (!IsSpecialProperty (itemDataArray [27])) {
-						em.magicRecoveryGain = FromStringToInt16 (itemDataArray [27]);
+					if (!IsSpecialProperty (equipmentDataArray [27])) {
+						em.magicRecoveryGain = FromStringToInt16 (equipmentDataArray [27]);
 					} else {
-						int magicRecoveryGain = FromStringToInt16 (itemDataArray [27].Remove (0, 1));
+						int magicRecoveryGain = FromStringToInt16 (equipmentDataArray [27].Remove (0, 1));
 						em.specProperties.Add (new PropertySet (PropertyType.MagicRecovery, magicRecoveryGain));
 					}
+
+					em.weaponType = (WeaponType)FromStringToInt16 (equipmentDataArray [28]);
 
 				}
 			}

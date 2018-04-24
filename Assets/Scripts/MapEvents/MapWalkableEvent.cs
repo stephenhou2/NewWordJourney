@@ -14,6 +14,10 @@ namespace WordJourney
 
 		public bool isTriggered;
 
+		public bool canEnterFight;
+
+		public bool isInMoving;
+
 		protected IEnumerator moveCoroutine;
 
 		public Vector3 moveOrigin;
@@ -135,9 +139,11 @@ namespace WordJourney
 
 		protected abstract void RunToPosition (Vector3 position, CallBack cb);
 
+		public abstract void QuitFightAndDelayMove (int delay);
+
 		protected IEnumerator MoveTo(Vector3 position,float timeScale,CallBack cb){
 
-
+			isInMoving = true;
 //			int targetPosX = Mathf.RoundToInt (position.x);
 //			int targetPosY = Mathf.RoundToInt (position.y);
 //
@@ -193,6 +199,8 @@ namespace WordJourney
 			if (cb != null) {
 				cb ();
 			}
+
+			isInMoving = false;
 
 		}
 

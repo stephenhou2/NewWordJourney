@@ -99,8 +99,6 @@ namespace WordJourney
 
 			boxCollider.enabled = false;
 
-//			this.bpCtr = bpCtr;
-
 			ClearAllSkillCallBacks ();
 
 			InitTriggeredPassiveSkillCallBacks (this,bpCtr);
@@ -281,15 +279,11 @@ namespace WordJourney
 		public override void QuitFight ()
 		{
 			StopCoroutinesWhenFightEnd ();
-			isIdle = true;
+			boxCollider.enabled = true;
 			enemy = null;
 			currentUsingActiveSkill = null;
 			SetRoleAnimTimeScale (1.0f);
 			agent.ResetBattleAgentProperties (false);
-			boxCollider.enabled = false;
-//			if (!agent.isDead) {
-//				PlayRoleAnim ("wait", 0, null);
-//			}
 		}
 
 		/// <summary>

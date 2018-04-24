@@ -44,9 +44,10 @@ namespace WordJourney
 		{
 			StopMoveImmidiately ();
 			StopCoroutine ("DelayedMovement");
-			bc2d.enabled = false;
+			DisableAllDetect ();
 			isReadyToFight = false;
 			HideAllAlertAreas ();
+			bc2d.enabled = false;
 			gameObject.SetActive (false);
 			pool.AddInstanceToPool (this.gameObject);
 			ExploreManager.Instance.newMapGenerator.allWalkableEventsInMap.Remove (this);
@@ -62,7 +63,17 @@ namespace WordJourney
 		}
 
 
-		public void QuitFightAndDelayMove(int delay){
+		public override void QuitFightAndDelayMove(int delay){
+
+			StopMoveImmidiately ();
+
+			isInAutoWalk = false;
+			isTriggered = false;
+			isReadyToFight = false;
+
+			HideAllAlertAreas ();
+
+			bc2d.enabled = true;
 
 			StopCoroutine ("DelayedMovement");
 
@@ -72,8 +83,6 @@ namespace WordJourney
 
 
 		private IEnumerator DelayedMovement(int delay){
-
-			HideAllAlertAreas ();
 
 			yield return new WaitForSeconds (delay);
 
@@ -131,6 +140,18 @@ namespace WordJourney
 				return;
 			}
 
+			if (baCtr.agent.isDead) {
+				return;
+			}
+
+//			if (bp.escapeFromFight) {
+//				return;
+//			}
+
+			if (bp.isInPosFixAfterFight) {
+				return;
+			}
+				
 			isReadyToFight = true;
 
 			EnterMapEvent (bp);
@@ -138,6 +159,7 @@ namespace WordJourney
 
 		public override void EnterMapEvent (BattlePlayerController bp)
 		{
+
 			bp.isInEvent = true;
 
 			ExploreManager.Instance.AllWalkableEventsStopMove ();
@@ -154,6 +176,10 @@ namespace WordJourney
 		}
 
 		public void DetectPlayer(BattlePlayerController bp){
+
+			if (bp.escapeFromFight) {
+				return;
+			}
 
 			bp.isInEvent = true;
 
@@ -267,14 +293,12 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
-
 			if (isTriggered) {
 				return;
 			}
 
-		
-
-			bc2d.enabled = false;
+			bp.escapeFromFight = false;
+			bp.isInEscaping = false;
 
 			if (!isReadyToFight) {
 
@@ -297,7 +321,7 @@ namespace WordJourney
 
 			yield return new WaitForSeconds (1f);
 
-			HideAllAlertAreas ();
+			DisableAllDetect ();
 
 			Vector3 playerOriPos = battlePlayerCtr.transform.position;
 			Vector3 monsterOriPos = transform.position;
@@ -375,24 +399,34 @@ namespace WordJourney
 				}
 			}
 
-			battlePlayerCtr.PlayRoleAnimByTime (playerCurrentAnimInfo.roleAnimName,playerCurrentAnimInfo.roleAnimTime,
-				playerCurrentAnimInfo.playTimes, playerCurrentAnimInfo.animEndCallback);
+			if (battlePlayerCtr.isInFight) {
+				battlePlayerCtr.PlayRoleAnimByTime (playerCurrentAnimInfo.roleAnimName, playerCurrentAnimInfo.roleAnimTime,
+					playerCurrentAnimInfo.playTimes, playerCurrentAnimInfo.animEndCallback);
+			}
 				
 			RunToPosition (monsterFightPos, delegate {
-				
-				this.transform.position = monsterFightPos;
 
-				if(transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x){
-					baCtr.TowardsRight();
+				if(!battlePlayerCtr.escapeFromFight){
+					
+					this.transform.position = monsterFightPos;
+
+					if(transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x){
+						baCtr.TowardsRight();
+					}else{
+						baCtr.TowardsLeft();
+					}
+
+					if (!battlePlayerCtr.isInEscaping && !battlePlayerCtr.isInFight) {
+						ExploreManager.Instance.PlayerAndMonsterStartFight ();
+						battlePlayerCtr.isInFight = true;
+					} else {
+						ExploreManager.Instance.MonsterStartFight ();
+					}
 				}else{
-					baCtr.TowardsLeft();
-				}
-
-				if (!battlePlayerCtr.isInFight) {
-					ExploreManager.Instance.PlayerAndMonsterStartFight ();
-					battlePlayerCtr.isInFight = true;
-				} else {
-					ExploreManager.Instance.MonsterStartFight ();
+					bool monsterDie = baCtr.agent.health <= 0;
+					RefreshWalkableInfoWhenQuit(monsterDie);
+					QuitFightAndDelayMove(5);
+					battlePlayerCtr.escapeFromFight = false;
 				}
 			});
 

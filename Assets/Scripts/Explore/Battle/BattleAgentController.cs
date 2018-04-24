@@ -429,7 +429,7 @@ namespace WordJourney
 		/// <param name="animName">播放的动画名称</param>
 		/// <param name="playTimes">播放次数 [-1: 使用动画数据默认值, 0: 无限循环播放, [1~N]: 循环播放 N 次]</param>
 		/// <param name="cb">动画完成回调.</param>
-		public void PlayRoleAnim (string animName, int playTimes, CallBack cb)
+		public virtual void PlayRoleAnim (string animName, int playTimes, CallBack cb)
 		{
 			isIdle = animName == CommonData.roleIdleAnimName;
 

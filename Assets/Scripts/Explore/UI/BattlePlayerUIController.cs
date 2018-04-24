@@ -19,6 +19,9 @@ namespace WordJourney
 		public ConsumablesDisplay consDisplay;
 
 
+		public Transform escapeBar;
+		public Image escapeBarFill;
+
 		public Transform activeSkillButtonContainer;
 		public InstancePool activeSkillButtonPool;
 		public Transform activeSkillButtonModel;
@@ -42,6 +45,8 @@ namespace WordJourney
 		public Transform directionArrow;
 
 		public Transform levelUpPlane;
+
+
 
 
 
@@ -94,10 +99,6 @@ namespace WordJourney
 
 
 		public void RefreshMiniMap(){
-
-//			if (!Player.mainPlayer.hasCompass) {
-//				return;
-//			}
 			
 			Vector3 directionVector = ExploreManager.Instance.newMapGenerator.GetDirectionVectorTowardsExit ();
 
@@ -105,9 +106,23 @@ namespace WordJourney
 
 		}
 
-//		public void SetUpFightPlane(){
-//			SetUpActiveSkillButtons ();
-//		}
+		public void SetUpFightPlane(){
+			escapeBar.gameObject.SetActive (false);
+			SetUpActiveSkillButtons ();
+		}
+
+		public void EscapeDisplay(float escapeTime,CallBack escapeCallBack){
+
+			escapeBarFill.fillAmount = 0f;
+
+			escapeBar.gameObject.SetActive (true);
+
+			escapeBarFill.DOFillAmount (1.0f, escapeTime).OnComplete(() => {
+				if(escapeCallBack != null){
+					escapeCallBack();
+				}
+			});
+		}
 
 		/// <summary>
 		/// 退出战斗时重用物体进缓存池

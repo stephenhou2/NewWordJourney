@@ -11,41 +11,45 @@ namespace WordJourney
 		{
 
 			self.QuitFight ();
-			enemy.QuitFight ();
 
-		
+			(self as BattlePlayerController).isInEscaping = true;
+
+			ExploreManager.Instance.expUICtr.ShowEscapeBar (skillCoolenTime, delegate {
+				EscapeCallBack(self,enemy);
+			});
+		}
+
+		private void EscapeCallBack(BattleAgentController self, BattleAgentController enemy){
+
+			enemy.QuitFight ();
 
 			ExploreManager.Instance.EnableInteractivity ();
 
 			ExploreManager.Instance.currentEnteredMapEvent = null;
 
-			(self as BattlePlayerController).FixPosition ();
+			BattlePlayerController bpCtr = self as BattlePlayerController;
 
-			Vector3 monsterFixedPosition = new Vector3 (Mathf.RoundToInt (enemy.transform.position.x),
-				                               Mathf.RoundToInt (enemy.transform.position.y),
-				                               Mathf.RoundToInt (enemy.transform.position.z));
+			bpCtr.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 
+			bpCtr.escapeFromFight = true;
 
-			ExploreManager.Instance.AllWalkableEventsStartMove ();
+			bpCtr.isInEscaping = false;
+
+			bpCtr.FixPosition ();
 
 			MapWalkableEvent mwe = enemy.GetComponent<MapWalkableEvent> ();
 
-			mwe.RefreshWalkableInfoWhenQuit (false);
+			ExploreManager.Instance.AllWalkableEventsStartMove ();
 
-			mwe.StopMoveImmidiately ();
+			mwe.RefreshWalkableInfoWhenQuit (enemy.agent.isDead);
 
-			mwe.WalkToPosition (monsterFixedPosition,delegate{
-				if(mwe is MapMonster){
-					(mwe as MapMonster).QuitFightAndDelayMove(10);
-				}else if(mwe is MapNPC){
-					(mwe as MapNPC).QuitFightAndDelayMove(10);
-				}
-			},false);
+			if (!mwe.isInMoving) {
+				mwe.QuitFightAndDelayMove (5);
+			}
 				
-			self.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-
 			ExploreManager.Instance.expUICtr.QuitFight ();
 
 		}
+
 	}
 }

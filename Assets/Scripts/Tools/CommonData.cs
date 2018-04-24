@@ -110,9 +110,44 @@ namespace WordJourney{
 		public static string roleIdleAnimName = "wait";
 		public static string roleWalkAnimName = "walk";
 		public static string roleRunAnimName = "run";
-		public static string roleAttackAnimName = "attack";
-		public static string roleAttackIntervalAnimName = "interval";
 		public static string roleDieAnimName = "death";
+
+
+		public static string roleAttackAnimName = "attack";
+		public static string rolePhysicalSkillAnimName = "physical_skill";
+		public static string roleMagicalSkillAnimName = "magical_skill";
+		public static string roleAttackIntervalAnimName = "interval";
+
+		//******* 玩家使用武器攻击的动画名称 *********//
+		public static string playerAttackBareHandName = "attack_default";
+		public static string playerAttackWithSwordName = "attack_sword";
+		public static string playerAttackWithStaffName = "attack_staff";
+		public static string playerAttackWithAxeName = "attack_axe";
+		public static string playerAttackWithDraggerName = "attack_dragger";
+
+		//******* 玩家使用物理伤害型技能攻击的动画名称 *********//
+		public static string playerPhysicalSkillBareHandName = "skill1_default";
+		public static string playerPhysicalSkillWithSwordName = "skill1_sword";
+		public static string playerPhysicalSkillWithStaffName = "skill1_staff";
+		public static string playerPhysicalSkillWithAxeName = "skill1_axe";
+		public static string playerPhysicalSkillWithDraggerName = "skill1_dragger";
+
+		//******* 玩家使用魔法伤害型技能攻击的动画名称 *********//
+		public static string playerMagicalSkillBareHandName = "skill2_default";
+		public static string playerMagicalSkillWithSwordName = "skill2_sword";
+		public static string playerMagicalSkillWithStaffName = "skill2_staff";
+		public static string playerMagicalSkillWithAxeName = "skill2_axe";
+		public static string playerMagicalSkillWithDraggerName = "skill2_dragger";
+
+		//******* 玩家攻击间隔的动画名称 *********//
+		public static string playerIntervalBareHandName = "interval_default";
+		public static string playerIntervalWithSwordName = "interval_sword";
+		public static string playerIntervalWithStaffName = "interval_staff";
+		public static string playerIntervalWithAxeName = "interval_axe";
+		public static string playerIntervalWithDraggerName = "interval_dragger";
+
+
+
 
 		public static int aInASCII = (int)('a');
 

@@ -62,6 +62,7 @@ namespace WordJourney
 			if (bp.isInFight) {
 				return;
 			}
+				
 
 			MapMonster mm = mapMonster as MapMonster;
 			mm.isReadyToFight = true;

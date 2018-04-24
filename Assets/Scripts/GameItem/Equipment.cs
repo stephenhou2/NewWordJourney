@@ -23,6 +23,14 @@ namespace WordJourney
 		DarkGold
 	}
 
+	public enum WeaponType{
+		None,
+		Sword,
+		Staff,
+		Axe,
+		Dragger
+	}
+
 
 	[System.Serializable]
 	public class Equipment : Item {
@@ -97,6 +105,7 @@ namespace WordJourney
 
 		public List<PropertySet> specProperties;//装备的特殊属性（蓝色/金色/暗金装备会增加1/2/2个特殊属性）
 
+		public WeaponType weaponType;
 
 //		public EquipmentModel.ItemInfoForProduce[] itemInfosForProduce;
 
@@ -111,6 +120,7 @@ namespace WordJourney
 		/// </summary>
 		public Equipment(){
 			itemId = -1;
+			weaponType = WeaponType.None;
 		}
 			
 
@@ -173,6 +183,8 @@ namespace WordJourney
 			}
 
 			attachedSkillId = itemId;
+
+			this.weaponType = equipmentModel.weaponType;
 
 			InitDescription ();
 		}

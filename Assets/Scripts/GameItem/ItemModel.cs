@@ -83,6 +83,8 @@ namespace WordJourney
 
 		public int attachedSkillId;
 
+		public WeaponType weaponType;
+
 		//		public ItemInfoForProduce[] itemInfosForProduce;
 
 

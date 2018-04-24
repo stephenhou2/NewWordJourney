@@ -493,6 +493,9 @@ namespace WordJourney
 				}
 			}
 
+			HLHRoleAnimInfo animInfo = bpCtr.GetCurrentRoleAnimInfo ();
+
+			bpCtr.PlayRoleAnimByTime(animInfo.roleAnimName,animInfo.roleAnimTime,animInfo.playTimes,animInfo.animEndCallback);
 
 			return pc;
 
@@ -641,7 +644,7 @@ namespace WordJourney
 
 			allEquipedEquipments [equipmentIndexInPanel] = equipment;
 
-//			equipmentDragControl.item = equipment;
+			BattlePlayerController bpCtr = battleAgentCtr as BattlePlayerController;
 
 			if (equipment.attachedSkillId > 0) {
 				
@@ -667,12 +670,16 @@ namespace WordJourney
 
 			if (ExploreManager.Instance != null) {
 				ExploreManager manager = ExploreManager.Instance;
-				BattlePlayerController bpCtr = battleAgentCtr as BattlePlayerController;
+
 				if (bpCtr.isInFight) {
 					bpCtr.InitTriggeredPassiveSkillCallBacks (bpCtr, bpCtr.enemy);
 				}
 				manager.UpdatePlayerStatusPlane ();
 			}
+
+			HLHRoleAnimInfo animInfo = bpCtr.GetCurrentRoleAnimInfo ();
+
+			bpCtr.PlayRoleAnimByTime(animInfo.roleAnimName,animInfo.roleAnimTime,animInfo.playTimes,animInfo.animEndCallback);
 
 			return pc;
 

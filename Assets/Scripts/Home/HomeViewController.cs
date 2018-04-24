@@ -12,22 +12,6 @@ namespace WordJourney
 		public HomeView homeView;
 
 		public void SetUpHomeView(){
-//			StartCoroutine ("SetUpViewAfterDataReady");
-//		}
-//
-//		private IEnumerator SetUpViewAfterDataReady(){
-//
-//			bool dataReady = false;
-//
-//			while (!dataReady) {
-//				dataReady = GameManager.Instance.gameDataCenter.CheckDatasReady (new GameDataCenter.GameDataType[] {
-//					GameDataCenter.GameDataType.UISprites,
-//					GameDataCenter.GameDataType.Skills
-//				});
-//				yield return null;
-//			}
-
-//			Player.mainPlayer.allEquipedEquipments [0] = null;
 
 			homeView.SetUpHomeView ();
 
@@ -39,53 +23,8 @@ namespace WordJourney
 				GameManager.Instance.soundManager.PlayBgmAudioClip (CommonData.homeBgmName, true);
 			}
 
-
-
-//			for (int i = 0; i < GameManager.Instance.gameDataCenter.allSkills.Count; i++) {
-//
-//				Skill s = GameManager.Instance.gameDataCenter.allSkills [i];
-//
-//				string sName = s.skillIconName;
-//
-//				Sprite sp = GameManager.Instance.gameDataCenter.allSkillSprites.Find(delegate(Sprite obj){
-//					return obj.name == sName;
-//				});
-//
-//				if (sp == null) {
-//					Debug.Log (s.skillName);
-//				}
-//
-//
-//			}
-
-
 		}
-
-
-
-//		private void SetUpCanvasWith(string bundleName,string canvasName,CallBack cb){
-//			
-//			Transform canvas = TransformManager.FindTransform (canvasName);
-//
-//			if (canvas != null) {
-//
-//				cb ();
-//
-//				homeView.OnQuitHomeView();
-//
-//				return;
-//			}
-//
-//			ResourceLoader loader = ResourceLoader.CreateNewResourceLoader ();
-//
-//			ResourceManager.Instance.LoadAssetsWithBundlePath (loader, bundleName, () => {
-//
-//				cb();
-//
-//				homeView.OnQuitHomeView();
-//			});
-//
-//		}
+			
 
 		public void OnExploreButtonClick(){
 			

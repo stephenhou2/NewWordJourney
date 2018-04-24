@@ -197,7 +197,7 @@ namespace WordJourney
 
 			battlePlane.gameObject.SetActive (true);
 
-			bpUICtr.SetUpActiveSkillButtons ();
+			bpUICtr.SetUpFightPlane ();
 
 		}
 
@@ -229,6 +229,11 @@ namespace WordJourney
 		/// </summary>
 		public void UpdateBottomBar(){
 			bpUICtr.SetUpConsumablesButtons ();
+		}
+
+
+		public void ShowEscapeBar(float escapeTime,CallBack escapeCallBack){
+			bpUICtr.EscapeDisplay (escapeTime, escapeCallBack);
 		}
 
 		public void UpdatePlayerStatusBar(){
