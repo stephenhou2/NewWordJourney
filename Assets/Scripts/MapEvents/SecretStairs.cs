@@ -36,7 +36,7 @@ namespace WordJourney
 
 //			Debug.LogFormat ("hole found,time:{0}", Time.realtimeSinceStartup);
 
-			ExploreManager.Instance.DisableInteractivity ();
+			ExploreManager.Instance.DisableExploreInteractivity ();
 
 			Vector3 otherHolePosition = new Vector3(randomOtherHole.transform.position.x,randomOtherHole.transform.position.y,0);
 
@@ -96,7 +96,7 @@ namespace WordJourney
 
 			targetHole.bc2d.enabled = true;
 
-			ExploreManager.Instance.EnableInteractivity ();
+			ExploreManager.Instance.EnableExploreInteractivity ();
 
 		}
 

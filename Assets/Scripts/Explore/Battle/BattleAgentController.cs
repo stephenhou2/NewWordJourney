@@ -459,6 +459,7 @@ namespace WordJourney
 
 			waitRoleAnimEndCoroutine = ExcuteCallBackAtEndOfRoleAnim (delegate {
 				PlayRoleAnim(CommonData.roleIdleAnimName,0,null);	
+				exploreManager.EnableExploreInteractivity();
 			});
 
 			StartCoroutine(waitRoleAnimEndCoroutine);
@@ -515,11 +516,7 @@ namespace WordJourney
 		/// </summary>
 		public abstract void Fight ();
 
-		public void ResetAgent(){
-			StopCoroutinesWhenFightEnd ();
-			this.armatureCom.animation.Stop ();
-			CancelInvoke ();
-		}
+
 
 		public abstract void AgentDie ();
 

@@ -334,7 +334,7 @@ namespace WordJourney
 
 			yield return new WaitForSeconds (1.0f);
 
-//			ExploreManager.Instance.DisableInteractivity ();
+//			ExploreManager.Instance.DisableExploreInteractivity ();
 
 			QuitWordHUD ();
 

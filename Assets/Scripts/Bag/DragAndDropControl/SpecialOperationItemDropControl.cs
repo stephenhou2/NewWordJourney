@@ -130,31 +130,26 @@ namespace WordJourney
 				return;
 			}
 
-			// 装备面板内的装备不能直接进行特殊操作
+			// 装备面板内的装备
 			if (draggedObject.GetComponent<EquipedItemDragControl> () != null) {
-				SetDropResult (eventData, false);
-				tintImage.enabled = false;
-				return;
+
+				EquipedItemDragControl dc = draggedObject.GetComponent<EquipedItemDragControl> ();
+
+				soDragControl.itemImage.sprite = dc.itemImage.sprite;
+				soDragControl.itemImage.enabled = true;
+
+				soDragControl.item = draggedItem;
+
+				SetDropResult (eventData, true);
 			}
 
-			//从背包内拖拽出得物品可以进行特殊操作
-			if (draggedObject.GetComponent<ItemInBagDragControl> () != null) {
+			//从背包内拖拽出得物品
+			 else if (draggedObject.GetComponent<ItemInBagDragControl> () != null) {
 
 				ItemInBagDragControl dc = draggedObject.GetComponent<ItemInBagDragControl> ();
 
 				soDragControl.itemImage.sprite = dc.itemImage.sprite;
 				soDragControl.itemImage.enabled = true;
-
-
-//				int oriIndexInBag = Player.mainPlayer.GetItemIndexInBag (draggedItem);
-
-//				if (soDragControl.item != null) {
-//					Player.mainPlayer.AddItem (soDragControl.item, oriIndexInBag);
-//				}
-
-//				Player.mainPlayer.RemoveItem (draggedItem,1);
-//
-//				dropCallBack ();
 
 				if (draggedItem.itemType == ItemType.Equipment) {
 					soDragControl.item = draggedItem;

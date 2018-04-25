@@ -182,7 +182,7 @@ namespace WordJourney
 				ResetPropertiesByQuality (EquipmentQuality.Gray);
 			}
 
-			attachedSkillId = itemId;
+//			attachedSkillId = itemId;
 
 			this.weaponType = equipmentModel.weaponType;
 

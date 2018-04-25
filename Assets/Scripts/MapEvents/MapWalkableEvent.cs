@@ -284,6 +284,19 @@ namespace WordJourney
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 1;
 
 		}
+
+		/// <summary>
+		/// 如果移动中被触发了，则需要将移动终点的可行走信息和可移动事件信息更新
+		/// </summary>
+		public void RefreshWalkableInfoWhenTriggeredInMoving(){
+
+			int walkableEventDestPosX = Mathf.RoundToInt (moveDestination.x);
+			int walkableEventDestPosY = Mathf.RoundToInt (moveDestination.y);
+
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 1;
+			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 0;
+
+		}
 			
 
 		/// <summary>

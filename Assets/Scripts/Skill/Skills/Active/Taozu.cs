@@ -23,7 +23,7 @@ namespace WordJourney
 
 			enemy.QuitFight ();
 
-			ExploreManager.Instance.EnableInteractivity ();
+			ExploreManager.Instance.EnableExploreInteractivity ();
 
 			ExploreManager.Instance.currentEnteredMapEvent = null;
 

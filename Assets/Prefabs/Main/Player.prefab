@@ -5438,7 +5438,7 @@ MonoBehaviour:
   bonesRoot: {fileID: 0}
   unityBones: []
   boneHierarchy: 0
-  animationName: 
+  animationName: wait
   _playTimes: 0
   _timeScale: 1
   _sortingMode: 0
@@ -5489,8 +5489,10 @@ MonoBehaviour:
   isInFight: 0
   isInEvent: 0
   needPosFix: 0
+  escapeFromFight: 0
+  isInEscaping: 0
+  isInPosFixAfterFight: 0
   stepCount: {fileID: 114910774419296030}
-  autoFight: 1
 --- !u!114 &114628218187340250
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5601,6 +5603,7 @@ MonoBehaviour:
     attachedSkillId: 0
     attachedSkill: {fileID: 0}
     specProperties: []
+    weaponType: 0
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -5655,6 +5658,7 @@ MonoBehaviour:
     attachedSkillId: 0
     attachedSkill: {fileID: 0}
     specProperties: []
+    weaponType: 0
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -5709,6 +5713,7 @@ MonoBehaviour:
     attachedSkillId: 0
     attachedSkill: {fileID: 0}
     specProperties: []
+    weaponType: 0
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -5763,6 +5768,7 @@ MonoBehaviour:
     attachedSkillId: 0
     attachedSkill: {fileID: 0}
     specProperties: []
+    weaponType: 0
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -5817,6 +5823,7 @@ MonoBehaviour:
     attachedSkillId: 0
     attachedSkill: {fileID: 0}
     specProperties: []
+    weaponType: 0
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -5871,6 +5878,7 @@ MonoBehaviour:
     attachedSkillId: 0
     attachedSkill: {fileID: 0}
     specProperties: []
+    weaponType: 0
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -5925,6 +5933,7 @@ MonoBehaviour:
     attachedSkillId: 0
     attachedSkill: {fileID: 0}
     specProperties: []
+    weaponType: 0
     equiped: 0
     equipmentType: 0
   attachedActiveSkills: []

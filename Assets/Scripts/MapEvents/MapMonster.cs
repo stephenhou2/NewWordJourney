@@ -144,13 +144,11 @@ namespace WordJourney
 				return;
 			}
 
-//			if (bp.escapeFromFight) {
-//				return;
-//			}
-
 			if (bp.isInPosFixAfterFight) {
 				return;
 			}
+
+
 				
 			isReadyToFight = true;
 
@@ -160,13 +158,15 @@ namespace WordJourney
 		public override void EnterMapEvent (BattlePlayerController bp)
 		{
 
+			if (isInMoving) {
+				RefreshWalkableInfoWhenTriggeredInMoving ();
+			}
+
 			bp.isInEvent = true;
 
 			ExploreManager.Instance.AllWalkableEventsStopMove ();
 
 			StopMoveImmidiately ();
-
-//			DisableAllDetect ();
 
 			bp.StopMoveAndWait ();
 
@@ -183,7 +183,11 @@ namespace WordJourney
 
 			bp.isInEvent = true;
 
-			ExploreManager.Instance.DisableInteractivity ();
+			ExploreManager.Instance.DisableExploreInteractivity ();
+
+			if (isInMoving) {
+				RefreshWalkableInfoWhenTriggeredInMoving ();
+			}
 
 			ExploreManager.Instance.AllWalkableEventsStopMove ();
 
@@ -321,6 +325,7 @@ namespace WordJourney
 
 			yield return new WaitForSeconds (1f);
 
+			HideAllAlertAreas ();
 			DisableAllDetect ();
 
 			Vector3 playerOriPos = battlePlayerCtr.transform.position;
@@ -340,7 +345,6 @@ namespace WordJourney
 			if (posOffsetX > 0) {
 				
 				battlePlayerCtr.TowardsLeft ();
-//				baCtr.TowardsRight ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
@@ -357,23 +361,24 @@ namespace WordJourney
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 
-//					baCtr.TowardsLeft ();
-
 					battlePlayerCtr.TowardsRight ();
 
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
 
-				} else if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
+				} else if (playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+					battlePlayerCtr.TowardsRight ();
 
-//					baCtr.TowardsRight ();
+					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
+				} else if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 
 					battlePlayerCtr.TowardsLeft ();
 
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
 
+				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+					battlePlayerCtr.TowardsLeft ();
+					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
 				} else {
-
-//					baCtr.TowardsLeft ();
 
 					battlePlayerCtr.TowardsRight ();
 
@@ -385,7 +390,6 @@ namespace WordJourney
 			} else if (posOffsetX < 0) {
 
 				battlePlayerCtr.TowardsRight ();
-//				baCtr.TowardsLeft ();
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
@@ -452,6 +456,8 @@ namespace WordJourney
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
 			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
 
+
+
 			RefreshWalkableInfoWhenStartMove ();
 
 			if (targetPosY == oriPosY) {
@@ -517,6 +523,8 @@ namespace WordJourney
 
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
 			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
+
+			Debug.LogFormat ("MOVE ORIGIN:{0}++++++MOVE DESTINATION:{1}", moveOrigin, moveDestination);
 
 			RefreshWalkableInfoWhenStartMove ();
 

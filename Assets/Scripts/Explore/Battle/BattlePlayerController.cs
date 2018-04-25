@@ -652,34 +652,20 @@ namespace WordJourney
 
 			InitTriggeredPassiveSkillCallBacks (this,bmCtr);
 
-//			this.bmCtr = bmCtr;
+			// 默认玩家在战斗中将先出招，首次攻击不用等待
+			currentUsingActiveSkill = normalAttack;
+			UseSkill (currentUsingActiveSkill);
 
-			// 初始化玩家战斗UI（技能界面）
-//			bpUICtr.SetUpPlayerSkillPlane (agent as Player);
-
-			if (autoFight) {
-				// 默认玩家在战斗中将先出招，首次攻击不用等待
-				currentUsingActiveSkill = normalAttack;
-				UseSkill (currentUsingActiveSkill);
-			} else {
-				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-			}
 
 		}
-
-		public bool autoFight = false;
 
 
 		/// <summary>
 		/// 角色默认战斗逻辑
 		/// </summary>
 		public override void Fight(){
-			if (!autoFight) {
-				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-			} else {
-				currentUsingActiveSkill = normalAttack;
-				attackCoroutine = InvokeAttack (currentUsingActiveSkill);
-			}
+			currentUsingActiveSkill = normalAttack;
+			attackCoroutine = InvokeAttack (currentUsingActiveSkill);
 		}
 
 
@@ -700,8 +686,11 @@ namespace WordJourney
 
 			// 播放技能对应的角色动画，角色动画结束后播放攻击间隔动画
 			this.PlayRoleAnim (skill.selfRoleAnimName, 1, () => {
+
 				// 播放等待动画
 				this.PlayRoleAnim(CommonData.roleAttackIntervalAnimName,0,null);
+
+
 			});
 
 		}
@@ -711,11 +700,12 @@ namespace WordJourney
 
 		protected override void AgentExcuteHitEffect ()
 		{
-			Debug.Log (armatureCom.animation.lastAnimationName);
-
-			Debug.LogFormat ("{0}-0",isInFight);
 
 			if (!isInFight) {
+				return;
+			}
+
+			if (enemy == null) {
 				return;
 			}
 
@@ -727,12 +717,8 @@ namespace WordJourney
 			if (mm != null) {
 				mm.isReadyToFight = true;
 			}
-
-			Debug.Log (currentUsingActiveSkill.skillName);
 			// 技能效果影响玩家和怪物
 			currentUsingActiveSkill.AffectAgents(this,enemy);
-
-			Debug.LogFormat ("{0}-1",isInFight);
 		
 			UpdateStatusPlane ();
 
@@ -742,22 +728,12 @@ namespace WordJourney
 				
 			enemy.UpdateStatusPlane ();
 
-			if (!isInFight) {
-				return;
-			}
-
 			// 如果战斗没有结束，则默认在攻击间隔时间之后按照默认攻击方式进行攻击
-			if (!CheckFightEnd ()) {
-				if (autoFight) {
-					currentUsingActiveSkill = normalAttack;
-					attackCoroutine = InvokeAttack (currentUsingActiveSkill);
-					StartCoroutine (attackCoroutine);
-				} else {
-//					TransformManager.FindTransform("ExploreCanvas").GetComponent<ExploreUICotroller> ().ResetAttackCheckPosition ();
-				}
-
+			if (isInFight && !CheckFightEnd ()) {
+				currentUsingActiveSkill = normalAttack;
+				attackCoroutine = InvokeAttack (currentUsingActiveSkill);
+				StartCoroutine (attackCoroutine);
 			} 
-
 		}
 
 
@@ -1043,23 +1019,27 @@ namespace WordJourney
 
 			agent.isDead = true;
 
-			ExploreManager.Instance.DisableInteractivity ();
+			ExploreManager.Instance.DisableAllInteractivity ();
+
+			enemy.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 
 			enemy.QuitFight ();
 
+			enemy.boxCollider.enabled = true;
+
 			QuitFight ();
 
-			PlayRoleAnim (CommonData.roleDieAnimName, 1, () => {
-				StartCoroutine ("LatelyDie");
+			PlayRoleAnim (CommonData.roleDieAnimName, 1, ()=>{
+				StartCoroutine("QueryBuyLife");
 			});
 
 		}
 			
-		private IEnumerator LatelyDie(){
+		private IEnumerator QueryBuyLife(){
+
+			yield return new WaitForSeconds (0.5f);
 
 			bool fromFight = isInFight;
-
-			yield return new WaitForSeconds (1f);
 
 			if(fromFight){
 				exploreManager.BattlePlayerLose ();
@@ -1070,6 +1050,7 @@ namespace WordJourney
 
 
 		public void RecomeToLife(){
+			FixPosition ();
 			agent.ResetBattleAgentProperties (true);
 			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			isInFight = false;
@@ -1079,7 +1060,8 @@ namespace WordJourney
 			moveDestination = transform.position;
 			singleMoveEndPos = transform.position;
 			pathPosList.Clear ();
-			fadeStepsLeft = 20;
+			boxCollider.enabled = false;
+			fadeStepsLeft = 5;
 		}
 
 		void OnDestroy(){

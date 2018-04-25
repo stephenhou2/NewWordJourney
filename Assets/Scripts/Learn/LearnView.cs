@@ -132,11 +132,11 @@ namespace WordJourney
 
 		}
 
-		private void DisableInteractivity(){
+		private void DisableExploreInteractivity(){
 			mask.gameObject.SetActive (true);
 		}
 
-		private void EnableInteractivity(){
+		private void EnableExploreInteractivity(){
 			mask.gameObject.SetActive (false);
 		}
 
@@ -148,7 +148,7 @@ namespace WordJourney
 
 			ShowContainers (false, false, false,false);
 
-			DisableInteractivity ();
+			DisableExploreInteractivity ();
 
 			StartCoroutine ("ExplainationShowAndHideAnim");
 
@@ -167,7 +167,7 @@ namespace WordJourney
 
 			colorTween.SetUpdate (true);
 
-			EnableInteractivity ();
+			EnableExploreInteractivity ();
 		}
 
 		public void ShowExplaination(){
@@ -275,7 +275,7 @@ namespace WordJourney
 
 		public void ShowRightAnswerAndEnterNextExam(int correctAnswerIndex, Examination nextExam){
 
-			DisableInteractivity ();
+			DisableExploreInteractivity ();
 
 			isShowRightAnswerFinished = false;
 
@@ -300,7 +300,7 @@ namespace WordJourney
 
 			isShowRightAnswerFinished = true;
 
-			EnableInteractivity ();
+			EnableExploreInteractivity ();
 		}
 
 		private IEnumerator StopForAWhileAndEnterNextExam(Examination nextExam){
@@ -313,7 +313,7 @@ namespace WordJourney
 
 			HideRightExplaination ();
 
-			EnableInteractivity ();
+			EnableExploreInteractivity ();
 		}
 
 		private void ShowRightExplaination(){

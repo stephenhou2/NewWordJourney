@@ -27,7 +27,7 @@ namespace WordJourney
 			this.mapGenerator = mapGenerator;
 
 			ExploreManager em = mapGenerator.GetComponent<ExploreManager> ();
-			em.DisableInteractivity ();
+			em.DisableExploreInteractivity ();
 
 			int[,] mapWalkableInfo = mapGenerator.mapWalkableInfoArray;
 
@@ -42,14 +42,14 @@ namespace WordJourney
 				this.transform.DOMove (new Vector3 (boxPosX + 1, boxPosY),1.0f).OnComplete (delegate {
 					mapWalkableInfo[boxPosX,boxPosY] = 1;
 					mapWalkableInfo[boxPosX + 1,boxPosY] = 0;
-					em.EnableInteractivity();
+					em.EnableExploreInteractivity();
 				});
 
 			} else if (playerPosX > boxPosX && CanMoveTo(boxPosX - 1, boxPosY)) {
 				this.transform.DOMove (new Vector3 (boxPosX - 1, boxPosY),1.0f).OnComplete (delegate {
 					mapWalkableInfo[boxPosX,boxPosY] = 1;
 					mapWalkableInfo[boxPosX - 1,boxPosY] = 0;
-					em.EnableInteractivity();
+					em.EnableExploreInteractivity();
 				});
 
 			} else if (playerPosY < boxPosY && CanMoveTo(boxPosX, boxPosY + 1)) {
@@ -57,7 +57,7 @@ namespace WordJourney
 					mapWalkableInfo[boxPosX,boxPosY] = 1;
 					mapWalkableInfo[boxPosX,boxPosY + 1] = 0;
 					SetSortingOrder(-boxPosY-1);
-					em.EnableInteractivity();
+					em.EnableExploreInteractivity();
 				});
 
 			} else if (playerPosY > boxPosY && CanMoveTo(boxPosX, boxPosY - 1)) {
@@ -66,11 +66,11 @@ namespace WordJourney
 					mapWalkableInfo[boxPosX,boxPosY] = 1;
 					mapWalkableInfo[boxPosX,boxPosY - 1] = 0;
 					SetSortingOrder(-boxPosY+1);
-					em.EnableInteractivity();
+					em.EnableExploreInteractivity();
 				});
 			}
 
-			em.EnableInteractivity ();
+			em.EnableExploreInteractivity ();
 
 		}
 

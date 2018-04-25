@@ -232,7 +232,7 @@ namespace WordJourney
 				player.magicAttack += 1;
 				break;
 			}
-			GetComponent<ExploreUICotroller> ().HideMask ();
+//			ExploreManager.Instance.EnableExploreInteractivity ();
 			UpdateAgentStatusPlane ();
 			levelUpPlane.gameObject.SetActive (false);
 			ExploreManager.Instance.AllWalkableEventsStartMove ();

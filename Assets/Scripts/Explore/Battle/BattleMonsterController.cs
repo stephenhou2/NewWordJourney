@@ -131,127 +131,41 @@ namespace WordJourney
 
 			// 播放技能对应的角色动画，角色动画结束后播放攻击间隔动画
 			this.PlayRoleAnim (skill.selfRoleAnimName, 1, () => {
-				// 播放等待动画
+
 				this.PlayRoleAnim(CommonData.roleAttackIntervalAnimName,0,null);
+
 			});
 
 		}
-			
+				
 
 
 		protected override void AgentExcuteHitEffect ()
 		{
+			if (enemy == null) {
+				return;
+			}
 			
 			GameManager.Instance.soundManager.PlayAudioClip ("Skill/" + currentUsingActiveSkill.sfxName);
 
 			currentUsingActiveSkill.AffectAgents (this, enemy);
 
 			UpdateStatusPlane ();
-			enemy.UpdateStatusPlane ();
 
-//			isAttackActionFinish = true;
-
-			if (enemy == null) {
-				return;
+			if (enemy != null) {
+				enemy.UpdateStatusPlane ();
 			}
 
 			// 如果战斗没有结束，则默认在攻击间隔时间之后按照默认攻击方式进行攻击
-			if(!CheckFightEnd()){
+			if((enemy as BattlePlayerController).isInFight && !CheckFightEnd()){
+				// 播放等待动画
+
 				currentUsingActiveSkill = normalAttack;
-//				Debug.Log (currentSkill);
 				attackCoroutine = InvokeAttack (currentUsingActiveSkill);
 				StartCoroutine (attackCoroutine);
 			}
-				
 
-//			this.UpdateStatusPlane();
-//
-//			bpCtr.UpdateStatusPlane();
-
-//			Player player = Player.mainPlayer;
-
-//			switch (currentSkill.hurtType) {
-//			case HurtType.Physical:
-//
-//				// 玩家受到物理攻击，已装备的护具中随机一个护具的耐久度降低
-//				List<Equipment> allEquipedProtector = player.allEquipedEquipments.FindAll (delegate (Equipment obj) {
-//					int equipmentTypeToInt = (int)obj.equipmentType;
-//					return equipmentTypeToInt >= 1 && equipmentTypeToInt <= 5;
-//				});
-//
-//				if (allEquipedProtector.Count == 0) {
-//					break;
-//				}
-//
-//				int randomIndex = Random.Range (0, allEquipedProtector.Count);
-//
-//				Equipment damagedEquipment = allEquipedProtector [randomIndex];
-//
-//				bool completeDamaged = damagedEquipment.EquipmentDamaged (EquipmentDamageSource.BePhysicalAttacked);
-//
-//				if (completeDamaged) {
-//					string tint = string.Format("{0}完全损坏",damagedEquipment.itemName);
-//					bmUICtr.GetComponent<ExploreUICotroller> ().SetUpTintHUD (tint);
-//
-//				}
-//
-//				break;
-//			case HurtType.Magical:
-//
-//				List<Equipment> allEquipedOrnaments = player.allEquipedEquipments.FindAll (delegate(Equipment obj) {
-//					int equipmentTypeToInt = (int)obj.equipmentType;
-//					return equipmentTypeToInt >= 5 && equipmentTypeToInt <= 6;
-//				});
-//
-//				if (allEquipedOrnaments.Count == 0) {
-//					break;
-//				}
-//
-//				randomIndex = Random.Range (0, allEquipedOrnaments.Count);
-//
-//				damagedEquipment = allEquipedOrnaments [randomIndex];
-//
-//				completeDamaged = damagedEquipment.EquipmentDamaged (EquipmentDamageSource.BeMagicAttacked);
-//
-//				if (completeDamaged) {
-//					string tint = string.Format("{0}完全损坏",damagedEquipment.itemName);
-//					bmUICtr.GetComponent<ExploreUICotroller> ().SetUpTintHUD (tint);
-//				}
-//				break;
-//			default:
-//				break;
-//			}
 		}
-
-//		public override void InitFightTextDirectionTowards (BattleAgentController enemy)
-//		{
-//			MyTowards fightTextTowards = MyTowards.Left;
-//
-//			if (enemy.transform.position.y == transform.position.y) {
-//				fightTextTowards = enemy.transform.position.x < transform.position.x ? MyTowards.Right : MyTowards.Left;
-//			} else {
-//				fightTextTowards = towards == MyTowards.Left ? MyTowards.Right : MyTowards.Left;
-//			}
-//
-//			bmUICtr.fightTextManager.SetUpFightTextManager (transform.position, fightTextTowards);
-//		}
-
-//		public override void InitFightTextDirectionTowards (Vector3 position)
-//		{
-//			MyTowards fightTextTowards = MyTowards.Left;
-//
-//			fightTextTowards = position.x < transform.position.x ? MyTowards.Right : MyTowards.Left;
-//
-//			bmUICtr.fightTextManager.SetUpFightTextManager (transform.position, fightTextTowards);
-//
-//		}
-
-
-
-//		public override void ShowFightTextInOrder ()
-//		{
-//			bmUICtr.fightTextManager.ShowFightTextInOrder ();
-//		}
 
 
 		/// <summary>
@@ -279,7 +193,7 @@ namespace WordJourney
 		public override void QuitFight ()
 		{
 			StopCoroutinesWhenFightEnd ();
-			boxCollider.enabled = true;
+			GetComponent<MapWalkableEvent> ().isTriggered = false;
 			enemy = null;
 			currentUsingActiveSkill = null;
 			SetRoleAnimTimeScale (1.0f);
@@ -295,7 +209,13 @@ namespace WordJourney
 				return;
 			}
 
+			enemy.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
+
+			exploreManager.DisableExploreInteractivity ();
+
 			agent.isDead = true;
+
+			boxCollider.enabled = false;
 
 			StartCoroutine ("LatelyDie");
 		}

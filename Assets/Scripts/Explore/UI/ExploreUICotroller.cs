@@ -16,7 +16,7 @@ namespace WordJourney
 		public PauseHUD pauseHUD;
 		public WordHUD wordHUD;
 
-		public Transform mask;
+		public Transform exploreMask;// 小遮罩，不遮盖底部消耗品栏和背包按钮
 
 		/**********  battlePlane UI *************/
 		public Transform battlePlane;
@@ -58,9 +58,10 @@ namespace WordJourney
 
 		public SimpleItemDetail simpleItemDetail;
 
-		public Transform buyLifeQueryHUD;
+		public BuyLifeQueryView buyLifeQueryHUD;
 		public Transform enterNextLevelQueryHUD;
 
+		public Transform fullMask;// 覆盖整个屏幕的遮罩，禁止一切点击响应
 
 		public void SetUpExploreCanvas(){
 
@@ -171,19 +172,29 @@ namespace WordJourney
 			}
 		}
 
-		public void ShowMask(){
-			mask.gameObject.SetActive (true);
+		public void ShowExploreMask(){
+			exploreMask.gameObject.SetActive (true);
 		}
 
-		public void HideMask(){
-			mask.gameObject.SetActive (false);
+		public void HideExploreMask(){
+			exploreMask.gameObject.SetActive (false);
 		}
+
+
+		public void ShowFullMask(){
+			fullMask.gameObject.SetActive (true);
+		}
+
+		public void HideFullMask(){
+			fullMask.gameObject.SetActive (false);
+		}
+
 
 		private void ShowExploreSceneSlowly(){
 			transitionMask.gameObject.SetActive (true);
 			transitionMask.color = Color.black;
 			transitionMask.DOFade (0, 1f).OnComplete (delegate {
-				HideMask();
+				HideExploreMask();
 				transitionMask.gameObject.SetActive(false);
 				ExploreManager.Instance.AllWalkableEventsStartMove();
 			});
@@ -401,20 +412,20 @@ namespace WordJourney
 
 
 		public void ShowBuyLifeQueryHUD(){
-			buyLifeQueryHUD.gameObject.SetActive (true);
+			buyLifeQueryHUD.SetUpBuyLifeQueryView (ConfirmBuyLife, CancelBuyLife);
 		}
+			
 
-		public void HideBuyLifeQueryHUD(){
-			buyLifeQueryHUD.gameObject.SetActive (false);
-		}
-
-		public void ConfirmBuyLife(){
+		private void ConfirmBuyLife(){
 			Debug.Log ("BUY LIFE");
-			ExploreManager.Instance.battlePlayerCtr.ResetAgent ();
+			QuitFight ();
+			ExploreManager.Instance.battlePlayerCtr.RecomeToLife ();
+			HideFullMask ();
+			bpUICtr.UpdateAgentStatusPlane ();
+			ExploreManager.Instance.AllWalkableEventsStartMove ();
 		}
 
-		public void CancelBuyLife(){
-			HideBuyLifeQueryHUD ();
+		private void CancelBuyLife(){
 			transitionView.PlayTransition (TransitionType.Death, delegate {
 				transitionMask.gameObject.SetActive(true);
 				transitionMask.color = Color.black;

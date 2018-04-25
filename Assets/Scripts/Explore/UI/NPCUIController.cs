@@ -729,7 +729,7 @@ namespace WordJourney
 
 			mn.RefreshWalkableInfoWhenQuit (false);
 
-			exploreManager.EnableInteractivity ();
+			exploreManager.EnableExploreInteractivity ();
 
 		}
 

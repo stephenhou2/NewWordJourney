@@ -105,7 +105,7 @@ namespace WordJourney
 		public void SetUpExploreView()
 		{
 
-			DisableInteractivity ();
+			DisableExploreInteractivity ();
 
 			if (!GameManager.Instance.soundManager.bgmAS.isPlaying 
 				|| GameManager.Instance.soundManager.bgmAS.clip.name != CommonData.exploreBgmName) {
@@ -120,7 +120,7 @@ namespace WordJourney
 
 			battlePlayerCtr.InitBattlePlayer ();
 
-			EnableInteractivity ();
+			EnableExploreInteractivity ();
 
 		}
 
@@ -177,7 +177,7 @@ namespace WordJourney
 //
 //			Camera.main.transform.localPosition = new Vector3 (0, 0, -5);;
 //
-//			EnableInteractivity ();
+//			EnableExploreInteractivity ();
 //		}
 
 		public void ItemsAroundAutoIntoLifeWithBasePoint(Vector3 basePostion,CallBack cb = null){
@@ -330,13 +330,21 @@ namespace WordJourney
 //		}
 
 
-		public void DisableInteractivity(){
-			expUICtr.ShowMask ();
+		public void DisableExploreInteractivity(){
+			expUICtr.ShowExploreMask ();
+			expUICtr.HideFullMask ();
 		}
 
-		public void EnableInteractivity(){
-			expUICtr.HideMask ();
+		public void EnableExploreInteractivity(){
+			expUICtr.HideExploreMask ();
+			expUICtr.HideFullMask ();
 		}
+
+		public void DisableAllInteractivity(){
+			expUICtr.HideExploreMask ();
+			expUICtr.ShowFullMask ();
+		}
+
 
 		public void ObtainReward(Item reward){
 			
@@ -370,7 +378,7 @@ namespace WordJourney
 
 //			detectFight = true;
 
-			DisableInteractivity ();
+			DisableExploreInteractivity ();
 
 			battleMonsterCtr = monsterTrans.GetComponent<BattleMonsterController> ();
 
@@ -518,7 +526,7 @@ namespace WordJourney
 
 			if (isLevelUp) {
 				PlayLevelUpAnim ();
-				DisableInteractivity ();
+				DisableExploreInteractivity ();
 				expUICtr.ShowLevelUpPlane ();
 			}
 
@@ -559,7 +567,7 @@ namespace WordJourney
 
 			}
 
-			EnableInteractivity ();
+			EnableExploreInteractivity ();
 
 			battlePlayerCtr.isInFight = false;
 
@@ -624,7 +632,7 @@ namespace WordJourney
 //
 ////			StartCoroutine ("ResetCamera");
 //
-//			EnableInteractivity ();
+//			EnableExploreInteractivity ();
 //
 //			battlePlayerCtr.PlayerMoveToEnemyPosAfterFight (oriMonsterPos);
 //		}
@@ -671,7 +679,7 @@ namespace WordJourney
 
 			Time.timeScale = 1;
 
-			DisableInteractivity ();
+			DisableExploreInteractivity ();
 
 			Player player = Player.mainPlayer;
 
@@ -688,7 +696,7 @@ namespace WordJourney
 	
 			SetUpExploreView ();
 
-//			EnableInteractivity ();
+//			EnableExploreInteractivity ();
 
 		}
 

@@ -163,13 +163,11 @@ namespace WordJourney{
 				return;
 			}
 
-//			if (bp.escapeFromFight) {
-//				return;
-//			}
-
 			if (bp.isInPosFixAfterFight) {
 				return;
 			}
+
+
 
 			MapEventTriggered (false, bp);
 		}
@@ -185,11 +183,18 @@ namespace WordJourney{
 
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
+			if (isInMoving) {
+				RefreshWalkableInfoWhenTriggeredInMoving ();
+			}
+
 			bp.isInEvent = true;
 			MapEventTriggered (false, bp);
 		}
 
 		public void DetectPlayer(BattlePlayerController bp){
+			if (isInMoving) {
+				RefreshWalkableInfoWhenTriggeredInMoving ();
+			}
 			bp.isInEvent = true;
 			MapEventTriggered (true, bp);
 		}
@@ -204,7 +209,7 @@ namespace WordJourney{
 				DisableAllAlertAreaDetect ();
 			}
 
-			ExploreManager.Instance.DisableInteractivity ();
+			ExploreManager.Instance.DisableExploreInteractivity ();
 
 			ExploreManager.Instance.AllWalkableEventsStopMove ();
 
@@ -348,7 +353,27 @@ namespace WordJourney{
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 
+				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+					baCtr.TowardsLeft ();
+
+					battlePlayerCtr.TowardsRight (false);
+
+					npcFightPos = new Vector3 (playerOriPos.x + 1, playerPosY, 0);
+
+					needPosFix = false;
+					battlePlayerCtr.needPosFix = false;
 				} else if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
+
+					baCtr.TowardsRight ();
+
+					battlePlayerCtr.TowardsLeft (false);
+
+					npcFightPos = new Vector3 (playerOriPos.x - 1, playerPosY, 0);
+
+					needPosFix = false;
+					battlePlayerCtr.needPosFix = false;
+
+				} else if (playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 
 					baCtr.TowardsRight ();
 
@@ -629,6 +654,8 @@ namespace WordJourney{
 
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
  			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
+
+			Debug.LogFormat ("MOVE ORIGIN:{0}++++++MOVE DESTINATION:{1}", moveOrigin, moveDestination);
 
 			RefreshWalkableInfoWhenStartMove ();
 
