@@ -304,8 +304,9 @@ namespace WordJourney
 		/// </summary>
 		public void RefreshWalkableInfoWhenQuit(bool walkableEventDie){
 
-			int walkableEventOriPosX = Mathf.RoundToInt(moveOrigin.x);
-			int walkableEventOriPosY = Mathf.RoundToInt(moveOrigin.y);
+
+			int walkableEventOriPosX = Mathf.RoundToInt (moveOrigin.x);
+			int walkableEventOriPosY = Mathf.RoundToInt (moveOrigin.y);
 
 			int walkableEventDestPosX = Mathf.RoundToInt (moveDestination.x);
 			int walkableEventDestPosY = Mathf.RoundToInt (moveDestination.y);
@@ -317,6 +318,7 @@ namespace WordJourney
 				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 1;
 				ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 0;
 			}
+	
 
 		}
 

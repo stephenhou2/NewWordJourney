@@ -68,10 +68,14 @@ namespace WordJourney{
 
 		public static string dataBaseName = "MyGameDB.db";
 
-		public static string NMETTable = "NMET";
-		public static string CET46Table = "CET46";
-		public static string GRETable = "GRE";
-		public static string TOEFLTable = "TOEFL";
+//		public static string NMETTable = "NMET";
+//		public static string CET46Table = "CET46";
+//		public static string GRETable = "GRE";
+//		public static string TOEFLTable = "TOEFL";
+
+		public static string simpleWordsTable = "SIMPLE";
+		public static string mediumWordsTabel = "MEDIUM";
+		public static string masterWordsTabel = "MASTER";
 
 		public static string instanceContainerName = "InstanceContainer";
 		public static string poolContainerName = "PoolsContainer";
@@ -175,10 +179,9 @@ namespace WordJourney{
 
 
 	public enum WordType{
-		NMET,
-		CET46,
-		TOEFL,
-		GRE
+		Simple,
+		Medium,
+		Master
 	}
 
 

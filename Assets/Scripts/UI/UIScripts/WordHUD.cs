@@ -253,6 +253,7 @@ namespace WordJourney
 			// 首项作为测试用的单词
 			questionWord = wordsArray [0];
 			questionForExplainationSelect.text = questionWord.spell;
+			exampleSentenceText.text = questionWord.sentenceEN;
 
 			for (int i = 0; i < validArray.Length; i++) {
 				validArray [i] = true;

@@ -35,7 +35,7 @@ namespace WordJourney
 //
 //			Player.mainPlayer.AddItem (eqp);
 //
-//			for (int i = 0; i < 5; i++) {
+//			for (int i = 0; i < 32; i++) {
 //				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
 //			}
 ////

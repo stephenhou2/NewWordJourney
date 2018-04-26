@@ -45,20 +45,29 @@ namespace WordJourney
 		public string phoneticSymbol;
 		// 单词释义
 		public string explaination;
-		// 例句
-//		public string example;
+		// 英文例句
+		public string sentenceEN;
+		// 中文例句
+		public string sentenceCH;
+		// 发音URL
+		public string pronounciationURL;
+		// 单词长度
+		public int wordLength;
 		// 单词已学次数
 		public int learnedTimes;
 		// 单词背错的次数
 		public int ungraspTimes;
 
 
-		public LearnWord(int wordId, string spell, string phoneticSymbol, string explaination,int learnedTimes,int ungraspTimes){
+		public LearnWord(int wordId, string spell, string phoneticSymbol, string explaination, string sentenceEN, string sentenceCH, string pronounciationURL, int wordLength, int learnedTimes,int ungraspTimes){
 			this.wordId = wordId;
 			this.spell = spell;
 			this.phoneticSymbol = phoneticSymbol;
 			this.explaination = explaination;
-//			this.example = example;
+			this.sentenceEN = sentenceEN;
+			this.sentenceCH = sentenceCH;
+			this.pronounciationURL = pronounciationURL;
+			this.wordLength = wordLength;
 			this.learnedTimes = learnedTimes;
 			this.ungraspTimes = ungraspTimes;
 		}

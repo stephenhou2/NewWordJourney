@@ -87,16 +87,13 @@ namespace WordJourney
 
 			switch (currentSelectWordTypeIndex) {
 			case 0:
-				GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.NMET;
+				GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.Simple;
 				break;
 			case 1:
-				GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.CET46;
+				GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.Medium;
 				break;
 			case 2:
-				GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.TOEFL;
-				break;
-			case 3:
-				GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.GRE;
+				GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.Master;
 				break;
 
 			}

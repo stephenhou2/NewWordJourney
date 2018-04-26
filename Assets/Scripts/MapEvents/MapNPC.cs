@@ -555,43 +555,26 @@ namespace WordJourney{
 
 		public override void WalkToPosition(Vector3 position,CallBack cb,bool showAlertArea = true){
 
-			if (MyTool.ApproximatelySamePosition2D (position, ExploreManager.Instance.battlePlayerCtr.transform.position)) {
-				return;
-			}
-
-			baCtr.PlayRoleAnim (CommonData.roleWalkAnimName, 0, null);
-
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
 			int oriPosY = Mathf.RoundToInt (transform.position.y);
 
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
-//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
-//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
-//
-//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
-//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
 
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
 			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
 
+
+			if (MyTool.ApproximatelySamePosition2D (position, ExploreManager.Instance.battlePlayerCtr.transform.position)) {
+				return;
+			}
+
+			baCtr.PlayRoleAnim (CommonData.roleWalkAnimName, 0, null);
+
+
 			RefreshWalkableInfoWhenStartMove ();
 
-//			if (targetPosY == oriPosY) {
-//				if (targetPosX >= oriPosX) {
-//					baCtr.TowardsRight ();
-//				} else {
-//					baCtr.TowardsLeft ();
-//				}
-//			} else if(targetPosX == oriPosX){
-//
-//				if (targetPosY >= oriPosY) {
-//					baCtr.TowardsUp ();
-//				} else {
-//					baCtr.TowardsDown ();
-//				}
-//			}
 
 			if (moveCoroutine != null) {
 				StopCoroutine (moveCoroutine);
@@ -629,6 +612,18 @@ namespace WordJourney{
 
 		protected override void RunToPosition(Vector3 position,CallBack cb){
 
+			int oriPosX = Mathf.RoundToInt (transform.position.x);
+			int oriPosY = Mathf.RoundToInt (transform.position.y);
+
+			int targetPosX = Mathf.RoundToInt (position.x);
+			int targetPosY = Mathf.RoundToInt (position.y);
+
+			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
+			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
+
+//			Debug.LogFormat ("MOVE ORIGIN:{0}++++++MOVE DESTINATION:{1}", moveOrigin, moveDestination);
+
+
 			if (position.Equals(transform.position)) {
 
 				if(cb != null){
@@ -640,22 +635,6 @@ namespace WordJourney{
 				
 			baCtr.PlayRoleAnim (CommonData.roleRunAnimName, 0, null);
 
-			int oriPosX = Mathf.RoundToInt (transform.position.x);
-			int oriPosY = Mathf.RoundToInt (transform.position.y);
-
-			int targetPosX = Mathf.RoundToInt (position.x);
-			int targetPosY = Mathf.RoundToInt (position.y);
-
-//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
-//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
-//
-//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
-//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
-
-			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
- 			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
-
-			Debug.LogFormat ("MOVE ORIGIN:{0}++++++MOVE DESTINATION:{1}", moveOrigin, moveDestination);
 
 			RefreshWalkableInfoWhenStartMove ();
 

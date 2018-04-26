@@ -447,11 +447,6 @@ namespace WordJourney
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
-//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
-//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
-//
-//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
-//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
 
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
 			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
@@ -515,16 +510,11 @@ namespace WordJourney
 			int targetPosX = Mathf.RoundToInt (position.x);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
-//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [oriPosX, oriPosY] = 0;
-//			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [targetPosX, targetPosY] = 1;
-//
-//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [oriPosX, oriPosY] = 1;
-//			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [targetPosX, targetPosY] = 5;
 
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
 			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
 
-			Debug.LogFormat ("MOVE ORIGIN:{0}++++++MOVE DESTINATION:{1}", moveOrigin, moveDestination);
+//			Debug.LogFormat ("MOVE ORIGIN:{0}++++++MOVE DESTINATION:{1}", moveOrigin, moveDestination);
 
 			RefreshWalkableInfoWhenStartMove ();
 

@@ -13,10 +13,9 @@ namespace WordJourney{
 
 		public Transform settingPlane;
 
-		public Toggle cet46;
-		public Toggle nmet;
-		public Toggle gre;
-		public Toggle toefl;
+		public Toggle simpleWords;
+		public Toggle mediumWords;
+		public Toggle masterWords;
 
 		public Transform queryChangeWordHUD;
 
@@ -32,17 +31,14 @@ namespace WordJourney{
 			tg.SetAllTogglesOff ();
 
 			switch (settings.wordType) {
-			case WordType.CET46:
-				cet46.isOn = true;
+			case WordType.Simple:
+				simpleWords.isOn = true;
 				break;
-			case WordType.NMET:
-				nmet.isOn = true;
+			case WordType.Medium:
+				mediumWords.isOn = true;
 				break;
-			case WordType.GRE:
-				gre.isOn = true;
-				break;
-			case WordType.TOEFL:
-				toefl.isOn = true;
+			case WordType.Master:
+				masterWords.isOn = true;
 				break;
 			}
 

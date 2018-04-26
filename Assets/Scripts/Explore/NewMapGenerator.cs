@@ -280,7 +280,7 @@ namespace WordJourney
 
 			string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
 
-			string query = string.Format ("SELECT learned_times FROM {0} ORDER BY learned_times ASC", currentWordsTableName);
+			string query = string.Format ("SELECT learnedTimes FROM {0} ORDER BY learnedTimes ASC", currentWordsTableName);
 
 			IDataReader reader = mySql.ExecuteQuery (query);
 
@@ -288,7 +288,7 @@ namespace WordJourney
 
 			int wholeLearnTime = reader.GetInt16 (0);
 
-			query = string.Format ("SELECT COUNT(*) FROM {0} WHERE learned_times={1}", currentWordsTableName, wholeLearnTime);
+			query = string.Format ("SELECT COUNT(*) FROM {0} WHERE learnedTimes={1}", currentWordsTableName, wholeLearnTime);
 
 			reader = mySql.ExecuteQuery (query);
 
@@ -298,9 +298,9 @@ namespace WordJourney
 
 			if (validWordCount < mapEventCount) {
 
-				string[] colFields = new string[]{ "learned_times" };
+				string[] colFields = new string[]{ "learnedTimes" };
 				string[] values = new string[]{ (wholeLearnTime + 1).ToString() };
-				string[] conditions = new string[]{"learned_times=" + wholeLearnTime.ToString()};
+				string[] conditions = new string[]{"learnedTimes=" + wholeLearnTime.ToString()};
 
 				mySql.UpdateValues (currentWordsTableName, colFields, values, conditions, true);
 
@@ -309,7 +309,7 @@ namespace WordJourney
 			}
 
 			// 边界条件
-			string[] condition = new string[]{ string.Format("learned_times={0} ORDER BY RANDOM() LIMIT {1}",wholeLearnTime,mapEventCount) };
+			string[] condition = new string[]{ string.Format("learnedTimes={0} ORDER BY RANDOM() LIMIT {1}",wholeLearnTime,mapEventCount) };
 
 			reader = mySql.ReadSpecificRowsOfTable (currentWordsTableName, null, condition, true);
 
@@ -325,11 +325,19 @@ namespace WordJourney
 
 				string explaination = reader.GetString (3);
 
-				int learnedTimes = reader.GetInt16 (4);
+				string sentenceEN = reader.GetString (4);
 
-				int ungraspTimes = reader.GetInt16 (5);
+				string sentenceCH = reader.GetString (5);
 
-				LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, learnedTimes, ungraspTimes);
+				string pronounciationURL = reader.GetString (6);
+
+				int wordLength = reader.GetInt16 (7);
+
+				int learnedTimes = reader.GetInt16 (8);
+
+				int ungraspTimes = reader.GetInt16 (9);
+
+				LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
 
 				words [index] = word;
 

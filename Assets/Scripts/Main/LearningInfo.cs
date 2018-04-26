@@ -58,17 +58,14 @@ namespace WordJourney
 			string tableName = string.Empty;
 
 			switch (currentWordType) {
-			case WordType.CET46:
-				tableName = CommonData.CET46Table;
+			case WordType.Simple:
+				tableName = CommonData.simpleWordsTable;
 				break;
-			case WordType.NMET:
-				tableName = CommonData.NMETTable;
+			case WordType.Medium:
+				tableName = CommonData.mediumWordsTabel;
 				break;
-			case WordType.GRE:
-				tableName = CommonData.GRETable;
-				break;
-			case WordType.TOEFL:
-				tableName = CommonData.TOEFLTable;
+			case WordType.Master:
+				tableName = CommonData.masterWordsTabel;
 				break;
 			}
 
@@ -115,7 +112,7 @@ namespace WordJourney
 			}
 
 			// 查询当前学习的单词类型中的所有单词数量
-			string[] learnedCondition = new string[]{"learned_times>0"};
+			string[] learnedCondition = new string[]{"learnedTimes>0"};
 			int count = sql.GetItemCountOfTable (tableName, learnedCondition, true);
 
 			sql.CloseAllConnections ();
@@ -142,7 +139,7 @@ namespace WordJourney
 
 
 			// 查询当前学习的单词类型中所有背错过的单词数量
-			string[] ungraspedCondition = new string[]{"ungrasp_times>0"};
+			string[] ungraspedCondition = new string[]{"ungraspTimes>0"};
 			int count = sql.GetItemCountOfTable (tableName, ungraspedCondition,true);
 
 			sql.CloseAllConnections ();
@@ -164,7 +161,7 @@ namespace WordJourney
 			// 连接数据库
 			sql.GetConnectionWith (CommonData.dataBaseName);
 
-			string[] ungraspedCondition = new string[]{"learned_times>0"};
+			string[] ungraspedCondition = new string[]{"learnedTimes>0"};
 
 			// 读取器
 			IDataReader reader = sql.ReadSpecificRowsOfTable(tableName,null,ungraspedCondition,true);
@@ -177,16 +174,29 @@ namespace WordJourney
 				}
 
 				int wordId = reader.GetInt32 (0);
+
 				string spell = reader.GetString (1);
-				string explaination = reader.GetString (2);
-				string phoneticSymble = reader.GetString (3);
-//				string example = reader.GetString (4);
-				int learnedTimes = reader.GetInt16 (4);
-				int ungraspTimes = reader.GetInt16 (5);
 
-				LearnWord w = new LearnWord (wordId, spell, explaination, phoneticSymble,learnedTimes,ungraspTimes);
+				string phoneticSymble = reader.GetString (2);
 
-				learnedWords.Add (w);
+				string explaination = reader.GetString (3);
+
+				string sentenceEN = reader.GetString (4);
+
+				string sentenceCH = reader.GetString (5);
+
+				string pronounciationURL = reader.GetString (6);
+
+				int wordLength = reader.GetInt16 (7);
+
+				int learnedTimes = reader.GetInt16 (8);
+
+				int ungraspTimes = reader.GetInt16 (9);
+
+				LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+
+
+				learnedWords.Add (word);
 
 			}
 
@@ -210,7 +220,7 @@ namespace WordJourney
 			// 连接数据库
 			sql.GetConnectionWith (CommonData.dataBaseName);
 
-			string[] ungraspedCondition = new string[]{"ungrasp_times>0"};
+			string[] ungraspedCondition = new string[]{"ungraspTimes>0"};
 
 			// 读取器
 			IDataReader reader = sql.ReadSpecificRowsOfTable(tableName,null,ungraspedCondition,true);
@@ -223,16 +233,29 @@ namespace WordJourney
 				}
 
 				int wordId = reader.GetInt32 (0);
+
 				string spell = reader.GetString (1);
-				string explaination = reader.GetString (2);
-				string phoneticSymble = reader.GetString (3);
-//				string example = reader.GetString (4);
-				int learnedTimes = reader.GetInt16 (4);
-				int ungraspTimes = reader.GetInt16 (5);
 
-				LearnWord w = new LearnWord (wordId, spell, explaination, phoneticSymble,learnedTimes,ungraspTimes);
+				string phoneticSymble = reader.GetString (2);
 
-				ungraspWords.Add (w);
+				string explaination = reader.GetString (3);
+
+				string sentenceEN = reader.GetString (4);
+
+				string sentenceCH = reader.GetString (5);
+
+				string pronounciationURL = reader.GetString (6);
+
+				int wordLength = reader.GetInt16 (7);
+
+				int learnedTimes = reader.GetInt16 (8);
+
+				int ungraspTimes = reader.GetInt16 (9);
+
+				LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+
+
+				ungraspWords.Add (word);
 
 			}
 

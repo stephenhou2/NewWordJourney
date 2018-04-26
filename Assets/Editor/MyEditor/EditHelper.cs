@@ -24,8 +24,7 @@ namespace WordJourney
 		[MenuItem("EditHelper/TempHelper")]
 		public static void TempHelper(){
 
-			Debug.Log (Mathf.RoundToInt (11.5f));
-
+			Debug.Log (CommonData.persistDataPath);
 
 		}
 

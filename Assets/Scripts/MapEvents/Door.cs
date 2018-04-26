@@ -103,11 +103,8 @@ namespace WordJourney
 				}
 
 				if(!hasValidWord){
-					#warning 这里如果已有的单词队列里单词长度都大于7，暂时先用第一个单词作为题目，数据库更新以后打开下面的代码
-					ExploreManager.Instance.ShowCharacterFillPlane (wordsArray [0]);
-
-//					LearnWord word = GetAValidWord ();
-//					ExploreManager.Instance.ShowCharacterFillPlane (word);
+					LearnWord word = GetAValidWord ();
+					ExploreManager.Instance.ShowCharacterFillPlane (word);
 				}
 			}
 
@@ -138,11 +135,20 @@ namespace WordJourney
 
 			string explaination = reader.GetString (3);
 
-			int learnedTimes = reader.GetInt16 (4);
+			string sentenceEN = reader.GetString (4);
 
-			int ungraspTimes = reader.GetInt16 (5);
+			string sentenceCH = reader.GetString (5);
 
-			LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, learnedTimes, ungraspTimes);
+			string pronounciationURL = reader.GetString (6);
+
+			int wordLength = reader.GetInt16 (7);
+
+			int learnedTimes = reader.GetInt16 (8);
+
+			int ungraspTimes = reader.GetInt16 (9);
+
+			LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+
 
 			return word;
 		}

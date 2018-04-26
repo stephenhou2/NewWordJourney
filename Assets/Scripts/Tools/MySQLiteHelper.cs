@@ -527,16 +527,17 @@ namespace WordJourney{
 		/// <returns>IDataReader</returns>
 		public IDataReader InsertValues(string tableName, string[] values)
 		{
-			//获取数据表中字段数目
-			int fieldCount = ReadFullTable(tableName).FieldCount;
-
-	//		string findTypesString = "SELECT"
-
-			//当插入的数据长度不等于字段数目时引发异常
-			if (values.Length != fieldCount)
-			{
-				throw new SqliteException("values.Length != fieldCount");
-			}
+//			//获取数据表中字段数目
+//			int fieldCount = ReadFullTable(tableName).FieldCount;
+//
+////			string queryString = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='" + tableName + "'";
+//			string getFiledCountQuery = string.Format ("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{0}'", tableName);
+//
+//			//当插入的数据长度不等于字段数目时引发异常
+//			if (values.Length != fieldCount)
+//			{
+//				throw new SqliteException("values.Length != fieldCount");
+//			}
 
 
 			StringBuilder queryString = new StringBuilder();
@@ -694,6 +695,7 @@ namespace WordJourney{
 			}
 
 		}
+
 
 		/// <summary>
 		/// 开启查询事务
