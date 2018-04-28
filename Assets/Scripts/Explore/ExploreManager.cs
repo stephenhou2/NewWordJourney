@@ -9,6 +9,8 @@ namespace WordJourney
 {
 	
 //	using UnityEngine.SceneManagement;
+	using DragonBones;
+	using Transform = UnityEngine.Transform;
 
 	public class ExploreManager : MonoBehaviour{
 
@@ -687,7 +689,7 @@ namespace WordJourney
 
 			player.currentLevelIndex++;
 
-			if (player.currentLevelIndex >= 5) {
+			if (player.currentLevelIndex >= 10) {
 				Debug.Log ("通关");
 				return;
 			}
@@ -714,10 +716,12 @@ namespace WordJourney
 			}
 
 			Camera.main.transform.SetParent (null);
-			Camera.main.transform.Find ("Mask").gameObject.SetActive (false);
+
+			Transform exploreMask = Camera.main.transform.Find ("ExploreMask");
+			exploreMask.GetComponent<UnityArmatureComponent> ().animation.Stop ();
+			exploreMask.gameObject.SetActive (false);
 
 			battlePlayerCtr.QuitExplore ();
-//			battlePlayerCtr.isInExplore = false;
 
 			TransformManager.DestroyTransfromWithName (CommonData.exploreScenePoolContainerName);
 

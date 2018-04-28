@@ -110,6 +110,7 @@ namespace WordJourney{
 		public static string skillsContainerName = CommonData.instanceContainerName + "/AllSkills";
 		public static string monstersContainerName = CommonData.instanceContainerName + "/AllMonsters";
 
+		public static string exploreMaskAnimName = "deafult";
 
 		public static string roleIdleAnimName = "wait";
 		public static string roleWalkAnimName = "walk";

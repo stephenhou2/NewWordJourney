@@ -7,7 +7,8 @@ namespace WordJourney
 {
 
 	using System.Data;
-
+	using DragonBones;
+	using Transform = UnityEngine.Transform;
 
 	public class NewMapGenerator : MonoBehaviour {
 
@@ -742,8 +743,10 @@ namespace WordJourney
 
 			#endif
 
+			Transform exploreMask = mainCamera.transform.Find ("ExploreMask");
+			exploreMask.gameObject.SetActive (true);
+			exploreMask.GetComponent<UnityArmatureComponent> ().animation.Play (CommonData.exploreMaskAnimName, 0);
 
-			mainCamera.transform.Find ("Mask").gameObject.SetActive (true);
 
 		}
 

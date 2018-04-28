@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Transform = UnityEngine.Transform;
-using DragonBones;
+
 
 
 namespace WordJourney
 {
+
+	using Transform = UnityEngine.Transform;
+	using DragonBones;
 
 	public delegate void SkillCallBack(BattleAgentController selfBaCtr,BattleAgentController enemyBaCtr);
 
@@ -121,15 +123,15 @@ namespace WordJourney
 			ListenerDelegate<EventObject> keyFrameListener = KeyFrameMessage;
 
 			if (this is BattleMonsterController ) {
-				armatureCom.AddEventListener (DragonBones.EventObject.FRAME_EVENT, keyFrameListener);
+				armatureCom.AddEventListener (EventObject.FRAME_EVENT, keyFrameListener);
 			} else if (this is BattlePlayerController) {
 				BattlePlayerController bpctr = this as BattlePlayerController;
 				UnityArmatureComponent playerSideArmature = bpctr.playerSide.GetComponent<UnityArmatureComponent> ();
 				UnityArmatureComponent playerForwardArmature = bpctr.playerForward.GetComponent<UnityArmatureComponent> ();
 				UnityArmatureComponent playerBackwardArmature = bpctr.playerBackWard.GetComponent<UnityArmatureComponent> ();
-				playerSideArmature.AddEventListener(DragonBones.EventObject.FRAME_EVENT, keyFrameListener);
-				playerForwardArmature.AddEventListener(DragonBones.EventObject.FRAME_EVENT, keyFrameListener);
-				playerBackwardArmature.AddEventListener(DragonBones.EventObject.FRAME_EVENT, keyFrameListener);
+				playerSideArmature.AddEventListener(EventObject.FRAME_EVENT, keyFrameListener);
+				playerForwardArmature.AddEventListener(EventObject.FRAME_EVENT, keyFrameListener);
+				playerBackwardArmature.AddEventListener(EventObject.FRAME_EVENT, keyFrameListener);
 			}
 
 			isIdle = true;
