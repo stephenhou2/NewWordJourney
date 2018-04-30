@@ -23,7 +23,8 @@ namespace WordJourney
 			SkillSprites,
 			Monsters,
 			NPCs,
-			Effects
+			Effects,
+            Proverbs
 		}
 
 		private GameSettings mGameSettings;
@@ -38,6 +39,7 @@ namespace WordJourney
 		private List<Skill> mAllSkills = new List<Skill>();
 		private List<Sprite> mAllSkillSprites = new List<Sprite>();
 		private List<EffectAnim> mAllEffects = new List<EffectAnim>();
+        private List<HLHProverb> mAllProverbs = new List<HLHProverb>();
 
 
 		public void InitPersistentGameData(){
@@ -174,6 +176,43 @@ namespace WordJourney
 				mAllSkillGemstoneModels.Add (skillGemstoneModels [i]);
 			}
 		}
+
+
+        public List<HLHProverb> allProverbs
+        {
+            get
+            {
+                if (mAllProverbs.Count == 0)
+                {
+                    LoadAllProverbs();
+                }
+
+                return mAllProverbs;
+            }
+
+
+        }
+
+        private void LoadAllProverbs(){
+
+            if(mAllProverbs.Count > 0){
+                return;
+            }
+
+            HLHProverb[] proverbs = DataHandler.LoadDataToModelsWithPath<HLHProverb>(CommonData.proverbsDataFilePath);
+
+            for (int i = 0; i < proverbs.Length;i++){
+                mAllProverbs.Add(proverbs[i]);
+            }
+        }
+
+        public HLHProverb GetARandomProverb(){
+
+            int randomIndex = Random.Range(0, allProverbs.Count);
+
+            return allProverbs[randomIndex];
+        }
+
 	
 		public List<Sprite> allEquipmentSprites{
 			get{
@@ -184,6 +223,10 @@ namespace WordJourney
 			}
 
 		}
+
+
+       
+
 
 		private void LoadAllEquipmentSprites(){
 			if (mAllEquipmentSprites.Count > 0) {
@@ -474,9 +517,6 @@ namespace WordJourney
 				ReleaseDataWithName (dataTypes [i]);
 			}
 
-//			Resources.UnloadUnusedAssets ();
-//
-//			System.GC.Collect ();
 
 		}
 

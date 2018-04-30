@@ -135,13 +135,13 @@ namespace WordJourney
 		/// <param name="learnInfo">Learn info.</param>
 		public void SetUpAllUngraspedWords(){
 			
-			List<LearnWord> allUngraspedWords = learnInfo.GetAllUngraspedWords ();
+			List<HLHWord> allUngraspedWords = learnInfo.GetAllUngraspedWords ();
 		
 			wordPool.AddChildInstancesToPool (wordContainer);
 
 			for (int i = 0; i < allUngraspedWords.Count; i++) {
 
-				LearnWord word = allUngraspedWords [i];
+				HLHWord word = allUngraspedWords [i];
 
 				Transform wordItem = wordPool.GetInstance <Transform> (wordModel.gameObject, wordContainer);
 

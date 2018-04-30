@@ -26,7 +26,8 @@ namespace WordJourney
 
 			direction = int.Parse(KVPair.GetPropertyStringWithKey("direction",attachedInfo.properties));
 
-			isOpen = bool.Parse(KVPair.GetPropertyStringWithKey("isOpen",attachedInfo.properties));
+            //isOpen = bool.Parse(KVPair.GetPropertyStringWithKey("isOpen",attachedInfo.properties));
+            isOpen = true;
 
 			if (!isOpen) {
 				mapItemRenderer.enabled = true;

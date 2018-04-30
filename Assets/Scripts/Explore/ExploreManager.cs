@@ -60,8 +60,8 @@ namespace WordJourney
 //		public float cameraRollSpeed = 6f;//镜头拉到传送阵的速度
 //		public float cameraStayDuration = 0.5f;//镜头停留时长
 
-		private List<LearnWord> correctWordList = new List<LearnWord>();
-		private List<LearnWord> wrongWordList = new List<LearnWord>();
+		private List<HLHWord> correctWordList = new List<HLHWord>();
+		private List<HLHWord> wrongWordList = new List<HLHWord>();
 
 
 		void Awake()
@@ -276,7 +276,7 @@ namespace WordJourney
 		/// </summary>
 		/// <param name="word">Word.</param>
 		/// <param name="isChooseRight">If set to <c>true</c> is choose right.</param>
-		public void RecordWord(LearnWord word,bool isChooseRight){
+		public void RecordWord(HLHWord word,bool isChooseRight){
 
 			if (isChooseRight) {
 				correctWordList.Add (word);
@@ -287,12 +287,12 @@ namespace WordJourney
 		}
 
 
-		public void ShowWordsChoosePlane(LearnWord[] wordsArray,string extraInfo = null){
+		public void ShowWordsChoosePlane(HLHWord[] wordsArray,string extraInfo = null){
 			AllWalkableEventsStopMove ();
 			expUICtr.SetUpWordHUD (wordsArray,extraInfo);
 		}
 
-		public void ShowCharacterFillPlane(LearnWord word){
+		public void ShowCharacterFillPlane(HLHWord word){
 			AllWalkableEventsStopMove ();
 			expUICtr.SetUpWordHUD (word);
 		}
@@ -510,7 +510,7 @@ namespace WordJourney
 
 			battlePlayerCtr.agent.ResetBattleAgentProperties (false);
 
-			battlePlayerCtr.FixPosition ();
+            battlePlayerCtr.FixPositionToStandard ();
 
 			battlePlayerCtr.ResetToWaitAfterCurrentRoleAnimEnd ();
 

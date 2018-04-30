@@ -116,7 +116,7 @@ namespace WordJourney
 
 
 
-		public void SetUpLearnViewWithWord(LearnWord word){
+		public void SetUpLearnViewWithWord(HLHWord word){
 
 			questionText.text = word.spell;
 
@@ -213,7 +213,7 @@ namespace WordJourney
 
 					choiceButton.GetComponentInChildren<Text> ().color = Color.white;
 
-					LearnWord answer = exam.answers [i];
+					HLHWord answer = exam.answers [i];
 
 					choiceButton.GetComponentInChildren<Text>().text = answer.explaination;
 
@@ -238,7 +238,7 @@ namespace WordJourney
 
 					Button choiceButton = choices [i];
 
-					LearnWord answer = exam.answers [i];
+					HLHWord answer = exam.answers [i];
 
 					choiceButton.GetComponentInChildren<Text>().text = answer.spell;
 

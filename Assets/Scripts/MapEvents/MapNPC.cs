@@ -312,7 +312,10 @@ namespace WordJourney{
 			int npcPosX = Mathf.RoundToInt (npcOriPos.x);
 			int npcPosY = Mathf.RoundToInt (npcOriPos.y);
 
-			int posOffsetX = playerPosX - npcPosX; 
+            int npcLayerOrder = -npcPosY;
+
+			int posOffsetX = playerPosX - npcPosX;
+            int posOffsetY = playerPosY - npcPosY;
 
 			Vector3 npcFightPos = Vector3.zero;
 
@@ -323,19 +326,45 @@ namespace WordJourney{
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 					npcFightPos = new Vector3 (playerOriPos.x - 1, playerPosY, 0);
+                    npcLayerOrder = -playerPosY;
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 				} else if (playerPosX - 1 == npcPosX && playerPosY == npcPosY) {
 					npcFightPos = new Vector3 (playerOriPos.x - 1, playerPosY, 0);
+                    npcLayerOrder = -playerPosY;
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 				} else if(playerPosX - 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y)){
 					npcFightPos = new Vector3 (playerOriPos.x - 1, playerPosY, 0);
+                    npcLayerOrder = -playerPosY;
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 				} else {
-					npcFightPos = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
-					battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x + 0.3f, playerPosY, 0);
+                    if (posOffsetY > 0)
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+                        npcLayerOrder = -playerPosY + 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY + 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+
+                    }
+                    else
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+                        npcLayerOrder = -playerPosY - 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY - 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                    }
 					needPosFix = true;
 					battlePlayerCtr.needPosFix = true;
 				}
@@ -390,8 +419,31 @@ namespace WordJourney{
 
 					battlePlayerCtr.TowardsRight (false);
 
-					npcFightPos = new Vector3 (playerOriPos.x + 0.3f, playerPosY, 0);
-					battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
+                    if (posOffsetY > 0)
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+                        npcLayerOrder = -playerPosY + 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY + 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+
+                    }
+                    else
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+                        npcLayerOrder = -playerPosY - 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY - 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                    }
 
 					needPosFix = true;
 					battlePlayerCtr.needPosFix = true;
@@ -424,8 +476,31 @@ namespace WordJourney{
 					battlePlayerCtr.needPosFix = false;
 
 				} else {
-					npcFightPos = new Vector3 (playerOriPos.x + 0.3f, playerPosY, 0);
-					battlePlayerCtr.transform.position = new Vector3 (playerOriPos.x - 0.3f, playerPosY, 0);
+                    if (posOffsetY > 0)
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+                        npcLayerOrder = -playerPosY + 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY + 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+
+                    }
+                    else
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+                        npcLayerOrder = -playerPosY - 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY - 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                    }
 
 					needPosFix = true;
 					battlePlayerCtr.needPosFix = true;
@@ -455,7 +530,7 @@ namespace WordJourney{
 					QuitFightAndDelayMove(5);
 					battlePlayerCtr.escapeFromFight = false;
 				}
-			});
+            },npcLayerOrder);
 		}
 			
 
@@ -471,7 +546,10 @@ namespace WordJourney{
 			int npcPosX = Mathf.RoundToInt (npcOriPos.x);
 			int npcPosY = Mathf.RoundToInt (npcOriPos.y);
 
-			int posOffsetX = playerPosX - npcPosX; 
+			int posOffsetX = playerPosX - npcPosX;
+            int posOffsetY = playerPosY - npcPosY;
+
+            int npcLayerOrder = -npcPosY;
 
 			Vector3 npcFightPos = Vector3.zero;
 
@@ -490,8 +568,32 @@ namespace WordJourney{
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 				} else {
-					npcFightPos = new Vector3 (playerPosX - 0.45f, playerOriPos.y, 0);
-					battlePlayerCtr.transform.position = new Vector3 (playerPosX + 0.4f, playerOriPos.y, 0);
+                    if (posOffsetY > 0)
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+                        npcLayerOrder = -playerPosY + 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY + 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+
+                    }
+                    else
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+                        npcLayerOrder = -playerPosY - 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY - 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                    }
+
 					needPosFix = true;
 					battlePlayerCtr.needPosFix = true;
 				}
@@ -508,8 +610,32 @@ namespace WordJourney{
 					battlePlayerCtr.needPosFix = false;
 				} else {
 					battlePlayerCtr.TowardsRight (true);
-					npcFightPos = new Vector3 (playerPosX + 0.45f, playerOriPos.y, 0);
-					battlePlayerCtr.transform.position = new Vector3 (playerPosX - 0.4f, playerPosY, 0);
+                    if (posOffsetY > 0)
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+                        npcLayerOrder = -playerPosY + 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY + 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+
+                    }
+                    else
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+                        npcLayerOrder = -playerPosY - 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY - 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                    }
+
 					needPosFix = true;
 					battlePlayerCtr.needPosFix = true;
 				}
@@ -528,8 +654,32 @@ namespace WordJourney{
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 				} else {
-					npcFightPos = new Vector3 (playerPosX + 0.45f, playerOriPos.y, 0);
-					battlePlayerCtr.transform.position = new Vector3 (playerPosX - 0.4f, playerOriPos.y, 0);
+                    if (posOffsetY > 0)
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+                        npcLayerOrder = -playerPosY + 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY + 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+
+                    }
+                    else
+                    {
+
+                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+                        npcLayerOrder = -playerPosY - 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY - 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                    }
+
 					needPosFix = true;
 					battlePlayerCtr.needPosFix = true;
 				}
@@ -542,7 +692,7 @@ namespace WordJourney{
 					baCtr.TowardsLeft();
 				}
 				ExploreManager.Instance.ShowNPCPlane (this);
-			});
+            },npcLayerOrder);
 
 		}
 
@@ -610,7 +760,7 @@ namespace WordJourney{
 		}
 
 
-		protected override void RunToPosition(Vector3 position,CallBack cb){
+		protected override void RunToPosition(Vector3 position,CallBack cb,int layerOrder){
 
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
 			int oriPosY = Mathf.RoundToInt (transform.position.y);
@@ -654,7 +804,7 @@ namespace WordJourney{
 					cb();
 				}
 
-				SetSortingOrder (-Mathf.RoundToInt (position.y));
+                SetSortingOrder (layerOrder);
 			});
 
 			StartCoroutine (moveCoroutine);

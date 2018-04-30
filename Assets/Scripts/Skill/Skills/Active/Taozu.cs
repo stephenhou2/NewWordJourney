@@ -35,7 +35,7 @@ namespace WordJourney
 
 			bpCtr.isInEscaping = false;
 
-			bpCtr.FixPosition ();
+			bpCtr.FixPositionToStandard ();
 
 			MapWalkableEvent mwe = enemy.GetComponent<MapWalkableEvent> ();
 

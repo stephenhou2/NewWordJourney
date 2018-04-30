@@ -2679,6 +2679,12 @@ MonoBehaviour:
   audioClipName: 
   wordsArray: []
   canMove: 0
+  isInAutoWalk: 0
+  isTriggered: 0
+  canEnterFight: 0
+  isInMoving: 0
+  moveOrigin: {x: 0, y: 0, z: 0}
+  moveDestination: {x: 0, y: 0, z: 0}
   alertAreas:
   - {fileID: 114904126093305750}
   - {fileID: 114485680549346302}
@@ -2851,7 +2857,6 @@ MonoBehaviour:
   currentTriggeredEffectAnim: []
   towards: 0
   effectAnimContainer: {fileID: 4963714157398188}
-  originalPos: {x: 0, y: 0, z: 0}
 --- !u!114 &114962750283088208
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2926,7 +2931,7 @@ MonoBehaviour:
   attachedPermanentPassiveSkills: []
   attachedTriggeredSkills: []
   allStatus: []
-  monsterId: 51
+  monsterId: 101
   rewardExperience: 120
   rewardGold: 80
   mAttackInterval: 1.3

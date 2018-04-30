@@ -186,7 +186,8 @@ namespace WordJourney
 
 			playerStartPosList.Clear ();
 
-			mapData = MapData.GetMapDataOfLevel (Player.mainPlayer.currentLevelIndex);
+            int randomMapIndex = Random.Range(0, 10);
+            mapData = MapData.GetMapDataOfLevel (randomMapIndex);
 
 			// 获取地图建模的行数和列数
 			rows = mapData.rowCount;
@@ -255,7 +256,7 @@ namespace WordJourney
 			int mapEventCount = mapData.GetMapEventCount ();
 
 			// 获取当前地图中要使用的单词
-			LearnWord[] words = InitLearnWordsInMap (mapEventCount);
+			HLHWord[] words = InitLearnWordsInMap (mapEventCount);
 
 			// 生成一个记录可使用单词序号的列表
 			List<int> unusedWordIndexRecordList = new List<int> ();
@@ -275,9 +276,9 @@ namespace WordJourney
 
 		}
 
-		private LearnWord[] InitLearnWordsInMap(int mapEventCount){
+		private HLHWord[] InitLearnWordsInMap(int mapEventCount){
 
-			LearnWord[] words = new LearnWord[mapEventCount];
+			HLHWord[] words = new HLHWord[mapEventCount];
 
 			string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
 
@@ -338,7 +339,7 @@ namespace WordJourney
 
 				int ungraspTimes = reader.GetInt16 (9);
 
-				LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+				HLHWord word = new HLHWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
 
 				words [index] = word;
 
@@ -350,8 +351,10 @@ namespace WordJourney
 		}
 			
 
-		private void InitializeMapEventsOfLayer(MapAttachedInfoLayer layer,LearnWord[] words,List<int> unusedWordIndexList){
+		private void InitializeMapEventsOfLayer(MapAttachedInfoLayer layer,HLHWord[] words,List<int> unusedWordIndexList){
 
+            bool exitOpen = true;
+            Exit exit = null;
 
 			for (int i = 0; i < layer.tileDatas.Count; i++) {
 
@@ -362,147 +365,159 @@ namespace WordJourney
 
 				MapEvent mapEvent = null;
 
-				switch (eventTile.type) {
-				case "playerStart":
-					playerStartPosList.Add (new Vector2 (posX, posY));
-					break;
-				case "exit":
-					mapEvent = mapEventsPool.GetInstanceWithName<Exit> (exitModel.name, exitModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 5;
-					exitPos = new Vector2 (posX, posY);
-					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
-					break;
-				case "billboard":
-					mapEvent = mapEventsPool.GetInstanceWithName<Billboard> (billboardModel.name, billboardModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					break;
-				case "item":
-					mapEvent = mapEventsPool.GetInstanceWithName<PickableItem> (pickableItemModel.name, pickableItemModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 1;
-					break;
-				case "block":
-					mapEvent = mapEventsPool.GetInstanceWithName<Block> (blockModel.name, blockModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					break;
-				case "box":
-					mapEvent = mapEventsPool.GetInstanceWithName<MovableBox> (movableBoxModel.name, movableBoxModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 1;
-					break;
-				case "monster":
-					mapEvent = GetMonster (eventTile);
-					(mapEvent as MapMonster).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 5;
-					mapWalkableEventInfoArray [posX, posY] = 1;
-					allWalkableEventsInMap.Add (mapEvent as MapMonster);
-					break;
-				case "boss":
-					mapEvent = GetBoss (eventTile);
-					(mapEvent as MapMonster).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 5;
-					mapWalkableEventInfoArray [posX, posY] = 1;
-					allWalkableEventsInMap.Add (mapEvent as MapMonster);
-					break;
-				case "goldPack":
-					mapEvent = mapEventsPool.GetInstanceWithName<GoldPack> (goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					break;
-				case "bucket":
-					mapEvent = mapEventsPool.GetInstanceWithName<Treasure> (bucketModel.name, bucketModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					(mapEvent as Treasure).treasureType = TreasureType.Bucket;
-					break;
-				case "pot":
-					mapEvent = mapEventsPool.GetInstanceWithName<Treasure> (potModel.name, potModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					(mapEvent as Treasure).treasureType = TreasureType.Pot;
-					break;
-				case "treasure":
-					mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox> (treasureBoxModel.name, treasureBoxModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					(mapEvent as Treasure).treasureType = TreasureType.TreasuerBox;
-					break;
-				case "stone":
-					mapEvent = mapEventsPool.GetInstanceWithName<Obstacle> (stoneModel.name, stoneModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					break;
-				case "crystal":
-					mapEvent = mapEventsPool.GetInstanceWithName<Crystal> (crystalModel.name, crystalModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					break;
-				case "curePoint":
-					mapEvent = mapEventsPool.GetInstanceWithName<CurePoint> (curePointModel.name, curePointModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					break;
-				case "doorGear":
-					mapEvent = mapEventsPool.GetInstanceWithName<Door> (doorModel.name, doorModel.gameObject, mapEventsContainer);
-					(mapEvent as Door).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 5;
-					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
-					break;
-				case "thornSwitch":
-					mapEvent = mapEventsPool.GetInstanceWithName<ThornTrapSwitch> (thornTrapSwitchModel.name, thornTrapSwitchModel.gameObject, mapEventsContainer);
-					(mapEvent as ThornTrapSwitch).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 0;
-					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
-					break;
-				case "thornTrap":
-					mapEvent = mapEventsPool.GetInstanceWithName<ThornTrap> (thornTrapModel.name, thornTrapModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 0;
-					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
-					break;
-				case "pressSwitch":
-					mapEvent = mapEventsPool.GetInstanceWithName<PressSwitch> (pressSwitchModel.name, pressSwitchModel.gameObject, mapEventsContainer);
-					(mapEvent as PressSwitch).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 5;
-					allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
-					break;
-				case "downStair":
-					mapEvent = mapEventsPool.GetInstanceWithName<SecretStairs> (secrectStairsModel.name, secrectStairsModel.gameObject, mapEventsContainer);
-					(mapEvent as SecretStairs).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 5;
-					break;
-				case "upStair":
-					mapEvent = mapEventsPool.GetInstanceWithName<SecretStairs> (secrectStairsModel.name, secrectStairsModel.gameObject, mapEventsContainer);
-					(mapEvent as SecretStairs).SetPosTransferSeed (rows);
-					mapWalkableInfoArray [posX, posY] = 5;
-					break;
-				case "fireTrap":
-					mapEvent = mapEventsPool.GetInstanceWithName<FireTrap> (fireTrapModel.name, fireTrapModel.gameObject, mapEventsContainer);
-					mapWalkableInfoArray [posX, posY] = 1;
-					break;
-				case "npc":
-					mapEvent = GetMapNPC (eventTile);
-					mapWalkableInfoArray [posX, posY] = 5;
-					mapWalkableEventInfoArray [posX, posY] = 1;
-					allWalkableEventsInMap.Add (mapEvent as MapNPC);
-					break;
-				case "tombstone":
+                switch (eventTile.type)
+                {
+                    case "playerStart":
+                        playerStartPosList.Add(new Vector2(posX, posY));
+                        break;
+                    case "exit":
+                        mapEvent = mapEventsPool.GetInstanceWithName<Exit>(exitModel.name, exitModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 5;
+                        exitPos = new Vector2(posX, posY);
+                        allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+                        exit = mapEvent as Exit;
+                        break;
+                    case "billboard":
+                        mapEvent = mapEventsPool.GetInstanceWithName<Billboard>(billboardModel.name, billboardModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        break;
+                    case "item":
+                        mapEvent = mapEventsPool.GetInstanceWithName<PickableItem>(pickableItemModel.name, pickableItemModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 1;
+                        break;
+                    case "block":
+                        mapEvent = mapEventsPool.GetInstanceWithName<Block>(blockModel.name, blockModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        break;
+                    case "box":
+                        mapEvent = mapEventsPool.GetInstanceWithName<MovableBox>(movableBoxModel.name, movableBoxModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 1;
+                        break;
+                    case "monster":
+                        mapEvent = GetMonster(eventTile);
+                        if (mapEvent != null)
+                        {
+                            (mapEvent as MapMonster).SetPosTransferSeed(rows);
+                            mapWalkableInfoArray[posX, posY] = 5;
+                            mapWalkableEventInfoArray[posX, posY] = 1;
+                            allWalkableEventsInMap.Add(mapEvent as MapMonster);
+                        }
+                        break;
+                    case "boss":
+                        mapEvent = GetBoss(eventTile);
+                        if (mapEvent != null)
+                        {
+                            (mapEvent as MapMonster).SetPosTransferSeed(rows);
+                            mapWalkableInfoArray[posX, posY] = 5;
+                            mapWalkableEventInfoArray[posX, posY] = 1;
+                            allWalkableEventsInMap.Add(mapEvent as MapMonster);
+                            exitOpen = false;
+                        }
+                        break;
+                    case "goldPack":
+                        mapEvent = mapEventsPool.GetInstanceWithName<GoldPack>(goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        break;
+                    case "bucket":
+                        mapEvent = mapEventsPool.GetInstanceWithName<Treasure>(bucketModel.name, bucketModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        (mapEvent as Treasure).treasureType = TreasureType.Bucket;
+                        break;
+                    case "pot":
+                        mapEvent = mapEventsPool.GetInstanceWithName<Treasure>(potModel.name, potModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        (mapEvent as Treasure).treasureType = TreasureType.Pot;
+                        break;
+                    case "treasure":
+                        mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox>(treasureBoxModel.name, treasureBoxModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        (mapEvent as Treasure).treasureType = TreasureType.TreasuerBox;
+                        break;
+                    case "stone":
+                        mapEvent = mapEventsPool.GetInstanceWithName<Obstacle>(stoneModel.name, stoneModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        break;
+                    case "crystal":
+                        mapEvent = mapEventsPool.GetInstanceWithName<Crystal>(crystalModel.name, crystalModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        break;
+                    case "curePoint":
+                        mapEvent = mapEventsPool.GetInstanceWithName<CurePoint>(curePointModel.name, curePointModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        break;
+                    case "doorGear":
+                        mapEvent = mapEventsPool.GetInstanceWithName<Door>(doorModel.name, doorModel.gameObject, mapEventsContainer);
+                        (mapEvent as Door).SetPosTransferSeed(rows);
+                        mapWalkableInfoArray[posX, posY] = 5;
+                        allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+                        break;
+                    case "thornSwitch":
+                        mapEvent = mapEventsPool.GetInstanceWithName<ThornTrapSwitch>(thornTrapSwitchModel.name, thornTrapSwitchModel.gameObject, mapEventsContainer);
+                        (mapEvent as ThornTrapSwitch).SetPosTransferSeed(rows);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+                        break;
+                    case "thornTrap":
+                        mapEvent = mapEventsPool.GetInstanceWithName<ThornTrap>(thornTrapModel.name, thornTrapModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 0;
+                        allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+                        break;
+                    case "pressSwitch":
+                        mapEvent = mapEventsPool.GetInstanceWithName<PressSwitch>(pressSwitchModel.name, pressSwitchModel.gameObject, mapEventsContainer);
+                        (mapEvent as PressSwitch).SetPosTransferSeed(rows);
+                        mapWalkableInfoArray[posX, posY] = 5;
+                        allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+                        break;
+                    case "downStair":
+                        mapEvent = mapEventsPool.GetInstanceWithName<SecretStairs>(secrectStairsModel.name, secrectStairsModel.gameObject, mapEventsContainer);
+                        (mapEvent as SecretStairs).SetPosTransferSeed(rows);
+                        mapWalkableInfoArray[posX, posY] = 5;
+                        break;
+                    case "upStair":
+                        mapEvent = mapEventsPool.GetInstanceWithName<SecretStairs>(secrectStairsModel.name, secrectStairsModel.gameObject, mapEventsContainer);
+                        (mapEvent as SecretStairs).SetPosTransferSeed(rows);
+                        mapWalkableInfoArray[posX, posY] = 5;
+                        break;
+                    case "fireTrap":
+                        mapEvent = mapEventsPool.GetInstanceWithName<FireTrap>(fireTrapModel.name, fireTrapModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 1;
+                        break;
+                    case "npc":
+                        mapEvent = GetMapNPC(eventTile);
+                        if (mapEvent != null){
+                            mapWalkableInfoArray[posX, posY] = 5;
+                            mapWalkableEventInfoArray[posX, posY] = 1;
+                            allWalkableEventsInMap.Add(mapEvent as MapNPC);
+                        }
+					    break;
+				    case "tombstone":
 
-					break;
-				case "statue":
+					    break;
+				    case "statue":
 
-					break;
-				case "wishpool":
+					    break;
+				    case "wishpool":
 
-					break;
-
+					    break;
+                            
 				}
 
 				if (mapEvent != null) {
 
 					// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
-					LearnWord[] wordsArray = GetDifferentWords (words, unusedWordIndexList, 3);
+					HLHWord[] wordsArray = GetDifferentWords (words, unusedWordIndexList, 3);
 
 					mapEvent.wordsArray = wordsArray;
 					
 					mapEvent.InitializeWithAttachedInfo (eventTile);
 
-//					if (layer.layerName.Equals ("GearEventLayer")) {
-//						allTriggeredMapEvents.Add (mapEvent as TriggeredGear);
-//					}
 				}
 
 			}
+
+            if(!exitOpen){
+                exit.isOpen = false;
+            }
 
 		}
 
@@ -541,9 +556,9 @@ namespace WordJourney
 		/// <param name="words">Words.</param>
 		/// <param name="unusedWordRecordList">Unused word record list.</param>
 		/// <param name="count">Count.</param>
-		private LearnWord[] GetDifferentWords(LearnWord[] words,List<int> unusedWordRecordList,int count){
+		private HLHWord[] GetDifferentWords(HLHWord[] words,List<int> unusedWordRecordList,int count){
 
-			LearnWord[] wordsArray = new LearnWord [count];
+			HLHWord[] wordsArray = new HLHWord [count];
 
 			// 记录已选过的单词在words数组中的位置信息
 			List<int> tempList = new List<int> ();
@@ -602,6 +617,10 @@ namespace WordJourney
 
 			string monsterName = MyTool.GetMonsterName(monsterId);
 
+            if(monsterName.Equals(string.Empty)){
+                return null;
+            }
+
 			for (int i = 0; i < monstersPool.transform.childCount; i++) {
 				Transform monsterInPool = monstersPool.transform.GetChild (i);
 				if(monsterInPool.name == monsterName){
@@ -630,11 +649,20 @@ namespace WordJourney
 
 			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];
 
+            if(!HLHGameLevelData.IsBossLevel()){
+                return null;
+            }
+
 			int bossId = levelData.bossId;
 
 			Transform boss = null;
 
 			string bossName = MyTool.GetMonsterName(bossId);
+
+            if (bossName.Equals(string.Empty))
+            {
+                return null;
+            }
 
 			boss = GameManager.Instance.gameDataCenter.LoadMonster (bossName).transform;
 
@@ -650,10 +678,12 @@ namespace WordJourney
 			
 			int npcId = int.Parse (KVPair.GetPropertyStringWithKey ("npcID", info.properties));
 
+            if(npcId == 0 && !HLHGameLevelData.HasWiseMan()){
+                return null;
+            }
 
 			if (npcId == -1) {
 				npcId = Random.Range (2,57);
-//				npcId = 11;
 			}
 
 			string npcName = MyTool.GetNpcName (npcId);
@@ -682,6 +712,8 @@ namespace WordJourney
 
 			return mapNpc;
 		}
+
+
 
 
 

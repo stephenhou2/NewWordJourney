@@ -60,7 +60,7 @@ namespace WordJourney
 		protected BoxCollider2D bc2d;
 
 		// 单词数组，第0项为显示的目标单词
-		public LearnWord[] wordsArray;
+		public HLHWord[] wordsArray;
 
 		protected bool isWordTriggered{
 			get{
@@ -114,7 +114,7 @@ namespace WordJourney
 
 			if (isWordTriggered) {
 
-				LearnWord targetWord = wordsArray [0];
+				HLHWord targetWord = wordsArray [0];
 
 				tmPro.text = targetWord.spell;
 

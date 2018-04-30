@@ -7,7 +7,7 @@ namespace WordJourney
 {
 	public class Billboard : MapEvent {
 
-		public string content;
+        public HLHProverb proverb;
 
 		public override bool IsPlayerNeedToStopWhenEntered ()
 		{
@@ -27,6 +27,7 @@ namespace WordJourney
 			transform.position = attachedInfo.position;
 			bc2d.enabled = true;
 			SetSortingOrder (-(int)transform.position.y);
+            proverb = GameManager.Instance.gameDataCenter.GetARandomProverb();
 
 		}
 

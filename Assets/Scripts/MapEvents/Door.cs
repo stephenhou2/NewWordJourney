@@ -103,7 +103,7 @@ namespace WordJourney
 				}
 
 				if(!hasValidWord){
-					LearnWord word = GetAValidWord ();
+					HLHWord word = GetAValidWord ();
 					ExploreManager.Instance.ShowCharacterFillPlane (word);
 				}
 			}
@@ -113,7 +113,7 @@ namespace WordJourney
 				bp.isInEvent = false;
 			}
 		}
-		private LearnWord GetAValidWord(){
+		private HLHWord GetAValidWord(){
 			
 			MySQLiteHelper mySql = MySQLiteHelper.Instance;
 
@@ -147,7 +147,7 @@ namespace WordJourney
 
 			int ungraspTimes = reader.GetInt16 (9);
 
-			LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+			HLHWord word = new HLHWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
 
 
 			return word;

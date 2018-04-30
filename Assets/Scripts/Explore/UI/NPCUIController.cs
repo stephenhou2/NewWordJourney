@@ -291,33 +291,41 @@ namespace WordJourney
 
 					List<Equipment> allEquipedEquipments = Player.mainPlayer.GetAllEquipedEquipment();
 
-					int randomSeed = Random.Range(0,allEquipedEquipments.Count);
+                    if (allEquipedEquipments.Count > 0)
+                    {
 
-					Equipment eqp = allEquipedEquipments[randomSeed];
-					
-					List<EquipmentModel> sameGradeEquipments = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj) {
-						return obj.equipmentGrade == eqp.equipmentGrade;
-					});
+                        int randomSeed = Random.Range(0, allEquipedEquipments.Count);
 
-					randomSeed = Random.Range(0,sameGradeEquipments.Count);
+                        Equipment eqp = allEquipedEquipments[randomSeed];
+                        int eqpIndexInPanel = Player.mainPlayer.GetEquipmentIndexInPanel(eqp);
 
-					Equipment newEqp = new Equipment(sameGradeEquipments[randomSeed],1);
 
-					Player.mainPlayer.RemoveItem(eqp,1);
+                        List<EquipmentModel> sameGradeEquipments = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
+                        {
+                            return obj.equipmentGrade == eqp.equipmentGrade;
+                        });
 
-					string tint = string.Format("失去{0}x1",eqp.itemName);
+                        randomSeed = Random.Range(0, sameGradeEquipments.Count);
 
-					ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(tint);
+                        Equipment newEqp = new Equipment(sameGradeEquipments[randomSeed], 1);
 
-					newEqp.ResetPropertiesByQuality(eqp.quality);
+                        Player.mainPlayer.UnloadEquipment(eqp, eqpIndexInPanel);
+                        Player.mainPlayer.RemoveItem(eqp, 1);
 
-					Player.mainPlayer.AddItem(newEqp);
+                        string tint = string.Format("失去{0}x1", eqp.itemName);
 
-					tint = string.Format("获得{0}x1",newEqp.itemName);
+                        ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(tint);
 
-					ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(tint);
+                        newEqp.ResetPropertiesByQuality(eqp.quality);
 
-					dialogHideAndShow = true;
+                        Player.mainPlayer.AddItem(newEqp);
+
+                        tint = string.Format("获得{0}x1", newEqp.itemName);
+
+                        ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(tint);
+
+                        dialogHideAndShow = true;
+                    }
 				}
 
 				if(choice.isEquipmentLoseTriggered){
@@ -328,6 +336,9 @@ namespace WordJourney
 
 					Equipment eqp = allEquipedEquipments[randomSeed];
 
+                    int eqpIndexInPanel = Player.mainPlayer.GetEquipmentIndexInPanel(eqp);
+
+                    Player.mainPlayer.UnloadEquipment(eqp, eqpIndexInPanel);
 					Player.mainPlayer.RemoveItem(eqp,1);
 
 					string tint = string.Format("失去{0}x1",eqp.itemName);

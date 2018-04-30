@@ -26,6 +26,20 @@ namespace WordJourney
 
 		public Count goldAmountRange;
 
+        public static bool HasWiseMan(){
+
+            return Player.mainPlayer.currentLevelIndex == 0 
+                         || Player.mainPlayer.currentLevelIndex == 9
+                         || Player.mainPlayer.currentLevelIndex == 19
+                         || Player.mainPlayer.currentLevelIndex == 39
+                         || Player.mainPlayer.currentLevelIndex == 49;
+
+        }
+
+        public static bool IsBossLevel(){
+            return (Player.mainPlayer.currentLevelIndex + 1) % 10 == 0;
+        }
+
 		public HLHGameLevelData(int gameLevelIndex, List<int> itemIdsInPot,List<int> itemIdsInBucket,List<int> itemIdsInTreasureBox,List<int> monsterIds,int bossId,Count goldAmountRange){
 			this.gameLevelIndex = gameLevelIndex;
 			this.itemIdsInPot = itemIdsInPot;

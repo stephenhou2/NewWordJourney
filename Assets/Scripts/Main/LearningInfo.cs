@@ -150,9 +150,9 @@ namespace WordJourney
 			
 
 
-		public List<LearnWord> GetAllLearnedWords(){
+		public List<HLHWord> GetAllLearnedWords(){
 
-			List<LearnWord> learnedWords = new List<LearnWord>();
+			List<HLHWord> learnedWords = new List<HLHWord>();
 
 			string tableName = GetCurrentLearningWordsTabelName ();
 
@@ -193,7 +193,7 @@ namespace WordJourney
 
 				int ungraspTimes = reader.GetInt16 (9);
 
-				LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+				HLHWord word = new HLHWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
 
 
 				learnedWords.Add (word);
@@ -209,9 +209,9 @@ namespace WordJourney
 		}
 
 
-		public List<LearnWord> GetAllUngraspedWords(){
+		public List<HLHWord> GetAllUngraspedWords(){
 
-			List<LearnWord> ungraspWords = new List<LearnWord>();
+			List<HLHWord> ungraspWords = new List<HLHWord>();
 
 			string tableName = GetCurrentLearningWordsTabelName ();
 
@@ -252,7 +252,7 @@ namespace WordJourney
 
 				int ungraspTimes = reader.GetInt16 (9);
 
-				LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+				HLHWord word = new HLHWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
 
 
 				ungraspWords.Add (word);

@@ -61,12 +61,12 @@ namespace WordJourney
 
 
 		// 本次所有需要记忆的单词数组
-		private LearnWord[] wordsToLearnArray;
+		private HLHWord[] wordsToLearnArray;
 
 		// 未掌握的单词列表
-		private List<LearnWord> ungraspedWordsList;
+		private List<HLHWord> ungraspedWordsList;
 
-		private List<LearnWord> graspedWordsList;
+		private List<HLHWord> graspedWordsList;
 
 		private int learnedWordCount;
 
@@ -85,7 +85,7 @@ namespace WordJourney
 		private Examination.ExaminationType examType;
 
 		// 当前正在学习的单词（未掌握单词列表的首项）
-		private LearnWord currentLearningWord{
+		private HLHWord currentLearningWord{
 			get{
 				if (beginWithLearn && ungraspedWordsList.Count > 0) {
 					return ungraspedWordsList [0];
@@ -117,11 +117,11 @@ namespace WordJourney
 			singleLearnWordsCount = 10;
 //			recycleGroupBase = 8;
 //			recycleLearnTimeBase = 2;
-			wordsToLearnArray = new LearnWord[singleLearnWordsCount];
+			wordsToLearnArray = new HLHWord[singleLearnWordsCount];
 			finalExaminationsList = new List<Examination> ();
 //			learnExaminationsList = new List<Examination> ();
-			ungraspedWordsList = new List<LearnWord> ();
-			graspedWordsList = new List<LearnWord> ();
+			ungraspedWordsList = new List<HLHWord> ();
+			graspedWordsList = new List<HLHWord> ();
 
 		}
 
@@ -277,7 +277,7 @@ namespace WordJourney
 
 				int ungraspTimes = reader.GetInt16 (9);
 
-				LearnWord word = new LearnWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+				HLHWord word = new HLHWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
 
 
 //				Debug.LogFormat ("{0}---{1}次",word,learnedTimes);
@@ -308,7 +308,7 @@ namespace WordJourney
 
 			for (int i = 0; i < ungraspedWordsList.Count; i++) {
 
-				LearnWord word = ungraspedWordsList [i];
+				HLHWord word = ungraspedWordsList [i];
 
 				Examination finalExam = new Examination (word, wordsToLearnArray, examType);
 
@@ -324,7 +324,7 @@ namespace WordJourney
 		/// </summary>
 		public void OnPronunciationButtonClick(){
 
-			LearnWord word = currentLearningWord;
+			HLHWord word = currentLearningWord;
 
 			if (word == null) {
 				return;
@@ -350,7 +350,7 @@ namespace WordJourney
 			finalExaminationsList.Add (exam);
 
 			// 将当前学习中的单词从未掌握单词列表中删除
-			LearnWord word = ungraspedWordsList[0];
+			HLHWord word = ungraspedWordsList[0];
 			ungraspedWordsList.RemoveAt (0);
 			graspedWordsList.Add (word);
 
@@ -388,7 +388,7 @@ namespace WordJourney
 		public void OnUnfamiliarButtonClick(){
 
 			// 将该单词移至未掌握单词列表的尾部
-			LearnWord unfamiliarWord = currentLearningWord;
+			HLHWord unfamiliarWord = currentLearningWord;
 
 			ungraspedWordsList.RemoveAt (0);
 
@@ -399,10 +399,10 @@ namespace WordJourney
 
 		}
 
-		private LearnWord GetWordFromWordsToLearnArrayWith(int wordId){
+		private HLHWord GetWordFromWordsToLearnArrayWith(int wordId){
 
 			for (int i = 0; i < wordsToLearnArray.Length; i++) {
-				LearnWord word = wordsToLearnArray [i];
+				HLHWord word = wordsToLearnArray [i];
 				if (word.wordId == wordId) {
 					return word;
 				}
@@ -417,7 +417,7 @@ namespace WordJourney
 		/// <summary>
 		/// 用户点击了最终测试界面中的答案选项卡
 		/// </summary>
-		public void OnAnswerChoiceButtonOfFinalExamsClick(LearnWord selectWord){
+		public void OnAnswerChoiceButtonOfFinalExamsClick(HLHWord selectWord){
 
 			learnedWordCount++;
 
@@ -493,7 +493,7 @@ namespace WordJourney
 			mySql.BeginTransaction ();
 
 			for (int i = 0; i < singleLearnWordsCount; i++) {
-				LearnWord word = wordsToLearnArray [i];
+				HLHWord word = wordsToLearnArray [i];
 				string condition = string.Format ("id={0}", word.wordId);
 				string newLearnedTime = (word.learnedTimes).ToString ();
 				string newUngraspTime = (word.ungraspTimes).ToString ();

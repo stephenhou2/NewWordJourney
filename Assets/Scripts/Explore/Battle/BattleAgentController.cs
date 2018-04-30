@@ -35,7 +35,7 @@ namespace WordJourney
 
 //		public AgentPropertyCalculator probpertyCalculator;
 
-		protected ExploreUICotroller expUICtr;
+		//protected ExploreUICotroller expUICtr;
 
 		public BattleAgentController enemy;
 
@@ -267,8 +267,6 @@ namespace WordJourney
 			armatureCom.sortingOrder = order;
 		}
 
-//		public abstract void InitFightTextDirectionTowards (BattleAgentController enemy);
-//		public abstract void InitFightTextDirectionTowards (Vector3 position);
 
 
 		public void SetRoleAnimTimeScale(float scale){
@@ -381,8 +379,8 @@ namespace WordJourney
 		/// <returns>The agent shake.</returns>
 		private IEnumerator PlayAgentShake(){
 
-			float backwardTime = 0.1f;
-			float forwardTime = 0.1f;
+			float backwardTime = 0.05f;
+			float forwardTime = 0.05f;
 
 			float timer = 0f;
 
@@ -433,6 +431,7 @@ namespace WordJourney
 		/// <param name="cb">动画完成回调.</param>
 		public virtual void PlayRoleAnim (string animName, int playTimes, CallBack cb)
 		{
+            
 			isIdle = animName == CommonData.roleIdleAnimName;
 
 			// 如果还有等待上个角色动作结束的协程存在，则结束该协程
@@ -460,7 +459,10 @@ namespace WordJourney
 		public void ResetToWaitAfterCurrentRoleAnimEnd(){
 
 			waitRoleAnimEndCoroutine = ExcuteCallBackAtEndOfRoleAnim (delegate {
-				PlayRoleAnim(CommonData.roleIdleAnimName,0,null);	
+                if(!isIdle){
+                    PlayRoleAnim(CommonData.roleIdleAnimName,0,null);  
+                }
+   
 				exploreManager.EnableExploreInteractivity();
 			});
 
@@ -513,10 +515,10 @@ namespace WordJourney
 		/// <param name="skill">Skill.</param>
 		public abstract void UseSkill (ActiveSkill skill);
 
-		/// <summary>
-		/// 角色默认的战斗方法
-		/// </summary>
-		public abstract void Fight ();
+		///// <summary>
+		///// 角色默认的战斗方法
+		///// </summary>
+		//public abstract void Fight ();
 
 
 

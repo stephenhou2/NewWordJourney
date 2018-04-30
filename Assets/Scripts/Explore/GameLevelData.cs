@@ -60,11 +60,6 @@ namespace WordJourney
 		// 关卡的宝箱中可能会出现的物品组
 		public List<Item> possiblyAppearItemsInLockedBox = new List<Item> ();
 
-//		// 关卡中所有npc的id对应的npc
-//		public List<NPC> npcs = new List<NPC>();
-
-		// 关卡中的所有怪物
-//		public List<Transform> monsters = new List<Transform>();
 
 
 		public Transform LoadMonster(int monsterId){

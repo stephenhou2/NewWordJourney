@@ -135,9 +135,8 @@ namespace WordJourney
 
 		public abstract void ResetWhenDie ();
 
-		public abstract void WalkToPosition (Vector3 position, CallBack cb, bool showAlertArea = true);
-
-		protected abstract void RunToPosition (Vector3 position, CallBack cb);
+        public abstract void WalkToPosition(Vector3 position, CallBack cb, bool showAlertArea = true);
+        protected abstract void RunToPosition(Vector3 position, CallBack cb, int layerOrder);
 
 		public abstract void QuitFightAndDelayMove (int delay);
 

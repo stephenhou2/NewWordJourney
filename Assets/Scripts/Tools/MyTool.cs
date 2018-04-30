@@ -181,10 +181,17 @@ namespace WordJourney
 		};
 
 		public static string GetMonsterName(int monsterId){
-			if (monsterId < 50) {
+            if(monsterId <= 0)
+            {
+                return string.Empty;
+            }
+			else if (monsterId < 100) 
+            {
 				return normalMonsterNames [monsterId - 1];
-			} else {
-				return bossNames [monsterId - 51];
+			} 
+            else 
+            {
+				return bossNames [monsterId - 101];
 			}
 		}
 

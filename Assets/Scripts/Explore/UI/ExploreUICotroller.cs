@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -8,14 +7,16 @@ namespace WordJourney
 {
 	using UnityEngine.UI;
 	using DG.Tweening;
-	using System.Text;
 
 	public class ExploreUICotroller : MonoBehaviour {
 
 		public TintHUD tintHUD;
 		public PauseHUD pauseHUD;
 		public WordHUD wordHUD;
+        public WordDetailHUD wordDetailHUD;
+        public BillboardHUD billboardHUD;
 
+        public Text wordRecordText;
 		public Transform exploreMask;// 小遮罩，不遮盖底部消耗品栏和背包按钮
 
 		/**********  battlePlane UI *************/
@@ -43,16 +44,6 @@ namespace WordJourney
 		public BattlePlayerUIController bpUICtr;
 		public BattleMonsterUIController bmUICtr;
 
-//		private ExploreManager mExploreManager;
-//		private ExploreManager exploreManager{
-//			get{
-//				if (mExploreManager == null) {
-//					mExploreManager = ExploreManager.Instance.GetComponent<ExploreManager>();
-//				}
-//
-//				return mExploreManager;
-//			}
-//		}
 
 		public TransitionView transitionView;
 
@@ -63,13 +54,16 @@ namespace WordJourney
 
 		public Transform fullMask;// 覆盖整个屏幕的遮罩，禁止一切点击响应
 
+        // 记录上一个碰到的单词
+        private HLHWord wordRecord;
+
 		public void SetUpExploreCanvas(){
 
 			transitionMask.gameObject.SetActive (true);
 
 			pauseHUD.InitPauseHUD (true, null, null, null, null);
 
-			wordHUD.InitWordHUD (true, ExploreManager.Instance.AllWalkableEventsStartMove,ChooseAnswerInWordHUD,ConfirmCharacterFillInWordHUD);
+            wordHUD.InitWordHUD (true, QuitWordHUDCallBack,ChooseAnswerInWordHUDCallBack,ConfirmCharacterFillInWordHUDCallBack);
 
 			if (!GameManager.Instance.UIManager.UIDic.ContainsKey ("BagCanvas")) {
 
@@ -81,7 +75,7 @@ namespace WordJourney
 			}
 
 			gameLevelLocationText.text = string.Format("第 {0} 层",Player.mainPlayer.currentLevelIndex + 1);
-
+            wordRecordText.text = string.Empty;
 
 			bpUICtr.InitExploreAgentView ();
 			bpUICtr.SetUpExplorePlayerView (Player.mainPlayer);
@@ -253,13 +247,7 @@ namespace WordJourney
 
 
 
-//		private IEnumerator PlayTintTextAnim(Transform tintText){
-//
-//			yield return new WaitForSeconds (1f);
-//
-//
-//
-//		}
+
 
 		public void EnterNPC(HLHNPC npc){
 			npcUIController.SetUpNpcPlane (npc);
@@ -282,17 +270,18 @@ namespace WordJourney
 		/// 初始化公告牌
 		/// </summary>
 		public void SetUpBillboard(Billboard bb){
-			billboardPlane.gameObject.SetActive (true);
-			Text billboardContent = billboard.Find ("Content").GetComponent<Text> ();
-			billboardContent.text = bb.content;
+			
 			ExploreManager.Instance.AllWalkableEventsStopMove ();
+
+            billboardHUD.SetUpBillboard(bb, QuitBillboard);
+
+
 		}
 
 		/// <summary>
 		/// 退出公告牌
 		/// </summary>
-		public void QuitBillboard(){
-			billboardPlane.gameObject.SetActive (false);
+        private void QuitBillboard(){
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 			ExploreManager.Instance.AllWalkableEventsStartMove ();
 		}
@@ -365,21 +354,43 @@ namespace WordJourney
 //		}
 
 
-		public void SetUpWordHUD(LearnWord[] words,string extraInfo = null){
+		public void SetUpWordHUD(HLHWord[] words,string extraInfo = null){
 			wordHUD.SetUpWordHUDAndShow (words,extraInfo);
 		}
 
-		public void SetUpWordHUD(LearnWord word){
+		public void SetUpWordHUD(HLHWord word){
 			wordHUD.SetUpWordHUDAndShow (word);
 		}
 
-		private void ConfirmCharacterFillInWordHUD(bool isFillCorrect){
+        public void SetUpWordDetailHUD(){
+            if (wordRecord != null)
+            {
+                ExploreManager.Instance.AllWalkableEventsStopMove();
+                wordDetailHUD.SetUpWordDetailHUD(wordRecord,ExploreManager.Instance.AllWalkableEventsStartMove);
+            }
+        }
+
+        private void ConfirmCharacterFillInWordHUDCallBack(bool isFillCorrect){
 
 			ExploreManager.Instance.ConfirmFillCharactersInWordHUD (isFillCorrect);
 
 		}
 
-		private void ChooseAnswerInWordHUD(bool isChooseCorrect){
+        private void QuitWordHUDCallBack(HLHWord word)
+		{
+            ExploreManager.Instance.AllWalkableEventsStartMove();
+
+            if (word == null)
+            {
+                return;
+            }
+
+            wordRecordText.text = word.spell;
+
+            wordRecord = word;
+		}
+
+		private void ChooseAnswerInWordHUDCallBack(bool isChooseCorrect){
 
 			ExploreManager.Instance.ChooseAnswerInWordHUD (isChooseCorrect);
 

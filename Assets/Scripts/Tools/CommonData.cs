@@ -59,7 +59,7 @@ namespace WordJourney{
 		public static string equipmentDataFilePath = persistDataPath + "/GameItems/EquipmentDatas.json";
 		public static string consumablesDataFilePath = persistDataPath + "/GameItems/ConsumablesDatas.json";
 		public static string skillGemstoneDataFilePath = persistDataPath + "/GameItems/SkillGemstoneDatas.json";
-		public static string materialsDataFilePath = persistDataPath + "/Materials.json";
+        public static string proverbsDataFilePath = persistDataPath + "/ProverbData.json";
 		public static string npcsDataDirPath = persistDataPath + "/NPCs";
 
 		public static string buyRecordFilePath = persistDataPath + "/BuyRecord.json";
@@ -110,7 +110,7 @@ namespace WordJourney{
 		public static string skillsContainerName = CommonData.instanceContainerName + "/AllSkills";
 		public static string monstersContainerName = CommonData.instanceContainerName + "/AllMonsters";
 
-		public static string exploreMaskAnimName = "deafult";
+		public static string exploreMaskAnimName = "default";
 
 		public static string roleIdleAnimName = "wait";
 		public static string roleWalkAnimName = "walk";

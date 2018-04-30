@@ -14,9 +14,9 @@ namespace WordJourney
 			Both
 		}
 		// 测试题目（测试的单词）
-		public LearnWord question;
+		public HLHWord question;
 		// 题目备选答案（测试单词+2个混淆单词）
-		public LearnWord[] answers;
+		public HLHWord[] answers;
 		// 正确答案在答案中的序号
 		public int correctAnswerIndex;
 		// 当前测试的测试类型
@@ -26,7 +26,7 @@ namespace WordJourney
 //		= new List<ExaminationType>(){ExaminationType.EngToChn,ExaminationType.ChnToEng};
 
 		// 测试备选单词数组
-		private LearnWord[] wordsArray;
+		private HLHWord[] wordsArray;
 
 		public ExaminationType GetCurrentExamType(){
 
@@ -60,9 +60,9 @@ namespace WordJourney
 		/// <summary>
 		/// 从当前学习中的所有单词列表中生成备选答案（当前学习的单词+2个混淆单词）
 		/// </summary>
-		private void RandomAnswersFromLearningWords(LearnWord[] wordsArray){
+		private void RandomAnswersFromLearningWords(HLHWord[] wordsArray){
 
-			answers = new LearnWord[3];
+			answers = new HLHWord[3];
 
 			List<int> indexList = new List<int>{ 0, 1, 2 };
 
@@ -72,7 +72,7 @@ namespace WordJourney
 
 			indexList.Remove (questionWordIndex);
 
-			LearnWord confuseWord1 = GetConfuseWordFromArray (wordsArray, new LearnWord[]{ question });
+			HLHWord confuseWord1 = GetConfuseWordFromArray (wordsArray, new HLHWord[]{ question });
 
 			int confuseWord1Index = indexList [Random.Range (0, indexList.Count)];
 
@@ -82,7 +82,7 @@ namespace WordJourney
 
 			int confuseWord2Index = indexList [Random.Range (0, indexList.Count)];
 
-			LearnWord confuseWord2 = GetConfuseWordFromArray (wordsArray, new LearnWord[]{ question, confuseWord1 });
+			HLHWord confuseWord2 = GetConfuseWordFromArray (wordsArray, new HLHWord[]{ question, confuseWord1 });
 
 			answers [confuseWord2Index] = confuseWord2;
 
@@ -98,7 +98,7 @@ namespace WordJourney
 		/// <param name="answers">Answers.</param>
 		/// <param name="correctAnswerIndex">Correct answer index.</param>
 		/// <param name="examType">Exam type.</param>
-		public Examination(LearnWord questionWord, LearnWord[] choiceWordsArray,ExaminationType examType){
+		public Examination(HLHWord questionWord, HLHWord[] choiceWordsArray,ExaminationType examType){
 
 			this.question = questionWord;
 			this.wordsArray = choiceWordsArray;
@@ -121,9 +121,9 @@ namespace WordJourney
 
 
 
-		private LearnWord GetConfuseWordFromArray(LearnWord[] wordsToLearnArray,LearnWord[] existWords){
+		private HLHWord GetConfuseWordFromArray(HLHWord[] wordsToLearnArray,HLHWord[] existWords){
 
-			LearnWord learnWord = null;
+			HLHWord learnWord = null;
 
 			int randomWordId = Random.Range (0, wordsToLearnArray.Length);
 

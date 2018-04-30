@@ -328,15 +328,21 @@ namespace WordJourney
 			HideAllAlertAreas ();
 			DisableAllDetect ();
 
-			Vector3 playerOriPos = battlePlayerCtr.transform.position;
-			Vector3 monsterOriPos = transform.position;
+            Vector3 playerOriPos = battlePlayerCtr.transform.position;
+            Vector3 monsterOriPos = transform.position;
 
-			int playerPosX = Mathf.RoundToInt (playerOriPos.x);
-			int playerPosY = Mathf.RoundToInt (playerOriPos.y);
-			int monsterPosX = Mathf.RoundToInt (monsterOriPos.x);
-			int monsterPosY = Mathf.RoundToInt (monsterOriPos.y);
+            int playerPosX = Mathf.RoundToInt(playerOriPos.x);
+            int playerPosY = Mathf.RoundToInt(playerOriPos.y);
+            int monsterPosX = Mathf.RoundToInt(monsterOriPos.x);
+            int monsterPosY = Mathf.RoundToInt(monsterOriPos.y);
 
+			
+            int monsterLayerOrder = -monsterPosY;
+
+		
 			int posOffsetX = playerPosX - monsterPosX; 
+            int posOffsetY = playerPosY - monsterPosY;
+
 
 			Vector3 monsterFightPos = Vector3.zero;
 
@@ -348,16 +354,43 @@ namespace WordJourney
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
+                    monsterLayerOrder = -playerPosY;
 				} else if (playerPosX - 1 == monsterPosX && playerPosY == monsterPosY) {
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
+                    monsterLayerOrder = -playerPosY;
 				} else if (playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
+                    monsterLayerOrder = -playerPosY;
 				} else {
-					monsterFightPos = new Vector3 (playerPosX - 0.45f,playerPosY, 0);
-					battlePlayerCtr.transform.position = new Vector3 (playerPosX + 0.3f, playerPosY, 0);
+                    if (posOffsetY > 0)
+                    {
+
+                        monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+                        monsterLayerOrder = -playerPosY + 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY + 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+
+                    }
+                    else
+                    {
+
+                        monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+                        monsterLayerOrder = -playerPosY - 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY - 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                    }
 				}
 
 			} else if (posOffsetX == 0) {
+
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 
@@ -365,26 +398,59 @@ namespace WordJourney
 
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
 
+                    monsterLayerOrder = -playerPosY;
+
 				} else if (playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
-					battlePlayerCtr.TowardsRight ();
+                    
+                    battlePlayerCtr.TowardsRight();
 
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
+
+                    monsterLayerOrder = -playerPosY;
 				} else if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 
 					battlePlayerCtr.TowardsLeft ();
 
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
 
+                    monsterLayerOrder = -playerPosY;
+
 				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                    
 					battlePlayerCtr.TowardsLeft ();
+
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
+
+                    monsterLayerOrder = -playerPosY;
 				} else {
 
 					battlePlayerCtr.TowardsRight ();
 
-					monsterFightPos = new Vector3 (playerPosX + 0.45f, playerPosY, 0);
-					battlePlayerCtr.transform.position = new Vector3 (playerPosX - 0.4f, playerPosY, 0);
+                    if(posOffsetY > 0){
 
+                        monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+
+                        monsterLayerOrder = -playerPosY + 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY + 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+
+                    }else{
+
+                        monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+
+                        monsterLayerOrder = -playerPosY - 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY - 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                    }
+					
 				}
 
 			} else if (posOffsetX < 0) {
@@ -393,13 +459,41 @@ namespace WordJourney
 
 				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
+                    monsterLayerOrder = -playerPosY;
 				} else if (playerPosX + 1 == monsterPosX && playerPosY == monsterPosY) {
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
+                    monsterLayerOrder = -playerPosY;
 				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
+                    monsterLayerOrder = -playerPosY;
 				} else {
-					monsterFightPos = new Vector3 (playerPosX + 0.45f, playerPosY, 0);
-					battlePlayerCtr.transform.position = new Vector3 (playerPosX - 0.4f, playerPosY, 0);
+                    if (posOffsetY > 0)
+                    {
+
+                        monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+
+                        monsterLayerOrder = -playerPosY + 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+
+                        baCtr.SetSortingOrder(-playerPosY + 1);
+
+                    }
+                    else
+                    {
+
+                        monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+
+                        monsterLayerOrder = -playerPosY - 1;
+
+                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+
+                        baCtr.SetSortingOrder(-playerPosY - 1);
+
+                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                    }
 				}
 			}
 
@@ -432,7 +526,7 @@ namespace WordJourney
 					QuitFightAndDelayMove(5);
 					battlePlayerCtr.escapeFromFight = false;
 				}
-			});
+            },monsterLayerOrder);
 
 		}
 
@@ -449,9 +543,7 @@ namespace WordJourney
 
 
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
-			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
-
-
+            moveDestination = new Vector3(targetPosX, targetPosY, 0);
 
 			RefreshWalkableInfoWhenStartMove ();
 
@@ -500,7 +592,7 @@ namespace WordJourney
 
 
 
-		protected override void RunToPosition(Vector3 position,CallBack cb){
+		protected override void RunToPosition(Vector3 position,CallBack cb,int layerOrder){
 
 			baCtr.PlayRoleAnim (CommonData.roleRunAnimName, 0, null);
 
@@ -537,7 +629,7 @@ namespace WordJourney
 					cb();
 				}
 
-				SetSortingOrder (-Mathf.RoundToInt (position.y));
+                SetSortingOrder (layerOrder);
 			});
 
 			StartCoroutine (moveCoroutine);

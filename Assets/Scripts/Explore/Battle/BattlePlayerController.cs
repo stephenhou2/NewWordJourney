@@ -11,566 +11,683 @@ namespace WordJourney
 	using Transform = UnityEngine.Transform;
 	using TMPro;
 
-	public class BattlePlayerController : BattleAgentController {
+    public class BattlePlayerController : BattleAgentController
+    {
 
-		public GameObject playerForward;
-		public GameObject playerBackWard;
-		public GameObject playerSide;
-					
+        public GameObject playerForward;
+        public GameObject playerBackWard;
+        public GameObject playerSide;
 
-		// 当前的单步移动动画对象
-		private Tweener moveTweener;
 
-		// 标记是否在单步移动中
-		private bool inSingleMoving;
+        // 当前的单步移动动画对象
+        private Tweener moveTweener;
 
-		// 移动路径点集
-		public List<Vector3> pathPosList;
+        // 标记是否在单步移动中
+        private bool inSingleMoving;
 
+        // 移动路径点集
+        public List<Vector3> pathPosList;
 
-		// 正在前往的节点位置
-		public Vector3 singleMoveEndPos;
 
-		// 移动的终点位置
-		public Vector3 moveDestination;
+        // 正在前往的节点位置
+        public Vector3 singleMoveEndPos;
 
-		// 玩家UI控制器
-		private BattlePlayerUIController bpUICtr;
+        // 移动的终点位置
+        public Vector3 moveDestination;
 
-		// 当前碰到的怪物控制器
-//		private BattleMonsterController bmCtr;
+        // 玩家UI控制器
+        private BattlePlayerUIController bpUICtr;
 
-		private NavigationHelper navHelper;
+        // 当前碰到的怪物控制器
+        //		private BattleMonsterController bmCtr;
 
-		public bool isInFight;
-		public bool isInEvent; //是否在一个事件触发过程中
+        private NavigationHelper navHelper;
 
-		public bool needPosFix;
+        public bool isInFight; //是否在战斗中
+        public bool isInEvent; //是否在一个事件触发过程中
 
-		public bool escapeFromFight;//是否从战斗中逃脱
+        public bool needPosFix;
 
-		public bool isInEscaping;//是否正在脱离战斗中
+        public bool escapeFromFight;//是否从战斗中逃脱
 
-		public bool isInPosFixAfterFight;
+        public bool isInEscaping;//是否正在脱离战斗中
 
+        public bool isInPosFixAfterFight;
 
-		public TextMeshPro stepCount;
-		private int mFadeStepsLeft;
-		private int fadeStepsLeft{get{return mFadeStepsLeft;}
-			set{
-				mFadeStepsLeft = value;
-				if (mFadeStepsLeft == 0) {
-					boxCollider.enabled = true;
-					stepCount.enabled = false;
-				} else {
-					stepCount.enabled = true;
-					stepCount.text = mFadeStepsLeft.ToString ();
-					boxCollider.enabled = false;
-					if (mFadeStepsLeft > 5) {
-						stepCount.color = Color.green;
-					} else {
-						stepCount.color = Color.red;
-					}
-				}
-			}
-		}
 
-		protected override void Awake(){
+        public TextMeshPro stepCount;
+        private int mFadeStepsLeft;
+        private int fadeStepsLeft
+        {
+            get { return mFadeStepsLeft; }
+            set
+            {
+                mFadeStepsLeft = value;
+                if (mFadeStepsLeft == 0)
+                {
+                    boxCollider.enabled = true;
+                    stepCount.enabled = false;
+                }
+                else
+                {
+                    stepCount.enabled = true;
+                    stepCount.text = mFadeStepsLeft.ToString();
+                    boxCollider.enabled = false;
+                    if (mFadeStepsLeft > 5)
+                    {
+                        stepCount.color = Color.green;
+                    }
+                    else
+                    {
+                        stepCount.color = Color.red;
+                    }
+                }
+            }
+        }
 
-			ActiveBattlePlayer (false, false, false);
+        protected override void Awake()
+        {
 
-			agent = GetComponentInParent<Player> ();
+            ActiveBattlePlayer(false, false, false);
 
-			navHelper = GetComponent<NavigationHelper> ();
+            agent = GetComponentInParent<Player>();
 
-			isInFight = false;
+            navHelper = GetComponent<NavigationHelper>();
 
-			isInEvent = false;
+            isInFight = false;
 
-			needPosFix = false;
+            isInEvent = false;
 
-			escapeFromFight = false;
+            needPosFix = false;
 
-			isInEscaping = false;
+            escapeFromFight = false;
 
-			isInPosFixAfterFight = false;
+            isInEscaping = false;
 
-			base.Awake ();
+            isInPosFixAfterFight = false;
 
-		}
-			
-		public void InitBattlePlayer(){
-			
-			Transform canvas = TransformManager.FindTransform ("ExploreCanvas");
+            base.Awake();
 
-			agentUICtr = canvas.GetComponent<BattlePlayerUIController> ();
+        }
 
-			bpUICtr = agentUICtr as BattlePlayerUIController;
+        public void InitBattlePlayer()
+        {
+
+            Transform canvas = TransformManager.FindTransform("ExploreCanvas");
 
-			moveDestination = transform.position;
+            agentUICtr = canvas.GetComponent<BattlePlayerUIController>();
 
-		}
+            bpUICtr = agentUICtr as BattlePlayerUIController;
 
+            moveDestination = transform.position;
 
-		public override void SetSortingOrder (int order)
-		{
-			playerForward.GetComponent<UnityArmatureComponent> ().sortingOrder = order;
-			playerBackWard.GetComponent<UnityArmatureComponent> ().sortingOrder = order;
-			playerSide.GetComponent<UnityArmatureComponent> ().sortingOrder = order;
-		}
+        }
 
-		/// <summary>
-		/// 设置寻路起点
-		/// </summary>
-		/// <param name="position">Position.</param>
-		public void SetNavigationOrigin(Vector3 position){
-			singleMoveEndPos = position;
-			moveDestination = position;
-		}
 
-		/// <summary>
-		/// 按照指定路径 pathPosList 移动到终点 moveDestination
-		/// </summary>
-		/// <param name="pathPosList">Path position list.</param>
-		/// <param name="moveDestination">End position.</param>
-		public bool MoveToPosition(Vector3 moveDestination,int[,] mapWalkableInfoArray){
+        public override void SetSortingOrder(int order)
+        {
+            playerForward.GetComponent<UnityArmatureComponent>().sortingOrder = order;
+            playerBackWard.GetComponent<UnityArmatureComponent>().sortingOrder = order;
+            playerSide.GetComponent<UnityArmatureComponent>().sortingOrder = order;
+        }
 
-			if (isInFight) {
-				return false;
-			}
+        /// <summary>
+        /// 设置寻路起点
+        /// </summary>
+        /// <param name="position">Position.</param>
+        public void SetNavigationOrigin(Vector3 position)
+        {
+            singleMoveEndPos = position;
+            moveDestination = position;
+        }
 
-			if (isInEvent) {
-				return false;
-			}
+        /// <summary>
+        /// 按照指定路径 pathPosList 移动到终点 moveDestination
+        /// </summary>
+        /// <param name="pathPosList">Path position list.</param>
+        /// <param name="moveDestination">End position.</param>
+        public bool MoveToPosition(Vector3 moveDestination, int[,] mapWalkableInfoArray)
+        {
 
-			// 计算自动寻路路径
-			pathPosList = navHelper.FindPath(singleMoveEndPos,moveDestination,mapWalkableInfoArray);
+            if (isInFight)
+            {
+                return false;
+            }
 
-			StopCoroutine ("MoveWithNewPath");
+            if (isInEvent)
+            {
+                return false;
+            }
 
-			this.moveDestination = moveDestination;
+            // 计算自动寻路路径
+            pathPosList = navHelper.FindPath(singleMoveEndPos, moveDestination, mapWalkableInfoArray);
 
-			if (pathPosList.Count == 0) {
+            StopCoroutine("MoveWithNewPath");
 
-				// 移动路径中没有点时，说明没有有效移动路径，此时终点设置为当前单步移动的终点
-				this.moveDestination = singleMoveEndPos;
+            this.moveDestination = moveDestination;
 
-				moveTweener.OnComplete (() => {
-					if(fadeStepsLeft > 0){
-						fadeStepsLeft--;
-					}
-					inSingleMoving = false;
-					PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-				});
+            if (pathPosList.Count == 0)
+            {
 
-				Debug.Log ("无有效路径");
+                // 移动路径中没有点时，说明没有有效移动路径，此时终点设置为当前单步移动的终点
+                this.moveDestination = singleMoveEndPos;
 
-				return false;
-			}
+                moveTweener.OnComplete(() =>
+                {
+                    if (fadeStepsLeft > 0)
+                    {
+                        fadeStepsLeft--;
+                    }
+                    inSingleMoving = false;
+                    PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+                });
 
-			StartCoroutine ("MoveWithNewPath");
+                Debug.Log("无有效路径");
 
-			return pathPosList.Count > 0;
+                return false;
+            }
 
-		}
+            StartCoroutine("MoveWithNewPath");
 
-		/// <summary>
-		/// 按照新路径移动
-		/// </summary>
-		/// <returns>The with new path.</returns>
-		private IEnumerator MoveWithNewPath(){
+            return pathPosList.Count > 0;
 
-			// 如果移动动画不为空，则等待当前移动结束
-			if (moveTweener != null) {
+        }
 
-				// 如果开始新的移动时，原来的移动还没有结束，则将当步的动画结束回调改为只标记已走完，而不删除路径点（因为新的路径就是根据当步的结束点计算的，改点不在新路径内）
-				moveTweener.OnComplete (() => {
-					if(fadeStepsLeft > 0){
-						fadeStepsLeft--;
-					}
-					inSingleMoving = false;
-				});
-					
-			} 
+        /// <summary>
+        /// 按照新路径移动
+        /// </summary>
+        /// <returns>The with new path.</returns>
+        private IEnumerator MoveWithNewPath()
+        {
 
-			yield return new WaitUntil (() => !inSingleMoving);
+            // 如果移动动画不为空，则等待当前移动结束
+            if (moveTweener != null)
+            {
 
+                // 如果开始新的移动时，原来的移动还没有结束，则将当步的动画结束回调改为只标记已走完，而不删除路径点（因为新的路径就是根据当步的结束点计算的，改点不在新路径内）
+                moveTweener.OnComplete(() =>
+                {
+                    if (fadeStepsLeft > 0)
+                    {
+                        fadeStepsLeft--;
+                    }
+                    inSingleMoving = false;
+                });
 
+            }
 
-			// 移动到新路径上的下一个节点
-			MoveToNextPosition ();
+            yield return new WaitUntil(() => !inSingleMoving);
 
-		}
 
 
-		/// <summary>
-		/// 匀速移动到指定节点位置
-		/// </summary>
-		/// <param name="targetPos">Target position.</param>
-		private void MoveToPosition(Vector3 targetPos){
+            // 移动到新路径上的下一个节点
+            MoveToNextPosition();
 
-			#if UNITY_EDITOR || UNITY_IOS
-			exploreManager.newMapGenerator.UpdateFogOfWar ();
-			#endif
+        }
 
-			float distance = (targetPos - transform.position).magnitude;
 
-			moveTweener =  transform.DOMove (targetPos, moveDuration * distance).OnComplete (() => {
+        /// <summary>
+        /// 匀速移动到指定节点位置
+        /// </summary>
+        /// <param name="targetPos">Target position.</param>
+        private void MoveToPosition(Vector3 targetPos)
+        {
 
-				if(needPosFix){
-					needPosFix = false;
-				}
+#if UNITY_EDITOR || UNITY_IOS
+            exploreManager.newMapGenerator.UpdateFogOfWar();
+#endif
 
-				bpUICtr.RefreshMiniMap();
+            float distance = (targetPos - transform.position).magnitude;
 
-				if(fadeStepsLeft > 0){
-					fadeStepsLeft--;
-				}
+            moveTweener = transform.DOMove(targetPos, moveDuration * distance).OnComplete(() =>
+            {
 
-				// 动画结束时已经移动到指定节点位置，标记单步行动结束
-				inSingleMoving = false;
+                if (needPosFix)
+                {
+                    needPosFix = false;
+                }
 
-				SetSortingOrder(-(int)transform.position.y);
+                bpUICtr.RefreshMiniMap();
 
-				if(pathPosList.Count > 0){
+                if (fadeStepsLeft > 0)
+                {
+                    fadeStepsLeft--;
+                }
 
-					// 将当前节点从路径点中删除
-					pathPosList.RemoveAt(0);
+                // 动画结束时已经移动到指定节点位置，标记单步行动结束
+                inSingleMoving = false;
 
-					// 移动到下一个节点位置
-					MoveToNextPosition();
+                SetSortingOrder(-(int)transform.position.y);
 
-				}
+                if (pathPosList.Count > 0)
+                {
 
-			});
+                    // 将当前节点从路径点中删除
+                    pathPosList.RemoveAt(0);
 
-			// 设置匀速移动
-			moveTweener.SetEase (Ease.Linear);
+                    // 移动到下一个节点位置
+                    MoveToNextPosition();
 
+                }
 
-		}
+            });
 
-		/// <summary>
-		/// 判断当前是否已经走到了终点位置
-		/// </summary>
-		/// <returns><c>true</c>, if end point was arrived, <c>false</c> otherwise.</returns>
-		private bool ArriveEndPoint(){
+            // 设置匀速移动
+            moveTweener.SetEase(Ease.Linear);
 
 
-			if(MyTool.ApproximatelySamePosition2D(moveDestination,transform.position)){
-//				Debug.Log ("到达终点");
-				return true;
-			}
-//			Debug.Log ("继续移动");
-			return false;
+        }
 
-		}
+        /// <summary>
+        /// 判断当前是否已经走到了终点位置
+        /// </summary>
+        /// <returns><c>true</c>, if end point was arrived, <c>false</c> otherwise.</returns>
+        private bool ArriveEndPoint()
+        {
 
 
-		public void ActiveBattlePlayer(bool forward,bool backward,bool side){
+            if (MyTool.ApproximatelySamePosition2D(moveDestination, transform.position))
+            {
+                //				Debug.Log ("到达终点");
+                return true;
+            }
+            //			Debug.Log ("继续移动");
+            return false;
 
+        }
 
-			bool lastRoleAnimStop = false;
 
-			if (forward && towards != MyTowards.Down) {
-				lastRoleAnimStop = true;
-			}
+        public void ActiveBattlePlayer(bool forward, bool backward, bool side)
+        {
 
-			if (backward && towards != MyTowards.Up) {
-				lastRoleAnimStop = true;
-			}
 
-			if (side && towards != MyTowards.Left && towards != MyTowards.Right) {
-				lastRoleAnimStop = true;
-			}
+            bool lastRoleAnimStop = false;
 
-			if (lastRoleAnimStop && modelActive != null) {
-				armatureCom.animation.Stop ();
-			}
+            if (forward && towards != MyTowards.Down)
+            {
+                lastRoleAnimStop = true;
+            }
 
-			playerForward.SetActive (forward);
-			playerBackWard.SetActive (backward);
-			playerSide.SetActive (side);
+            if (backward && towards != MyTowards.Up)
+            {
+                lastRoleAnimStop = true;
+            }
 
-			if (forward) {
-				modelActive = playerForward;
-			} else if (backward) {
-				modelActive = playerBackWard;
-			} else if (side) {
-				modelActive = playerSide;
-			}
+            if (side && towards != MyTowards.Left && towards != MyTowards.Right)
+            {
+                lastRoleAnimStop = true;
+            }
 
-		}
+            if (lastRoleAnimStop && modelActive != null)
+            {
+                armatureCom.animation.Stop();
+                isIdle = false;
+            }
 
+            playerForward.SetActive(forward);
+            playerBackWard.SetActive(backward);
+            playerSide.SetActive(side);
 
+            if (forward)
+            {
+                modelActive = playerForward;
+            }
+            else if (backward)
+            {
+                modelActive = playerBackWard;
+            }
+            else if (side)
+            {
+                modelActive = playerSide;
+            }
 
-		/// <summary>
-		/// 移动到下一个节点
-		/// </summary>
-		private void MoveToNextPosition ()
-		{
-			Vector3 nextPos = Vector3.zero;
+        }
 
-			boxCollider.enabled = fadeStepsLeft == 0;
 
-			if (pathPosList.Count > 0) {
 
-				nextPos = pathPosList [0];
+        /// <summary>
+        /// 移动到下一个节点
+        /// </summary>
+        private void MoveToNextPosition()
+        {
+            Vector3 nextPos = Vector3.zero;
 
-				if (ArriveEndPoint() && armatureCom.animation.lastAnimationName != CommonData.roleIdleAnimName) {
-					PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-					return;
-				}
+            boxCollider.enabled = fadeStepsLeft == 0;
 
-				bool resetWalkAnim = false;
+            bool resetWalkAnim = false;
 
-				if(MyTool.ApproximatelySamePosition2D(nextPos,transform.position)){
-					pathPosList.RemoveAt (0);
-					MoveToNextPosition ();
-					return;
-				}
+            if (pathPosList.Count > 0)
+            {
 
-				if (pathPosList.Count >= 2) {
+                nextPos = pathPosList[0];
 
-					Vector3 firstFollowingPos = pathPosList [0];
-					Vector3 secondFollowingPos = pathPosList [1];
+                if (ArriveEndPoint() && armatureCom.animation.lastAnimationName != CommonData.roleIdleAnimName)
+                {
+                    PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+                    return;
+                }
 
-					if ((firstFollowingPos.x - transform.position.x) * (secondFollowingPos.x - transform.position.x) < 0
-						&& Mathf.RoundToInt(firstFollowingPos.y) == Mathf.RoundToInt(transform.position.y)
-						&& Mathf.RoundToInt(firstFollowingPos.y) == Mathf.RoundToInt(secondFollowingPos.y)) {
-						pathPosList.RemoveAt (0);
-						MoveToNextPosition ();
-						return;
-					}
-				}
+               
 
-				if (Mathf.RoundToInt(nextPos.x) == Mathf.RoundToInt(transform.position.x)) {
+                if (MyTool.ApproximatelySamePosition2D(nextPos, transform.position))
+                {
+                    pathPosList.RemoveAt(0);
+                    MoveToNextPosition();
+                    return;
+                }
 
-					if (nextPos.y < transform.position.y) {
-						if (modelActive != playerForward) {
-							resetWalkAnim = true;
-						}
-						ActiveBattlePlayer (true, false, false);
-						towards = MyTowards.Down;
-					} else if (nextPos.y > transform.position.y) {
-						if (modelActive != playerBackWard) {
-							resetWalkAnim = true;
-						}
-						ActiveBattlePlayer (false, true, false);
-						towards = MyTowards.Up;
-					}
+                if (pathPosList.Count >= 2)
+                {
 
-				}
+                    Vector3 firstFollowingPos = pathPosList[0];
+                    Vector3 secondFollowingPos = pathPosList[1];
 
-				if(Mathf.RoundToInt(nextPos.y) == Mathf.RoundToInt(transform.position.y)){
+                    if ((firstFollowingPos.x - transform.position.x) * (secondFollowingPos.x - transform.position.x) < 0
+                        && Mathf.RoundToInt(firstFollowingPos.y) == Mathf.RoundToInt(transform.position.y)
+                        && Mathf.RoundToInt(firstFollowingPos.y) == Mathf.RoundToInt(secondFollowingPos.y))
+                    {
+                        pathPosList.RemoveAt(0);
+                        MoveToNextPosition();
+                        return;
+                    }
+                }
 
-					if (modelActive != playerSide) {
-						resetWalkAnim = true;
-					}else if ((nextPos.x > transform.position.x && armatureCom.armature.flipX == true) ||
-						(nextPos.x < transform.position.x && armatureCom.armature.flipX == false)){
-						resetWalkAnim = true;
-					} 
+                if (Mathf.RoundToInt(nextPos.x) == Mathf.RoundToInt(transform.position.x))
+                {
 
-					ActiveBattlePlayer (false, false, true);
+                    if (nextPos.y < transform.position.y)
+                    {
+                        if (modelActive != playerForward)
+                        {
+                            resetWalkAnim = true;
+                        }
+                        ActiveBattlePlayer(true, false, false);
+                        towards = MyTowards.Down;
+                    }
+                    else if (nextPos.y > transform.position.y)
+                    {
+                        if (modelActive != playerBackWard)
+                        {
+                            resetWalkAnim = true;
+                        }
+                        ActiveBattlePlayer(false, true, false);
+                        towards = MyTowards.Up;
+                    }
 
-					bool nextPosLeft = nextPos.x < transform.position.x;
-					armatureCom.armature.flipX = nextPosLeft;
-					towards = nextPosLeft ? MyTowards.Left : MyTowards.Right;
+                }
 
-				}
+                if (Mathf.RoundToInt(nextPos.y) == Mathf.RoundToInt(transform.position.y))
+                {
 
-				if (isIdle){
-					resetWalkAnim = true;
-				}
+                    if (modelActive != playerSide)
+                    {
+                        resetWalkAnim = true;
+                    }
+                    else if ((nextPos.x > transform.position.x && armatureCom.armature.flipX == true) ||
+                       (nextPos.x < transform.position.x && armatureCom.armature.flipX == false))
+                    {
+                        resetWalkAnim = true;
+                    }
 
-				if (resetWalkAnim) {
-					PlayRoleAnim (CommonData.roleWalkAnimName, 0, null);
-				} 
-			}
+                    ActiveBattlePlayer(false, false, true);
 
-			// 到达终点前的单步移动开始前进行碰撞检测
-			// 1.如果碰撞体存在，则根据碰撞体类型给exploreManager发送消息执行指定回调
-			// 2.如果未检测到碰撞体，则开始本次移动
-			if (pathPosList.Count == 1) {
+                    bool nextPosLeft = nextPos.x < transform.position.x;
+                    armatureCom.armature.flipX = nextPosLeft;
+                    towards = nextPosLeft ? MyTowards.Left : MyTowards.Right;
 
-				Vector3 rayStartPos = (transform.position + pathPosList [0]) / 2;
+                }
 
-				RaycastHit2D r2d = Physics2D.Linecast (rayStartPos, pathPosList [0], collosionLayer);
+                if (isIdle)
+                {
+                    resetWalkAnim = true;
+                }
 
-				if (r2d.transform != null) {
 
-					MapEvent me = r2d.transform.GetComponent<MapEvent> ();
+            }
 
-					bool needToStopMove = true;
+            // 到达终点前的单步移动开始前进行碰撞检测
+            // 1.如果碰撞体存在，则根据碰撞体类型给exploreManager发送消息执行指定回调
+            // 2.如果未检测到碰撞体，则开始本次移动
+            if (pathPosList.Count == 1)
+            {
 
-					if (me != null) {
-						needToStopMove = me.IsPlayerNeedToStopWhenEntered ();
-					} else {
-						needToStopMove = false;
-					}
+                Vector3 rayStartPos = (transform.position + pathPosList[0]) / 2;
 
-					if (needToStopMove) {
-						StopMoveAndWait ();
-					} 
-						
-					if (me != null) {
-						exploreManager.currentEnteredMapEvent = me;
+                RaycastHit2D r2d = Physics2D.Linecast(rayStartPos, pathPosList[0], collosionLayer);
 
-						isInEvent = true;
+                if (r2d.transform != null)
+                {
 
-						me.EnterMapEvent (this);
-					}
+                    MapEvent me = r2d.transform.GetComponent<MapEvent>();
 
-					if (needToStopMove) {
-						return;
-					} 
+                    bool needToStopMove = true;
 
-				}
-			}
-			// 路径中没有节点
-			// 按照行动路径已经将所有的节点走完
-			if (pathPosList.Count == 0) {
+                    if (me != null)
+                    {
+                        needToStopMove = me.IsPlayerNeedToStopWhenEntered();
+                    }
+                    else
+                    {
+                        needToStopMove = false;
+                    }
 
-				// 走到了终点
-				if (ArriveEndPoint ()) {
-					moveTweener.Kill (true);
-//					backgroundMoveTweener.Kill (true);
-					PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-//					Debug.Log ("到达终点");
-				} else {
-					Debug.Log (string.Format("actual pos:{0}/ntarget pos:{1},predicat pos{2}",transform.position,moveDestination,singleMoveEndPos));
-					throw new System.Exception ("路径走完但是未到终点");
-				}
-				return;
-			}
+                    if (needToStopMove)
+                    {
+                        StopMoveAndWait();
+                    }
 
-			// 如果还没有走到终点
-			if (!ArriveEndPoint ()) {
+                    if (me != null)
+                    {
+                        exploreManager.currentEnteredMapEvent = me;
 
-				GameManager.Instance.soundManager.PlayAudioClip ("Other/sfx_Footstep");
+                        isInEvent = true;
 
-				// 记录下一节点位置
-				singleMoveEndPos = nextPos;
+                        me.EnterMapEvent(this);
+                    }
 
-				// 向下一节点移动
-				MoveToPosition (nextPos);
+                    if (needToStopMove)
+                    {
+                        return;
+                    }
 
-				// 标记单步移动中
-				inSingleMoving = true;
+                }
+            }
+            // 路径中没有节点
+            // 按照行动路径已经将所有的节点走完
+            if (pathPosList.Count == 0)
+            {
 
-			} else {
-				moveTweener.Kill (true);
-//				backgroundMoveTweener.Kill (true);
-				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-			}
+                // 走到了终点
+                if (ArriveEndPoint())
+                {
+                    moveTweener.Kill(true);
 
-		}
+                    if(!isIdle){
+                        PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+                    }
 
 
+                }
+                else
+                {
+                    Debug.Log(string.Format("actual pos:{0}/ntarget pos:{1},predicat pos{2}", transform.position, moveDestination, singleMoveEndPos));
+                    throw new System.Exception("路径走完但是未到终点");
+                }
+                return;
+            }
 
-		public void StopMoveAtEndOfCurrentStep(){
+            // 如果还没有走到终点
+            if (!ArriveEndPoint())
+            {
 
-//			Debug.LogFormat ("{0}/{1}", transform.position, singleMoveEndPos);
+                GameManager.Instance.soundManager.PlayAudioClip("Other/sfx_Footstep");
 
-			StopCoroutine ("MoveWithNewPath");
+                // 记录下一节点位置
+                singleMoveEndPos = nextPos;
 
-			this.moveDestination = singleMoveEndPos;
+                if (resetWalkAnim)
+                {
+                    PlayRoleAnim(CommonData.roleWalkAnimName, 0, null);
+                }
 
-			pathPosList.Clear ();
+                // 向下一节点移动
+                MoveToPosition(nextPos);
 
-			pathPosList.Add (singleMoveEndPos);
+                // 标记单步移动中
+                inSingleMoving = true;
 
-			if (moveTweener != null) {
+            }
+            else
+            {
+                moveTweener.Kill(true);
+               
+                if(!isIdle){
+                    PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+                }
+               
+            }
 
-				moveTweener.OnComplete (() => {
+        }
 
-					if (fadeStepsLeft > 0) {
-						fadeStepsLeft--;
-					}
 
-					// 动画结束时已经移动到指定节点位置，标记单步行动结束
-					inSingleMoving = false;
 
-					SetSortingOrder (-(int)transform.position.y);
+        public void StopMoveAtEndOfCurrentStep()
+        {
 
-					if (pathPosList.Count > 0) {
+            //			Debug.LogFormat ("{0}/{1}", transform.position, singleMoveEndPos);
 
-						// 将当前节点从路径点中删除
-						pathPosList.RemoveAt (0);
+            StopCoroutine("MoveWithNewPath");
 
-						// 移动到下一个节点位置
-						MoveToNextPosition ();
+            this.moveDestination = singleMoveEndPos;
 
-					}
-				});
-			} else {
-				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-			}
+            pathPosList.Clear();
 
-		}
+            pathPosList.Add(singleMoveEndPos);
 
+            if (moveTweener != null)
+            {
 
+                moveTweener.OnComplete(() =>
+                {
 
-		public void StopMoveAndWait(){
-			StopCoroutine ("MoveWithNewPath");
-			moveTweener.Kill (false);
-			inSingleMoving = false;
-			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-//			SetSortingOrder (-(int)transform.position.y);
-			Vector3 currentPos = new Vector3(Mathf.RoundToInt(transform.position.x),Mathf.RoundToInt(transform.position.y),0);
-			SetNavigationOrigin (currentPos);
-		}
+                    if (fadeStepsLeft > 0)
+                    {
+                        fadeStepsLeft--;
+                    }
+
+                    // 动画结束时已经移动到指定节点位置，标记单步行动结束
+                    inSingleMoving = false;
+
+                    SetSortingOrder(-(int)transform.position.y);
 
-		public override void TowardsLeft(bool andWait = true){
-			ActiveBattlePlayer (false, false, true);
-			if (andWait) {
-				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-			}
-			armatureCom.armature.flipX = true;
-			towards = MyTowards.Left;
-		}
-
-		public override void TowardsRight(bool andWait = true){
-			ActiveBattlePlayer (false, false, true);
-			if (andWait) {
-				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-			}
-			armatureCom.armature.flipX = false;
-			towards = MyTowards.Right;
-		}
-
-		public override void TowardsUp(bool andWait = true){
-			ActiveBattlePlayer (false, true, false);
-			if (andWait) {
-				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-			}
-			towards = MyTowards.Up;
-		}
-
-		public override void TowardsDown (bool andWait = true)
-		{
-			ActiveBattlePlayer (true, false, false);
-			if (andWait) {
-				PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-			}
-			towards = MyTowards.Down;
-			
-		}
-
-		public void FixPosition(){
-			Vector3 fixedPosition = new Vector3 (Mathf.RoundToInt (transform.position.x), 
-				Mathf.RoundToInt (transform.position.y), 
-				transform.position.z);
-//			transform.position = fixedPosition;
-			singleMoveEndPos = fixedPosition;
-			moveDestination = fixedPosition;
-			isInPosFixAfterFight = true;
-			transform.DOMove (fixedPosition, 0.1f).OnComplete (() => {
-				isInPosFixAfterFight = false;
-				escapeFromFight = false;
-				isInEscaping = false;
-			});
-		}
+                    if (pathPosList.Count > 0)
+                    {
+
+                        // 将当前节点从路径点中删除
+                        pathPosList.RemoveAt(0);
+
+                        // 移动到下一个节点位置
+                        MoveToNextPosition();
+
+                    }
+                });
+            }
+            else if(!isIdle)
+            {
+                PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+            }
+
+        }
+
+
+
+        public void StopMoveAndWait()
+        {
+            StopCoroutine("MoveWithNewPath");
+            moveTweener.Kill(false);
+            inSingleMoving = false;
+            if (!isIdle) 
+            {
+                PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+            }
+            Vector3 currentPos = new Vector3(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y), 0);
+            SetNavigationOrigin(currentPos);
+        }
+
+        public override void TowardsLeft(bool andWait = true)
+        {
+            ActiveBattlePlayer(false, false, true);
+            if (andWait && !isIdle)
+            {
+                PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+            }
+            armatureCom.armature.flipX = true;
+            towards = MyTowards.Left;
+        }
+
+        public override void TowardsRight(bool andWait = true)
+        {
+            ActiveBattlePlayer(false, false, true);
+            if (andWait && !isIdle)
+            {
+                PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+            }
+            armatureCom.armature.flipX = false;
+            towards = MyTowards.Right;
+        }
+
+        public override void TowardsUp(bool andWait = true)
+        {
+            ActiveBattlePlayer(false, true, false);
+            if (andWait && !isIdle)
+            {
+                PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+            }
+            towards = MyTowards.Up;
+        }
+
+        public override void TowardsDown(bool andWait = true)
+        {
+            ActiveBattlePlayer(true, false, false);
+            if (andWait && !isIdle)
+            {
+                PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+            }
+            towards = MyTowards.Down;
+
+        }
+
+        /// <summary>
+        /// 位置修正到最近整数点
+        /// </summary>
+		public void FixPositionToStandard()
+        {
+            Vector3 fixedPosition = new Vector3(Mathf.RoundToInt(transform.position.x),
+                Mathf.RoundToInt(transform.position.y),
+                transform.position.z);
+            //			transform.position = fixedPosition;
+            singleMoveEndPos = fixedPosition;
+            moveDestination = fixedPosition;
+            isInPosFixAfterFight = true;
+            transform.DOMove(fixedPosition, 0.05f).OnComplete(() =>
+            {
+                isInPosFixAfterFight = false;
+                escapeFromFight = false;
+                isInEscaping = false;
+            });
+        }
+
+        public void FixPosTo(Vector3 pos,float duration,CallBack callBack = null) {
+
+            transform.DOMove(pos, duration).OnComplete(() =>
+            {
+                if(callBack != null){
+                    callBack();
+                }
+
+            });
+                
+        }
 
 		/// <summary>
 		/// 战斗结束之后玩家移动到怪物原来的位置
@@ -660,13 +777,6 @@ namespace WordJourney
 		}
 
 
-		/// <summary>
-		/// 角色默认战斗逻辑
-		/// </summary>
-		public override void Fight(){
-			currentUsingActiveSkill = normalAttack;
-			attackCoroutine = InvokeAttack (currentUsingActiveSkill);
-		}
 
 
 
@@ -1050,7 +1160,7 @@ namespace WordJourney
 
 
 		public void RecomeToLife(){
-			FixPosition ();
+			FixPositionToStandard ();
 			agent.ResetBattleAgentProperties (true);
 			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			isInFight = false;

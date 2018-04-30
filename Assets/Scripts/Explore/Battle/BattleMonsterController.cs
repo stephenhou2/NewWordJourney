@@ -4,9 +4,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
-	using DragonBones;
 	using Transform = UnityEngine.Transform;
-	using TMPro;
 		
 	public class BattleMonsterController : BattleAgentController {
 
@@ -24,18 +22,7 @@ namespace WordJourney
 			}
 		}
 
-		// 玩家控制器
-//		private BattlePlayerController bpCtr;
-
-
-//		public Vector3 originalPos;
-
-		// 是否可以交谈
-//		public bool canTalk;
-
-
-
-//		public LearnWord[] wordsArray;
+        public bool isInFight; //是否在战斗中
 
 
 		protected override void Awake(){
@@ -58,6 +45,7 @@ namespace WordJourney
 
 		public void SetAlive(){
 			boxCollider.enabled = true;
+            isInFight = false;
 			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			SetSortingOrder (-Mathf.RoundToInt(transform.position.y));
 		}
@@ -99,6 +87,8 @@ namespace WordJourney
 
 			boxCollider.enabled = false;
 
+            isInFight = true;
+
 			ClearAllSkillCallBacks ();
 
 			InitTriggeredPassiveSkillCallBacks (this,bpCtr);
@@ -111,7 +101,7 @@ namespace WordJourney
 		/// <summary>
 		/// 角色战斗逻辑
 		/// </summary>
-		public override void Fight(){
+		public void Fight(){
 			currentUsingActiveSkill = normalAttack;
 			UseSkill (currentUsingActiveSkill);
 		}
@@ -145,6 +135,10 @@ namespace WordJourney
 			if (enemy == null) {
 				return;
 			}
+
+            if(!isInFight){
+                return;
+            }
 			
 			GameManager.Instance.soundManager.PlayAudioClip ("Skill/" + currentUsingActiveSkill.sfxName);
 
@@ -195,6 +189,7 @@ namespace WordJourney
 			StopCoroutinesWhenFightEnd ();
 			GetComponent<MapWalkableEvent> ().isTriggered = false;
 			enemy = null;
+            isInFight = false;
 			currentUsingActiveSkill = null;
 			SetRoleAnimTimeScale (1.0f);
 			agent.ResetBattleAgentProperties (false);

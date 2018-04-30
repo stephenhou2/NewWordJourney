@@ -9,10 +9,10 @@ namespace WordJourney
 
 		private class Pronunciation
 		{
-			public LearnWord word;
+			public HLHWord word;
 			public AudioClip pronunciation;
 
-			public Pronunciation(LearnWord word,AudioClip pronunciation){
+			public Pronunciation(HLHWord word,AudioClip pronunciation){
 				this.word = word;
 				this.pronunciation = pronunciation;
 			}
@@ -28,22 +28,20 @@ namespace WordJourney
 		// 下载发音的超时时长
 		public float wwwTimeOutInterval = 2f;
 
-		// 当前正在学习的单词的发音
-		private AudioClip pronunciationOfCurrentWord;
 
 		// 读音缓存
 		private List<Pronunciation> pronunciationCache;
 
 		private IEnumerator waitDownloadFinishCoroutine;
 
-		private LearnWord wordToPronounce;
+		private HLHWord wordToPronounce;
 
 
-		private string pronunciationBaseURL;
+		//private string pronunciationBaseURL;
 
 		void Awake(){
 			pronunciationCache = new List<Pronunciation> ();
-			pronunciationBaseURL = "https://wordsound.b0.upaiyun.com/voice";
+			//pronunciationBaseURL = "https://wordsound.b0.upaiyun.com/voice";
 		}
 
 		/// <summary>
@@ -51,7 +49,7 @@ namespace WordJourney
 		/// </summary>
 		/// <returns>The pronunciation from cache.</returns>
 		/// <param name="word">Word.</param>
-		private Pronunciation GetPronunciationFromCache(LearnWord word){
+		private Pronunciation GetPronunciationFromCache(HLHWord word){
 			Pronunciation pro = pronunciationCache.Find (delegate(Pronunciation obj) {
 				return obj.word.wordId == word.wordId;
 			});
@@ -64,13 +62,13 @@ namespace WordJourney
 		/// </summary>
 		/// <returns>The pronunciation with WW.</returns>
 		/// <param name="word">Word.</param>
-		private WWW GetPronunciationWithWWW(LearnWord word){
+		private WWW GetPronunciationWithWWW(HLHWord word){
 
 			string firstLetter = word.spell.Substring (0, 1);
 
-			string url = string.Format ("{0}/{1}/{2}.wav", pronunciationBaseURL, firstLetter, word.spell);
+			//string url = string.Format ("{0}/{1}/{2}.wav", pronunciationBaseURL, firstLetter, word.spell);
 
-			return new WWW (url);
+            return new WWW (word.pronounciationURL);
 
 		}
 
@@ -78,7 +76,7 @@ namespace WordJourney
 		/// 如果缓存中有单词发音，则直接发音，如果没有，则下载完成后发音
 		/// </summary>
 		/// <param name="word">Word.</param>
-		public void PronounceWord(LearnWord word){
+		public void PronounceWord(HLHWord word){
 
 			wordToPronounce = word;
 

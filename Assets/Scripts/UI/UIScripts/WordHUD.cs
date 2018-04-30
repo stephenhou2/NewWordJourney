@@ -7,13 +7,19 @@ namespace WordJourney
 {
 	using UnityEngine.UI;
 
+
+    public delegate void CallBackWithWord(HLHWord word);
+
+
 	public class WordHUD : MonoBehaviour {
 
 
 		// ************* 选择正确释义的UI部分 *************** //
 		public Transform explainationSelectPlane;
 
-		public Text questionForExplainationSelect;
+		public Text question;
+
+        public Text phoneticSymbol;
 
 		public Text exampleSentenceText;
 
@@ -54,7 +60,7 @@ namespace WordJourney
 		private bool quitWhenClickBackground;
 
 		// 退出单词选择时的回调
-		private CallBack quitCallBack;
+        private CallBackWithWord quitCallBack;
 
 		// （选择释义类型）选择释义之后的回调
 		private ChooseCallBack explainationChooseCallBack;
@@ -63,7 +69,7 @@ namespace WordJourney
 		private ChooseCallBack characterFillConfirmCallBack;
 
 		// 作为问题使用的word
-		private LearnWord questionWord;
+		private HLHWord questionWord;
 
 		private char[] realCharacters;
 		private char[] answerCharacters;
@@ -87,7 +93,7 @@ namespace WordJourney
 		/// 初始化单词选择弹出框
 		/// </summary>
 		/// <param name="wordsArray">Words array.</param>
-		public void InitWordHUD(bool quitWhenClickBackground,CallBack quitCallBack,
+        public void InitWordHUD(bool quitWhenClickBackground,CallBackWithWord quitCallBack,
 			ChooseCallBack explainationChooseCallBack,ChooseCallBack characterFillConfirmCallBack)
 		{
 			this.quitWhenClickBackground = quitWhenClickBackground;
@@ -96,7 +102,9 @@ namespace WordJourney
 			this.characterFillConfirmCallBack = characterFillConfirmCallBack;
 		}
 
-		public void SetUpWordHUDAndShow(LearnWord word){
+		public void SetUpWordHUDAndShow(HLHWord word){
+
+            this.questionWord = word;
 
 			gameObject.SetActive (true);
 
@@ -238,7 +246,7 @@ namespace WordJourney
 		/// 初始化单词【单词数据规定：数组首项为测试的单词，剩余为混淆用单词】
 		/// </summary>
 		/// <param name="wordsArray">Words array.</param>
-		public void SetUpWordHUDAndShow(LearnWord[] wordsArray,string extraInfo = null){
+		public void SetUpWordHUDAndShow(HLHWord[] wordsArray,string extraInfo = null){
 
 			gameObject.SetActive (true);
 
@@ -252,7 +260,8 @@ namespace WordJourney
 
 			// 首项作为测试用的单词
 			questionWord = wordsArray [0];
-			questionForExplainationSelect.text = questionWord.spell;
+			question.text = questionWord.spell;
+            phoneticSymbol.text = questionWord.phoneticSymbol;
 			exampleSentenceText.text = questionWord.sentenceEN;
 
 			for (int i = 0; i < validArray.Length; i++) {
@@ -266,7 +275,7 @@ namespace WordJourney
 
 			for(int i = 1; i < 3; i++){
 
-				LearnWord word = wordsArray [i];
+				HLHWord word = wordsArray [i];
 
 				// 从记录列表中随机一个序号
 				int randomIndex = GetARandomValidIndex();
@@ -291,6 +300,12 @@ namespace WordJourney
 			canQuitWhenClickBackground = false;
 				
 		}
+
+        public void OnPronunceButtonClick(){
+
+            GameManager.Instance.pronounceManager.PronounceWord(questionWord);
+            
+        }
 
 
 		private int GetARandomValidIndex(){
@@ -364,6 +379,7 @@ namespace WordJourney
 			
 			if (quitWhenClickBackground && canQuitWhenClickBackground) {
 				ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+                questionWord = null;
 				QuitWordHUD ();
 			}
 		}
@@ -371,7 +387,7 @@ namespace WordJourney
 		public void QuitWordHUD(){
 
 			if (quitCallBack != null) {
-				quitCallBack ();
+                quitCallBack(questionWord);
 			}
 
 			characterToFillCellPool.AddChildInstancesToPool (characterToFillCellContainer);
