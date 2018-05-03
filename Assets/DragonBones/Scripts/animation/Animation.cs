@@ -20,7 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace DragonBones
 {
@@ -56,6 +56,8 @@ namespace DragonBones
         /// <language>zh_CN</language>
         public float timeScale;
 
+        private bool _lockUpdate;
+
         // Update bones and slots cachedFrameIndices.
         private bool _animationDirty;
         private float _inheritTimeScale;
@@ -80,6 +82,8 @@ namespace DragonBones
 
             this.timeScale = 1.0f;
 
+            this._lockUpdate = false;
+
             this._animationDirty = false;
             this._inheritTimeScale = 1.0f;
             this._animationNames.Clear();
@@ -97,6 +101,11 @@ namespace DragonBones
                 case AnimationFadeOutMode.SameLayer:
                     foreach (var animationState in this._animationStates)
                     {
+                        if (animationState._parent != null)
+                        {
+                            continue;
+                        }
+
                         if (animationState.layer == animationConfig.layer)
                         {
                             animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
@@ -106,6 +115,11 @@ namespace DragonBones
                 case AnimationFadeOutMode.SameGroup:
                     foreach (var animationState in this._animationStates)
                     {
+                        if (animationState._parent != null)
+                        {
+                            continue;
+                        }
+
                         if (animationState.group == animationConfig.group)
                         {
                             animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
@@ -115,6 +129,11 @@ namespace DragonBones
                 case AnimationFadeOutMode.SameLayerAndGroup:
                     foreach (var animationState in this._animationStates)
                     {
+                        if (animationState._parent != null)
+                        {
+                            continue;
+                        }
+
                         if (animationState.layer == animationConfig.layer &&
                             animationState.group == animationConfig.group)
                         {
@@ -125,6 +144,11 @@ namespace DragonBones
                 case AnimationFadeOutMode.All:
                     foreach (var animationState in this._animationStates)
                     {
+                        if (animationState._parent != null)
+                        {
+                            continue;
+                        }
+
                         animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
                     }
                     break;
@@ -151,13 +175,13 @@ namespace DragonBones
         internal void AdvanceTime(float passedTime)
         {
             if (passedTime < 0.0f)
-            { 
+            {
                 // Only animationState can reverse play.
                 passedTime = -passedTime;
             }
 
             if (this._armature.inheritAnimation && this._armature._parent != null)
-            { 
+            {
                 // Inherit parent animation timeScale.
                 this._inheritTimeScale = this._armature._parent._armature.animation._inheritTimeScale * this.timeScale;
             }
@@ -197,7 +221,21 @@ namespace DragonBones
 
                         foreach (var slot in this._armature.GetSlots())
                         {
-                            slot._cachedFrameIndices = animationData.GetSlotCachedFrameIndices(slot.name);
+                            var rawDisplayDatas = slot.rawDisplayDatas;
+                            if (rawDisplayDatas != null && rawDisplayDatas.Count > 0)
+                            {
+                                var rawDsplayData = rawDisplayDatas[0];
+                                if (rawDsplayData != null)
+                                {
+                                    if (rawDsplayData.parent == this._armature.armatureData.defaultSkin)
+                                    {
+                                        slot._cachedFrameIndices = animationData.GetSlotCachedFrameIndices(slot.name);
+                                        continue;
+                                    }
+                                }
+                            }
+
+                            slot._cachedFrameIndices = null;
                         }
                     }
 
@@ -333,8 +371,8 @@ namespace DragonBones
             if (!(this._animations.ContainsKey(animationName)))
             {
                 Helper.Assert(false,
-                    "Non-existent animation.\n" + 
-                    "DragonBones name: " + this._armature.armatureData.parent.name + 
+                    "Non-existent animation.\n" +
+                    "DragonBones name: " + this._armature.armatureData.parent.name +
                     "Armature name: " + this._armature.name +
                     "Animation name: " + animationName
                 );
@@ -427,13 +465,16 @@ namespace DragonBones
                 var added = false;
                 for (int i = 0, l = this._animationStates.Count; i < l; ++i)
                 {
-                    if (animationState.layer >= this._animationStates[i].layer)
-                    {
-                    }
-                    else
+                    if (animationState.layer > this._animationStates[i].layer)
                     {
                         added = true;
                         this._animationStates.Insert(i, animationState);
+                        break;
+                    }
+                    else if (i != l - 1 && animationState.layer > this._animationStates[i + 1].layer)
+                    {
+                        added = true;
+                        this._animationStates.Insert(i + 1, animationState);
                         break;
                     }
                 }
@@ -461,10 +502,13 @@ namespace DragonBones
                 }
             }
 
-            if (animationConfig.fadeInTime <= 0.0f)
-            { 
-                // Blend animation state, update armature.
-                this._armature.AdvanceTime(0.0f);
+            if (!this._lockUpdate)
+            {
+                if (animationConfig.fadeInTime <= 0.0f)
+                {
+                    // Blend animation state, update armature.
+                    this._armature.AdvanceTime(0.0f);
+                }
             }
 
             this._lastAnimationState = animationState;
@@ -1000,7 +1044,7 @@ namespace DragonBones
         /// <language>zh_CN</language>
         public AnimationState lastAnimationState
         {
-            get{ return this._lastAnimationState; }
+            get { return this._lastAnimationState; }
         }
     }
 }

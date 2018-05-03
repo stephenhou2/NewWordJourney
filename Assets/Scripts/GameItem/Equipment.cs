@@ -182,7 +182,7 @@ namespace WordJourney
 				ResetPropertiesByQuality (EquipmentQuality.Gray);
 			}
 
-			attachedSkillId = itemId;
+			//attachedSkillId = itemId;
 
 			this.weaponType = equipmentModel.weaponType;
 
@@ -292,12 +292,6 @@ namespace WordJourney
 			case EquipmentQuality.Blue:
 				gainScaler = Random.Range (1.2f, 1.3f);
 
-				randomSeed = Random.Range (0, specProperties.Count);
-
-				PropertySet ps = specProperties [randomSeed];
-
-				InitSpecificProperty (ps);
-
 				this.price = (int)(price * 1.5f);
 
 				randomSeed = Random.Range (0, 100);
@@ -309,24 +303,12 @@ namespace WordJourney
 				break;
 			case EquipmentQuality.Gold:
 				gainScaler = Random.Range (1.3f, 1.4f);
-				for (int i = 0; i < specProperties.Count; i++) {
-
-					ps = specProperties [i];
-
-					InitSpecificProperty (ps);
-				}
-
+				
 				this.price = price * 2;
 				break;
 			case EquipmentQuality.DarkGold:
 				gainScaler = Random.Range (1.3f, 1.4f);
-				for (int i = 0; i < specProperties.Count; i++) {
-
-					ps = specProperties [i];
-
-					InitSpecificProperty (ps);
-				}
-
+				
 				this.price = price * 2;
 				attachedSkillId = oriAttachedSkillId;
 				break;
@@ -357,6 +339,33 @@ namespace WordJourney
 
 			this.healthRecoveryGain = (int)(healthRecoveryGain * gainScaler);
 			this.magicRecoveryGain = (int)(magicRecoveryGain * gainScaler);
+
+
+            switch(quality){
+                case EquipmentQuality.Gray:
+                    break;
+                case EquipmentQuality.Blue:
+
+                    int randomSeed = Random.Range(0, specProperties.Count);
+
+                    PropertySet ps = specProperties[randomSeed];
+
+                    InitSpecificProperty(ps);
+
+                    break;
+                case EquipmentQuality.Gold:
+                case EquipmentQuality.DarkGold:
+                    for (int i = 0; i < specProperties.Count; i++)
+                    {
+
+                        ps = specProperties[i];
+
+                        InitSpecificProperty(ps);
+                    }
+
+                    break;
+
+            }
 
 			if (attachedSkillId > 0 && equiped) {
 				attachedSkill = SkillGenerator.GenerateTriggeredSkill (attachedSkillId);

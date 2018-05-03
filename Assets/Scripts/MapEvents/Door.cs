@@ -22,6 +22,8 @@ namespace WordJourney
 
 		private int mapHeight;
 
+        private HLHWord word;
+
 		public void SetPosTransferSeed(int mapHeight){
 			this.mapHeight = mapHeight;
 		}
@@ -81,6 +83,26 @@ namespace WordJourney
 			bc2d.enabled = true;
 			SetSortingOrder (-(int)transform.position.y);
 
+            if (isWordTrigger)
+            {
+                bool hasValidWord = false;
+                for (int i = 0; i < wordsArray.Length; i++)
+                {
+                    if (wordsArray[i].spell.Length <= 7)
+                    {
+                        hasValidWord = true;
+                        word = wordsArray[i];
+                        break;
+                    }
+                }
+
+                if (!hasValidWord)
+                {
+                    word = GetAValidWord();
+
+                }
+            }
+
 		}
 
 
@@ -92,24 +114,11 @@ namespace WordJourney
 				return;
 			}
 
-			if (isWordTrigger) {
-				bool hasValidWord = false;
-				for (int i = 0; i < wordsArray.Length; i++) {
-					if (wordsArray [i].spell.Length <= 7) {
-						ExploreManager.Instance.ShowCharacterFillPlane (wordsArray [i]);
-						hasValidWord = true;
-						break;
-					}
-				}
 
-				if(!hasValidWord){
-					HLHWord word = GetAValidWord ();
-					ExploreManager.Instance.ShowCharacterFillPlane (word);
-				}
-			}
+            ExploreManager.Instance.ShowCharacterFillPlane(word);
 
 			if (!isOpen && !isWordTrigger) {
-				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("隐约听到齿轮转动的声音,应该需要通过机关才能打开");
+				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("隐约听到齿轮转动的声音,需要通过机关才能打开");
 				bp.isInEvent = false;
 			}
 		}

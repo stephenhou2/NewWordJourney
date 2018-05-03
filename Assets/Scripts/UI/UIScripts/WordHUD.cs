@@ -17,9 +17,9 @@ namespace WordJourney
 		// ************* 选择正确释义的UI部分 *************** //
 		public Transform explainationSelectPlane;
 
-		public Text question;
+		public Text questionForExplainSelect;
 
-        public Text phoneticSymbol;
+        public Text phoneticSymbolForExplainSelect;
 
 		public Text exampleSentenceText;
 
@@ -38,6 +38,8 @@ namespace WordJourney
 		public Transform characterFillPlane;
 
 		public Text questionForCharacterFill;
+
+        public Text phoneticSymbolForCharacterFill;
 
 //		public Transform characterToFillCellModel;
 
@@ -119,6 +121,7 @@ namespace WordJourney
 			answerCharacters = GenerateCharacterFillArray (word.spell);
 
 			questionForCharacterFill.text = word.explaination;
+            phoneticSymbolForCharacterFill.text = word.phoneticSymbol;
 
 			lockStatusIcon.sprite = lockSprite;
 
@@ -260,8 +263,8 @@ namespace WordJourney
 
 			// 首项作为测试用的单词
 			questionWord = wordsArray [0];
-			question.text = questionWord.spell;
-            phoneticSymbol.text = questionWord.phoneticSymbol;
+			questionForExplainSelect.text = questionWord.spell;
+            phoneticSymbolForExplainSelect.text = questionWord.phoneticSymbol;
 			exampleSentenceText.text = questionWord.sentenceEN;
 
 			for (int i = 0; i < validArray.Length; i++) {

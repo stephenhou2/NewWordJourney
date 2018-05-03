@@ -92,7 +92,7 @@ namespace WordJourney
 			}
 
 			bool canEquip = itemInBag.itemType == ItemType.Equipment;
-//
+
 //			if (itemInBag.itemType != ItemType.Equipment) {
 //				canEquip = false;
 //			} else {
@@ -113,31 +113,21 @@ namespace WordJourney
 			// 准备装上的装备
 			Equipment equipmentPrepareToLoad = itemInBag as Equipment;
 
+            bagView.GetComponent<BagViewController>().currentSelectItem = equipmentPrepareToLoad;
+
 			int indexInPanel = (int)equipmentPrepareToLoad.equipmentType;
+
+            // 如果额外装备槽已解锁，并且想要装上的装备是戒指，并且原有戒指槽已经有装备，则该戒指撞到额外装备槽上
+            if (equipmentPrepareToLoad.equipmentType == EquipmentType.Ring && BuyRecord.Instance.extraEquipmentSlotUnlocked && Player.mainPlayer.allEquipedEquipments[5].itemId >= 0 && Player.mainPlayer.allEquipedEquipments[6].itemId < 0)
+            {
+                indexInPanel = 6;
+            }
 
 			// 准备换下的装备
 			Equipment equipmentPrepareToUnload = Player.mainPlayer.allEquipedEquipments[indexInPanel];
 
 			// 如果是从装备栏中拖拽出来的物品
 			if (draggedObject.GetComponent<EquipedItemDragControl>() != null) {
-
-//				equipmentPrepareToLoad.equiped = true;
-//
-//				int unloadEquipmentIndex = equipmentIndexInPanel;
-//
-//				int loadEquipmentIndex = GetEquipmentIndexInPanel (equipmentPrepareToLoad);
-//
-////				Debug.LogFormat ("装备互换{0}-{1}", unloadEquipmentIndex, loadEquipmentIndex);
-//
-//				// 互换装备位置（空的格子原来使用空装备占位，也应该进行移动）
-//				Player.mainPlayer.allEquipedEquipments[unloadEquipmentIndex] = equipmentPrepareToLoad;
-//				Player.mainPlayer.allEquipedEquipments[loadEquipmentIndex] = equipmentPrepareToUnload;
-//
-//				// 对应格子中的装备数据更换
-//				GetComponent<EquipedItemDragControl>().item = equipmentPrepareToLoad;
-//				GetDraggedObject (eventData).GetComponent<EquipedItemDragControl> ().item = equipmentPrepareToUnload;
-//
-//				bagView.SetUpEquipedEquipmentsPlane ();
 
 				SetDropResult (eventData, true);
 

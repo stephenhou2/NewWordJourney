@@ -44,7 +44,7 @@ namespace WordJourney
 
 		public int agentLevel;
 
-		[HideInInspector]public bool isDead;
+		//[HideInInspector]public bool isDead;
 
 		protected BattleAgentController mBattleAgentController;
 		protected BattleAgentController battleAgentCtr{

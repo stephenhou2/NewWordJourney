@@ -230,7 +230,14 @@ namespace DragonBones
             Armature childArmature = null;
             if (childTransform == null)
             {
-                childArmature = BuildArmature(displayData.path, dataPackage.dataName);
+                if (dataPackage != null)
+                {
+                    childArmature = BuildArmature(displayData.path, dataPackage.dataName);
+                }
+                else
+                {
+                    childArmature = BuildArmature(displayData.path, displayData.parent.parent.parent.name);
+                }
             }
             else
             {
@@ -244,6 +251,11 @@ namespace DragonBones
                 }
             }
 
+            if (childArmature == null)
+            {
+                return null;
+            }
+
             //
             var childArmatureDisplay = childArmature.display as GameObject;
             childArmatureDisplay.GetComponent<UnityArmatureComponent>().isUGUI = proxy.GetComponent<UnityArmatureComponent>().isUGUI;
@@ -255,24 +267,35 @@ namespace DragonBones
         }
 
         /// <private/>
-        protected override Slot _BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, List<DisplayData> displays, Armature armature)
+        protected override Slot _BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, Armature armature)
         {
             var slot = BaseObject.BorrowObject<UnitySlot>();
-            var displayList = new List<object>();
-            if (displays != null)
-            {
-                displayList.ResizeList(displays.Count);
-            }
-
             var armatureDisplay = armature.display as GameObject;
             var transform = armatureDisplay.transform.Find(slotData.name);
             var gameObject = transform == null ? null : transform.gameObject;
+            var isNeedIngoreCombineMesh = false;
             if (gameObject == null)
             {
                 gameObject = new GameObject(slotData.name);
             }
+            else
+            {
+                if (gameObject.hideFlags == HideFlags.None)
+                {
+                    var combineMeshs = (armature.proxy as UnityArmatureComponent).GetComponent<UnityCombineMeshs>();
+                    if (combineMeshs != null)
+                    {
+                        isNeedIngoreCombineMesh = !combineMeshs.slotNames.Contains(slotData.name);
+                    }
+                }
+            }
 
-            slot.Init(slotData, displays, gameObject, gameObject);
+            slot.Init(slotData, armature, gameObject, gameObject);
+
+            if (isNeedIngoreCombineMesh)
+            {
+                slot.DisallowCombineMesh();
+            }
 
             return slot;
         }
@@ -474,7 +497,6 @@ namespace DragonBones
                     }
 #endif
                 }
-
                 textureAtlasData.texture = material;
             }
         }
@@ -830,7 +852,7 @@ namespace DragonBones
                 }
             }
         }
-         /// <private/>
+        /// <private/>
         public override void ReplaceDisplay(Slot slot, DisplayData displayData, int displayIndex = -1)
         {
             //UGUI Display Object and Normal Display Object cannot be replaced with each other
@@ -885,7 +907,7 @@ namespace DragonBones
         /// <language>zh_CN</language>
         public void ReplaceSlotDisplay(
                                         string dragonBonesName, string armatureName, string slotName, string displayName,
-                                        Slot slot, Texture2D texture, Material material,
+                                        Slot slot, Texture2D texture, Material material = null,
                                         bool isUGUI = false, int displayIndex = -1)
         {
             var armatureData = this.GetArmatureData(armatureName, dragonBonesName);
@@ -910,12 +932,21 @@ namespace DragonBones
                 }
             }
 
-            if (prevDispalyData == null || !(prevDispalyData is ImageDisplayData))
+            if (prevDispalyData == null || !((prevDispalyData is ImageDisplayData) || (prevDispalyData is MeshDisplayData)))
             {
                 return;
             }
 
-            TextureData prevTextureData = (prevDispalyData as ImageDisplayData).texture;
+            TextureData prevTextureData = null;
+            if(prevDispalyData is ImageDisplayData)
+            {
+                prevTextureData = (prevDispalyData as ImageDisplayData).texture;
+            }
+            else
+            {
+                prevTextureData = (prevDispalyData as MeshDisplayData).texture;
+            }
+
             UnityTextureData newTextureData = new UnityTextureData();
             newTextureData.CopyFrom(prevTextureData);
             newTextureData.rotated = false;
@@ -928,6 +959,21 @@ namespace DragonBones
             newTextureData.parent = new UnityTextureAtlasData();
             newTextureData.parent.width = (uint)texture.width;
             newTextureData.parent.height = (uint)texture.height;
+            newTextureData.parent.scale = prevTextureData.parent.scale;
+
+            //
+            if (material == null)
+            {
+                if (isUGUI)
+                {
+                    material = UnityFactoryHelper.GenerateMaterial(defaultUIShaderName, texture.name + "_UI_Mat", texture);
+                }
+                else
+                {
+                    material = UnityFactoryHelper.GenerateMaterial(defaultShaderName, texture.name + "_Mat", texture);
+                }
+            }
+
             if (isUGUI)
             {
                 (newTextureData.parent as UnityTextureAtlasData).uiTexture = material;
@@ -939,20 +985,32 @@ namespace DragonBones
 
             material.mainTexture = texture;
 
-            ImageDisplayData newDisplayData = prevDispalyData is MeshDisplayData ? new MeshDisplayData() : new ImageDisplayData();
-            newDisplayData.type = prevDispalyData.type;
-            newDisplayData.name = prevDispalyData.name;
-            newDisplayData.path = prevDispalyData.path;
-            newDisplayData.transform.CopyFrom(prevDispalyData.transform);
-            newDisplayData.parent = prevDispalyData.parent;
-            newDisplayData.pivot.CopyFrom((prevDispalyData as ImageDisplayData).pivot);
-            newDisplayData.texture = newTextureData;
-
-            if (newDisplayData is MeshDisplayData)
+            DisplayData newDisplayData = null;
+            if (prevDispalyData is ImageDisplayData)
             {
-                (newDisplayData as MeshDisplayData).inheritAnimation = (prevDispalyData as MeshDisplayData).inheritAnimation;
-                (newDisplayData as MeshDisplayData).offset = (prevDispalyData as MeshDisplayData).offset;
-                (newDisplayData as MeshDisplayData).weight = (prevDispalyData as MeshDisplayData).weight;
+                newDisplayData = new ImageDisplayData();
+                newDisplayData.type = prevDispalyData.type;
+                newDisplayData.name = prevDispalyData.name;
+                newDisplayData.path = prevDispalyData.path;
+                newDisplayData.transform.CopyFrom(prevDispalyData.transform);
+                newDisplayData.parent = prevDispalyData.parent;
+                (newDisplayData as ImageDisplayData).pivot.CopyFrom((prevDispalyData as ImageDisplayData).pivot);
+                (newDisplayData as ImageDisplayData).texture = newTextureData;
+            }
+            else if (prevDispalyData is MeshDisplayData)
+            {
+                newDisplayData = new MeshDisplayData();
+                newDisplayData.type = prevDispalyData.type;
+                newDisplayData.name = prevDispalyData.name;
+                newDisplayData.path = prevDispalyData.path;
+                newDisplayData.transform.CopyFrom(prevDispalyData.transform);
+                newDisplayData.parent = prevDispalyData.parent;
+                (newDisplayData as MeshDisplayData).texture = newTextureData;
+
+                (newDisplayData as MeshDisplayData).vertices.inheritDeform = (prevDispalyData as MeshDisplayData).vertices.inheritDeform;
+                (newDisplayData as MeshDisplayData).vertices.offset = (prevDispalyData as MeshDisplayData).vertices.offset;
+                (newDisplayData as MeshDisplayData).vertices.data = (prevDispalyData as MeshDisplayData).vertices.data;
+                (newDisplayData as MeshDisplayData).vertices.weight = (prevDispalyData as MeshDisplayData).vertices.weight;
             }
 
             ReplaceDisplay(slot, newDisplayData, displayIndex);
@@ -1009,7 +1067,6 @@ namespace DragonBones
             //创建材质球
             Shader shader = Shader.Find(shaderName);
             Material material = new Material(shader);
-            //material.name = texture2D.name + "_Mat";
             material.name = materialName;
             material.mainTexture = texture;
 
@@ -1105,6 +1162,11 @@ namespace DragonBones
 
         internal static void DestroyUnityObject(UnityEngine.Object obj)
         {
+            if (obj == null)
+            {
+                return;
+            }
+
 #if UNITY_EDITOR
             UnityEngine.Object.DestroyImmediate(obj);
 #else
@@ -1118,48 +1180,6 @@ namespace DragonBones
         internal static void LogWarning(object message)
         {
             UnityEngine.Debug.LogWarning("[DragonBones]" + message);
-        }
-    }
-
-    public static class JsonHelper
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <param name="jsonParse"></param>
-        /// <returns></returns>
-        public static Dictionary<string, object> DeserializeBinaryJsonData(byte[] bytes, out int headerLength, BinaryDataParser.JsonParseDelegate jsonParse = null)
-        {
-            headerLength = 0;
-            Dictionary<string, object> result = null;
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(bytes))
-            using (BinaryDataReader reader = new BinaryDataReader(ms))
-            {
-                ms.Position = 0;
-                byte[] tag = reader.ReadBytes(8);
-
-                byte[] array = System.Text.Encoding.ASCII.GetBytes("DBDT");
-
-                if (tag[0] != array[0] ||
-                     tag[1] != array[1] ||
-                     tag[2] != array[2] ||
-                     tag[3] != array[3])
-                {
-                    Helper.Assert(false, "Nonsupport data.");
-                    return null;
-                }
-
-                headerLength = (int)reader.ReadUInt32();
-                var headerBytes = reader.ReadBytes(headerLength);
-                var headerString = System.Text.Encoding.UTF8.GetString(headerBytes);
-                result = jsonParse != null ? jsonParse(headerString) as Dictionary<string, object> : MiniJSON.Json.Deserialize(headerString) as Dictionary<string, object>;
-
-                reader.Close();
-                ms.Dispose();
-            }
-
-            return result;
         }
     }
 }

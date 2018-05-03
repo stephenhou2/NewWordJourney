@@ -45,18 +45,20 @@ namespace WordJourney
 
 		public void OnConsumablesClick(){
 			switch (cons.type) {
-			case ConsumablesType.ShuXingTiSheng:
-				Player.mainPlayer.health += cons.healthGain + Player.mainPlayer.healthRecovery;
-				Player.mainPlayer.mana += cons.manaGain + Player.mainPlayer.magicRecovery;
-				Player.mainPlayer.experience += cons.experienceGain + Player.mainPlayer.extraExperience;
-				Player.mainPlayer.RemoveItem (cons, 1);
-				break;  
-			case ConsumablesType.ChongZhuShi:
-			case ConsumablesType.DianJinShi:
-			case ConsumablesType.XiaoMoJuanZhou:
-				break;
-			case ConsumablesType.YinShenJuanZhou:
-				ExploreManager.Instance.PlayerFade ();
+    			case ConsumablesType.ShuXingTiSheng:
+    				Player.mainPlayer.health += cons.healthGain + Player.mainPlayer.healthRecovery;
+    				Player.mainPlayer.mana += cons.manaGain + Player.mainPlayer.magicRecovery;
+    				Player.mainPlayer.experience += cons.experienceGain;
+    				Player.mainPlayer.RemoveItem (cons, 1);
+
+    				break;  
+    			case ConsumablesType.ChongZhuShi:
+    			case ConsumablesType.DianJinShi:
+    			case ConsumablesType.XiaoMoJuanZhou:
+    				break;
+			    case ConsumablesType.YinShenJuanZhou:
+				    ExploreManager.Instance.PlayerFade ();
+                    Player.mainPlayer.RemoveItem(cons, 1);
 				break;
 			}
 			if (refreshCallBack != null) {

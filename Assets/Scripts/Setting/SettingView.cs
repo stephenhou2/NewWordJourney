@@ -4,45 +4,57 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
-namespace WordJourney{
-	public class SettingView : MonoBehaviour {
+namespace WordJourney
+{
+    public class SettingView : MonoBehaviour
+    {
 
-		public Slider volumeControl;
+        public Slider volumeControl;
 
-		public ToggleGroup tg;
+        public ToggleGroup tg;
 
-		public Transform settingPlane;
+        public Transform settingPlane;
 
-		public Toggle simpleWords;
-		public Toggle mediumWords;
-		public Toggle masterWords;
+        public Transform quitAPPButton;
 
-		public Transform queryChangeWordHUD;
+        public Toggle simpleWords;
+        public Toggle mediumWords;
+        public Toggle masterWords;
 
-		public Image pronounceOnImage;
-		public Image pronounceOffImage;
+        public Transform queryChangeWordHUD;
 
-		public void SetUpSettingView(GameSettings settings){
+        public Image pronounceOnImage;
+        public Image pronounceOffImage;
 
-			volumeControl.value = (int)(settings.systemVolume * 100);
+        public void SetUpSettingView(GameSettings settings)
+        {
 
-			UpdatePronounceControl (settings.isAutoPronounce);
+            volumeControl.value = (int)(settings.systemVolume * 100);
 
-			tg.SetAllTogglesOff ();
+            UpdatePronounceControl(settings.isAutoPronounce);
 
-			switch (settings.wordType) {
-			case WordType.Simple:
-				simpleWords.isOn = true;
-				break;
-			case WordType.Medium:
-				mediumWords.isOn = true;
-				break;
-			case WordType.Master:
-				masterWords.isOn = true;
-				break;
-			}
+            tg.SetAllTogglesOff();
 
-			GetComponent<Canvas> ().enabled = true;
+            switch (settings.wordType)
+            {
+                case WordType.Simple:
+                    simpleWords.isOn = true;
+                    break;
+                case WordType.Medium:
+                    mediumWords.isOn = true;
+                    break;
+                case WordType.Master:
+                    masterWords.isOn = true;
+                    break;
+            }
+
+#if UNITY_ANDROID
+            quitAPPButton.gameObjcet.SetActive(True);
+#else
+            quitAPPButton.gameObject.SetActive(false);
+#endif
+
+            GetComponent<Canvas> ().enabled = true;
 
 		}
 

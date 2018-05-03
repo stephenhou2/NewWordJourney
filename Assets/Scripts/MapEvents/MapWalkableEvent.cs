@@ -61,6 +61,7 @@ namespace WordJourney
 			}
 			StopCoroutine("AutoWalk");
 			isInAutoWalk = false;
+            isInMoving = false;
 			if (!baCtr.isIdle) {
 				baCtr.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			}
@@ -282,6 +283,9 @@ namespace WordJourney
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventOriPosX, walkableEventOriPosY] = 0;
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 1;
 
+            //Debug.LogFormat("开始移动时 更新行走信息[{0},{1}]:1,[{2},{3}]:5,更新行走事件信息[{4},{5}]:0,[{6},{7}]:1", walkableEventOriPosX, walkableEventOriPosY, walkableEventDestPosX, walkableEventDestPosY,
+                            //walkableEventOriPosX, walkableEventOriPosY, walkableEventDestPosX, walkableEventDestPosY);
+
 		}
 
 		/// <summary>
@@ -294,6 +298,9 @@ namespace WordJourney
 
 			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 1;
 			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 0;
+
+            //Debug.LogFormat("行走中碰到 更新行走信息[{0},{1}]:1,更新行走事件信息[{2},{3}]:0",  walkableEventDestPosX, walkableEventDestPosY,
+                          //walkableEventDestPosX, walkableEventDestPosY);
 
 		}
 			
@@ -310,13 +317,23 @@ namespace WordJourney
 			int walkableEventDestPosX = Mathf.RoundToInt (moveDestination.x);
 			int walkableEventDestPosY = Mathf.RoundToInt (moveDestination.y);
 
-			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventOriPosX, walkableEventOriPosY] = 1;
-			ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventOriPosX, walkableEventOriPosY] = 0;
+            if(walkableEventOriPosX != walkableEventDestPosX && walkableEventOriPosY != walkableEventDestPosY){
+                ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[walkableEventOriPosX, walkableEventOriPosY] = 1;
+                ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray[walkableEventOriPosX, walkableEventOriPosY] = 0;
+                //Debug.LogFormat("事件结束时 更新行走信息[{0},{1}]:1,更新行走事件信息[{2},{3}]:0", walkableEventOriPosX, walkableEventOriPosY,
+                           //walkableEventOriPosX, walkableEventOriPosY);
+            }
+			
 
 			if (walkableEventDie) {
 				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 1;
 				ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 0;
+
+                //Debug.LogFormat("死亡后 更新行走信息[{0},{1}]:1,更新行走事件信息[{2},{3}]:0", walkableEventDestPosX, walkableEventDestPosY,
+                         //walkableEventDestPosX, walkableEventDestPosY);
 			}
+
+           
 	
 
 		}

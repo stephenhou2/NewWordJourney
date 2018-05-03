@@ -39,7 +39,7 @@ namespace WordJourney
 		private List<Skill> mAllSkills = new List<Skill>();
 		private List<Sprite> mAllSkillSprites = new List<Sprite>();
 		private List<EffectAnim> mAllEffects = new List<EffectAnim>();
-        private List<HLHProverb> mAllProverbs = new List<HLHProverb>();
+        private List<HLHSentenceAndPoem> mAllProverbs = new List<HLHSentenceAndPoem>();
 
 
 		public void InitPersistentGameData(){
@@ -178,7 +178,7 @@ namespace WordJourney
 		}
 
 
-        public List<HLHProverb> allProverbs
+        public List<HLHSentenceAndPoem> allProverbs
         {
             get
             {
@@ -199,14 +199,14 @@ namespace WordJourney
                 return;
             }
 
-            HLHProverb[] proverbs = DataHandler.LoadDataToModelsWithPath<HLHProverb>(CommonData.proverbsDataFilePath);
+            HLHSentenceAndPoem[] proverbs = DataHandler.LoadDataToModelsWithPath<HLHSentenceAndPoem>(CommonData.proverbsDataFilePath);
 
             for (int i = 0; i < proverbs.Length;i++){
                 mAllProverbs.Add(proverbs[i]);
             }
         }
 
-        public HLHProverb GetARandomProverb(){
+        public HLHSentenceAndPoem GetARandomProverb(){
 
             int randomIndex = Random.Range(0, allProverbs.Count);
 

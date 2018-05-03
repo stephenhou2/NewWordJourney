@@ -28,8 +28,11 @@ namespace WordJourney
 			}
 		}
 
+        // 奖励的物品id范围，如果数组为null或者数组长度为0，代表随机生成奖励，否则在id数组内随机生成奖励物品
+        public int[] rewardItemIds;
 
-
+        // 标记怪s物是否是boss
+        public bool isBoss;
 
 		public override void Awake ()
 		{
@@ -89,7 +92,7 @@ namespace WordJourney
 
 			this.shenLuTuTengScaler = 0;
 			this.poisonHurtScaler = 1f;
-			this.isDead = false;
+			//this.isDead = false;
 		}
 
 
@@ -146,7 +149,7 @@ namespace WordJourney
 			if (toOriginalState) {
 				health = maxHealth;
 				mana = maxMana;
-				isDead = false;
+				//isDead = false;
 			} else {
 				health = (int)(healthRecord * (float)maxHealth / maxHealthRecord);
 				mana = (int)(manaRecord * (float)maxMana / maxManaRecord);
@@ -178,6 +181,64 @@ namespace WordJourney
 				dodgeChange,critChange,healthRecoveryChange,magicRecoveryChange,extraGoldChange,extraExperienceChange);
 
 		}
+
+
+        public Item GenerateRewardItem()
+        {
+
+            Item rewardItem = null;
+
+            if (rewardItemIds == null || rewardItemIds.Length == 0)
+            {
+
+                int randomSeed = Random.Range(0, 100);
+
+                if (randomSeed >= 0 && randomSeed < 90)
+                {
+                    rewardItem = null;
+                }
+                else
+                {
+
+                    randomSeed = Random.Range(0, 2);
+
+                    if (randomSeed == 0)
+                    {
+                        int index = 0;
+                        if (!isBoss)
+                        {
+                            index = Player.mainPlayer.currentLevelIndex / 5 + 1;
+                        }
+                        else
+                        {
+                            index = (Player.mainPlayer.currentLevelIndex / 5 + 1) * 10;
+                        }
+                        List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
+                        {
+                            return obj.equipmentGrade == index;
+                        });
+                        randomSeed = Random.Range(0, ems.Count);
+                        rewardItem = new Equipment(ems[randomSeed], 1);
+                    }
+                    else
+                    {
+                        randomSeed = Random.Range(300, 316);
+                        rewardItem = Item.NewItemWith(randomSeed, 1);
+                    }
+
+                }
+
+            }
+            else
+            {
+                int randomSeed = Random.Range(0, rewardItemIds.Length);
+                rewardItem = Item.NewItemWith(rewardItemIds[randomSeed], 1);
+
+            }
+
+            return rewardItem;
+        }
+
 
 
 

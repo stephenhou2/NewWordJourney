@@ -76,6 +76,8 @@ namespace WordJourney
 
 			ItemDragControl dragControl = draggedObject.GetComponent<ItemDragControl> ();
 
+            bagView.GetComponent<BagViewController>().currentSelectItem = draggedItem;
+
 			// 如果是从背包中拖拽出来的物品
 			if (dragControl is ItemInBagDragControl) {
 				SetDropResult (eventData, false);

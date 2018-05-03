@@ -39,7 +39,7 @@ namespace WordJourney
 //				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
 //			}
 ////
-//			Player.mainPlayer.AddItem (Item.NewItemWith (305, 5));
+			//Player.mainPlayer.AddItem (Item.NewItemWith (305, 5));
 //			Player.mainPlayer.AddItem (Item.NewItemWith (302, 5));
 //
 //			Player.mainPlayer.totalGold = 2000;
@@ -128,9 +128,14 @@ namespace WordJourney
 
 			int oriItemIndexInBag = Player.mainPlayer.GetItemIndexInBag (currentSelectItem);
 
-			PropertyChange propertyChangeFromUnload = new PropertyChange();
+            PropertyChange propertyChangeFromUnload = new PropertyChange();
 
-			if (Player.mainPlayer.allEquipedEquipments [equipmentIndexInPanel].itemId >= 0) {
+            // 如果额外装备槽已解锁，并且想要装上的装备是戒指，并且原有戒指槽已经有装备，则该戒指撞到额外装备槽上
+            if(equipment.equipmentType == EquipmentType.Ring && BuyRecord.Instance.extraEquipmentSlotUnlocked && Player.mainPlayer.allEquipedEquipments[5].itemId >= 0 && Player.mainPlayer.allEquipedEquipments[6].itemId < 0){
+                equipmentIndexInPanel = 6;
+            }
+
+            if (Player.mainPlayer.allEquipedEquipments [equipmentIndexInPanel].itemId >= 0) {
 				Equipment equipmentToUnload = Player.mainPlayer.allEquipedEquipments [equipmentIndexInPanel];
 				propertyChangeFromUnload = Player.mainPlayer.UnloadEquipment (equipmentToUnload, equipmentIndexInPanel);
 			}
@@ -243,47 +248,52 @@ namespace WordJourney
 			bool clearItemDetail = false;
 
 			switch (consumables.type) {
-			case ConsumablesType.ShuXingTiSheng:
+    			case ConsumablesType.ShuXingTiSheng:
 
-				player.health += consumables.healthGain + player.healthRecovery;
-				player.mana += consumables.manaGain + player.magicRecovery;
-				player.experience += consumables.experienceGain + player.extraExperience;
+    				player.health += consumables.healthGain + player.healthRecovery;
+    				player.mana += consumables.manaGain + player.magicRecovery;
+    				player.experience += consumables.experienceGain + player.extraExperience;
 
-				clearItemDetail = player.RemoveItem (consumables, 1);
+    				clearItemDetail = player.RemoveItem (consumables, 1);
 
-				bool isLevelUp = player.LevelUpIfExperienceEnough ();
-				if (isLevelUp) {
-					ExploreManager.Instance.expUICtr.ShowLevelUpPlane ();
-				}
+    				bool isLevelUp = player.LevelUpIfExperienceEnough ();
+    				if (isLevelUp) {
+    					ExploreManager.Instance.expUICtr.ShowLevelUpPlane ();
+    				}
 
-				bagView.SetUpPlayerStatusPlane (new PropertyChange());
+    				bagView.SetUpPlayerStatusPlane (new PropertyChange());
 
-				break;  
-			case ConsumablesType.ChongZhuShi:
-				Equipment eqp = bagView.RebuildEquipment ();
-				if (eqp != null) {
-					currentSelectItem = eqp;
-				}
-				player.RemoveItem (consumables, 1);
-				break;
-			case ConsumablesType.DianJinShi:
-				eqp = bagView.UpgradeEquipmentToGold ();
-				if (eqp != null) {
-					currentSelectItem = eqp;
-				}
-				player.RemoveItem (consumables, 1);
-				break;
-			case ConsumablesType.XiaoMoJuanZhou:
-				eqp = bagView.RemoveEquipmentAttachedSkill ();
-				if (eqp != null) {
-					currentSelectItem = eqp;
-				}
-				player.RemoveItem (consumables, 1);
-				break;
-			case ConsumablesType.YinShenJuanZhou:
-				ExploreManager.Instance.PlayerFade ();
-				clearItemDetail = player.RemoveItem (consumables, 1);
-				break;
+                    if (ExploreManager.Instance.battlePlayerCtr.isInFight)
+                    {
+                        ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
+                    }
+
+    				break;  
+    			case ConsumablesType.ChongZhuShi:
+    				Equipment eqp = bagView.RebuildEquipment ();
+    				if (eqp != null) {
+    					currentSelectItem = eqp;
+    				}
+    				player.RemoveItem (consumables, 1);
+    				break;
+    			case ConsumablesType.DianJinShi:
+    				eqp = bagView.UpgradeEquipmentToGold ();
+    				if (eqp != null) {
+    					currentSelectItem = eqp;
+    				}
+    				player.RemoveItem (consumables, 1);
+    				break;
+    			case ConsumablesType.XiaoMoJuanZhou:
+    				eqp = bagView.RemoveEquipmentAttachedSkill ();
+    				if (eqp != null) {
+    					currentSelectItem = eqp;
+    				}
+    				player.RemoveItem (consumables, 1);
+    				break;
+    			case ConsumablesType.YinShenJuanZhou:
+    				ExploreManager.Instance.PlayerFade ();
+    				clearItemDetail = player.RemoveItem (consumables, 1);
+    				break;
 			}
 
 

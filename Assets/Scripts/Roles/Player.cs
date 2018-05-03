@@ -48,18 +48,12 @@ namespace WordJourney
 		public AttackSpeed attackSpeed;
 
 		//玩家经验值
-		public int mExperience;
-		public int experience{
-			get{ return mExperience; }
-			set{ mExperience = value + extraExperience; }
-		}
+		//public int mExperience;
+        public int experience;
 
 		//玩家金钱
-		public int mTotalGold;
-		public int totalGold{
-			get { return mTotalGold; }
-			set{ mTotalGold = value + extraGold; }
-		}
+		//public int mTotalGold;
+        public int totalGold;
 
 		// 每次升级所需要的经验值
 		public int upgradeExprience{
@@ -393,7 +387,7 @@ namespace WordJourney
 			if (toOriginalState) {
 				health = maxHealth;
 				mana = maxMana;
-				isDead = false;
+				//isDead = false;
 			} else {
 				health = Mathf.RoundToInt(healthRecord * (float)maxHealth / maxHealthRecord);
 				mana = Mathf.RoundToInt(manaRecord * (float)maxMana / maxManaRecord);
@@ -716,16 +710,16 @@ namespace WordJourney
 
 		public void RemoveSkill(Skill skill){
 			switch (skill.skillType) {
-			case SkillType.Active:
-				attachedActiveSkills.Remove (skill as ActiveSkill);
-				break;
-			case SkillType.PermanentPassive:
-				attachedPermanentPassiveSkills.Remove (skill as PermanentPassiveSkill);
-				break;
-			case SkillType.TriggeredPassive:
-				attachedTriggeredSkills.Remove (skill as TriggeredPassiveSkill);
-				battleAgentCtr.RemoveTriggeredSkillExcutor (skill as TriggeredPassiveSkill);
-				break;
+    			case SkillType.Active:
+    				attachedActiveSkills.Remove (skill as ActiveSkill);
+    				break;
+    			case SkillType.PermanentPassive:
+    				attachedPermanentPassiveSkills.Remove (skill as PermanentPassiveSkill);
+    				break;
+                case SkillType.TriggeredPassive:
+    				attachedTriggeredSkills.Remove (skill as TriggeredPassiveSkill);
+    				battleAgentCtr.RemoveTriggeredSkillExcutor (skill as TriggeredPassiveSkill);
+    				break;
 			}
 		}
 

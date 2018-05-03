@@ -112,7 +112,7 @@ namespace WordJourney
 
 			Player.mainPlayer.SetUpPlayerWithPlayerData (resetPd);
 
-			Player.mainPlayer.isDead = false;
+			//Player.mainPlayer.isDead = false;
 
 			SaveCompletePlayerData ();
 

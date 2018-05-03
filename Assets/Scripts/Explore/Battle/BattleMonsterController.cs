@@ -22,7 +22,7 @@ namespace WordJourney
 			}
 		}
 
-        public bool isInFight; //是否在战斗中
+
 
 
 		protected override void Awake(){
@@ -46,6 +46,7 @@ namespace WordJourney
 		public void SetAlive(){
 			boxCollider.enabled = true;
             isInFight = false;
+            isDead = false;
 			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 			SetSortingOrder (-Mathf.RoundToInt(transform.position.y));
 		}
@@ -132,6 +133,10 @@ namespace WordJourney
 
 		protected override void AgentExcuteHitEffect ()
 		{
+            if(isDead || (enemy != null && isDead)){
+                return;
+            }
+
 			if (enemy == null) {
 				return;
 			}
@@ -167,7 +172,12 @@ namespace WordJourney
 		/// </summary>
 		public override bool CheckFightEnd(){
 
-			if (enemy.agent.health <= 0) {
+            if (enemy.agent.health <= 0)
+            {
+                MapMonster mm = GetComponent<MapMonster>();
+                if (mm != null) { 
+                    mm.isReadyToFight = false;
+                }
 				enemy.AgentDie ();
 				return true;
 			} else if (agent.health <= 0) {
@@ -200,7 +210,7 @@ namespace WordJourney
 		/// </summary>
 		override public void AgentDie(){
 
-			if (agent.isDead) {
+			if (isDead) {
 				return;
 			}
 
@@ -208,7 +218,7 @@ namespace WordJourney
 
 			exploreManager.DisableExploreInteractivity ();
 
-			agent.isDead = true;
+			isDead = true;
 
 			boxCollider.enabled = false;
 

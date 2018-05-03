@@ -20,8 +20,6 @@ namespace WordJourney
 
 		public bool isReadyToFight;
 
-		public bool isBoss;
-
 		// 触发机关的位置【如果没有触发的机关，则设置为（-1，-1，-1）】
 		public Vector3 pairEventPos;
 
@@ -140,7 +138,7 @@ namespace WordJourney
 				return;
 			}
 
-			if (baCtr.agent.isDead) {
+			if (baCtr.isDead) {
 				return;
 			}
 
@@ -227,6 +225,8 @@ namespace WordJourney
 
 			HideAllAlertAreas ();
 
+            RandomTowards();
+
 			if (canMove) {
 				ShowAlertAreaTint ();
 			}
@@ -238,8 +238,6 @@ namespace WordJourney
 			GetComponent<Monster> ().ResetBattleAgentProperties (true);
 
 			baCtr.SetAlive();
-
-			RandomTowards ();
 
 			StartMove ();
 
@@ -345,54 +343,53 @@ namespace WordJourney
 
 
 			Vector3 monsterFightPos = Vector3.zero;
+            Vector3 playerFightPos = new Vector3(playerPosX, playerPosY, 0);
+
+            int minX = 0;
+            int maxX = ExploreManager.Instance.newMapGenerator.columns - 1;
 
 			HLHRoleAnimInfo playerCurrentAnimInfo = battlePlayerCtr.GetCurrentRoleAnimInfo ();
 
 			if (posOffsetX > 0) {
 				
-				battlePlayerCtr.TowardsLeft ();
+                battlePlayerCtr.TowardsLeft();
 
-				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
+                if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
-				} else if (playerPosX - 1 == monsterPosX && playerPosY == monsterPosY) {
+                } else if (playerPosX - 1 >= minX && playerPosX - 1 == monsterPosX && playerPosY == monsterPosY) {
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
-				} else if (playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
-					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
+                } else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                    monsterFightPos = new Vector3(playerPosX - 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
 				} else {
                     if (posOffsetY > 0)
                     {
 
-                        monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+                        monsterFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
                         monsterLayerOrder = -playerPosY + 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
-
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
                     }
                     else
                     {
 
-                        monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+                        monsterFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
                         monsterLayerOrder = -playerPosY - 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
-
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
                     }
 				}
 
 			} else if (posOffsetX == 0) {
-
-
-				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
+                
+                if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 
 					battlePlayerCtr.TowardsRight ();
 
@@ -400,14 +397,14 @@ namespace WordJourney
 
                     monsterLayerOrder = -playerPosY;
 
-				} else if (playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                } else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
                     
                     battlePlayerCtr.TowardsRight();
 
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
 
                     monsterLayerOrder = -playerPosY;
-				} else if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
+                } else if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 
 					battlePlayerCtr.TowardsLeft ();
 
@@ -415,16 +412,14 @@ namespace WordJourney
 
                     monsterLayerOrder = -playerPosY;
 
-				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                } else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
                     
 					battlePlayerCtr.TowardsLeft ();
 
-					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
+					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
 
                     monsterLayerOrder = -playerPosY;
 				} else {
-
-					battlePlayerCtr.TowardsRight ();
 
                     if(posOffsetY > 0){
 
@@ -432,11 +427,11 @@ namespace WordJourney
 
                         monsterLayerOrder = -playerPosY + 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        battlePlayerCtr.TowardsRight();
 
                     }else{
 
@@ -444,11 +439,13 @@ namespace WordJourney
 
                         monsterLayerOrder = -playerPosY - 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        battlePlayerCtr.TowardsRight();
+
+
                     }
 					
 				}
@@ -457,13 +454,13 @@ namespace WordJourney
 
 				battlePlayerCtr.TowardsRight ();
 
-				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
+                if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
-				} else if (playerPosX + 1 == monsterPosX && playerPosY == monsterPosY) {
+                } else if (playerPosX + 1 <= maxX && playerPosX + 1 == monsterPosX && playerPosY == monsterPosY) {
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
-				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                } else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
 				} else {
@@ -474,9 +471,7 @@ namespace WordJourney
 
                         monsterLayerOrder = -playerPosY + 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
-
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
@@ -488,11 +483,9 @@ namespace WordJourney
 
                         monsterLayerOrder = -playerPosY - 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
-
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
                     }
 				}
 			}
@@ -501,6 +494,8 @@ namespace WordJourney
 				battlePlayerCtr.PlayRoleAnimByTime (playerCurrentAnimInfo.roleAnimName, playerCurrentAnimInfo.roleAnimTime,
 					playerCurrentAnimInfo.playTimes, playerCurrentAnimInfo.animEndCallback);
 			}
+
+            battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 				
 			RunToPosition (monsterFightPos, delegate {
 
@@ -643,39 +638,6 @@ namespace WordJourney
 		}
 			
 
-		public Item GenerateRandomRewardItem(){
-
-			Item rewardItem = null;
-
-			int randomSeed = Random.Range (0, 100);
-
-			if (randomSeed >= 0 && randomSeed < 90) {
-				rewardItem = null;
-			} else {
-
-				randomSeed = Random.Range (0, 2);
-
-				if (randomSeed == 0) {
-					int index = 0;
-					if (!isBoss) {
-						index = Player.mainPlayer.currentLevelIndex / 5 + 1;
-					} else {
-						index = (Player.mainPlayer.currentLevelIndex / 5 + 1) * 10;
-					}
-					List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll (delegate(EquipmentModel obj) {
-						return obj.equipmentGrade == index;
-					});
-					randomSeed = Random.Range (0, ems.Count);
-					rewardItem = new Equipment (ems [randomSeed], 1);
-				} else {
-					randomSeed = Random.Range (300, 316);
-					rewardItem = Item.NewItemWith (randomSeed, 1);
-				}
-
-			}
-
-			return rewardItem;
-		}
-
+		
 	}
 }

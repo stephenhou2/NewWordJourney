@@ -50,6 +50,7 @@ namespace WordJourney
 				consCells [indexInPanel].SetUpConsumablesCell (cons, delegate {
 					SetUpConsumablesButtons();
 					refreshPlayerStatusPlane();
+
 				});
 
 				indexInPanel++;

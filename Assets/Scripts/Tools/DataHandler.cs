@@ -151,10 +151,13 @@ namespace WordJourney
 
 			FileInfo[] fiArray = sourceDirectoryInfo.GetFiles ();
 
-			for (int i = 0; i < fiArray.Length; i++) {
-				FileInfo fi = fiArray [i];
-				string newPath = Path.Combine (destPath, fi.Name);
-				fi.CopyTo (newPath);
+            for (int i = 0; i < fiArray.Length; i++)
+            {
+                FileInfo fi = fiArray[i];
+                string newPath = Path.Combine(destPath, fi.Name);
+                if (!fi.Extension.Equals(".meta")) { 
+                    fi.CopyTo(newPath);
+                }
 
 			}
 

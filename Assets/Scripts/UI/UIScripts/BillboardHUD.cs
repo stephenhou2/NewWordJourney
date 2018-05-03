@@ -9,16 +9,34 @@ namespace WordJourney{
 
     public class BillboardHUD : ZoomHUD {
 
-        public Text proverbEN;
-        public Text proverbCH;
+        // 句子或诗歌英文文本
+        public Text SAPEN;
+        // 句子或诗歌中文文本
+        public Text SAPCH;
+
 
         private CallBack quitCallBack;
 
+        //private float offsetEN_CH = 50;
+
+
         public void SetUpBillboard(Billboard bb,CallBack quitCallBack){
 
-            proverbEN.text = bb.proverb.proverbEN;
+            SAPEN.text = bb.sap.sapEN;
 
-            proverbCH.text = bb.proverb.proverbCH;
+            SAPCH.text = bb.sap.sapCH;
+
+            switch(bb.sap.sapType){
+                case HLHSAPType.Sentence:
+                    SAPEN.alignment = TextAnchor.MiddleLeft;
+                    SAPCH.alignment = TextAnchor.MiddleLeft;
+                    break;
+                case HLHSAPType.Poem:
+                    SAPEN.alignment = TextAnchor.MiddleCenter;
+                    SAPCH.alignment = TextAnchor.MiddleCenter;
+                    break;
+
+            }
 
             this.quitCallBack = quitCallBack;
 
@@ -32,6 +50,8 @@ namespace WordJourney{
 
             StartCoroutine(zoomCoroutine);
         }
+
+       
 
         public void QuitBillboard(){
 

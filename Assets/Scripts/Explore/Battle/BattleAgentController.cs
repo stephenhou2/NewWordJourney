@@ -41,7 +41,11 @@ namespace WordJourney
 
 		protected BattleAgentUIController agentUICtr;
 
-		public bool isIdle;
+		public bool isIdle;// 是否在空闲状态中
+
+        public bool isInFight; //是否在战斗中
+
+        public bool isDead;// 是否已经死亡
 
 		// 进入战斗前触发事件回调队列
 		public List<TriggeredSkillExcutor> beforeFightTriggerExcutors = new List<TriggeredSkillExcutor>();
@@ -136,6 +140,7 @@ namespace WordJourney
 
 			isIdle = true;
 
+            isDead = false;
 
 		}
 
@@ -298,6 +303,10 @@ namespace WordJourney
 
 
 		public void RemoveTriggeredSkillExcutor(TriggeredPassiveSkill skill){
+
+            if(!isInFight){
+                return;
+            }
 
 			if (skill.beforeFightTrigger) {
 				int index = beforeFightTriggerExcutors.FindIndex (delegate(TriggeredSkillExcutor obj) {

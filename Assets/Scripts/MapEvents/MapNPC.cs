@@ -159,7 +159,7 @@ namespace WordJourney{
 				return;
 			}
 
-			if (baCtr.agent.isDead) {
+			if (baCtr.isDead) {
 				return;
 			}
 
@@ -168,8 +168,7 @@ namespace WordJourney{
 			}
 
 
-
-			MapEventTriggered (false, bp);
+            EnterMapEvent (bp);
 		}
 
 //		public void OnTriggerExit2D(Collider2D col){
@@ -318,23 +317,27 @@ namespace WordJourney{
             int posOffsetY = playerPosY - npcPosY;
 
 			Vector3 npcFightPos = Vector3.zero;
+            Vector3 playerFightPos = new Vector3(playerPosX, playerPosY, 0);
+
+            int minX = 0;
+            int maxX = ExploreManager.Instance.newMapGenerator.columns - 1;
 
 			if (posOffsetX > 0) {
 
 				battlePlayerCtr.TowardsLeft (false);
 				baCtr.TowardsRight ();
 
-				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
+                if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 					npcFightPos = new Vector3 (playerOriPos.x - 1, playerPosY, 0);
                     npcLayerOrder = -playerPosY;
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
-				} else if (playerPosX - 1 == npcPosX && playerPosY == npcPosY) {
+                } else if (playerPosX - 1 >= minX && playerPosX - 1 == npcPosX && playerPosY == npcPosY) {
 					npcFightPos = new Vector3 (playerOriPos.x - 1, playerPosY, 0);
                     npcLayerOrder = -playerPosY;
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
-				} else if(playerPosX - 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y)){
+                } else if(playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y)){
 					npcFightPos = new Vector3 (playerOriPos.x - 1, playerPosY, 0);
                     npcLayerOrder = -playerPosY;
 					needPosFix = false;
@@ -346,11 +349,11 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
                         npcLayerOrder = -playerPosY + 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
                     }
                     else
@@ -359,11 +362,11 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
                         npcLayerOrder = -playerPosY - 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
                     }
 					needPosFix = true;
 					battlePlayerCtr.needPosFix = true;
@@ -371,7 +374,7 @@ namespace WordJourney{
 
 			} else if (posOffsetX == 0) {
 
-				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
+                if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 
 					baCtr.TowardsLeft ();
 
@@ -382,7 +385,7 @@ namespace WordJourney{
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 
-				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                } else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 					baCtr.TowardsLeft ();
 
 					battlePlayerCtr.TowardsRight (false);
@@ -391,7 +394,7 @@ namespace WordJourney{
 
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
-				} else if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
+                } else if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 
 					baCtr.TowardsRight ();
 
@@ -402,7 +405,7 @@ namespace WordJourney{
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 
-				} else if (playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                } else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 
 					baCtr.TowardsRight ();
 
@@ -425,11 +428,11 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
                         npcLayerOrder = -playerPosY + 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
                     }
                     else
@@ -438,11 +441,11 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
                         npcLayerOrder = -playerPosY - 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
                     }
 
 					needPosFix = true;
@@ -455,21 +458,21 @@ namespace WordJourney{
 				battlePlayerCtr.TowardsRight(false);
 				baCtr.TowardsLeft ();
 
-				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
+                if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 
 					npcFightPos = new Vector3 (playerOriPos.x + 1, playerPosY, 0);
 
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 
-				} else if (playerPosX + 1 == npcPosX && playerPosY == npcPosY) {
+                } else if (playerPosX + 1 <=maxX && playerPosX + 1 == npcPosX && playerPosY == npcPosY) {
 
 					npcFightPos = new Vector3 (playerOriPos.x + 1, playerPosY, 0);
 
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
 
-				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                } else if (playerPosX + 1 <=maxX && playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 					npcFightPos = new Vector3 (playerOriPos.x + 1, playerPosY, 0);
 
 					needPosFix = false;
@@ -482,11 +485,11 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
                         npcLayerOrder = -playerPosY + 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
                     }
                     else
@@ -495,11 +498,11 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
                         npcLayerOrder = -playerPosY - 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
                     }
 
 					needPosFix = true;
@@ -508,6 +511,8 @@ namespace WordJourney{
 				}
 
 			}
+
+            battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
 			RunToPosition (npcFightPos, delegate {
 
@@ -552,18 +557,23 @@ namespace WordJourney{
             int npcLayerOrder = -npcPosY;
 
 			Vector3 npcFightPos = Vector3.zero;
+            Vector3 playerFightPos = new Vector3(playerPosX, playerPosY, 0);
+
+
+            int minX = 0;
+            int maxX = ExploreManager.Instance.newMapGenerator.rows - 1;
 
 			if (posOffsetX > 0) {
 				battlePlayerCtr.TowardsLeft (true);
-				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
+                if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 					npcFightPos = new Vector3 (playerPosX - 1, playerOriPos.y, 0);
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
-				} else if (playerPosX - 1 == npcPosX && playerPosY == npcPosY) {
+                } else if (playerPosX - 1 >= minX && playerPosX - 1 == npcPosX && playerPosY == npcPosY) {
 					npcFightPos = new Vector3 (playerPosX - 1, playerOriPos.y, 0);
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
-				} else if (playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                } else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 					npcFightPos = new Vector3 (playerPosX - 1, playerOriPos.y, 0);
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
@@ -574,11 +584,11 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
                         npcLayerOrder = -playerPosY + 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
                     }
                     else
@@ -587,23 +597,23 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
                         npcLayerOrder = -playerPosY - 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
                     }
 
 					needPosFix = true;
 					battlePlayerCtr.needPosFix = true;
 				}
 			} else if (posOffsetX == 0) {
-				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
+                if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 					battlePlayerCtr.TowardsRight (true);
 					npcFightPos = new Vector3 (playerPosX + 1, playerOriPos.y, 0);
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
-				} else if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
+                } else if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 					battlePlayerCtr.TowardsLeft (true);
 					npcFightPos = new Vector3 (playerPosX - 1, playerOriPos.y, 0);
 					needPosFix = false;
@@ -616,11 +626,11 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
                         npcLayerOrder = -playerPosY + 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
                     }
                     else
@@ -629,11 +639,11 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
                         npcLayerOrder = -playerPosY - 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
                     }
 
 					needPosFix = true;
@@ -641,15 +651,15 @@ namespace WordJourney{
 				}
 			} else if (posOffsetX < 0) {
 				battlePlayerCtr.TowardsRight (true);
-				if (ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
+                if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 					npcFightPos = new Vector3 (playerPosX + 1, playerOriPos.y, 0);
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
-				} else if (playerPosX + 1 == npcPosX && playerPosY == npcPosY) {
+                } else if (playerPosX + 1 <= maxX && playerPosX + 1 == npcPosX && playerPosY == npcPosY) {
 					npcFightPos = new Vector3 (playerPosX + 1, playerOriPos.y, 0);
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
-				} else if (playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                } else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 					npcFightPos = new Vector3 (playerPosX + 1, playerOriPos.y, 0);
 					needPosFix = false;
 					battlePlayerCtr.needPosFix = false;
@@ -660,11 +670,11 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
                         npcLayerOrder = -playerPosY + 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
                     }
                     else
@@ -673,17 +683,19 @@ namespace WordJourney{
                         npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
                         npcLayerOrder = -playerPosY - 1;
 
-                        Vector3 playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
                     }
 
 					needPosFix = true;
 					battlePlayerCtr.needPosFix = true;
 				}
 			}
+
+            battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
 			RunToPosition (npcFightPos, delegate {
 				if(transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x){
@@ -722,6 +734,7 @@ namespace WordJourney{
 
 			baCtr.PlayRoleAnim (CommonData.roleWalkAnimName, 0, null);
 
+            //Debug.LogFormat("MOVE ORIGIN:{0}++++++MOVE DESTINATION:{1}", moveOrigin, moveDestination);
 
 			RefreshWalkableInfoWhenStartMove ();
 
@@ -771,7 +784,7 @@ namespace WordJourney{
 			moveOrigin = new Vector3 (oriPosX, oriPosY, 0);
 			moveDestination = new Vector3 (targetPosX, targetPosY, 0);
 
-//			Debug.LogFormat ("MOVE ORIGIN:{0}++++++MOVE DESTINATION:{1}", moveOrigin, moveDestination);
+			//Debug.LogFormat ("MOVE ORIGIN:{0}++++++MOVE DESTINATION:{1}", moveOrigin, moveDestination);
 
 
 			if (position.Equals(transform.position)) {

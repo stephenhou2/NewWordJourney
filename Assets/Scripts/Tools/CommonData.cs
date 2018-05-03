@@ -49,6 +49,7 @@ namespace WordJourney{
 			new KVPair("OriginalPlayerData","/Data/OriginalPlayerData.json"),
 			new KVPair("Level","/Data/MapData/Level"),
 			new KVPair("NPC","/Data/NPCs"),
+            new KVPair("ProverbData","/Data/HLHSentenceAndPoemData.json")
 		};
 
 
@@ -59,7 +60,7 @@ namespace WordJourney{
 		public static string equipmentDataFilePath = persistDataPath + "/GameItems/EquipmentDatas.json";
 		public static string consumablesDataFilePath = persistDataPath + "/GameItems/ConsumablesDatas.json";
 		public static string skillGemstoneDataFilePath = persistDataPath + "/GameItems/SkillGemstoneDatas.json";
-        public static string proverbsDataFilePath = persistDataPath + "/ProverbData.json";
+        public static string proverbsDataFilePath = persistDataPath + "/HLHSentenceAndPoemData.json";
 		public static string npcsDataDirPath = persistDataPath + "/NPCs";
 
 		public static string buyRecordFilePath = persistDataPath + "/BuyRecord.json";
@@ -186,29 +187,7 @@ namespace WordJourney{
 	}
 
 
-	// 附加信息层对应的附加信息
-	public enum MapEventType{
-		Exit,
-		Crystal,
-		Trader,
-		NPC,
-		Door,
-		Buck,
-		Pot,
-		TreasureBox,
-		Stone,
-		Tree,
-		Switch,
-		TrapOff,
-		TrapOn,
-		Monster,
-		FireTrap,
-		Billboard,
-		SecretRoom,
-		MovableBox,
-		PressSwitch,
-		Docoration
-	}
+
 
 
 	// Using Serializable allows us to embed a class with sub properties in the inspector.

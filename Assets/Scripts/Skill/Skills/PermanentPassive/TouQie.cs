@@ -14,7 +14,8 @@ namespace WordJourney
 			if (isEffective (triggerProbability)) {
 				if (self is BattlePlayerController) {
 					int goldChange = self.agent.agentLevel * (int)skillSourceValue;
-					(self.agent as Player).totalGold += goldChange + self.agent.extraGold;
+                    int goldGain = goldChange + self.agent.extraGold;
+                    (self.agent as Player).totalGold += goldGain;
 					string tint = string.Format ("金币+{0}", goldChange);
 					self.AddTintTextToQueue (tint);
 					self.UpdateStatusPlane ();

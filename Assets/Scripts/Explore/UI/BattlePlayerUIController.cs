@@ -65,7 +65,12 @@ namespace WordJourney
 			experienceBar.InitHLHFillBar (player.upgradeExprience, player.experience);
 			playerLevelText.text = player.agentLevel.ToString();
 
-			consDisplay.InitConsumablesDisplay (UpdateAgentStatusPlane);
+            consDisplay.InitConsumablesDisplay (delegate{
+                UpdateAgentStatusPlane();
+                if(bpCtr.isInFight){
+                    UpdateSkillStatusPlane(bpCtr.agent);
+                }
+            });
 
 			SetUpConsumablesButtons ();
 

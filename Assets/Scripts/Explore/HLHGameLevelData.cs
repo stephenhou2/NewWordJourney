@@ -30,7 +30,7 @@ namespace WordJourney
 
             return Player.mainPlayer.currentLevelIndex == 0 
                          || Player.mainPlayer.currentLevelIndex == 9
-                         || Player.mainPlayer.currentLevelIndex == 19
+                         || Player.mainPlayer.currentLevelIndex == 29
                          || Player.mainPlayer.currentLevelIndex == 39
                          || Player.mainPlayer.currentLevelIndex == 49;
 

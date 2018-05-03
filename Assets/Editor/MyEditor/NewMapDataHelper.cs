@@ -71,13 +71,14 @@ namespace WordJourney
 
 				FileInfo fi = originalMapDatasFiles [i];
 
-				// 判断是否是存储数据用的json文件（文件夹下还有保存引用关系的.meta文件）
+				// 判断是否是存储数据用的json文件
 				if (fi.Extension != ".json") {
 					continue;
 				}
 
+                //Debug.LogFormat("地图数据名称" + fi.Name);
 				//读取原始地图数据
-				MapData mapData = ReadMap (fi.FullName);
+                MapData mapData = ReadMap (fi.FullName,fi);
 
 				//保存新的地图数据
 				SaveNewMapData (mapData, fi.Name);
@@ -91,7 +92,7 @@ namespace WordJourney
 		/// </summary>
 		/// <returns>The map.</returns>
 		/// <param name="mapDataPath">Map data path.</param>
-		private static MapData ReadMap(string mapDataPath){
+        private static MapData ReadMap(string mapDataPath,FileInfo fi){
 
 			// 读取原始json数据
 			string oriMapDataString = DataHandler.LoadDataString (mapDataPath);
@@ -121,7 +122,7 @@ namespace WordJourney
 			// 地图块数据（内含walkable info array）
 			MapTilesInfo tileInfo = null;
 
-			Dictionary<string,object> tileSetInfo = tileSetsArray [0] as Dictionary<string,object>;
+            Dictionary<string, object> tileSetInfo = null;
 
 			for (int j = 0; j < layersDataArray.Count; j++) {
 
@@ -129,23 +130,44 @@ namespace WordJourney
 
 				List<MapTile> tileDatas = new List<MapTile> ();
 
-				//获取当前层使用的地图块的firstGid
-				int firstGid = int.Parse (tileSetInfo ["firstgid"].ToString());
+				
 				//获取当前层的类型名称
 				string layerType = layerDataDic ["type"].ToString ();
 
-				// 当前层为地图层
-				if (layerType.Equals("tilelayer")) {
+                // 当前层为地图层
+                if (layerType.Equals("tilelayer"))
+                {
 
-					List<object> tileDataArray = (List<object>)layerDataDic ["data"];
+                    List<object> tileDataArray = (List<object>)layerDataDic["data"];
 
-					string layerName = layerDataDic ["name"].ToString ();
+                    string layerName = layerDataDic["name"].ToString();
 
-					if (layerName.Equals ("FloorLayer")) {
-						Dictionary<string,object> tileSetsNameDic = layerDataDic ["properties"] as Dictionary<string,object>;
-						tileSetsImageName = tileSetsNameDic ["TilesetImageName"].ToString ();
-						tileInfo = GetMapTilesInfoWithName (tileSetsImageName);
-					}
+                    if (layerName.Equals("FloorLayer"))
+                    {
+                        Dictionary<string, object> tileSetsNameDic = layerDataDic["properties"] as Dictionary<string, object>;
+                        tileSetsImageName = tileSetsNameDic["TilesetImageName"].ToString();
+                        tileInfo = GetMapTilesInfoWithName(tileSetsImageName);
+                    }
+
+
+
+                    if (tileSetInfo == null) { 
+                        for (int k = 0; k < tileSetsArray.Count; k++)
+                        {
+                            Dictionary<string, object> tempTileSetInfo = tileSetsArray[k] as Dictionary<string, object>;
+                            string sourceName = tempTileSetInfo["source"] as string;
+                            if (sourceName.Contains(tileSetsImageName))
+                            {
+                                tileSetInfo = tempTileSetInfo;
+                                break;
+                            }
+                        }
+                    }
+
+
+                    //获取当前层使用的地图块的firstGid
+                    int firstGid = int.Parse(tileSetInfo["firstgid"].ToString());
+
 
 					for (int k = 0; k < tileDataArray.Count; k++) {
 
@@ -155,10 +177,10 @@ namespace WordJourney
 						int tileIndex = int.Parse (tileDataArray [k].ToString ()) - firstGid;
 						if (tileIndex >= 0) {
 							bool canWalk = false;
+                            //Debug.LogFormat("mapName:{0},layerName:{1},tileIndex:{2},firstGid:{3}",fi.Name, layerName, tileIndex,firstGid);
 							canWalk = tileInfo.walkableInfoArray [tileIndex] == 1;
 							MapTile tile = new MapTile (new Vector2 (col, row), tileIndex,canWalk);
 							tileDatas.Add (tile);
-//								Debug.LogFormat ("mapName:{0},layerName:{1},index:{2},tileInfo:{3},canwalk:{4}",fi.Name,"floor",k,tile,canWalk);
 						}
 
 					}

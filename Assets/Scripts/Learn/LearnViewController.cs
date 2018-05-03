@@ -520,6 +520,7 @@ namespace WordJourney
 		/// </summary>
 		private void UpdatePlayerData(){
 
+            int goldGain = coinGain + Player.mainPlayer.extraGold;
 			Player.mainPlayer.totalGold += coinGain;
 
 			GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
@@ -578,7 +579,7 @@ namespace WordJourney
 				GameManager.Instance.UIManager.HideCanvas ("LearnCanvas");
 				GameManager.Instance.soundManager.ResumeBgm ();
 				if (finishLearning) {
-					exploreManager.ChangeCrystalStatus ();
+					//exploreManager.ChangeCrystalStatus ();
 					exploreManager.expUICtr.UpdatePlayerStatusBar ();
 					GameManager.Instance.UIManager.RemoveCanvasCache ("LearnCanvas");
 					Destroy (this.gameObject);

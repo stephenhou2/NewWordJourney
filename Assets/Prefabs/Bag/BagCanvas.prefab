@@ -291,7 +291,6 @@ GameObject:
   m_Component:
   - component: {fileID: 224365730078939796}
   - component: {fileID: 114592418232870104}
-  - component: {fileID: 114719694200269822}
   - component: {fileID: 114001831515430554}
   m_Layer: 0
   m_Name: EquipmentButton
@@ -1816,7 +1815,6 @@ GameObject:
   m_Component:
   - component: {fileID: 224041608308911924}
   - component: {fileID: 114009527186082816}
-  - component: {fileID: 114368028693667498}
   - component: {fileID: 114266960289186422}
   m_Layer: 0
   m_Name: EquipmentButton
@@ -2493,7 +2491,6 @@ GameObject:
   m_Component:
   - component: {fileID: 224218730748560502}
   - component: {fileID: 114313936424726028}
-  - component: {fileID: 114610045560162594}
   - component: {fileID: 114282201674830834}
   m_Layer: 0
   m_Name: EquipmentButton
@@ -2560,7 +2557,6 @@ GameObject:
   m_Component:
   - component: {fileID: 224274863907017854}
   - component: {fileID: 114828020375779166}
-  - component: {fileID: 114704236059371284}
   - component: {fileID: 114720268539554868}
   m_Layer: 0
   m_Name: EquipmentButton
@@ -2976,7 +2972,6 @@ GameObject:
   m_Component:
   - component: {fileID: 224226803301396988}
   - component: {fileID: 114063812408090918}
-  - component: {fileID: 114979130934822484}
   - component: {fileID: 114074525990867014}
   m_Layer: 0
   m_Name: EquipmentButton
@@ -2994,7 +2989,6 @@ GameObject:
   m_Component:
   - component: {fileID: 224394369204790954}
   - component: {fileID: 114630904187879876}
-  - component: {fileID: 114586917595870966}
   - component: {fileID: 114383491685922990}
   m_Layer: 0
   m_Name: EquipmentButton
@@ -3705,7 +3699,6 @@ GameObject:
   m_Component:
   - component: {fileID: 224620520503061904}
   - component: {fileID: 114030124988357422}
-  - component: {fileID: 114164249780106490}
   - component: {fileID: 114482783169388080}
   m_Layer: 0
   m_Name: EquipmentButton
@@ -4971,19 +4964,6 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: "\u66B4\u51FB"
---- !u!114 &114164249780106490
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1972740807276084}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77491de856b5e47af942a08470d5d4fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tintImage: {fileID: 114415297534387060}
-  allEquipedItemDragControls: []
 --- !u!114 &114165336868692072
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6309,19 +6289,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114368028693667498
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1444031271438626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77491de856b5e47af942a08470d5d4fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tintImage: {fileID: 114462229393196846}
-  allEquipedItemDragControls: []
 --- !u!114 &114371647547347068
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7927,19 +7894,6 @@ MonoBehaviour:
   m_Spacing: {x: 30, y: 30}
   m_Constraint: 0
   m_ConstraintCount: 2
---- !u!114 &114586917595870966
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1770420203274238}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77491de856b5e47af942a08470d5d4fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tintImage: {fileID: 114298134557249244}
-  allEquipedItemDragControls: []
 --- !u!114 &114592418232870104
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -8091,19 +8045,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114610045560162594
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1633549959587988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77491de856b5e47af942a08470d5d4fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tintImage: {fileID: 114272748303542784}
-  allEquipedItemDragControls: []
 --- !u!114 &114616608749895840
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -8703,32 +8644,6 @@ MonoBehaviour:
   fillText: {fileID: 114298328878521838}
   changeDuration: 0.2
   updateWithAnim: 0
---- !u!114 &114704236059371284
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1644808855260226}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77491de856b5e47af942a08470d5d4fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tintImage: {fileID: 114465851118138822}
-  allEquipedItemDragControls: []
---- !u!114 &114719694200269822
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1074675104472310}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77491de856b5e47af942a08470d5d4fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tintImage: {fileID: 114288578291852276}
-  allEquipedItemDragControls: []
 --- !u!114 &114720268539554868
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -10201,19 +10116,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114979130934822484
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1767139175840760}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77491de856b5e47af942a08470d5d4fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tintImage: {fileID: 114842772566623684}
-  allEquipedItemDragControls: []
 --- !u!114 &114980021700894478
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -13640,10 +13542,10 @@ RectTransform:
   m_Father: {fileID: 224245014543545818}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 148, y: 148}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224419449654951994
 RectTransform:

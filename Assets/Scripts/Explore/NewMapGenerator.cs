@@ -186,7 +186,9 @@ namespace WordJourney
 
 			playerStartPosList.Clear ();
 
-            int randomMapIndex = Random.Range(0, 10);
+            Player.mainPlayer.currentLevelIndex = 9;
+            int currentLevelGrade = Player.mainPlayer.currentLevelIndex / 10;
+            int randomMapIndex = currentLevelGrade * 10 + Random.Range(0, 10);
             mapData = MapData.GetMapDataOfLevel (randomMapIndex);
 
 			// 获取地图建模的行数和列数

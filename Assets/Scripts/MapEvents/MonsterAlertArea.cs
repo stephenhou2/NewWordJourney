@@ -19,7 +19,7 @@ namespace WordJourney
 
 		public void InitializeAlertArea(){
 			alertAreaTint = GetComponent<UnityArmatureComponent> ();
-			mr = GetComponent<MeshRenderer> ();
+            mr = transform.Find("detect").GetComponent<MeshRenderer> ();
 			ec2D = GetComponent<EdgeCollider2D> ();
 			alertAreaTint.animation.timeScale = 0.2f;
 			ec2D.enabled = false;

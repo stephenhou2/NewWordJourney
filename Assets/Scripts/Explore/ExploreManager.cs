@@ -44,7 +44,7 @@ namespace WordJourney
 
 		[HideInInspector]public ExploreUICotroller expUICtr;
 
-		private Transform crystalEntered;
+		//private Transform crystalEntered;
 
 //		private Transform monsterEntered;
 
@@ -471,11 +471,11 @@ namespace WordJourney
 //		}
 
 
-		public void ChangeCrystalStatus(){
-			crystalEntered.GetComponent<Crystal> ().CrystalExausted ();
-			mapGenerator.mapWalkableInfoArray [(int)crystalEntered.position.x, (int)crystalEntered.position.y] = 1;
-			expUICtr.GetComponent<BattlePlayerUIController> ().UpdateAgentStatusPlane ();
-		}
+		//public void ChangeCrystalStatus(){
+		//	crystalEntered.GetComponent<Crystal> ().CrystalExausted ();
+		//	mapGenerator.mapWalkableInfoArray [(int)crystalEntered.position.x, (int)crystalEntered.position.y] = 1;
+		//	expUICtr.GetComponent<BattlePlayerUIController> ().UpdateAgentStatusPlane ();
+		//}
 
 		public void PlayerFade(){
 			battlePlayerCtr.PlayerFade ();
@@ -518,9 +518,10 @@ namespace WordJourney
 
 			walkableEvent.RefreshWalkableInfoWhenQuit (true);
 
-			player.totalGold += monster.rewardGold + player.extraGold;//更新玩家金钱
-
-			expUICtr.SetUpGoldGainTintHUD (monster.rewardGold);
+            //更新玩家金钱
+            int goldGain = monster.rewardGold + player.extraGold;
+            player.totalGold += goldGain;
+            expUICtr.SetUpGoldGainTintHUD (goldGain);
 
 			player.experience += monster.rewardExperience + player.extraExperience;//更新玩家经验值
 
@@ -536,9 +537,9 @@ namespace WordJourney
 
 			MapMonster mm = bmCtr.GetComponent<MapMonster> ();
 
-			if (mm != null) {
+            if (mm != null) {
 
-				Item rewardItem = mm.GenerateRandomRewardItem ();
+                Item rewardItem = monster.GenerateRewardItem();
 
 				if (rewardItem != null) {
 					newMapGenerator.SetUpRewardInMap (rewardItem, trans.position);
@@ -689,7 +690,7 @@ namespace WordJourney
 
 			player.currentLevelIndex++;
 
-			if (player.currentLevelIndex >= 10) {
+			if (player.currentLevelIndex >= 20) {
 				Debug.Log ("通关");
 				return;
 			}

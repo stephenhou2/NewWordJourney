@@ -43,7 +43,7 @@ namespace WordJourney
 
         private NavigationHelper navHelper;
 
-        public bool isInFight; //是否在战斗中
+
         public bool isInEvent; //是否在一个事件触发过程中
 
         public bool needPosFix;
@@ -810,6 +810,10 @@ namespace WordJourney
 
 		protected override void AgentExcuteHitEffect ()
 		{
+            if (isDead || (enemy != null && enemy.isDead))
+            {
+                return;
+            }
 
 			if (!isInFight) {
 				return;
@@ -1123,11 +1127,11 @@ namespace WordJourney
 		/// </summary>
 		override public void AgentDie(){
 
-			if (agent.isDead) {
+			if (isDead) {
 				return;
 			}
 
-			agent.isDead = true;
+			isDead = true;
 
 			ExploreManager.Instance.DisableAllInteractivity ();
 
@@ -1167,6 +1171,7 @@ namespace WordJourney
 			inSingleMoving = false;
 			isInEvent = false;
 			needPosFix = false;
+            isDead = false;
 			moveDestination = transform.position;
 			singleMoveEndPos = transform.position;
 			pathPosList.Clear ();

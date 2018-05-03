@@ -20,7 +20,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 
@@ -44,133 +44,6 @@ namespace DragonBones
         private short[] _frameArrayBuffer;
         private ushort[] _timelineArrayBuffer;
 
-        private bool _InRange(int a, int min, int max)
-        {
-            return min <= a && a <= max;
-        }
-        private string _DecodeUTF8(ushort[] data)
-        {
-            var EOF_byte = -1;
-            var EOF_code_point = -1;
-            var FATAL_POINT = 0xFFFD;
-
-            var pos = 0;
-            var result = "";
-            int? code_point;
-            var utf8_code_point = 0;
-            var utf8_bytes_needed = 0;
-            var utf8_bytes_seen = 0;
-            var utf8_lower_boundary = 0;
-
-            while (data.Length > pos)
-            {
-                var _byte = data[pos++];
-
-                if (_byte == EOF_byte)
-                {
-                    if (utf8_bytes_needed != 0)
-                    {
-                        code_point = FATAL_POINT;
-                    }
-                    else
-                    {
-                        code_point = EOF_code_point;
-                    }
-                }
-                else
-                {
-                    if (utf8_bytes_needed == 0)
-                    {
-                        if (this._InRange(_byte, 0x00, 0x7F))
-                        {
-                            code_point = _byte;
-                        }
-                        else
-                        {
-                            if (this._InRange(_byte, 0xC2, 0xDF))
-                            {
-                                utf8_bytes_needed = 1;
-                                utf8_lower_boundary = 0x80;
-                                utf8_code_point = _byte - 0xC0;
-                            }
-                            else if (this._InRange(_byte, 0xE0, 0xEF))
-                            {
-                                utf8_bytes_needed = 2;
-                                utf8_lower_boundary = 0x800;
-                                utf8_code_point = _byte - 0xE0;
-                            }
-                            else if (this._InRange(_byte, 0xF0, 0xF4))
-                            {
-                                utf8_bytes_needed = 3;
-                                utf8_lower_boundary = 0x10000;
-                                utf8_code_point = _byte - 0xF0;
-                            }
-                            else
-                            {
-
-                            }
-
-                            utf8_code_point = utf8_code_point * (int)Math.Pow(64, utf8_bytes_needed);
-                            code_point = null;
-                        }
-                    }
-                    else if (!this._InRange(_byte, 0x80, 0xBF))
-                    {
-                        utf8_code_point = 0;
-                        utf8_bytes_needed = 0;
-                        utf8_bytes_seen = 0;
-                        utf8_lower_boundary = 0;
-                        pos--;
-                        code_point = _byte;
-                    }
-                    else
-                    {
-                        utf8_bytes_seen += 1;
-                        utf8_code_point = utf8_code_point + (_byte - 0x80) * (int)Math.Pow(64, utf8_bytes_needed - utf8_bytes_seen);
-
-                        if (utf8_bytes_seen != utf8_bytes_needed)
-                        {
-                            code_point = null;
-                        }
-                        else
-                        {
-                            var cp = utf8_code_point;
-                            var lower_boundary = utf8_lower_boundary;
-                            utf8_code_point = 0;
-                            utf8_bytes_needed = 0;
-                            utf8_bytes_seen = 0;
-                            utf8_lower_boundary = 0;
-                            if (this._InRange(cp, lower_boundary, 0x10FFFF) && !this._InRange(cp, 0xD800, 0xDFFF))
-                            {
-                                code_point = cp;
-                            }
-                            else
-                            {
-                                code_point = _byte;
-                            }
-                        }
-                    }
-                }
-
-                //Decode string
-                if (code_point != null && code_point != EOF_code_point)
-                {
-                    if (code_point <= 0xFFFF)
-                    {
-                        
-                        if (code_point > 0) result += Convert.ToChar(code_point);
-                    }
-                    else
-                    {
-                        code_point -= 0x10000;
-                        result += Convert.ToChar(0xD800 + ((code_point >> 10) & 0x3ff));
-                        result += Convert.ToChar(0xDC00 + (code_point & 0x3ff));
-                    }
-                }
-            }
-
-            return result;
-        }
         private TimelineData _ParseBinaryTimeline(TimelineType type, uint offset, TimelineData timelineData = null)
         {
             var timeline = timelineData != null ? timelineData : BaseObject.BorrowObject<TimelineData>();
@@ -220,22 +93,19 @@ namespace DragonBones
             return timeline;
         }
 
-        protected override void _ParseMesh(Dictionary<string, object> rawData, MeshDisplayData mesh)
+        private void _ParseVertices(Dictionary<string, object> rawData, VerticesData vertices)
         {
-            //mesh.offset = (int)rawData[ObjectDataParser.OFFSET];
-            mesh.offset = int.Parse(rawData[ObjectDataParser.OFFSET].ToString());
+            vertices.offset = int.Parse(rawData[DataParser.OFFSET].ToString());
 
-            var weightOffset = this._intArrayBuffer[mesh.offset + (int)BinaryOffset.MeshWeightOffset];
-
+            var weightOffset = this._intArrayBuffer[vertices.offset + (int)BinaryOffset.MeshWeightOffset];
             if (weightOffset >= 0)
             {
                 var weight = BaseObject.BorrowObject<WeightData>();
-
-                var vertexCount = this._intArrayBuffer[mesh.offset + (int)BinaryOffset.MeshVertexCount];
+                var vertexCount = this._intArrayBuffer[vertices.offset + (int)BinaryOffset.MeshVertexCount];
                 var boneCount = this._intArrayBuffer[weightOffset + (int)BinaryOffset.WeigthBoneCount];
                 weight.offset = weightOffset;
-                
-                for (var i = 0; i < boneCount; ++i)
+
+                for (int i = 0; i < boneCount; ++i)
                 {
                     var boneIndex = this._intArrayBuffer[weightOffset + (int)BinaryOffset.WeigthBoneIndices + i];
                     weight.AddBone(this._rawBones[boneIndex]);
@@ -251,44 +121,49 @@ namespace DragonBones
                 }
 
                 weight.count = weightCount;
-                mesh.weight = weight;
+                vertices.weight = weight;
             }
+        }
+
+        protected override void _ParseMesh(Dictionary<string, object> rawData, MeshDisplayData mesh)
+        {
+            this._ParseVertices(rawData, mesh.vertices);
         }
         protected override AnimationData _ParseAnimation(Dictionary<string, object> rawData)
         {
             var animation = BaseObject.BorrowObject<AnimationData>();
-            animation.frameCount = (uint)Math.Max(ObjectDataParser._GetNumber(rawData, ObjectDataParser.DURATION, 1), 1);
-            animation.playTimes = (uint)ObjectDataParser._GetNumber(rawData, ObjectDataParser.PLAY_TIMES, 1);
+            animation.frameCount = (uint)Math.Max(ObjectDataParser._GetNumber(rawData, DataParser.DURATION, 1), 1);
+            animation.playTimes = (uint)ObjectDataParser._GetNumber(rawData, DataParser.PLAY_TIMES, 1);
             animation.duration = (float)animation.frameCount / (float)this._armature.frameRate;//Must float
-            animation.fadeInTime = ObjectDataParser._GetNumber(rawData, ObjectDataParser.FADE_IN_TIME, 0.0f);
-            animation.scale = ObjectDataParser._GetNumber(rawData, ObjectDataParser.SCALE, 1.0f);
-            animation.name = ObjectDataParser._GetString(rawData, ObjectDataParser.NAME, ObjectDataParser.DEFAULT_NAME);
+            animation.fadeInTime = ObjectDataParser._GetNumber(rawData, DataParser.FADE_IN_TIME, 0.0f);
+            animation.scale = ObjectDataParser._GetNumber(rawData, DataParser.SCALE, 1.0f);
+            animation.name = ObjectDataParser._GetString(rawData, DataParser.NAME, DataParser.DEFAULT_NAME);
             if (animation.name.Length == 0)
             {
-                animation.name = ObjectDataParser.DEFAULT_NAME;
+                animation.name = DataParser.DEFAULT_NAME;
             }
 
             // Offsets.
-            var offsets = rawData[ObjectDataParser.OFFSET] as List<object>;
+            var offsets = rawData[DataParser.OFFSET] as List<object>;
             animation.frameIntOffset = uint.Parse(offsets[0].ToString());
             animation.frameFloatOffset = uint.Parse(offsets[1].ToString());
             animation.frameOffset = uint.Parse(offsets[2].ToString());
 
             this._animation = animation;
 
-            if (rawData.ContainsKey(ObjectDataParser.ACTION))
+            if (rawData.ContainsKey(DataParser.ACTION))
             {
-                animation.actionTimeline = this._ParseBinaryTimeline(TimelineType.Action, uint.Parse(rawData[ObjectDataParser.ACTION].ToString()));
+                animation.actionTimeline = this._ParseBinaryTimeline(TimelineType.Action, uint.Parse(rawData[DataParser.ACTION].ToString()));
             }
 
-            if (rawData.ContainsKey(ObjectDataParser.Z_ORDER))
+            if (rawData.ContainsKey(DataParser.Z_ORDER))
             {
-                animation.zOrderTimeline = this._ParseBinaryTimeline(TimelineType.ZOrder, uint.Parse(rawData[ObjectDataParser.Z_ORDER].ToString()));
+                animation.zOrderTimeline = this._ParseBinaryTimeline(TimelineType.ZOrder, uint.Parse(rawData[DataParser.Z_ORDER].ToString()));
             }
 
-            if (rawData.ContainsKey(ObjectDataParser.BONE))
+            if (rawData.ContainsKey(DataParser.BONE))
             {
-                var rawTimeliness = rawData[ObjectDataParser.BONE] as Dictionary<string, object>;
+                var rawTimeliness = rawData[DataParser.BONE] as Dictionary<string, object>;
                 foreach (var k in rawTimeliness.Keys)
                 {
                     var rawTimelines = rawTimeliness[k] as List<object>;
@@ -309,9 +184,9 @@ namespace DragonBones
                 }
             }
 
-            if (rawData.ContainsKey(ObjectDataParser.SLOT))
+            if (rawData.ContainsKey(DataParser.SLOT))
             {
-                var rawTimeliness = rawData[ObjectDataParser.SLOT] as Dictionary<string, object>;
+                var rawTimeliness = rawData[DataParser.SLOT] as Dictionary<string, object>;
                 foreach (var k in rawTimeliness.Keys)
                 {
                     var rawTimelines = rawTimeliness[k] as List<object>;
@@ -332,9 +207,9 @@ namespace DragonBones
                 }
             }
 
-            if (rawData.ContainsKey(ObjectDataParser.CONSTRAINT))
+            if (rawData.ContainsKey(DataParser.CONSTRAINT))
             {
-                var rawTimeliness = rawData[ObjectDataParser.CONSTRAINT] as Dictionary<string, object>;
+                var rawTimeliness = rawData[DataParser.CONSTRAINT] as Dictionary<string, object>;
                 foreach (var k in rawTimeliness.Keys)
                 {
                     var rawTimelines = rawTimeliness[k] as List<object>;
@@ -347,8 +222,8 @@ namespace DragonBones
 
                     for (int i = 0, l = rawTimelines.Count; i < l; i += 2)
                     {
-                        var timelineType = rawTimelines[i];
-                        var timelineOffset = rawTimelines[i + 1];
+                        var timelineType = int.Parse(rawTimelines[i].ToString());
+                        var timelineOffset = int.Parse(rawTimelines[i + 1].ToString());
                         var timeline = this._ParseBinaryTimeline((TimelineType)timelineType, (uint)timelineOffset);
                         this._animation.AddConstraintTimeline(constraint, timeline);
                     }
@@ -361,7 +236,7 @@ namespace DragonBones
         }
         protected override void _ParseArray(Dictionary<string, object> rawData)
         {
-            var offsets = rawData[ObjectDataParser.OFFSET] as List<object>;
+            var offsets = rawData[DataParser.OFFSET] as List<object>;
 
             int l0 = int.Parse(offsets[0].ToString());
             int l1 = int.Parse(offsets[1].ToString());
@@ -377,7 +252,7 @@ namespace DragonBones
             float[] frameFloatArray = { };
             short[] frameArray = { };
             ushort[] timelineArray = { };
-            
+
             using (MemoryStream ms = new MemoryStream(_binary))
             using (BinaryDataReader reader = new BinaryDataReader(ms))
             {
@@ -412,13 +287,14 @@ namespace DragonBones
             this._data.frameArray = this._frameArrayBuffer;
             this._data.timelineArray = this._timelineArrayBuffer;
         }
+
         public override DragonBonesData ParseDragonBonesData(object rawObj, float scale = 1)
         {
-            Helper.Assert(rawObj != null  && rawObj is byte[], "Data error.");
+            Helper.Assert(rawObj != null && rawObj is byte[], "Data error.");
 
             byte[] bytes = rawObj as byte[];
             int headerLength = 0;
-            object header = JsonHelper.DeserializeBinaryJsonData(bytes, out headerLength, jsonParseDelegate);
+            object header = DeserializeBinaryJsonData(bytes, out headerLength, jsonParseDelegate);
 
             this._binary = bytes;
             this._binaryOffset = 8 + 4 + headerLength;
@@ -428,17 +304,37 @@ namespace DragonBones
             return base.ParseDragonBonesData(header, scale);
         }
 
-        private string _GetUTF16Key(string value)
+        public static Dictionary<string, object> DeserializeBinaryJsonData(byte[] bytes, out int headerLength, BinaryDataParser.JsonParseDelegate jsonParse = null)
         {
-            for (int i = 0, l = value.Length; i<l; ++i)
+            headerLength = 0;
+            Dictionary<string, object> result = null;
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(bytes))
+            using (BinaryDataReader reader = new BinaryDataReader(ms))
             {
-                if (Convert.ToByte(value[i]) > 255)
+                ms.Position = 0;
+                byte[] tag = reader.ReadBytes(8);
+
+                byte[] array = System.Text.Encoding.ASCII.GetBytes("DBDT");
+
+                if (tag[0] != array[0] ||
+                     tag[1] != array[1] ||
+                     tag[2] != array[2] ||
+                     tag[3] != array[3])
                 {
-                    return Uri.EscapeUriString(value);
+                    Helper.Assert(false, "Nonsupport data.");
+                    return null;
                 }
+
+                headerLength = (int)reader.ReadUInt32();
+                var headerBytes = reader.ReadBytes(headerLength);
+                var headerString = System.Text.Encoding.UTF8.GetString(headerBytes);
+                result = jsonParse != null ? jsonParse(headerString) as Dictionary<string, object> : MiniJSON.Json.Deserialize(headerString) as Dictionary<string, object>;
+
+                reader.Close();
+                ms.Dispose();
             }
 
-            return value;
+            return result;
         }
     }
 }

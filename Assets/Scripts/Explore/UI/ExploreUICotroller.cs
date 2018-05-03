@@ -274,8 +274,6 @@ namespace WordJourney
 			ExploreManager.Instance.AllWalkableEventsStopMove ();
 
             billboardHUD.SetUpBillboard(bb, QuitBillboard);
-
-
 		}
 
 		/// <summary>

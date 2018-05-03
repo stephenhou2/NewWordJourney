@@ -41,7 +41,7 @@ namespace WordJourney
 
 			ExploreManager.Instance.AllWalkableEventsStartMove ();
 
-			mwe.RefreshWalkableInfoWhenQuit (enemy.agent.isDead);
+			mwe.RefreshWalkableInfoWhenQuit (enemy.isDead);
 
 			if (!mwe.isInMoving) {
 				mwe.QuitFightAndDelayMove (5);

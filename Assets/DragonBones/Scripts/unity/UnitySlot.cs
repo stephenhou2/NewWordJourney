@@ -20,6 +20,28 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+﻿/**
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2012-2017 DragonBones team and other contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -30,27 +52,31 @@ namespace DragonBones
      * Unity 插槽。
      * @version DragonBones 3.0
      */
-    [DisallowMultipleComponent]
     public class UnitySlot : Slot
     {
+        internal const float Z_OFFSET = 0.001f;
         private static readonly int[] TRIANGLES = { 0, 1, 2, 0, 2, 3 };
-        private static readonly Vector2[] _helpVector2s = { new Vector2(), new Vector2(), new Vector2(), new Vector2() };
         private static Vector3 _helpVector3 = new Vector3();
+
+        internal GameObject _renderDisplay;
+        internal UnityUGUIDisplay _uiDisplay = null;
+
+        internal MeshBuffer _meshBuffer;
+
+        internal MeshRenderer _meshRenderer = null;
+        internal MeshFilter _meshFilter = null;
+
+        //combineMesh
+        internal bool _isIgnoreCombineMesh;
+        internal bool _isCombineMesh;
+        internal int _sumMeshIndex = -1;
+        internal int _verticeOrder = -1;
+        internal int _verticeOffset = -1;
+        internal UnityCombineMeshs _combineMesh = null;
+        internal bool _isActive = false;
 
         private bool _skewed;
         private UnityArmatureComponent _proxy;
-        private GameObject _renderDisplay;
-        private Mesh _mesh;
-        private Vector2[] _uvs;
-        private Vector3[] _vertices;
-        private Vector3[] _vertices2;
-        private Vector3[] _normals;
-        private Color32[] _colors;
-        private Vector3 _normalVal = Vector3.zero;
-        private MeshRenderer _renderer = null;
-        private MeshFilter _meshFilter = null;
-        private UnityUGUIDisplay _uiDisplay = null;
-
         private BlendMode _currentBlendMode;
 
         /**
@@ -67,37 +93,50 @@ namespace DragonBones
         {
             base._OnClear();
 
-            if (_mesh != null)
+            if (this._meshBuffer != null)
             {
-                UnityFactoryHelper.DestroyUnityObject(_mesh);
+                this._meshBuffer.Dispose();
             }
 
-            _skewed = false;
-            _proxy = null;
-            _renderDisplay = null;
-            _mesh = null;
-            _uvs = null;
-            _vertices = null;
-            _vertices2 = null;
-            _normals = null;
-            _colors = null;
+            this._skewed = false;
+            this._proxy = null;
 
-            _currentBlendMode = BlendMode.Normal;
+            this._renderDisplay = null;
+            this._uiDisplay = null;
+
+            this._meshBuffer = null;
+
+            this._meshRenderer = null;
+            this._meshFilter = null;
+
+            this._isIgnoreCombineMesh = false;
+            this._isCombineMesh = false;
+            this._sumMeshIndex = -1;
+            this._verticeOrder = -1;
+            this._verticeOffset = -1;
+
+            this._combineMesh = null;
+
+            this._currentBlendMode = BlendMode.Normal;
+            this._isActive = false;
         }
 
         /**
          * @private
          */
-        protected override void _InitDisplay(object value)
+        protected override void _InitDisplay(object value, bool isRetain)
         {
 
         }
         /**
          * @private
          */
-        protected override void _DisposeDisplay(object value)
+        protected override void _DisposeDisplay(object value, bool isRelease)
         {
-            UnityFactoryHelper.DestroyUnityObject(value as GameObject);
+            if (!isRelease)
+            {
+                UnityFactoryHelper.DestroyUnityObject(value as GameObject);
+            }
         }
         /**
          * @private
@@ -119,25 +158,25 @@ namespace DragonBones
             }
             else
             {
-                _renderer = _renderDisplay.GetComponent<MeshRenderer>();
-                if (_renderer == null)
+                _meshRenderer = _renderDisplay.GetComponent<MeshRenderer>();
+                if (_meshRenderer == null)
                 {
-                    _renderer = _renderDisplay.AddComponent<MeshRenderer>();
+                    _meshRenderer = _renderDisplay.AddComponent<MeshRenderer>();
                 }
                 //
                 _meshFilter = _renderDisplay.GetComponent<MeshFilter>();
-                if (_meshFilter == null)
+                if (_meshFilter == null && _renderDisplay.GetComponent<TextMesh>() == null)
                 {
                     _meshFilter = _renderDisplay.AddComponent<MeshFilter>();
                 }
             }
 
             //init mesh
-            if (_mesh == null)
+            if (this._meshBuffer == null)
             {
-                _mesh = new Mesh();
-                _mesh.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
-                _mesh.MarkDynamic();
+                this._meshBuffer = new MeshBuffer();
+                this._meshBuffer.sharedMesh = MeshBuffer.GenerateMesh();
+                this._meshBuffer.sharedMesh.name = this.name;
             }
         }
         /**
@@ -151,7 +190,7 @@ namespace DragonBones
             {
                 _renderDisplay.transform.SetParent(container.transform);
 
-                _helpVector3.Set(0.0f, 0.0f, -_zOrder * (_proxy.zSpace + 0.001f));
+                _helpVector3.Set(0.0f, 0.0f, 0.0f);
                 _SetZorder(_helpVector3);
             }
         }
@@ -184,9 +223,13 @@ namespace DragonBones
          */
         protected override void _UpdateZOrder()
         {
-            _helpVector3.Set(_renderDisplay.transform.localPosition.x, _renderDisplay.transform.localPosition.y, -_zOrder * (_proxy._zSpace + 0.001f));
+            _SetZorder(this._renderDisplay.transform.localPosition);
 
-            _SetZorder(_helpVector3);
+            //
+            if (this._childArmature != null || !this._isActive)
+            {
+                this._CombineMesh();
+            }
         }
 
         /**
@@ -194,51 +237,138 @@ namespace DragonBones
          */
         internal void _SetZorder(Vector3 zorderPos)
         {
-            if (_renderDisplay != null)
+            if (this._isCombineMesh)
             {
-                _renderDisplay.transform.localPosition = zorderPos;
-                _renderDisplay.transform.SetSiblingIndex(_zOrder);
+                var meshBuffer = this._combineMesh.meshBuffers[this._sumMeshIndex];
+                meshBuffer.zorderDirty = true;
+            }
 
-                if (_proxy.isUGUI)
-                {
-                    return;
-                }
+            {
+                zorderPos.z = -this._zOrder * (this._proxy._zSpace + Z_OFFSET);
 
-                if (_childArmature == null)
+                if (_renderDisplay != null)
                 {
-                    if (_renderer == null)
+                    _renderDisplay.transform.localPosition = zorderPos;
+                    _renderDisplay.transform.SetSiblingIndex(_zOrder);
+
+                    if (_proxy.isUGUI)
                     {
-                        _renderer = _renderDisplay.GetComponent<MeshRenderer>();
-                        if (_renderer == null)
-                        {
-                            _renderer = _renderDisplay.AddComponent<MeshRenderer>();
-                        }
+                        return;
                     }
 
-                    _renderer.sortingLayerName = _proxy.sortingLayerName;
-                    if (_proxy.sortingMode == SortingMode.SortByOrder)
+                    if (_childArmature == null)
                     {
-                        _renderer.sortingOrder = _zOrder * UnityArmatureComponent.ORDER_SPACE;
+                        _meshRenderer.sortingLayerName = _proxy.sortingLayerName;
+                        if (_proxy.sortingMode == SortingMode.SortByOrder)
+                        {
+                            _meshRenderer.sortingOrder = _zOrder * UnityArmatureComponent.ORDER_SPACE;
+                        }
+                        else
+                        {
+                            _meshRenderer.sortingOrder = _proxy.sortingOrder;
+                        }
                     }
                     else
                     {
-                        _renderer.sortingOrder = _proxy.sortingOrder;
+                        var childArmatureComp = childArmature.proxy as UnityArmatureComponent;
+                        childArmatureComp._sortingMode = _proxy._sortingMode;
+                        childArmatureComp._sortingLayerName = _proxy._sortingLayerName;
+                        if (_proxy._sortingMode == SortingMode.SortByOrder)
+                        {
+                            childArmatureComp.sortingOrder = _zOrder * UnityArmatureComponent.ORDER_SPACE;
+                        }
+                        else
+                        {
+                            childArmatureComp.sortingOrder = _proxy._sortingOrder;
+                        }
                     }
+                }
+            }
+        }
+
+        public void DisallowCombineMesh()
+        {
+            this.CancelCombineMesh();
+            this._isIgnoreCombineMesh = true;
+        }
+
+        internal void CancelCombineMesh()
+        {
+            if (this._isCombineMesh)
+            {
+                this._isCombineMesh = false;
+                if (this._meshFilter != null)
+                {
+                    this._meshFilter.sharedMesh = this._meshBuffer.sharedMesh;
+                    var isSkinnedMesh = this._deformVertices != null && this._deformVertices.verticesData != null && this._deformVertices.verticesData.weight != null;
+                    if (!isSkinnedMesh)
+                    {
+                        this._meshBuffer.rawVertextBuffers.CopyTo(this._meshBuffer.vertexBuffers, 0);
+                    }
+
+                    //
+                    this._meshBuffer.UpdateVertices();
+                    this._meshBuffer.UpdateColors();
+
+                    if (isSkinnedMesh)
+                    {
+                        this._UpdateMesh();
+                        this._IdentityTransform();
+                    }
+                    else
+                    {
+                        this._UpdateTransform();
+                    }
+                }
+
+                this._meshBuffer.enabled = true;
+            }
+
+            if (this._renderDisplay != null)
+            {
+                if (this._childArmature != null)
+                {
+                    this._renderDisplay.SetActive(true);
                 }
                 else
                 {
-                    var childArmatureComp = childArmature.proxy as UnityArmatureComponent;
-                    childArmatureComp._sortingMode = _proxy._sortingMode;
-                    childArmatureComp._sortingLayerName = _proxy._sortingLayerName;
-                    if (_proxy._sortingMode == SortingMode.SortByOrder)
-                    {
-                        childArmatureComp._sortingOrder = _zOrder * UnityArmatureComponent.ORDER_SPACE; ;
-                    }
-                    else
-                    {
-                        childArmatureComp._sortingOrder = _proxy._sortingOrder;
-                    }
+                    this._renderDisplay.SetActive(this._isActive);
                 }
+                //
+                this._renderDisplay.hideFlags = HideFlags.None;
+            }
+
+            //
+            this._isCombineMesh = false;
+            this._sumMeshIndex = -1;
+            this._verticeOrder = -1;
+            this._verticeOffset = -1;
+            // this._combineMesh = null;
+        }
+
+        //
+        private void _CombineMesh()
+        {
+            //引起合并的条件,Display改变，混合模式改变，Visible改变，Zorder改变
+            //已经关闭合并，不再考虑
+            if (this._isIgnoreCombineMesh || this._proxy.isUGUI)
+            {
+                return;
+            }
+
+            //已经合并过了，又触发合并，那么打断合并，用自己的网格数据还原
+            if (this._isCombineMesh)
+            {
+                //已经合并过，除非满足一下情况，否则都不能再合并, TODO
+                this.CancelCombineMesh();
+                this._isIgnoreCombineMesh = true;
+            }
+
+            var combineMeshComp = this._proxy.GetComponent<UnityCombineMeshs>();
+            //从来没有合并过，触发合并，那么尝试合并
+            if (combineMeshComp != null)
+            {
+                combineMeshComp.dirty = true;
             }
         }
 
@@ -247,39 +377,47 @@ namespace DragonBones
          */
         internal override void _UpdateVisible()
         {
-            _renderDisplay.SetActive(_parent.visible);
+            this._renderDisplay.SetActive(this._parent.visible);
+
+            if (this._isCombineMesh && !this._parent.visible)
+            {
+                this._CombineMesh();
+            }
         }
         /**
          * @private
          */
         internal override void _UpdateBlendMode()
         {
-            if (_currentBlendMode == _blendMode)
+            if (this._currentBlendMode == this._blendMode)
             {
                 return;
             }
 
-            if (_childArmature == null)
+            if (this._childArmature == null)
             {
-                if (_uiDisplay != null)
+                if (this._uiDisplay != null)
                 {
-                    _uiDisplay.material = (this._textureData as UnityTextureData).GetMaterial(_blendMode, true);
+                    this._uiDisplay.material = (this._textureData as UnityTextureData).GetMaterial(this._blendMode, true);
                 }
                 else
                 {
-                    _renderer.sharedMaterial = (this._textureData as UnityTextureData).GetMaterial(_blendMode);
+                    this._meshRenderer.sharedMaterial = (this._textureData as UnityTextureData).GetMaterial(this._blendMode);
                 }
+
+                this._meshBuffer.name = this._uiDisplay != null ? this._uiDisplay.material.name : this._meshRenderer.sharedMaterial.name;
             }
             else
             {
                 foreach (var slot in _childArmature.GetSlots())
                 {
-                    slot._blendMode = _blendMode;
+                    slot._blendMode = this._blendMode;
                     slot._UpdateBlendMode();
                 }
             }
 
-            _currentBlendMode = _blendMode;
+            this._currentBlendMode = this._blendMode;
+            this._CombineMesh();
         }
         /**
          * @private
@@ -288,28 +426,39 @@ namespace DragonBones
         {
             if (this._childArmature == null)
             {
-                if (_mesh != null)
+                var proxyTrans = _proxy._colorTransform;
+                if (this._isCombineMesh)
                 {
-                    if (_colors == null || _colors.Length != _mesh.vertexCount)
+                    var meshBuffer = this._combineMesh.meshBuffers[this._sumMeshIndex];
+                    for (var i = 0; i < this._meshBuffer.vertexBuffers.Length; i++)
                     {
-                        _colors = new Color32[_mesh.vertexCount];
+                        var index = this._verticeOffset + i;
+                        this._meshBuffer.color32Buffers[i].r = (byte)(_colorTransform.redMultiplier * proxyTrans.redMultiplier * 255);
+                        this._meshBuffer.color32Buffers[i].g = (byte)(_colorTransform.greenMultiplier * proxyTrans.greenMultiplier * 255);
+                        this._meshBuffer.color32Buffers[i].b = (byte)(_colorTransform.blueMultiplier * proxyTrans.blueMultiplier * 255);
+                        this._meshBuffer.color32Buffers[i].a = (byte)(_colorTransform.alphaMultiplier * proxyTrans.alphaMultiplier * 255);
+                        //
+                        meshBuffer.color32Buffers[index] = this._meshBuffer.color32Buffers[i];
                     }
 
-                    var proxyTrans = _proxy._colorTransform;
-                    for (int i = 0, l = _mesh.vertexCount; i < l; ++i)
+                    meshBuffer.UpdateColors();
+                }
+                else if (this._meshBuffer.sharedMesh != null)
+                {
+                    for (int i = 0, l = this._meshBuffer.sharedMesh.vertexCount; i < l; ++i)
                     {
-                        _colors[i].r = (byte)(_colorTransform.redMultiplier * proxyTrans.redMultiplier * 255);
-                        _colors[i].g = (byte)(_colorTransform.greenMultiplier * proxyTrans.greenMultiplier * 255);
-                        _colors[i].b = (byte)(_colorTransform.blueMultiplier * proxyTrans.blueMultiplier * 255);
-                        _colors[i].a = (byte)(_colorTransform.alphaMultiplier * proxyTrans.alphaMultiplier * 255);
+                        this._meshBuffer.color32Buffers[i].r = (byte)(_colorTransform.redMultiplier * proxyTrans.redMultiplier * 255);
+                        this._meshBuffer.color32Buffers[i].g = (byte)(_colorTransform.greenMultiplier * proxyTrans.greenMultiplier * 255);
+                        this._meshBuffer.color32Buffers[i].b = (byte)(_colorTransform.blueMultiplier * proxyTrans.blueMultiplier * 255);
+                        this._meshBuffer.color32Buffers[i].a = (byte)(_colorTransform.alphaMultiplier * proxyTrans.alphaMultiplier * 255);
                     }
                     //
-                    _mesh.colors32 = _colors;
+                    this._meshBuffer.UpdateColors();
                 }
             }
             else
             {
-                //set all childArmature color dirty
+                //Set all childArmature color dirty
                 (this._childArmature.proxy as UnityArmatureComponent).color = _colorTransform;
             }
 
@@ -319,24 +468,20 @@ namespace DragonBones
          */
         protected override void _UpdateFrame()
         {
-            var meshData = this._display == this._meshDisplay ? this._meshData : null;
+            var currentVerticesData = (this._deformVertices != null && this._display == this._meshDisplay) ? this._deformVertices.verticesData : null;
             var currentTextureData = this._textureData as UnityTextureData;
 
+            this._meshBuffer.Clear();
+            this._isActive = false;
             if (this._displayIndex >= 0 && this._display != null && currentTextureData != null)
             {
                 var currentTextureAtlas = _proxy.isUGUI ? currentTextureAtlasData.uiTexture : currentTextureAtlasData.texture;
                 if (currentTextureAtlas != null)
                 {
+                    this._isActive = true;
+                    //
                     var textureAtlasWidth = currentTextureAtlasData.width > 0.0f ? (int)currentTextureAtlasData.width : currentTextureAtlas.mainTexture.width;
                     var textureAtlasHeight = currentTextureAtlasData.height > 0.0f ? (int)currentTextureAtlasData.height : currentTextureAtlas.mainTexture.height;
-
-                    var meshDisplay = this._mesh;
-                    meshDisplay.Clear();
-                    meshDisplay.uv = null;
-                    meshDisplay.vertices = null;
-                    meshDisplay.normals = null;
-                    meshDisplay.triangles = null;
-                    meshDisplay.colors32 = null;
 
                     var textureScale = _armature.armatureData.scale * currentTextureData.parent.scale;
                     var sourceX = currentTextureData.region.x;
@@ -344,61 +489,68 @@ namespace DragonBones
                     var sourceWidth = currentTextureData.region.width;
                     var sourceHeight = currentTextureData.region.height;
 
-                    if (meshData != null)
+                    if (currentVerticesData != null)
                     {
-                        var data = meshData.parent.parent.parent;
+                        var data = currentVerticesData.data;
+                        var meshOffset = currentVerticesData.offset;
                         var intArray = data.intArray;
                         var floatArray = data.floatArray;
-                        var vertexCount = intArray[meshData.offset + (int)BinaryOffset.MeshVertexCount];
-                        var triangleCount = intArray[meshData.offset + (int)BinaryOffset.MeshTriangleCount];
-                        int vertexOffset = intArray[meshData.offset + (int)BinaryOffset.MeshFloatOffset];
+                        var vertexCount = intArray[meshOffset + (int)BinaryOffset.MeshVertexCount];
+                        var triangleCount = intArray[meshOffset + (int)BinaryOffset.MeshTriangleCount];
+                        int vertexOffset = intArray[meshOffset + (int)BinaryOffset.MeshFloatOffset];
                         if (vertexOffset < 0)
                         {
                             vertexOffset += 65536; // Fixed out of bouds bug. 
                         }
 
                         var uvOffset = vertexOffset + vertexCount * 2;
-
-                        if (this._uvs == null || this._uvs.Length != vertexCount)
+                        if (this._meshBuffer.uvBuffers == null || this._meshBuffer.uvBuffers.Length != vertexCount)
                         {
-                            this._uvs = new Vector2[vertexCount];
+                            this._meshBuffer.uvBuffers = new Vector2[vertexCount];
                         }
 
-                        if (this._vertices == null || this._vertices.Length != vertexCount)
+                        if (this._meshBuffer.rawVertextBuffers == null || this._meshBuffer.rawVertextBuffers.Length != vertexCount)
                         {
-                            this._vertices = new Vector3[vertexCount];
-                            this._vertices2 = new Vector3[vertexCount];
+                            this._meshBuffer.rawVertextBuffers = new Vector3[vertexCount];
+                            this._meshBuffer.vertexBuffers = new Vector3[vertexCount];
                         }
 
-                        int[] triangles = new int[triangleCount * 3];
+                        this._meshBuffer.triangleBuffers = new int[triangleCount * 3];
 
                         for (int i = 0, iV = vertexOffset, iU = uvOffset, l = vertexCount; i < l; ++i)
                         {
-                            this._vertices[i].x = floatArray[iV++] * textureScale;
-                            this._vertices[i].y = floatArray[iV++] * textureScale;
+                            this._meshBuffer.uvBuffers[i].x = (sourceX + floatArray[iU++] * sourceWidth) / textureAtlasWidth;
+                            this._meshBuffer.uvBuffers[i].y = 1.0f - (sourceY + floatArray[iU++] * sourceHeight) / textureAtlasHeight;
 
-                            this._uvs[i].x = (sourceX + floatArray[iU++] * sourceWidth) / textureAtlasWidth;
-                            this._uvs[i].y = 1.0f - (sourceY + floatArray[iU++] * sourceHeight) / textureAtlasHeight;
+                            this._meshBuffer.rawVertextBuffers[i].x = floatArray[iV++] * textureScale;
+                            this._meshBuffer.rawVertextBuffers[i].y = floatArray[iV++] * textureScale;
 
-                            this._vertices2[i] = this._vertices[i];
+                            this._meshBuffer.vertexBuffers[i].x = this._meshBuffer.rawVertextBuffers[i].x;
+                            this._meshBuffer.vertexBuffers[i].y = this._meshBuffer.rawVertextBuffers[i].y;
                         }
 
                         for (int i = 0; i < triangleCount * 3; ++i)
                         {
-                            triangles[i] = intArray[meshData.offset + (int)BinaryOffset.MeshVertexIndices + i];
+                            this._meshBuffer.triangleBuffers[i] = intArray[meshOffset + (int)BinaryOffset.MeshVertexIndices + i];
                         }
 
-                        //
-                        meshDisplay.vertices = this._vertices;
-                        meshDisplay.uv = this._uvs;// Must set vertices before uvs.
-                        meshDisplay.triangles = triangles;
+                        var isSkinned = currentVerticesData.weight != null;
+                        if (isSkinned)
+                        {
+                            this._IdentityTransform();
+                        }
                     }
                     else
                     {
-                        if (_vertices == null || _vertices.Length != 4)
+                        if (this._meshBuffer.rawVertextBuffers == null || this._meshBuffer.rawVertextBuffers.Length != 4)
                         {
-                            _vertices = new Vector3[4];
-                            _vertices2 = new Vector3[4];
+                            this._meshBuffer.rawVertextBuffers = new Vector3[4];
+                            this._meshBuffer.vertexBuffers = new Vector3[4];
+                        }
+
+                        if (this._meshBuffer.uvBuffers == null || this._meshBuffer.uvBuffers.Length != this._meshBuffer.rawVertextBuffers.Length)
+                        {
+                            this._meshBuffer.uvBuffers = new Vector2[this._meshBuffer.rawVertextBuffers.Length];
                         }
 
                         // Normal texture.                        
@@ -432,7 +584,7 @@ namespace DragonBones
                             var scaleWidth = sourceWidth * textureScale;
                             var scaleHeight = sourceHeight * textureScale;
                             var pivotX = _pivotX;
-                            var pivotY = scaleHeight - _pivotY;
+                            var pivotY = _pivotY;
 
                             if (currentTextureData.rotated)
                             {
@@ -442,95 +594,104 @@ namespace DragonBones
 
                                 pivotX = scaleWidth - _pivotX;
                                 pivotY = scaleHeight - _pivotY;
-
                                 //uv
-                                _helpVector2s[i].x = (sourceX + (1.0f - v) * sourceWidth) / textureAtlasWidth;
-                                _helpVector2s[i].y = 1.0f - (sourceY + u * sourceHeight) / textureAtlasHeight;
+                                this._meshBuffer.uvBuffers[i].x = (sourceX + (1.0f - v) * sourceWidth) / textureAtlasWidth;
+                                this._meshBuffer.uvBuffers[i].y = 1.0f - (sourceY + u * sourceHeight) / textureAtlasHeight;
                             }
                             else
                             {
                                 //uv
-                                _helpVector2s[i].x = (sourceX + u * sourceWidth) / textureAtlasWidth;
-                                _helpVector2s[i].y = 1.0f - (sourceY + v * sourceHeight) / textureAtlasHeight;
+                                this._meshBuffer.uvBuffers[i].x = (sourceX + u * sourceWidth) / textureAtlasWidth;
+                                this._meshBuffer.uvBuffers[i].y = 1.0f - (sourceY + v * sourceHeight) / textureAtlasHeight;
                             }
 
                             //vertices
-                            _vertices[i].x = (u * scaleWidth) - pivotX;
-                            _vertices[i].y = (1.0f - v) * scaleHeight - pivotY;
+                            this._meshBuffer.rawVertextBuffers[i].x = u * scaleWidth - pivotX;
+                            this._meshBuffer.rawVertextBuffers[i].y = (1.0f - v) * scaleHeight - pivotY;
 
-                            _vertices[i].z = 0.0f;
-                            _vertices2[i] = _vertices[i];
+                            this._meshBuffer.vertexBuffers[i].x = this._meshBuffer.rawVertextBuffers[i].x;
+                            this._meshBuffer.vertexBuffers[i].y = this._meshBuffer.rawVertextBuffers[i].y;
                         }
 
-                        _mesh.vertices = _vertices; // Must set vertices before uvs.
-                        _mesh.uv = _helpVector2s;
-                        _mesh.triangles = TRIANGLES;
+                        this._meshBuffer.triangleBuffers = TRIANGLES;
                     }
 
                     if (_proxy.isUGUI)
                     {
-                        _uiDisplay.material = currentTextureAtlas;
-                        _uiDisplay.texture = currentTextureAtlas.mainTexture;
-                        _mesh.RecalculateBounds();
-                        _uiDisplay.sharedMesh = _mesh;
+                        this._uiDisplay.material = currentTextureAtlas;
+                        this._uiDisplay.texture = currentTextureAtlas.mainTexture;
+                        this._uiDisplay.sharedMesh = this._meshBuffer.sharedMesh;
                     }
                     else
                     {
-                        if (_renderer.enabled)
-                        {
-                            _mesh.RecalculateBounds();
-                        }
-
-                        _meshFilter.sharedMesh = _mesh;
-                        _renderer.sharedMaterial = currentTextureAtlas;
+                        this._meshFilter.sharedMesh = this._meshBuffer.sharedMesh;
+                        this._meshRenderer.sharedMaterial = currentTextureAtlas;
                     }
 
+                    this._meshBuffer.name = currentTextureAtlas.name;
+                    this._meshBuffer.InitMesh();
                     this._currentBlendMode = BlendMode.Normal;
                     this._blendModeDirty = true;
                     this._colorDirty = true;// Relpace texture will override blendMode and color.
                     this._visibleDirty = true;
+
+                    this._CombineMesh();
                     return;
                 }
             }
 
-            _renderDisplay.SetActive(false);
+            this._renderDisplay.SetActive(this._isActive);
             if (_proxy.isUGUI)
             {
-                _uiDisplay.material = null;
-                _uiDisplay.texture = null;
-                _uiDisplay.sharedMesh = null;
+                this._uiDisplay.material = null;
+                this._uiDisplay.texture = null;
+                this._uiDisplay.sharedMesh = null;
             }
             else
             {
-                _meshFilter.sharedMesh = null;
-                _renderer.sharedMaterial = null;
+                this._meshFilter.sharedMesh = null;
+                this._meshRenderer.sharedMaterial = null;
             }
 
             _helpVector3.x = 0.0f;
             _helpVector3.y = 0.0f;
-            _helpVector3.z = _renderDisplay.transform.localPosition.z;
+            _helpVector3.z = this._renderDisplay.transform.localPosition.z;
 
-            _renderDisplay.transform.localPosition = _helpVector3;
+            this._renderDisplay.transform.localPosition = _helpVector3;
+
+            if (this._isCombineMesh)
+            {
+                this._CombineMesh();
+            }
+        }
+
+        protected override void _IdentityTransform()
+        {
+            var transform = this._renderDisplay.transform;
+
+            transform.localPosition = new Vector3(0.0f, 0.0f, transform.localPosition.z);
+            transform.localEulerAngles = Vector3.zero;
+            transform.localScale = Vector3.one;
         }
 
         protected override void _UpdateMesh()
         {
-            if (_mesh == null)
+            if (this._meshBuffer.sharedMesh == null || this._deformVertices == null)
             {
                 return;
             }
+            
+            var scale = this._armature.armatureData.scale;
+            var deformVertices = this._deformVertices.vertices;
+            var bones = this._deformVertices.bones;
+            var hasDeform = deformVertices.Count > 0;
+            var verticesData = this._deformVertices.verticesData;
+            var weightData = verticesData.weight;
 
-            //
-            var hasFFD = this._ffdVertices.Count > 0;
-            var scale = _armature.armatureData.scale;
-            var meshData = this._meshData;
-            var weightData = meshData.weight;
-            var meshDisplay = this._mesh;
-
-            var data = meshData.parent.parent.parent;
+            var data = verticesData.data;
             var intArray = data.intArray;
             var floatArray = data.floatArray;
-            var vertextCount = intArray[meshData.offset + (int)BinaryOffset.MeshVertexCount];
+            var vertextCount = intArray[verticesData.offset + (int)BinaryOffset.MeshVertexCount];
 
             if (weightData != null)
             {
@@ -540,6 +701,11 @@ namespace DragonBones
                     weightFloatOffset += 65536; // Fixed out of bouds bug. 
                 }
 
+                MeshBuffer meshBuffer = null;
+                if (this._isCombineMesh)
+                {
+                    meshBuffer = this._combineMesh.meshBuffers[this._sumMeshIndex];
+                }
                 int iB = weightData.offset + (int)BinaryOffset.WeigthBoneIndices + weightData.bones.Count, iV = weightFloatOffset, iF = 0;
                 for (int i = 0; i < vertextCount; ++i)
                 {
@@ -548,7 +714,7 @@ namespace DragonBones
                     for (var j = 0; j < boneCount; ++j)
                     {
                         var boneIndex = intArray[iB++];
-                        var bone = this._meshBones[boneIndex];
+                        var bone = bones[boneIndex];
                         if (bone != null)
                         {
                             var matrix = bone.globalTransformMatrix;
@@ -556,64 +722,132 @@ namespace DragonBones
                             var xL = floatArray[iV++] * scale;
                             var yL = floatArray[iV++] * scale;
 
-                            if (hasFFD)
+                            if (hasDeform)
                             {
-                                xL += this._ffdVertices[iF++];
-                                yL += this._ffdVertices[iF++];
+                                xL += deformVertices[iF++];
+                                yL += deformVertices[iF++];
                             }
 
                             xG += (matrix.a * xL + matrix.c * yL + matrix.tx) * weight;
                             yG += (matrix.b * xL + matrix.d * yL + matrix.ty) * weight;
                         }
                     }
+                    this._meshBuffer.vertexBuffers[i].x = xG;
+                    this._meshBuffer.vertexBuffers[i].y = yG;
 
-                    _vertices[i].x = xG;
-                    _vertices[i].y = yG;
-                    _vertices2[i].x = _vertices[i].x;
-                    _vertices2[i].y = _vertices[i].y;
+                    if (meshBuffer != null)
+                    {
+                        meshBuffer.vertexBuffers[i + this._verticeOffset].x = xG;
+                        meshBuffer.vertexBuffers[i + this._verticeOffset].y = yG;
+                    }
                 }
 
-                meshDisplay.vertices = _vertices;
-
-                if (_renderer && _renderer.enabled)
+                if (meshBuffer != null)
                 {
-                    meshDisplay.RecalculateBounds();
+                    meshBuffer.vertexDirty = true;
+                }
+                else
+                {
+                    // if (this._meshRenderer && this._meshRenderer.enabled)
+                    {
+                        this._meshBuffer.UpdateVertices();
+                    }
                 }
             }
-            else if (hasFFD)
+            else if (deformVertices.Count > 0)
             {
-                int vertexOffset = intArray[meshData.offset + (int)BinaryOffset.MeshFloatOffset];
+                int vertexOffset = data.intArray[verticesData.offset + (int)BinaryOffset.MeshFloatOffset];
                 if (vertexOffset < 0)
                 {
                     vertexOffset += 65536; // Fixed out of bouds bug. 
                 }
+                //
+                var a = globalTransformMatrix.a;
+                var b = globalTransformMatrix.b;
+                var c = globalTransformMatrix.c;
+                var d = globalTransformMatrix.d;
+                var tx = globalTransformMatrix.tx;
+                var ty = globalTransformMatrix.ty;
+
+                var index = 0;
+                var rx = 0.0f;
+                var ry = 0.0f;
+                var vx = 0.0f;
+                var vy = 0.0f;
+                MeshBuffer meshBuffer = null;
+                if (this._isCombineMesh)
+                {
+                    meshBuffer = this._combineMesh.meshBuffers[this._sumMeshIndex];
+                }
 
                 for (int i = 0, iV = 0, iF = 0, l = vertextCount; i < l; ++i)
                 {
-                    _vertices[i].x = (floatArray[vertexOffset + (iV++)] * scale + this._ffdVertices[iF++]);
-                    _vertices[i].y = -(floatArray[vertexOffset + (iV++)] * scale + this._ffdVertices[iF++]);
-                    _vertices2[i].x = _vertices[i].x;
-                    _vertices2[i].y = _vertices[i].y;
+                    rx = (data.floatArray[vertexOffset + (iV++)] * scale + deformVertices[iF++]);
+                    ry = (data.floatArray[vertexOffset + (iV++)] * scale + deformVertices[iF++]);
+
+                    this._meshBuffer.rawVertextBuffers[i].x = rx;
+                    this._meshBuffer.rawVertextBuffers[i].y = -ry;
+
+                    this._meshBuffer.vertexBuffers[i].x = rx;
+                    this._meshBuffer.vertexBuffers[i].y = -ry;
+
+                    if (meshBuffer != null)
+                    {
+                        index = i + this._verticeOffset;
+                        vx = (rx * a + ry * c + tx);
+                        vy = (rx * b + ry * d + ty);
+
+                        meshBuffer.vertexBuffers[index].x = vx;
+                        meshBuffer.vertexBuffers[index].y = vy;
+                    }
                 }
-
-                meshDisplay.vertices = _vertices;
-
-                if (_renderer && _renderer.enabled)
+                if (meshBuffer != null)
                 {
-                    meshDisplay.RecalculateBounds();
+                    meshBuffer.vertexDirty = true;
+                }
+                // else if (this._meshRenderer && this._meshRenderer.enabled)
+                else
+                {
+                    this._meshBuffer.UpdateVertices();
                 }
             }
         }
 
-        protected override void _UpdateTransform(bool isSkinnedMesh)
+        protected override void _UpdateTransform()
         {
-            if (isSkinnedMesh)
+            if (this._isCombineMesh)
             {
-                var transform = _renderDisplay.transform;
+                var a = globalTransformMatrix.a;
+                var b = globalTransformMatrix.b;
+                var c = globalTransformMatrix.c;
+                var d = globalTransformMatrix.d;
+                var tx = globalTransformMatrix.tx;
+                var ty = globalTransformMatrix.ty;
 
-                transform.localPosition = new Vector3(0.0f, 0.0f, transform.localPosition.z);
-                transform.localEulerAngles = Vector3.zero;
-                transform.localScale = Vector3.one;
+                var index = 0;
+                var rx = 0.0f;
+                var ry = 0.0f;
+                var vx = 0.0f;
+                var vy = 0.0f;
+                var meshBuffer = this._combineMesh.meshBuffers[this._sumMeshIndex];
+                for (int i = 0, l = this._meshBuffer.vertexBuffers.Length; i < l; i++)
+                {
+                    index = i + this._verticeOffset;
+                    //vertices
+                    rx = this._meshBuffer.rawVertextBuffers[i].x;
+                    ry = -this._meshBuffer.rawVertextBuffers[i].y;
+
+                    vx = rx * a + ry * c + tx;
+                    vy = rx * b + ry * d + ty;
+
+                    this._meshBuffer.vertexBuffers[i].x = vx;
+                    this._meshBuffer.vertexBuffers[i].y = vy;
+
+                    meshBuffer.vertexBuffers[index].x = vx;
+                    meshBuffer.vertexBuffers[index].y = vy;
+                }
+                //
+                meshBuffer.vertexDirty = true;
             }
             else
             {
@@ -676,7 +910,7 @@ namespace DragonBones
                 transform.localEulerAngles = _helpVector3;
 
                 //Modify mesh skew. // TODO child armature skew.
-                if ((_display == _rawDisplay || _display == _meshDisplay) && _mesh != null)
+                if ((this._display == this._rawDisplay || this._display == this._meshDisplay) && this._meshBuffer.sharedMesh != null)
                 {
                     var skew = global.skew;
                     var dSkew = skew;
@@ -698,27 +932,28 @@ namespace DragonBones
                         var cos = Mathf.Cos(dSkew);
                         var sin = Mathf.Sin(dSkew);
 
-                        for (int i = 0, l = _vertices.Length; i < l; ++i)
+                        var x = 0.0f;
+                        var y = 0.0f;
+                        for (int i = 0, l = this._meshBuffer.vertexBuffers.Length; i < l; ++i)
                         {
-                            var x = _vertices[i].x;
-                            var y = _vertices[i].y;
+                            x = this._meshBuffer.rawVertextBuffers[i].x;
+                            y = this._meshBuffer.rawVertextBuffers[i].y;
 
                             if (isPositive)
                             {
-                                _vertices2[i].x = x + y * sin;
+                                this._meshBuffer.vertexBuffers[i].x = x + y * sin;
                             }
                             else
                             {
-                                _vertices2[i].x = -x + y * sin;
+                                this._meshBuffer.vertexBuffers[i].x = -x + y * sin;
                             }
 
-                            _vertices2[i].y = y * cos;
+                            this._meshBuffer.vertexBuffers[i].y = y * cos;
                         }
 
-                        _mesh.vertices = _vertices2;
-                        if (_renderer && _renderer.enabled)
+                        // if (this._meshRenderer && this._meshRenderer.enabled)
                         {
-                            _mesh.RecalculateBounds();
+                            this._meshBuffer.UpdateVertices();
                         }
                     }
                 }
@@ -733,85 +968,55 @@ namespace DragonBones
 
             if (_childArmature != null)
             {
-                UnityArmatureComponent unityArmature = (_childArmature.proxy as UnityArmatureComponent);
                 _childArmature.flipX = _armature.flipX;
                 _childArmature.flipY = _armature.flipY;
-
-                unityArmature.addNormal = _proxy.addNormal;
-                unityArmature.boneHierarchy = _proxy.boneHierarchy;
-            }
-
-            UpdateNormal();
-        }
-
-        public void UpdateNormal()
-        {
-            if (_mesh != null)
-            {
-                if (_proxy.addNormal)
-                {
-                    var flipX = armature.flipX ? 1f : -1f;
-                    var flipY = armature.flipY ? 1f : -1f;
-                    float normalZ = -flipX * flipY;
-                    if (_normals == null || _normals.Length != _mesh.vertexCount)
-                    {
-                        _normals = new Vector3[_mesh.vertexCount];
-                        _normalVal.z = 0f;
-                    }
-                    if (normalZ != _normalVal.z)
-                    {
-                        _normalVal.z = normalZ;
-                        for (int i = 0; i < _mesh.vertexCount; ++i)
-                        {
-                            _normals[i] = _normalVal;
-                        }
-                        _mesh.normals = _normals;
-                    }
-                }
-                else
-                {
-                    _normals = null;
-                    _normalVal.z = 0f;
-                }
-            }
-            else
-            {
-                _normals = null;
-                _normalVal.z = 0f;
             }
         }
 
         public Mesh mesh
         {
-            get { return _mesh; }
+            get
+            {
+                if (this._meshBuffer == null)
+                {
+                    return null;
+                }
+
+                return this._meshBuffer.sharedMesh;
+            }
         }
 
         public MeshRenderer meshRenderer
         {
-            get { return _renderer; }
+            get { return this._meshRenderer; }
         }
 
         public UnityTextureAtlasData currentTextureAtlasData
         {
             get
             {
-                if (_textureData == null || _textureData.parent == null)
+                if (this._textureData == null || this._textureData.parent == null)
                 {
                     return null;
                 }
 
-                return _textureData.parent as UnityTextureAtlasData;
+                return this._textureData.parent as UnityTextureAtlasData;
             }
         }
-        
+
         public GameObject renderDisplay
         {
-            get { return _renderDisplay; }
+            get { return this._renderDisplay; }
         }
 
         public UnityArmatureComponent proxy
         {
-            get { return _proxy; }
+            get { return this._proxy; }
+        }
+
+        public bool isIgnoreCombineMesh
+        {
+            get { return this._isIgnoreCombineMesh; }
         }
     }
 }
