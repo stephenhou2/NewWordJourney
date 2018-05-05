@@ -1467,7 +1467,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentName: 
   agentLevel: 0
-  isDead: 0
   originalMaxHealth: 0
   originalMaxMana: 0
   originalAttack: 0
@@ -1520,6 +1519,8 @@ MonoBehaviour:
   rewardExperience: 0
   rewardGold: 0
   mAttackInterval: 0
+  rewardItemIds: 
+  isBoss: 0
 --- !u!114 &114743356949123248
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1555,7 +1556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioClipName: 
   wordsArray: []
-  canMove: 1
+  canMove: 0
   isInAutoWalk: 0
   isTriggered: 0
   canEnterFight: 0
@@ -1660,6 +1661,8 @@ MonoBehaviour:
   agent: {fileID: 0}
   enemy: {fileID: 0}
   isIdle: 1
+  isInFight: 0
+  isDead: 0
   collosionLayer:
     serializedVersion: 2
     m_Bits: 2560
@@ -1668,7 +1671,6 @@ MonoBehaviour:
   currentTriggeredEffectAnim: []
   towards: 0
   effectAnimContainer: {fileID: 4432953355679392}
-  isInFight: 0
 --- !u!114 &114979658027443870
 MonoBehaviour:
   m_ObjectHideFlags: 1

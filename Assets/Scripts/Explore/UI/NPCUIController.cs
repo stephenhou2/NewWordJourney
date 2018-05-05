@@ -630,6 +630,7 @@ namespace WordJourney
 			goodsDisplayPlane.transform.localPosition = goodsPlaneStartPos;
 			specialOperationHUD.transform.DOLocalMoveX (specialOperationHUDStartPos.x, flyDuration);
 			bagItemsDisplay.transform.DOLocalMoveY (bagItemsPlaneStartPos.y, flyDuration);
+            specialOperationHUD.QuitSpecialOperationHUD();
 		}
 			
 

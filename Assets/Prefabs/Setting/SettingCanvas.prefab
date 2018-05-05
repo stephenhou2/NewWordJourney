@@ -532,6 +532,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 224055691714956984}
+  - component: {fileID: 114933149327084660}
   m_Layer: 0
   m_Name: Fill Area
   m_TagString: Untagged
@@ -2321,6 +2322,7 @@ MonoBehaviour:
   volumeControl: {fileID: 114379932473127316}
   tg: {fileID: 114563318763618992}
   settingPlane: {fileID: 224886272603210264}
+  quitAPPButton: {fileID: 224846018913472204}
   simpleWords: {fileID: 114218818209035092}
   mediumWords: {fileID: 114275430890258242}
   masterWords: {fileID: 114219378551513124}
@@ -3244,6 +3246,21 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114933149327084660
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1499288800195214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e945ae9200044f5d95be5e291f431be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fillImage: {fileID: 114575186834043532}
+  fillText: {fileID: 0}
+  changeDuration: 0.2
+  updateWithAnim: 0
 --- !u!114 &114933668858503040
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5068,8 +5085,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 327.49997, y: -25.5}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: -10, y: -10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224989558164164574
 RectTransform:

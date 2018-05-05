@@ -60,27 +60,11 @@ namespace WordJourney
 
 		public void QuitSpecialOperationHUD(){
 
-			bool needRefreshBag = false;
+            equipmentCell.soDragControl.Reset();
 
-			Item equipment = equipmentCell.soDragControl.item;
+            functionalItemCell.soDragControl.Reset();
 
-			if (equipment != null) {
-				Player.mainPlayer.AddItem (equipment);
-				needRefreshBag = true;
-			}
-
-			Item functionalItem = functionalItemCell.soDragControl.item;
-
-			if (functionalItem != null) {
-				Player.mainPlayer.AddItem (functionalItem);
-				needRefreshBag = true;
-			}
-
-			if (needRefreshBag) {
-				refreshCurrentBagCallBack ();
-			}
-
-			gameObject.SetActive (false);
+			//gameObject.SetActive (false);
 
 		}
 

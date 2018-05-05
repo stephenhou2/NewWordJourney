@@ -149,6 +149,8 @@ namespace WordJourney
         public bool MoveToPosition(Vector3 moveDestination, int[,] mapWalkableInfoArray)
         {
 
+            boxCollider.enabled = true;
+
             if (isInFight)
             {
                 return false;
@@ -392,6 +394,23 @@ namespace WordJourney
                     }
                 }
 
+                if (pathPosList.Count >= 2)
+                {
+
+                    Vector3 firstFollowingPos = pathPosList[0];
+                    Vector3 secondFollowingPos = pathPosList[1];
+
+                    if ((firstFollowingPos.y - transform.position.y) * (secondFollowingPos.y - transform.position.y) < 0
+                        && Mathf.RoundToInt(firstFollowingPos.x) == Mathf.RoundToInt(transform.position.x)
+                        && Mathf.RoundToInt(firstFollowingPos.x) == Mathf.RoundToInt(secondFollowingPos.x))
+                    {
+                        pathPosList.RemoveAt(0);
+                        MoveToNextPosition();
+                        return;
+                    }
+                }
+
+
                 if (Mathf.RoundToInt(nextPos.x) == Mathf.RoundToInt(transform.position.x))
                 {
 
@@ -502,11 +521,10 @@ namespace WordJourney
                 {
                     moveTweener.Kill(true);
 
-                    if(!isIdle){
+                    if (!isIdle)
+                    {
                         PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
                     }
-
-
                 }
                 else
                 {
@@ -986,81 +1004,81 @@ namespace WordJourney
 			                 || animName == CommonData.roleIdleAnimName
 			                 || animName == CommonData.roleDieAnimName;
 
-			if (!adaptException && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+			if (!adaptException) {
 				
 				Equipment playerWeapon = Player.mainPlayer.allEquipedEquipments [0];
 
 				switch (playerWeapon.weaponType) {
-				case WeaponType.None:
-					if (IsInAttackAnim(animName)) {
-						adaptName = CommonData.playerAttackBareHandName;
-					} else if (IsInPhysicalSkillAnim(animName)) {
-						adaptName = CommonData.playerPhysicalSkillBareHandName;
-					} else if (IsInMagiclSkillAnim(animName)) {
-						adaptName = CommonData.playerMagicalSkillBareHandName;
-					} else if (IsInIntervalAnim(animName)) {
-						adaptName = CommonData.playerIntervalBareHandName;
-					}
-					break;
-				case WeaponType.Sword:
-					if (IsInAttackAnim(animName)) {
-						adaptName = CommonData.playerAttackWithSwordName;
-					} else if (IsInPhysicalSkillAnim(animName)) {
-						adaptName = CommonData.playerPhysicalSkillWithSwordName;
-					} else if (IsInMagiclSkillAnim(animName)) {
-						adaptName = CommonData.playerMagicalSkillWithSwordName;
-					} else if (IsInIntervalAnim(animName)) {
-						adaptName = CommonData.playerIntervalWithSwordName;
-					}
-					break;
-				case WeaponType.Staff:
-					if (IsInAttackAnim(animName)) {
-						adaptName = CommonData.playerAttackWithStaffName;
-					} else if (IsInPhysicalSkillAnim(animName)) {
-						adaptName = CommonData.playerPhysicalSkillWithStaffName;
-					} else if (IsInMagiclSkillAnim(animName)) {
-						adaptName = CommonData.playerMagicalSkillWithStaffName;
-					} else if (IsInIntervalAnim(animName)) {
-						adaptName = CommonData.playerIntervalWithStaffName;
-					}
-					break;
-				case WeaponType.Axe:
-					if (IsInAttackAnim(animName)) {
-						adaptName = CommonData.playerAttackWithAxeName;
-					} else if (IsInPhysicalSkillAnim(animName)) {
-						adaptName = CommonData.playerPhysicalSkillWithAxeName;
-					} else if (IsInMagiclSkillAnim(animName)) {
-						adaptName = CommonData.playerMagicalSkillWithAxeName;
-					} else if (IsInIntervalAnim(animName)) {
-						adaptName = CommonData.playerIntervalWithAxeName;
-					}
-					break;
-				case WeaponType.Dragger:
-					if (IsInAttackAnim(animName)) {
-						adaptName = CommonData.playerAttackWithDraggerName;
-					} else if (IsInPhysicalSkillAnim(animName)) {
-						adaptName = CommonData.playerPhysicalSkillWithDraggerName;
-					} else if (IsInMagiclSkillAnim(animName)) {
-						adaptName = CommonData.playerMagicalSkillWithDraggerName;
-					} else if (IsInIntervalAnim(animName)) {
-						adaptName = CommonData.playerIntervalWithDraggerName;
-					}
-					break;
+    				case WeaponType.None:
+    					if (IsInAttackAnim(animName)) {
+    						adaptName = CommonData.playerAttackBareHandName;
+                        } else if (IsInPhysicalSkillAnim(animName) && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+    						adaptName = CommonData.playerPhysicalSkillBareHandName;
+                        } else if (IsInMagiclSkillAnim(animName) && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+    						adaptName = CommonData.playerMagicalSkillBareHandName;
+    					} else if (IsInIntervalAnim(animName)) {
+    						adaptName = CommonData.playerIntervalBareHandName;
+    					}
+    					break;
+    				case WeaponType.Sword:
+    					if (IsInAttackAnim(animName)) {
+    						adaptName = CommonData.playerAttackWithSwordName;
+                        } else if (IsInPhysicalSkillAnim(animName) && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+    						adaptName = CommonData.playerPhysicalSkillWithSwordName;
+                        } else if (IsInMagiclSkillAnim(animName) && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+    						adaptName = CommonData.playerMagicalSkillWithSwordName;
+    					} else if (IsInIntervalAnim(animName)) {
+    						adaptName = CommonData.playerIntervalWithSwordName;
+    					}
+    					break;
+    				case WeaponType.Staff:
+    					if (IsInAttackAnim(animName)) {
+    						adaptName = CommonData.playerAttackWithStaffName;
+                        } else if (IsInPhysicalSkillAnim(animName) && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+    						adaptName = CommonData.playerPhysicalSkillWithStaffName;
+                        } else if (IsInMagiclSkillAnim(animName) && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+    						adaptName = CommonData.playerMagicalSkillWithStaffName;
+    					} else if (IsInIntervalAnim(animName)) {
+    						adaptName = CommonData.playerIntervalWithStaffName;
+    					}
+    					break;
+    				case WeaponType.Axe:
+    					if (IsInAttackAnim(animName)) {
+    						adaptName = CommonData.playerAttackWithAxeName;
+                        } else if (IsInPhysicalSkillAnim(animName) && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+    						adaptName = CommonData.playerPhysicalSkillWithAxeName;
+                        } else if (IsInMagiclSkillAnim(animName) && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+    						adaptName = CommonData.playerMagicalSkillWithAxeName;
+    					} else if (IsInIntervalAnim(animName)) {
+    						adaptName = CommonData.playerIntervalWithAxeName;
+    					}
+    					break;
+    				case WeaponType.Dragger:
+    					if (IsInAttackAnim(animName)) {
+    						adaptName = CommonData.playerAttackWithDraggerName;
+                        } else if (IsInPhysicalSkillAnim(animName) && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+    						adaptName = CommonData.playerPhysicalSkillWithDraggerName;
+                        } else if (IsInMagiclSkillAnim(animName) && (towards == MyTowards.Left || towards == MyTowards.Right)) {
+    						adaptName = CommonData.playerMagicalSkillWithDraggerName;
+    					} else if (IsInIntervalAnim(animName)) {
+    						adaptName = CommonData.playerIntervalWithDraggerName;
+    					}
+    					break;
 				}
 
 			}
 
-			if (towards == MyTowards.Up || towards == MyTowards.Down) {
-				if (IsInAttackAnim (animName)) {
-					adaptName = CommonData.roleAttackAnimName;
-				} else if (IsInIntervalAnim (animName)) {
-					adaptName = CommonData.roleAttackIntervalAnimName;
-				} else if (IsInPhysicalSkillAnim (animName)) {
-					adaptName = CommonData.roleAttackAnimName;
-				} else if (IsInMagiclSkillAnim (animName)) {
-					adaptName = CommonData.roleAttackAnimName;
-				}
-			}
+			//if (towards == MyTowards.Up || towards == MyTowards.Down) {
+			//	if (IsInAttackAnim (animName)) {
+			//		adaptName = CommonData.roleAttackAnimName;
+			//	} else if (IsInIntervalAnim (animName)) {
+			//		adaptName = CommonData.roleAttackIntervalAnimName;
+			//	} else if (IsInPhysicalSkillAnim (animName)) {
+			//		adaptName = CommonData.roleAttackAnimName;
+			//	} else if (IsInMagiclSkillAnim (animName)) {
+			//		adaptName = CommonData.roleAttackAnimName;
+			//	}
+			//}
 
 			return adaptName;
 

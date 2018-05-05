@@ -194,6 +194,7 @@ namespace WordJourney
 
 
 		public void SetUpCurrentBagItemsPlane(){
+            
 			bagItemsDisplay.SetUpCurrentBagItemsPlane ();
 		}
 			
@@ -318,8 +319,12 @@ namespace WordJourney
 		/// <param name="item">Item.</param>
 		/// <param name="btn">Button.</param>
 		public void AddBagItem(Item item,int atIndex = -1,bool forceAdd = false){
-
-			bagItemsDisplay.AddBagItem (item, atIndex, forceAdd);
+            if(bagItemsDisplay.currentBagIndex == 4){
+                bagItemsDisplay.SetUpEquipedEquipments();
+            }else{
+                bagItemsDisplay.AddBagItem(item, atIndex, forceAdd);
+            }
+			
 		}
 
 

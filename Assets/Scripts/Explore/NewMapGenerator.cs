@@ -186,7 +186,6 @@ namespace WordJourney
 
 			playerStartPosList.Clear ();
 
-            Player.mainPlayer.currentLevelIndex = 9;
             int currentLevelGrade = Player.mainPlayer.currentLevelIndex / 10;
             int randomMapIndex = currentLevelGrade * 10 + Random.Range(0, 10);
             mapData = MapData.GetMapDataOfLevel (randomMapIndex);

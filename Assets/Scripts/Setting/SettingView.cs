@@ -49,7 +49,7 @@ namespace WordJourney
             }
 
 #if UNITY_ANDROID
-            quitAPPButton.gameObjcet.SetActive(True);
+            quitAPPButton.gameObject.SetActive(true);
 #else
             quitAPPButton.gameObject.SetActive(false);
 #endif

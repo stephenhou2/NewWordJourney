@@ -76,7 +76,9 @@ namespace WordJourney
 
 			ItemDragControl dragControl = draggedObject.GetComponent<ItemDragControl> ();
 
-            bagView.GetComponent<BagViewController>().currentSelectItem = draggedItem;
+            if(bagView != null){
+                bagView.GetComponent<BagViewController>().currentSelectItem = draggedItem;
+            }
 
 			// 如果是从背包中拖拽出来的物品
 			if (dragControl is ItemInBagDragControl) {
@@ -120,23 +122,23 @@ namespace WordJourney
 			// 如果是从已装备面板拖拽过来的物品
 			if (dragControl is SpecialOperationItemDragControl) {
 
-				if (Player.mainPlayer.CheckBagFull (draggedItem)) {
-					SetDropResult (eventData, false);
-					tintImage.enabled = false;
-					bagView.SetUpSingleTextTintHUD ("背包已满,请先整理背包");
-					return;
-				}
+				//if (Player.mainPlayer.CheckBagFull (draggedItem)) {
+				//	SetDropResult (eventData, false);
+				//	tintImage.enabled = false;
+				//	bagView.SetUpSingleTextTintHUD ("背包已满,请先整理背包");
+				//	return;
+				//}
 
-				Equipment equipment = draggedItem as Equipment;
+				//Equipment equipment = draggedItem as Equipment;
 
-				if (equipment.itemId >= 0) {
-					Player.mainPlayer.AddItem (equipment);
-					bagView.AddBagItem (equipment);
+				//if (equipment.itemId >= 0) {
+					//Player.mainPlayer.AddItem (equipment);
+					//bagView.AddBagItem (equipment);
 					(dragControl as SpecialOperationItemDragControl).Reset ();
 					SetDropResult (eventData, true);
-				} else {
-					SetDropResult (eventData, false);
-				}
+				//} else {
+				//	SetDropResult (eventData, false);
+				//}
 
 
 			}

@@ -52,26 +52,17 @@ namespace WordJourney{
 		}
 
 
-		private IEnumerator DelayedMovement(int delay){
+        private IEnumerator DelayedMovement(int delay)
+        {
 
-			DisableAllDetect ();
+            DisableAllDetect();
 
-			yield return new WaitForSeconds (delay);
+            yield return new WaitForSeconds(delay);
 
-			EnableAllDetect ();
-			StartMove ();
+            EnableAllDetect();
+            StartMove();
 
-		}
-
-
-//		public void ReenableDetect(){
-//			if (npc.isExcutor) {
-//				bc2d.enabled = true;
-//				EnableAllAlertAreaDetect ();
-//			} else {
-//				bc2d.enabled = true;
-//			}
-//		}
+        }
 
 
 
@@ -168,6 +159,7 @@ namespace WordJourney{
 			}
 
 
+
             EnterMapEvent (bp);
 		}
 
@@ -187,6 +179,11 @@ namespace WordJourney{
 			}
 
 			bp.isInEvent = true;
+
+            bp.StopMoveAndWait();
+
+            bp.FixPositionToStandard();
+
 			MapEventTriggered (false, bp);
 		}
 
@@ -194,12 +191,15 @@ namespace WordJourney{
 			if (isInMoving) {
 				RefreshWalkableInfoWhenTriggeredInMoving ();
 			}
+            bp.StopMoveAtEndOfCurrentStep();
 			bp.isInEvent = true;
 			MapEventTriggered (true, bp);
 		}
 
 		public override void MapEventTriggered (bool isFromDetect, BattlePlayerController bp)
 		{
+            bp.boxCollider.enabled = false;
+
 			if (isTriggered) {
 				return;
 			}
@@ -216,7 +216,7 @@ namespace WordJourney{
 
 			ExploreManager.Instance.currentEnteredMapEvent = this;
 
-			bp.StopMoveAtEndOfCurrentStep ();
+			//bp.StopMoveAtEndOfCurrentStep ();
 
 			if(canMove){	
 //				bp.StopMoveAtEndOfCurrentStep ();
@@ -224,7 +224,6 @@ namespace WordJourney{
 				StartCoroutine ("AdjustPositionAndTowards", bp);
 
 			} else {
-//				bp.StopMoveAndWait ();
 
 				AdjustTowards (bp);
 			}

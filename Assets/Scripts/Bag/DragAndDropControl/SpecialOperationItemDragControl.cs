@@ -104,6 +104,7 @@ namespace WordJourney
 
 		public override void Reset(){
 			item = null;
+            itemImage.sprite = null;
 			itemImage.enabled = false;
 		}
 

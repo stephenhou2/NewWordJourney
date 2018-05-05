@@ -680,6 +680,8 @@ namespace WordJourney
 
 			AllWalkableEventsStopMove ();
 
+            GameManager.Instance.pronounceManager.ClearPronunciationCache();
+
 			Time.timeScale = 1;
 
 			DisableExploreInteractivity ();

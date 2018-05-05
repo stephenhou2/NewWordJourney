@@ -12,32 +12,40 @@ namespace WordJourney
 
 		public MapNPC mapNPC;
 
-		private UnityArmatureComponent alertAreaTint;
-		private MeshRenderer mr;
-		private EdgeCollider2D ec2D;
+		//private UnityArmatureComponent alertAreaTint;
+		//private MeshRenderer mr;
+		//private EdgeCollider2D ec2D;
+        private BoxCollider2D boxCollider2D;
 
 
 		public void InitializeAlertArea(){
-			alertAreaTint = GetComponent<UnityArmatureComponent> ();
-            mr = transform.Find("detect").GetComponent<MeshRenderer>();
-			ec2D = GetComponent<EdgeCollider2D> ();
+			//alertAreaTint = GetComponent<UnityArmatureComponent> ();
 
-			mr.enabled = false;
-			alertAreaTint.enabled = false;
+            //mr = transform.Find("detect").GetComponent<MeshRenderer>();
 
-//			alertAreaTint.animation.timeScale = 0.2f;
-//			alertAreaTint.animation.Play ();
-			ec2D.enabled = true;
+			//ec2D = GetComponent<EdgeCollider2D> ();
+
+            boxCollider2D = GetComponent<BoxCollider2D> ();
+
+			//mr.enabled = false;
+			//alertAreaTint.enabled = false;
+
+            //			alertAreaTint.animation.timeScale = 0.2f;
+            //			alertAreaTint.animation.Play ();
+            //ec2D.enabled = true;
+            boxCollider2D.enabled = true;
 		}
 			
 
 		public void EnableAlertDetect(){
-			ec2D.enabled = true;
+			//ec2D.enabled = true;
+            boxCollider2D.enabled = true;
 //			alertAreaTint.animation.Play ();
 		}
 
 		public void DisableAlertDetect(){
-			ec2D.enabled = false;
+			//ec2D.enabled = false;
+            boxCollider2D.enabled = false;
 //			alertAreaTint.animation.Stop ();
 		}
 

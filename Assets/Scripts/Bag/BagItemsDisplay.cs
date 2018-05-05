@@ -21,7 +21,7 @@ namespace WordJourney
 
 
 //		private int singleBagItemVolume = 24;
-		private int currentBagIndex;
+        public int currentBagIndex;
 
 		private int minItemIndexOfCurrentBag {
 			get {
@@ -51,13 +51,11 @@ namespace WordJourney
 
 			bagItemsPool.AddChildInstancesToPool (bagItemsContainer);
 
-			currentBagIndex = bagIndex;
-
 			for (int i = 0; i < bagTabs.Length; i++) {
 				if (i == currentBagIndex) {
-					bagTabs[i].GetComponentInChildren<Image>().sprite = bagTabSelectedIcon;
+					bagTabs[i].GetComponent<Image>().sprite = bagTabSelectedIcon;
 				}else{
-					bagTabs[i].GetComponentInChildren<Image>().sprite = bagTabDeselectedIcon;
+					bagTabs[i].GetComponent<Image>().sprite = bagTabDeselectedIcon;
 				}
 			}
 
@@ -74,6 +72,37 @@ namespace WordJourney
 
 		}
 
+        public void SetUpEquipedEquipments(){
+            
+            totalGoldText.text = Player.mainPlayer.totalGold.ToString();
+
+            bagItemsPool.AddChildInstancesToPool(bagItemsContainer);
+
+            for (int i = 0; i < bagTabs.Length; i++)
+            {
+                if (i == currentBagIndex)
+                {
+                    bagTabs[i].GetComponent<Image>().sprite = bagTabSelectedIcon;
+                }
+                else
+                {
+                    bagTabs[i].GetComponent<Image>().sprite = bagTabDeselectedIcon;
+                }
+            }
+
+            for (int i = 0; i < Player.mainPlayer.allEquipedEquipments.Length; i++)
+            {
+                Equipment eqp = Player.mainPlayer.allEquipedEquipments[i];
+
+                if(eqp.itemId < 0){
+                    continue;
+                }
+
+                AddBagItem(eqp);
+            }
+
+        }
+
 		public void UpdateBagTabs(){
 			bagTabs [3].transform.Find ("LockIcon").gameObject.SetActive (!BuyRecord.Instance.extraBagUnlocked);
 		}
@@ -84,8 +113,13 @@ namespace WordJourney
 		}
 
 		public void SetUpCurrentBagItemsPlane(){
-			SetUpBagItemsPlane (currentBagIndex);
-		}
+            if(currentBagIndex != 4){
+                SetUpBagItemsPlane(currentBagIndex);
+            }else{
+                SetUpEquipedEquipments();        
+            }
+        }
+			
 
 
 		public void ChangeBag(int bagIndex){
@@ -98,8 +132,15 @@ namespace WordJourney
 			if (bagIndex == currentBagIndex) {
 				return;
 			}
+
 			currentBagIndex = bagIndex;
-			SetUpBagItemsPlane (bagIndex);
+
+            if(bagIndex != 4){
+                SetUpBagItemsPlane(bagIndex);
+            }else{
+                SetUpEquipedEquipments();
+            }
+			
 
 		}
 
@@ -178,10 +219,6 @@ namespace WordJourney
 				return;
 			}
 
-//			if (player.allItemsInBag.Count <= minItemIndexOfCurrentBag) {
-//				tintHUD.SetUpTintHUD (string.Format("已自动加入背包{0}",currentBagIndex), null);
-//				return;
-//			}
 				
 			Transform bagItem = bagItemsPool.GetInstance<Transform> (bagItemModel.gameObject, bagItemsContainer);
 

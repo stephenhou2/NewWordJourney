@@ -283,7 +283,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1416496866382916
 GameObject:
   m_ObjectHideFlags: 0
@@ -699,9 +699,9 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1185127155831244}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.000024438192, w: 1}
+  m_LocalPosition: {x: -0.069318935, y: 0.0042334013, z: 0}
+  m_LocalScale: {x: 0.99999994, y: 0.99999994, z: 1}
   m_Children: []
   m_Father: {fileID: 4174219411663198}
   m_RootOrder: 0
@@ -2810,7 +2810,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentName: 
   agentLevel: 0
-  isDead: 0
   originalMaxHealth: 0
   originalMaxMana: 0
   originalAttack: 0
@@ -2863,6 +2862,8 @@ MonoBehaviour:
   rewardExperience: 0
   rewardGold: 0
   mAttackInterval: 0
+  rewardItemIds: 
+  isBoss: 0
 --- !u!114 &114816580770156070
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2876,7 +2877,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioClipName: 
   wordsArray: []
-  canMove: 1
+  canMove: 0
   isInAutoWalk: 0
   isTriggered: 0
   canEnterFight: 0
@@ -2958,7 +2959,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotNames:
-  - shadow
   - weapon
   - arm_r_1
   - arm_r_2
@@ -2992,6 +2992,8 @@ MonoBehaviour:
   agent: {fileID: 0}
   enemy: {fileID: 0}
   isIdle: 1
+  isInFight: 0
+  isDead: 0
   collosionLayer:
     serializedVersion: 2
     m_Bits: 2560
@@ -3000,7 +3002,6 @@ MonoBehaviour:
   currentTriggeredEffectAnim: []
   towards: 0
   effectAnimContainer: {fileID: 4472728603766244}
-  isInFight: 0
 --- !u!114 &114960754114361380
 MonoBehaviour:
   m_ObjectHideFlags: 1

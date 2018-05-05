@@ -19,11 +19,11 @@ namespace WordJourney
 
 		void Awake(){
 			
-			for (int i = 1; i < 33; i++) {
-				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
-			}
-//
-//			Player.mainPlayer.AddItem (Item.NewItemWith (305, 20));
+			//for (int i = 1; i < 33; i++) {
+			//	Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
+			//}
+
+			//Player.mainPlayer.AddItem (Item.NewItemWith (305, 20));
 //
 //			for (int i = 401; i < 433; i++) {
 //				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));

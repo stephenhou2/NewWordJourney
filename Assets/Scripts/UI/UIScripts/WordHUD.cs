@@ -324,25 +324,51 @@ namespace WordJourney
 			return index;
 
 		}
-			
 
 
-		/// <summary>
-		/// 作出单词选择
-		/// </summary>
-		/// <param name="index">Index.</param>
-		public void OnMakeExplainationChoice(int index){
 
-			canQuitWhenClickBackground = false;
+        /// <summary>
+        /// 作出单词选择
+        /// </summary>
+        /// <param name="index">Index.</param>
+        public void OnMakeExplainationChoice(int index)
+        {
 
-			if (index == answerIndex) {
-				choiceTexts [index].color = Color.green;
-				StartCoroutine ("ShowChooseResultForAWhile", true);
-			} else {
-				choiceTexts [index].color = Color.red;
-				choiceTexts [answerIndex].color = Color.green;
-				StartCoroutine ("ShowChooseResultForAWhile", false);
-			}
+            canQuitWhenClickBackground = false;
+
+            bool chooseCorrect = index == answerIndex;
+
+            if (chooseCorrect)
+            {
+                choiceTexts[index].color = Color.green;
+                StartCoroutine("ShowChooseResultForAWhile", true);
+            }
+            else
+            {
+                choiceTexts[index].color = Color.red;
+                choiceTexts[answerIndex].color = Color.green;
+                StartCoroutine("ShowChooseResultForAWhile", false);
+            }
+
+            MySQLiteHelper sql = MySQLiteHelper.Instance;
+
+            sql.GetConnectionWith(CommonData.dataBaseName);
+
+            string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
+
+            questionWord.learnedTimes++;
+            if (!chooseCorrect)
+            {
+                questionWord.ungraspTimes++;
+            }
+
+            string[] colFields = new string[] { "learnedTimes","ungraspTimes" };
+            string[] conditions = new string[] {"wordId=" + questionWord.wordId};
+            string[] values = new string[] { questionWord.learnedTimes.ToString(), questionWord.ungraspTimes.ToString() }; 
+
+            sql.UpdateValues(currentWordsTableName, colFields, values, conditions, true);
+
+            sql.CloseConnection(CommonData.dataBaseName);
 
 			DisableClick ();
 
