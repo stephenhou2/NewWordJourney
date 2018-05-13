@@ -201,7 +201,7 @@ namespace WordJourney
 
 		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
 		{
-			BattleMonsterController baCtr = transform.GetComponent<BattleMonsterController> ();
+			//BattleMonsterController baCtr = transform.GetComponent<BattleMonsterController> ();
 
 			canMove = bool.Parse(KVPair.GetPropertyStringWithKey("canMove",attachedInfo.properties));
 
@@ -321,7 +321,7 @@ namespace WordJourney
 
 			baCtr.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 
-			yield return new WaitForSeconds (1f);
+			yield return new WaitForSeconds (0.5f);
 
 			HideAllAlertAreas ();
 			DisableAllDetect ();
@@ -605,7 +605,7 @@ namespace WordJourney
 
 			RefreshWalkableInfoWhenStartMove ();
 
-			float timeScale = 1f;
+			float timeScale = 0.8f;
 
 			if (position.x >= transform.position.x + 0.2f) {
 				baCtr.TowardsRight ();

@@ -126,6 +126,8 @@ namespace WordJourney
 		private Vector2 exitPos;
 
 
+
+
 //		void Update(){
 //			Material m = fogOfWarPlane.GetComponent<Renderer>().material;
 //			Texture t = Resources.Load("FOWTexture") as Texture;
@@ -167,6 +169,8 @@ namespace WordJourney
 			fogOfWarPlane.gameObject.SetActive(false);
 			#endif
 
+
+
 		}
 
 		private void DestroyUnusedMonsterAndNpc(){
@@ -175,6 +179,7 @@ namespace WordJourney
 			mapEventsPool.ClearInstancePool ();
 		}
 
+      
 		/// <summary>
 		/// 重置地图初始化工具
 		/// </summary>
@@ -186,8 +191,12 @@ namespace WordJourney
 
 			playerStartPosList.Clear ();
 
-            int currentLevelGrade = Player.mainPlayer.currentLevelIndex / 10;
-            int randomMapIndex = currentLevelGrade * 10 + Random.Range(0, 10);
+
+            int randomMapIndex = Player.mainPlayer.GetRandomMapIndex();
+
+           
+            Debug.Log(randomMapIndex);
+
             mapData = MapData.GetMapDataOfLevel (randomMapIndex);
 
 			// 获取地图建模的行数和列数
@@ -488,7 +497,7 @@ namespace WordJourney
                         if (mapEvent != null){
                             mapWalkableInfoArray[posX, posY] = 5;
                             mapWalkableEventInfoArray[posX, posY] = 1;
-                            allWalkableEventsInMap.Add(mapEvent as MapNPC);
+                            //allWalkableEventsInMap.Add(mapEvent as MapNPC);
                         }
 					    break;
 				    case "tombstone":
@@ -516,7 +525,7 @@ namespace WordJourney
 
 			}
 
-            if(!exitOpen){
+			if(exit != null && !exitOpen){
                 exit.isOpen = false;
             }
 
@@ -563,8 +572,7 @@ namespace WordJourney
 
 			// 记录已选过的单词在words数组中的位置信息
 			List<int> tempList = new List<int> ();
-
-
+           
 			// 从未使用过的单词列表中随机1个单词做为目标单词
 			int targetWordIndexInUnusedWordList = Random.Range (0, unusedWordRecordList.Count);
 
@@ -606,6 +614,7 @@ namespace WordJourney
 		/// <param name="info">Info.</param>
 		private MapEvent GetMonster(MapAttachedInfoTile info){
 
+         
 			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];
 
 			int randomSeed = Random.Range (0, levelData.monsterIds.Count);
@@ -685,6 +694,7 @@ namespace WordJourney
 
 			if (npcId == -1) {
 				npcId = Random.Range (2,57);
+                //npcId = 8;
 			}
 
 			string npcName = MyTool.GetNpcName (npcId);
@@ -765,8 +775,9 @@ namespace WordJourney
 			fowCamera.gameObject.SetActive(true);
 			fowCamera.orthographicSize = (float)Mathf.Max (rows, columns) / 2;
 			fowCamera.transform.position = new Vector3 (columns / 2, rows / 2, -5);
-			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController> ().RefreshMiniMap ();
+
 			UpdateFogOfWar ();
+
 			#elif UNITY_ANDROID 
 			bp.transform.Find ("FowBrush").gameObject.SetActive (false);
 			Transform fowCamera = TransformManager.FindTransform ("FogOfWarBrushCamera");
@@ -775,6 +786,8 @@ namespace WordJourney
 			}
 
 			#endif
+
+			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().RefreshMiniMap();
 
 			Transform exploreMask = mainCamera.transform.Find ("ExploreMask");
 			exploreMask.gameObject.SetActive (true);
@@ -936,9 +949,11 @@ namespace WordJourney
 				effectAnim.name = effectModel.effectName;
 			}
 
-			effectAnim.transform.SetParent (effectContainer);
+			effectAnim.transform.SetParent (effectContainer,false);
 
-//			Vector3 newPos = effectContainer.position + effectAnim.localPos;
+			//			Vector3 newPos = effectContainer.position + effectAnim.localPos;
+
+			Debug.LogFormat("effectAnim pos:{0},container Pos:{1}", effectAnim.localPos, effectContainer.position);
 
 			effectAnim.transform.localPosition = new Vector3 (effectAnim.localPos.x, effectAnim.localPos.y, 0);
 			effectAnim.transform.localRotation = Quaternion.identity;

@@ -307,7 +307,8 @@ namespace WordJourney
 				this.price = price * 2;
 				break;
 			case EquipmentQuality.DarkGold:
-				gainScaler = Random.Range (1.3f, 1.4f);
+					
+				gainScaler = 1.0f;
 				
 				this.price = price * 2;
 				attachedSkillId = oriAttachedSkillId;
@@ -371,11 +372,15 @@ namespace WordJourney
 				attachedSkill = SkillGenerator.GenerateTriggeredSkill (attachedSkillId);
 			}
 
-			if (equiped) {
-				Player.mainPlayer.ResetBattleAgentProperties (false);
-			}
+			PropertyChange propertyChange = new PropertyChange();
+
+			//if (equiped) {
+			//	propertyChange = Player.mainPlayer.ResetBattleAgentProperties (false);
+			//}
 
 			InitDescription ();
+
+			//return propertyChange;
 
 		}
 
@@ -623,15 +628,25 @@ namespace WordJourney
 
 			bool addSuccess = false;
 
-			attachedSkillId = skillId;
-			addSuccess = true;
+            // 理论上这中情况不应该存在
+			if (attachedSkill != null && attachedSkillId != skillId)
+            {
 
-			if (attachedSkill != null) {
-				if (attachedSkillId != skillId) {
-					GameObject.Destroy (attachedSkill);
-					attachedSkill = SkillGenerator.GenerateTriggeredSkill (skillId);
-				}
+				addSuccess = false;
+                
+			}else{
+
+				attachedSkillId = skillId;
+
+                addSuccess = true;
+
+                if (equiped)
+                {
+                    attachedSkill = SkillGenerator.GenerateTriggeredSkill(skillId);
+                }
+
 			}
+         
 
 			return addSuccess;
 		}

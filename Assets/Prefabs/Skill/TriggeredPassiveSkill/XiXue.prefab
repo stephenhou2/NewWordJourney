@@ -54,12 +54,11 @@ MonoBehaviour:
   skillName: "\u5438\u8840"
   sfxName: 
   skillId: 32
-  skillDescription: "\u666E\u901A\u653B\u51FB\u670910%\u5730\u70B9\u51E0\u7387\u56DE\u590D\uFF08\u4F24\u5BB350%\uFF09\u7684\u751F\u547D"
+  skillDescription: "\u666E\u901A\u653B\u51FB\u670915%\u5730\u70B9\u51E0\u7387\u56DE\u590D\uFF08\u4F24\u5BB350%\uFF09\u7684\u751F\u547D"
   skillIconName: 32_xiXue
-  selfEffectAnimName: 
+  selfEffectAnimName: 06_blood_effect1
   enemyEffectAnimName: 
   skillType: 2
-  canOverlay: 0
   beforeFightTrigger: 0
   attackTrigger: 0
   hitTrigger: 1
@@ -67,5 +66,6 @@ MonoBehaviour:
   beHitTrigger: 0
   fightEndTrigger: 0
   statusName: 
-  skillSourceValue: 0.5
-  triggerProbability: 0.1
+  triggerProbability: 0.15
+  healthAbsorbScaler: 0.5
+  fixedHealthAbsorb: 0

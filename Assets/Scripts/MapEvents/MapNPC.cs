@@ -158,8 +158,6 @@ namespace WordJourney{
 				return;
 			}
 
-
-
             EnterMapEvent (bp);
 		}
 
@@ -218,14 +216,10 @@ namespace WordJourney{
 
 			//bp.StopMoveAtEndOfCurrentStep ();
 
-			if(canMove){	
-//				bp.StopMoveAtEndOfCurrentStep ();
-
-				StartCoroutine ("AdjustPositionAndTowards", bp);
-
+			if(canMove){
+                StartCoroutine("AdjustPositionAndTowards", bp);
 			} else {
-
-				AdjustTowards (bp);
+                StartCoroutine("AdjustTowards", bp);
 			}
 
 			isTriggered = true;
@@ -249,7 +243,33 @@ namespace WordJourney{
 		/// 与npc相遇时只调整方向，不调整位置
 		/// </summary>
 		/// <param name="battlePlayerCtr">Battle player ctr.</param>
-		private void AdjustTowards(BattlePlayerController battlePlayerCtr){
+        private IEnumerator AdjustTowards(BattlePlayerController battlePlayerCtr){
+
+            yield return new WaitUntil(() => battlePlayerCtr.isIdle);
+
+            float posOffsetX = battlePlayerCtr.transform.position.x - this.transform.position.x;
+            float posOffsetY = battlePlayerCtr.transform.position.y - this.transform.position.y;
+
+            if (posOffsetX > 0.1f)
+            {
+                battlePlayerCtr.TowardsLeft();
+                baCtr.TowardsRight(false);
+            }
+            else if (posOffsetX < -0.1f)
+            {
+                battlePlayerCtr.TowardsRight();
+                baCtr.TowardsLeft(false);
+            } 
+            else if(posOffsetY > 0.1f)
+            {
+                battlePlayerCtr.TowardsDown();
+                baCtr.TowardsUp(false);
+            }
+            else
+            {
+                battlePlayerCtr.TowardsUp();
+                baCtr.TowardsDown(false);
+            }
 
 			switch (battlePlayerCtr.towards) {
 			case MyTowards.Up:
@@ -352,8 +372,6 @@ namespace WordJourney{
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
-
                     }
                     else
                     {
@@ -365,7 +383,6 @@ namespace WordJourney{
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
                     }
 					needPosFix = true;
 					battlePlayerCtr.needPosFix = true;

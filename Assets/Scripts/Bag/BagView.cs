@@ -10,6 +10,8 @@ namespace WordJourney
 	using DG.Tweening;
 	using System.Text;
 
+
+
 	public class BagView : MonoBehaviour {
 
 		public PropertyDisplay propertyDisplay;
@@ -131,7 +133,7 @@ namespace WordJourney
 		}
 
 		public void SetUpItemDetail(Item item){
-			itemDetail.SetUpItemDetail (item,SetUpCurrentBagItemsPlane);
+			itemDetail.SetUpItemDetail (item,RefreshBagViewAfterSpecialOperation);
 		}
 
 		public void ClearItemDetail(){
@@ -158,7 +160,11 @@ namespace WordJourney
 //
 //		}
 
+		public void RefreshBagViewAfterSpecialOperation(PropertyChange propertyChange){
+			SetUpCurrentBagItemsPlane();
+			SetUpPlayerStatusPlane(propertyChange);
 
+		}
 			
 
 
@@ -265,6 +271,7 @@ namespace WordJourney
 			}
 			SetUpCurrentBagItemsPlane ();
 			itemDetail.SetUpItemDetail (eqp);
+
 			return eqp;
 		}
 
@@ -275,6 +282,7 @@ namespace WordJourney
 			}
 			SetUpCurrentBagItemsPlane ();
 			itemDetail.SetUpItemDetail (eqp);
+
 			return eqp;
 		}
 

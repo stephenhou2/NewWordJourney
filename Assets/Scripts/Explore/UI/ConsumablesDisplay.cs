@@ -71,6 +71,8 @@ namespace WordJourney
 		}
 
 		public void ChangeConsumablesDisplayIndex(){
+
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.bagAudioName);
 			
 			if (consumablesDisplayIndex == 0) {
 				consumablesDisplayIndex = 1;

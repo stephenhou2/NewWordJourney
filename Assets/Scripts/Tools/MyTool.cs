@@ -173,11 +173,16 @@ namespace WordJourney
 		};
 
 		private static string[] bossNames = new string[] {
-			"01_boss_commando",
-			"02_boss_forsaken",
-			"03_boss_earthen",
-			"04_boss_death",
-			"05_boss_dragon"
+			"01_boss_magic_armor",
+			"02_boss_commando",
+			"03_boss_pharmacist",
+			"04_boss_forsaken",
+			"05_boss_mutant",
+			"06_boss_earthen",
+			"07_boss_puppet",
+			"08_boss_death",
+			"09_boss_demon",
+			"10_boss_dragon"
 		};
 
 		public static string GetMonsterName(int monsterId){

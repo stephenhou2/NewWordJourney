@@ -7,9 +7,13 @@ namespace WordJourney
 {
 	public class LongZhiNingShi : TriggeredPassiveSkill {
 
+		public int magicReistDecreaseBase;
+
 		protected override void BeforeFightTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
 		{
-			enemy.agent.magicResist -= (int)(self.agent.agentLevel * skillSourceValue);
+			int magicResistChange = -self.agent.agentLevel * magicReistDecreaseBase;
+            enemy.agent.magicResistChangeFromSkill += magicResistChange;
+            enemy.agent.magicResist += magicResistChange;
 		}
 
 	}

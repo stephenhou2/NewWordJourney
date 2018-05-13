@@ -9,7 +9,8 @@ namespace WordJourney
 
 	public enum TransitionType{
 		Introduce,
-		Death
+		Death,
+        End
 	}
 
 	public class TransitionView : MonoBehaviour {
@@ -122,47 +123,52 @@ namespace WordJourney
 			}
 
 			switch (transitionType) {
-			case TransitionType.Introduce:
-				transitionPlaneMask.enabled = true;
-				transitionPlaneMask.color = new Color (0, 0, 0, 0);
-				transitionPlaneMask.raycastTarget = true;
-				clickTintText.enabled = true;
-				alpha = 0.5f;
+    			case TransitionType.Introduce:
+    				transitionPlaneMask.enabled = true;
+    				transitionPlaneMask.color = new Color (0, 0, 0, 0);
+    				transitionPlaneMask.raycastTarget = true;
+    				clickTintText.enabled = true;
+    				alpha = 0.5f;
 
-				while (!hasUserClick) {
+    				while (!hasUserClick) {
 
-					while (alpha < 1f) {
+    					while (alpha < 1f) {
 
-						clickTintText.color = new Color (1, 1, 1, alpha);
+    						clickTintText.color = new Color (1, 1, 1, alpha);
 
-						alpha += alphaChangeSpeed * Time.deltaTime / 2;
+    						alpha += alphaChangeSpeed * Time.deltaTime / 2;
 
-						if (hasUserClick) {
-							break;
-						}
+    						if (hasUserClick) {
+    							break;
+    						}
 
-						yield return null;
+    						yield return null;
 
-					}
+    					}
 
-					while (alpha > 0.5f) {
+    					while (alpha > 0.5f) {
 
-						clickTintText.color = new Color (1, 1, 1, alpha);
+    						clickTintText.color = new Color (1, 1, 1, alpha);
 
-						alpha -= alphaChangeSpeed * Time.deltaTime / 2;
+    						alpha -= alphaChangeSpeed * Time.deltaTime / 2;
 
-						if (hasUserClick) {
-							break;
-						}
+    						if (hasUserClick) {
+    							break;
+    						}
 
-						yield return null;
+    						yield return null;
 
-					}
-				}
+    					}
+    				}
 
-				break;
-			case TransitionType.Death:
-				break;
+                    
+
+    				break;
+    			case TransitionType.Death:
+    				break;
+				case TransitionType.End:
+
+					break;
 			}
 				
 			alpha = 0;
@@ -174,6 +180,18 @@ namespace WordJourney
 				alpha += alphaChangeSpeed * Time.deltaTime;
 
 				yield return null;
+			}
+
+			switch(transitionType){
+				case TransitionType.Introduce:
+					GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.exploreBgmName);
+					break;
+				case TransitionType.Death:
+					GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
+					break;
+				case TransitionType.End:
+					GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
+					break;
 			}
 
 			finishTransitionCallBack ();

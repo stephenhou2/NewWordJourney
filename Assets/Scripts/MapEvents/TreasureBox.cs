@@ -22,7 +22,7 @@ namespace WordJourney
 
 			animEndCallBack = cb;
 
-			GameManager.Instance.soundManager.PlayAudioClip ("MapEffects/" + audioClipName);
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.treasureBoxAudioName);
 
 			mapItemRenderer.enabled = false;
 
@@ -38,7 +38,24 @@ namespace WordJourney
 			StartCoroutine ("ResetMapItemOnAnimFinished");
 
 		}
-			
+
+		protected override void AnimEnd()
+		{
+			if (!isGoldTreasureBox)
+            {
+				mapItemAnimator.ResetTrigger("PlayNormal");
+            }
+            else
+            {
+				mapItemAnimator.ResetTrigger("PlaySpecial");
+            }
+
+			if (animEndCallBack != null)
+            {
+                animEndCallBack();
+            }
+		}
+
 
 		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
 		{

@@ -14,7 +14,7 @@ namespace WordJourney{
         protected IEnumerator zoomCoroutine;
 
 
-        protected IEnumerator HUDZoomIn()
+        protected IEnumerator HUDZoomIn(CallBack callBack = null)
         {
 
             contentContainer.localScale = new Vector3(0.2f, 0.2f, 1);
@@ -39,6 +39,11 @@ namespace WordJourney{
             }
 
             contentContainer.transform.localScale = Vector3.one;
+
+            if(callBack != null)
+            {
+                callBack();
+            }
 
 
         }

@@ -4,7 +4,15 @@ using UnityEngine;
 
 namespace WordJourney
 {
-	using Transform = UnityEngine.Transform;
+
+    using Transform = UnityEngine.Transform;
+
+    [System.Serializable]
+    public struct MonsterActiveSkill{
+        public ActiveSkill skill;
+        public int probabilityx100;
+    }
+
 		
 	public class BattleMonsterController : BattleAgentController {
 
@@ -22,7 +30,7 @@ namespace WordJourney
 			}
 		}
 
-
+        public MonsterActiveSkill[] activeSkills ;
 
 
 		protected override void Awake(){
@@ -98,6 +106,40 @@ namespace WordJourney
 			Invoke ("Fight", 0.3f);
 
 		}
+
+        private ActiveSkill AutoRandomActiveSkill()
+        {
+
+            ActiveSkill randomAS = normalAttack;
+
+            int joint = 0;
+
+            List<int> jointsList = new List<int>();
+
+            for (int i = 0; i < activeSkills.Length; i++)
+            {
+
+                MonsterActiveSkill monsterActiveSkill = activeSkills[i];
+
+                joint += monsterActiveSkill.probabilityx100;
+
+                jointsList.Add(joint);
+
+            }
+
+            int randomSeed = Random.Range(0, joint);
+
+            for (int i = 0; i < jointsList.Count; i++)
+            {
+                if(i <= jointsList.Count - 2 && randomSeed >= jointsList[i] && randomSeed < jointsList[i + 1]){
+                    randomAS = activeSkills[i].skill;
+                    break;
+                }  
+            }
+
+            return randomAS;
+
+        }
 			
 		/// <summary>
 		/// 角色战斗逻辑
@@ -250,6 +292,7 @@ namespace WordJourney
 				}else if (mwe is MapNPC){
 					mwe.AddToPool(exploreManager.newMapGenerator.npcsPool);
 				}
+
 			});
 		}
 

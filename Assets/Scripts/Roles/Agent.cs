@@ -79,8 +79,29 @@ namespace WordJourney
 		public float originalCritHurtScaler;//基础暴击系数
 		public int originalHealthRecovery;//基础生命回复
 		public int originalMagicRecovery;//基础魔法回复
-		//*****人物基础信息(无装备，无状态加成时的人物属性)********//
+        //*****人物基础信息(无装备，无状态加成时的人物属性)********//
 
+
+        //**** 人物因技能引起的属性变化**********//
+        [HideInInspector]public int maxHealthChangeFromSkill;
+        [HideInInspector]public int maxManaChangeFromSkill;
+        [HideInInspector]public int attackChangeFromSkill;
+        [HideInInspector]public int magicAttackChangeFromSkill;
+        [HideInInspector]public int armorChangeFromSkill;
+        [HideInInspector]public int magicResistChangeFromSkill;
+        [HideInInspector]public int armorDecreaseChangeFromSkill;
+        [HideInInspector]public int magicResistDecreaseChangeFromSkill;
+        [HideInInspector]public int moveSpeedChangeFromSkill;
+        [HideInInspector]public float critChangeFromSkill;
+        [HideInInspector]public float dodgeChangeFromSkill;
+        [HideInInspector] public int extraGoldChangeFromSkill;
+        [HideInInspector]public int extraExperienceChangeFromSkill;
+        [HideInInspector]public float physicalHurtScalerChangeFromSkill;
+        [HideInInspector]public float magicalHurtScalerChangeFromSkill;
+        [HideInInspector]public float critHurtScalerChangeFromSkill;
+        [HideInInspector]public int healthRecoveryChangeFromSkill;
+        [HideInInspector]public int magicRecoveryChangeFromSkill;
+        //**** 人物因技能引起的属性变化**********//
 
 
 		//********人物最终的实际属性信息*********//
@@ -261,6 +282,30 @@ namespace WordJourney
 
 		}
 			
+
+        public void ClearPropertyChangesFromSkill()
+        {
+            maxHealthChangeFromSkill = 0;
+            maxManaChangeFromSkill = 0;
+            attackChangeFromSkill = 0;
+            magicAttackChangeFromSkill = 0;
+            armorChangeFromSkill = 0;
+            magicResistChangeFromSkill = 0;
+            armorDecreaseChangeFromSkill = 0;
+            magicResistDecreaseChangeFromSkill = 0;
+            moveSpeedChangeFromSkill = 0;
+            critChangeFromSkill = 0;
+            dodgeChangeFromSkill = 0;
+            extraGoldChangeFromSkill = 0;
+            extraExperienceChangeFromSkill = 0;
+            physicalHurtScalerChangeFromSkill = 0;
+            magicalHurtScalerChangeFromSkill = 0;
+            critHurtScalerChangeFromSkill = 0;
+            healthRecoveryChangeFromSkill = 0;
+            magicRecoveryChangeFromSkill = 0;
+
+        }
+
 		// 仅根据物品重新计人物的属性，其余属性重置为初始状态
 		public abstract PropertyChange ResetBattleAgentProperties (bool toOriginalState = false);
 

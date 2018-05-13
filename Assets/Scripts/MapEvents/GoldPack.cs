@@ -85,6 +85,7 @@ namespace WordJourney
 			if (isSuccess) {
 				int goldGain = goldAmount + bp.agent.extraGold;
 				(bp.agent as Player).totalGold += goldGain;
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.goldAudioName);
 				ExploreManager.Instance.UpdatePlayerStatusPlane ();
 				ExploreManager.Instance.expUICtr.SetUpGoldGainTintHUD(goldGain);
 			}

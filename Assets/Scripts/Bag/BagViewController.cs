@@ -19,11 +19,13 @@ namespace WordJourney
 
 		void Awake(){
 			
-			//for (int i = 1; i < 33; i++) {
-			//	Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
-			//}
+			for (int i = 1; i < 33; i++) {
+				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
+			}
 
-			//Player.mainPlayer.AddItem (Item.NewItemWith (305, 20));
+			Player.mainPlayer.AddItem(Item.NewItemWith(409, 1));
+
+			Player.mainPlayer.AddItem (Item.NewItemWith (305, 20));
 //
 //			for (int i = 401; i < 433; i++) {
 //				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
@@ -77,6 +79,11 @@ namespace WordJourney
 //			}
 
 			bagView.SetUpBagView (setVisible);
+
+			if(setVisible){
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.bagAudioName);
+			}
+
 
 		}
 
@@ -268,9 +275,12 @@ namespace WordJourney
                         ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
                     }
 
+					GameManager.Instance.soundManager.PlayAudioClip(consumables.audioName);
+
     				break;  
     			case ConsumablesType.ChongZhuShi:
     				Equipment eqp = bagView.RebuildEquipment ();
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.chongzhuAudioName);
     				if (eqp != null) {
     					currentSelectItem = eqp;
     				}
@@ -278,6 +288,7 @@ namespace WordJourney
     				break;
     			case ConsumablesType.DianJinShi:
     				eqp = bagView.UpgradeEquipmentToGold ();
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.dianJinAudioName);
     				if (eqp != null) {
     					currentSelectItem = eqp;
     				}
@@ -285,6 +296,7 @@ namespace WordJourney
     				break;
     			case ConsumablesType.XiaoMoJuanZhou:
     				eqp = bagView.RemoveEquipmentAttachedSkill ();
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.xiaoMoAudioName);
     				if (eqp != null) {
     					currentSelectItem = eqp;
     				}
@@ -293,6 +305,7 @@ namespace WordJourney
     			case ConsumablesType.YinShenJuanZhou:
     				ExploreManager.Instance.PlayerFade ();
     				clearItemDetail = player.RemoveItem (consumables, 1);
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.xiangQianJiNengAudioName);
     				break;
 			}
 
@@ -315,6 +328,7 @@ namespace WordJourney
 				return;
 			}
 			bagView.ShowRemoveQueryHUD ();
+
 		}
 
 
@@ -322,6 +336,8 @@ namespace WordJourney
 			if (currentSelectItem == null) {
 				return;
 			}
+
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.dropItemAudioName);
 
 			Player.mainPlayer.RemoveItem (currentSelectItem,currentSelectItem.itemCount);
 

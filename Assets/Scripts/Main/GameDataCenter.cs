@@ -211,6 +211,7 @@ namespace WordJourney
             int randomIndex = Random.Range(0, allProverbs.Count);
 
             return allProverbs[randomIndex];
+
         }
 
 	
@@ -502,10 +503,12 @@ namespace WordJourney
 
 			Transform effectsContainer = TransformManager.FindOrCreateTransform ("AllEffects");
 
+            effectsContainer.position = new Vector3(1000, 0, 0);
+
 			for (int i = 0; i < effectCache.Length; i++) {
 				GameObject effect = GameObject.Instantiate (effectCache [i]);
 				effect.name = effectCache [i].name;
-				effect.transform.SetParent (effectsContainer);
+                effect.transform.SetParent (effectsContainer,false);
 				mAllEffects.Add(effect.GetComponent<EffectAnim>());
 			}
 		}
@@ -516,7 +519,6 @@ namespace WordJourney
 			for (int i = 0; i < dataTypes.Length; i++) {
 				ReleaseDataWithName (dataTypes [i]);
 			}
-
 
 		}
 

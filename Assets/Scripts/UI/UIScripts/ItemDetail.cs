@@ -14,6 +14,8 @@ namespace WordJourney
 		XiangQianJiNeng
 	}
 
+	public delegate void ItemChangeCallBack(PropertyChange propertyChange); 
+
 	public class ItemDetail : MonoBehaviour {
 
 		public Text itemName;
@@ -32,9 +34,13 @@ namespace WordJourney
 
 		public AttachedSkillDisplay attachedSkillDisplay;
 
+		private ItemChangeCallBack refreshCallBack;
+        
 
 
-		public void SetUpItemDetail(Item item,CallBack dropCallBack = null){
+		public void SetUpItemDetail(Item item,ItemChangeCallBack refreshCallBack = null){
+
+			this.refreshCallBack = refreshCallBack;
 
 			ClearItemDetails ();
 
@@ -159,16 +165,27 @@ namespace WordJourney
 			switch (so) {
 			case SpecialOperation.ChongZhu:
 				equipment.RebuildEquipment ();
+
 				break;
 			case SpecialOperation.DianJin:
 				equipment.SetToGoldQuality ();
+
 				break;
 			case SpecialOperation.XiaoMo:
 				equipment.RemoveAttachedSkill ();
+
 				break;
 			case SpecialOperation.XiangQianJiNeng:
 				equipment.AddSkill (attachedInfo);
+
 				break;
+			}
+
+          
+            
+			if(equipment.equiped){
+				PropertyChange propertyChange = Player.mainPlayer.ResetBattleAgentProperties(false);
+				refreshCallBack(propertyChange);
 			}
 
 //			Player.mainPlayer.AddItem (equipment);

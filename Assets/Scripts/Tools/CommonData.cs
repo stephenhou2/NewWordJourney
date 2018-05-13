@@ -55,7 +55,7 @@ namespace WordJourney{
 
 		public static string assetBundleRootName = "AssetBundle";
 
-		public static string effectsDataFilePath = persistDataPath + "/TestEffectString.txt";
+		//public static string effectsDataFilePath = persistDataPath + "/TestEffectString.txt";
 		public static string gameLevelDataFilePath = persistDataPath + "/GameLevelDatas.json";
 		public static string equipmentDataFilePath = persistDataPath + "/GameItems/EquipmentDatas.json";
 		public static string consumablesDataFilePath = persistDataPath + "/GameItems/ConsumablesDatas.json";
@@ -113,6 +113,8 @@ namespace WordJourney{
 
 		public static string exploreMaskAnimName = "default";
 
+        public static string regularEffectAnimName = "default";
+
 		public static string roleIdleAnimName = "wait";
 		public static string roleWalkAnimName = "walk";
 		public static string roleRunAnimName = "run";
@@ -153,7 +155,68 @@ namespace WordJourney{
 		public static string playerIntervalWithDraggerName = "interval_dragger";
 
 
+		// 特效名称
+		public static string healthHealEffecttName = "01_health_heal";
+		public static string magicHealEffectName = "02_magic_heal";
+		public static string levelUpEffectName = "03_level_up";
+		public static string stealthEffectName = "04_stealth";
+		public static string poisonedEffectName = "05_poisoned";
+		public static string burnedEffectName = "06_burned";
+		public static string propertyDecreaseEffectName = "07_attribute_down";
+		public static string bleedingEffectName = "08_bleeding";
+		public static string shieldEffectName = "09_shiled";
+		public static string frozenAEffectName = "10_frozen";
+		public static string paralizedEffectName = "11_paralized";
+		public static string propertyIncreaseEffectName = "12_attribute_up";
 
+
+        // 技能 音效 名称
+        public static string healthHealAudiotName = "01_health_heal";
+        public static string magicHealAudioName = "02_magic_heal";
+        
+        public static string stealthAudioName = "04_stealth";
+        public static string poisonedAudioName = "05_poisoned";
+        public static string burnedAudioName = "06_burned";
+        public static string propertyDecreaseAudioName = "07_attribute_down";
+        public static string bleedingAudioName = "08_bleeding";
+        public static string shieldAudioName = "09_shiled";
+        public static string frozenAudioName = "10_frozen";
+        public static string paralizedAudioName = "11_paralized";
+        public static string propertyIncreaseAudioName = "12_attribute_up";
+
+
+		// 物品 音效 名称
+		public static string dianJinAudioName = "Item/sfx_dianjin";
+		public static string chongzhuAudioName = "Item/sfx_chongzhu";
+		public static string xiaoMoAudioName = "";
+		public static string yinShenAudioName = "";
+		public static string xiangQianJiNengAudioName = "Item/sfx_xiangqianjineng";
+		public static string equipmentAudioName = "Item/sfx_equipment";
+
+		// 其他 音效 名称
+		public static string levelUpAudioName = "Other/sfx_levelup";
+		public static string footstepAudioName = "Other/sfx_footstep";
+		public static string goldAudioName = "Other/sfx_gold";
+		public static string playerDieAudioName = "Other/sfx_playerDie";
+
+
+		// 地图事件 音效 名称
+		public static string doorAudioName = "MapEvents/sfx_door";
+        public static string potAudioName = "MapEvents/sfx_pot";
+        public static string bucketAudioName = "MapEvents/sfx_bucket";
+        public static string treasureBoxAudioName = "MapEvents/sfx_treasurebox";
+        public static string crystalAudioName = "MapEvents/sfx_crystal";
+		public static string merchantAudioName = "MapEvents/sfx_merchant";
+		public static string billboardAudioName = "MapEvents/sfx_billboard";
+
+		// UI 音效 名称
+		public static string correctTintAudioName = "UI/sfx_UI_correctTint";
+		public static string wrongTintAudioName = "UI/sfx_UI_wrongTint";
+		public static string buttonClickAudioName = "UI/sfx_UI_click";
+		public static string paperAudioName = "UI/sfx_UI_paper";
+		public static string addSkillAudioName= "UI/sfx_UI_xiangqianjineng";
+		public static string bagAudioName = "UI/sfx_UI_bag";
+		public static string dropItemAudioName = "UI/sfx_UI_dropItem";
 
 		public static int aInASCII = (int)('a');
 

@@ -56,10 +56,9 @@ MonoBehaviour:
   skillId: 9
   skillDescription: "0.5*\u7B49\u7EA7%\u7684\u6982\u7387\u53D7\u5230\u653B\u51FB\u65F6\u5BF9\u5730\u65B9\u9020\u621025%\u81EA\u8EAB\u62A4\u7532\u503C\u7684\u4F24\u5BB3"
   skillIconName: 09_jueDuiFangYu
-  selfEffectAnimName: 
+  selfEffectAnimName: 09_shield
   enemyEffectAnimName: 
   skillType: 2
-  canOverlay: 0
   beforeFightTrigger: 0
   attackTrigger: 0
   hitTrigger: 0
@@ -67,4 +66,5 @@ MonoBehaviour:
   beHitTrigger: 1
   fightEndTrigger: 0
   statusName: 
-  skillSourceValue: 0.002
+  triggeredProbabilityBase: 0.5
+  refrectScaler: 0.25

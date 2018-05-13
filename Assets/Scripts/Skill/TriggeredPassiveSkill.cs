@@ -9,7 +9,7 @@ namespace WordJourney
 	public abstract class TriggeredPassiveSkill : Skill {
 
 
-		public bool canOverlay;// 技能效果是否可以叠加
+		//public bool canOverlay;// 技能效果是否可以叠加
 
 
 		public bool beforeFightTrigger;
@@ -23,7 +23,7 @@ namespace WordJourney
 
 //		public float triggeredProbability;//触发概率
 
-		public float skillSourceValue;//技能结算数据源
+		//public float skillSourceValue;//技能结算数据源
 
 //		public HurtType hurtType;
 
@@ -46,7 +46,7 @@ namespace WordJourney
 		public override void AffectAgents (BattleAgentController self, BattleAgentController enemy)
 		{
 
-			BattleAgentController triggerSource = null;
+			//BattleAgentController triggerSource = null;
 
 			if (beforeFightTrigger) {
 				TriggeredSkillExcutor beforeFightSkillExcutor = new TriggeredSkillExcutor (this, BeforeFightTriggerCallBack);

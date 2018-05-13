@@ -107,6 +107,8 @@ namespace WordJourney
 		public ConsumablesType type;
 		public bool isShowInBagOnly;
 
+		public string audioName;
+
 	}
 
 	[System.Serializable]

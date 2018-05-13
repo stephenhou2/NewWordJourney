@@ -41,15 +41,19 @@ namespace WordJourney
 			}
 
 			equipment.AddSkill (gemstone.skillId);
-
-//			Player.mainPlayer.AddItem (equipment);
+           
+			if(equipment.equiped){
+				Player.mainPlayer.ResetBattleAgentProperties(false);
+			}
 
 			Player.mainPlayer.RemoveItem (gemstone, 1);
 
 			Player.mainPlayer.totalGold -= 200;
 
-			equipmentCell.ResetSpecialOperationCell ();
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.goldAudioName);
 
+			equipmentCell.ResetSpecialOperationCell ();
+           
 			functionalItemCell.ResetSpecialOperationCell ();
 
 			refreshCurrentBagCallBack ();

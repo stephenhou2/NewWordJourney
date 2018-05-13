@@ -11,9 +11,11 @@ namespace WordJourney
 //
 		public int manaRecoveryBase;
 
+		public float triggeredProbability;
+
 		protected override void AttackTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
 		{
-			if (isEffective (skillSourceValue)) {
+			if (isEffective (triggeredProbability)) {
 
 				self.agent.mana += self.agent.agentLevel * manaRecoveryBase + self.agent.magicRecovery;
 

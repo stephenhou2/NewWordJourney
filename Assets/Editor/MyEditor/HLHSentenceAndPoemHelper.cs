@@ -47,8 +47,8 @@ namespace WordJourney
             string[] dataArray = sapData.Split(new char[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
 
             int proverbID = int.Parse(dataArray[0]);
-            string proverbEN = dataArray[1].Replace('+',',').Replace('#','\n');
-            string proverbCH = dataArray[2].Replace('+',',').Replace('#','\n');
+            string proverbEN = dataArray[1].Replace('+',',').Replace('#','\n').Replace('^', '\"');
+            string proverbCH = dataArray[2].Replace('+',',').Replace('#','\n').Replace('^', '\"');
             HLHSAPType type = (HLHSAPType)int.Parse(dataArray[3]);
 
             return new HLHSentenceAndPoem(proverbID, proverbEN, proverbCH,type);

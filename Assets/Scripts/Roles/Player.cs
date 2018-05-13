@@ -66,19 +66,19 @@ namespace WordJourney
 			get{
 				float interval = 1.0f;
 				switch (attackSpeed) {
-				case AttackSpeed.Slow:
-					interval = 1.0f;
-					break;
-				case AttackSpeed.Medium:
-					interval = 0.7f;
-					break;
-				case AttackSpeed.Fast:
-					interval = 0.3f;
-					break;
-				case AttackSpeed.VeryFast:
-					interval = 0.2f;
-					break;
-				}
+    				case AttackSpeed.Slow:
+    					interval = 1.0f;
+    					break;
+    				case AttackSpeed.Medium:
+    					interval = 0.9f;
+    					break;
+    				case AttackSpeed.Fast:
+    					interval = 0.8f;
+    					break;
+    				case AttackSpeed.VeryFast:
+    					interval = 0.6f;
+    					break;
+    			}
 				return interval;
 			}
 		}
@@ -91,6 +91,9 @@ namespace WordJourney
 		public List<SkillGemstone> allSkillGemstonesInBag = new List<SkillGemstone>();//背包中所有的技能宝石
 
 		public List<HLHTask> inProgressTasks = new List<HLHTask> ();
+
+        // 地图初始化记录
+        public List<int> mapIndexRecord = new List<int>();
 
 		public int robTime;
 
@@ -184,10 +187,8 @@ namespace WordJourney
 			this.allEquipmentsInBag = playerData.allEquipmentsInBag;
 			this.allConsumablesInBag = playerData.allConsumablesInBag;
 			this.allSkillGemstonesInBag = playerData.allSkillGemstonesInBag;
-//			this.allUnlockScrollsInBag = playerData.allUnlockScrollsInBag;
-//			this.allCraftingRecipesInBag = playerData.allCraftRecipesInBag;
 
-
+            this.mapIndexRecord = playerData.mapIndexRecord;
 
 			allEquipedEquipments = new Equipment[7];
 			for(int i = 0;i<allEquipedEquipments.Length;i++){
@@ -285,6 +286,33 @@ namespace WordJourney
 		}
 
 
+        public int GetRandomMapIndex()
+        {
+
+			return currentLevelIndex;
+
+			if(Player.mainPlayer.currentLevelIndex == 49){
+				return 49;
+			}
+
+			if(mapIndexRecord.Count == 0){
+				//mapIndexRecord.Clear();
+				int currentLevelGrade = Player.mainPlayer.currentLevelIndex / 10;
+				for (int i = 0; i < 10; i++){
+					mapIndexRecord.Add(currentLevelGrade * 10 + i);
+				}
+			}         
+
+			int mapIndex = mapIndexRecord[Random.Range(0, mapIndexRecord.Count)];
+
+			mapIndexRecord.Remove(mapIndex);
+
+			return mapIndex;
+        }
+
+       
+
+
 		public override PropertyChange ResetBattleAgentProperties (bool toOriginalState = false)
 		{
 
@@ -305,36 +333,36 @@ namespace WordJourney
 			int extraGoldRecord = extraGold;
 			int extraExperienceRecord = extraExperience;
 
-			maxHealth = originalMaxHealth;
-			maxMana = originalMaxMana;
+            maxHealth = originalMaxHealth + maxHealthChangeFromSkill;
+            maxMana = originalMaxMana + maxManaChangeFromSkill;
 
-			attack = originalAttack;
-			magicAttack = originalMagicAttack;
+            attack = originalAttack + attackChangeFromSkill;
+            magicAttack = originalMagicAttack + magicAttackChangeFromSkill;
 
-			armor = originalArmor;
-			magicResist = originalMagicResist;
+            armor = originalArmor + armorChangeFromSkill;
+            magicResist = originalMagicResist + magicResistChangeFromSkill;
 
-			armorDecrease = originalArmorDecrease;
-			magicResistDecrease = originalMagicResistDecrease;
+            armorDecrease = originalArmorDecrease + armorDecreaseChangeFromSkill;
+            magicResistDecrease = originalMagicResistDecrease + magicResistChangeFromSkill;
 
 			attackSpeed = originalAttackSpeed;
-			moveSpeed = originalMoveSpeed;
+            moveSpeed = originalMoveSpeed + moveSpeedChangeFromSkill;
 
-			crit = originalCrit;
-			dodge = originalDodge;
+            crit = originalCrit + critChangeFromSkill;
+            dodge = originalDodge + dodgeChangeFromSkill;
 
-			critHurtScaler = originalCritHurtScaler;
-			physicalHurtScaler = originalPhysicalHurtScaler;
-			magicalHurtScaler = originalMagicalHurtScaler;
+            critHurtScaler = originalCritHurtScaler + critHurtScalerChangeFromSkill;
+            physicalHurtScaler = originalPhysicalHurtScaler + physicalHurtScalerChangeFromSkill;
+            magicalHurtScaler = originalMagicalHurtScaler + magicalHurtScalerChangeFromSkill;
 
-			extraGold = originalExtraGold;
-			extraExperience = originalExtraExperience;
+            extraGold = originalExtraGold + extraGoldChangeFromSkill;
+            extraExperience = originalExtraExperience + extraExperienceChangeFromSkill;
 
-			healthRecovery = originalHealthRecovery;
-			magicRecovery = originalMagicRecovery;
+            healthRecovery = originalHealthRecovery + healthRecoveryChangeFromSkill;
+            magicRecovery = originalMagicRecovery + magicRecoveryChangeFromSkill;
 
-			shenLuTuTengScaler = 0;
-			poisonHurtScaler = 1f;
+			//shenLuTuTengScaler = 0;
+			//poisonHurtScaler = 1f;
 
 			for (int i = 0; i < allEquipedEquipments.Length; i++) {
 
@@ -382,6 +410,8 @@ namespace WordJourney
 				}
 
 			}
+
+
 
 
 			if (toOriginalState) {
@@ -448,7 +478,7 @@ namespace WordJourney
 		/// <param name="equipmentIndexInPanel">Equipment index in panel.</param>
 		public PropertyChange UnloadEquipment(Equipment equipment,int equipmentIndexInPanel,int indexInBag = -1){
 
-			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Equipment");
+			GameManager.Instance.soundManager.PlayAudioClip (CommonData.equipmentAudioName);
 
 			equipment.equiped = false;
 
@@ -630,7 +660,7 @@ namespace WordJourney
 		/// <param name="equipmentIndexInPanel">Equipment index in panel.</param>
 		public PropertyChange EquipEquipment(Equipment equipment,int equipmentIndexInPanel){
 
-			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Equipment");
+			GameManager.Instance.soundManager.PlayAudioClip (CommonData.equipmentAudioName);
 
 			equipment.equiped = true;
 
@@ -1386,7 +1416,7 @@ namespace WordJourney
 
 //		public int maxUnlockLevelIndex;//最大解锁关卡序号
 		public int currentLevelIndex;//当前所在关卡序号
-
+        public List<int> mapIndexRecord = new List<int>();
 
 		public List<HLHTask> inProgressTasks;
 
@@ -1471,6 +1501,7 @@ namespace WordJourney
 
 //			this.maxUnlockLevelIndex = player.maxUnlockLevelIndex;
 			this.currentLevelIndex = player.currentLevelIndex;
+            this.mapIndexRecord = player.mapIndexRecord;
 
 			this.inProgressTasks = player.inProgressTasks;
 

@@ -108,6 +108,7 @@ namespace WordJourney
 		}
 
 		public void ArrangeBag(){
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.bagAudioName);
 			Player.mainPlayer.ArrangeBagItems ();
 			SetUpCurrentBagItemsPlane ();
 		}
@@ -132,6 +133,8 @@ namespace WordJourney
 			if (bagIndex == currentBagIndex) {
 				return;
 			}
+
+			//GameManager.Instance.soundManager.PlayAudioClip(CommonData.bagAudioName);
 
 			currentBagIndex = bagIndex;
 

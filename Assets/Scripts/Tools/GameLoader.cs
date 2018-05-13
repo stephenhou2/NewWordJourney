@@ -72,7 +72,7 @@ namespace WordJourney
 			DirectoryInfo persistDi = new DirectoryInfo (CommonData.persistDataPath);
 
 #if UNITY_EDITOR || UNITY_IOS
-
+                     
 			if (!persistDi.Exists) {
 				DataHandler.CopyDirectory (CommonData.originDataPath, CommonData.persistDataPath, true);
 
@@ -94,7 +94,11 @@ namespace WordJourney
 
 			if (alwaysPersistData)
 			{
+    			if(DataHandler.DirectoryExist(CommonData.persistDataPath + "/Data")){
+			        DataHandler.DeleteDirectory(CommonData.persistDataPath + "/Data");
+                }
 				StartCoroutine("CopyDataForPersist");
+                
 			}else{
 				StartCoroutine("InitData");
 			}
@@ -125,7 +129,7 @@ namespace WordJourney
 
 				if (fileName.Equals ("Level")) {
 					//执行level的循环操作
-					for (int j = 0; j < 30; j++) {
+					for (int j = 0; j < 50; j++) {
 						filePath = "/Data/MapData/Level_" + j + ".json";
 
 						Debug.Log (Application.streamingAssetsPath + filePath);
@@ -216,6 +220,9 @@ namespace WordJourney
 				}
 
 			}
+
+			//DataHandler.DeleteFile(CommonData.persistDataPath + "/PlayerData.json");
+
 			//初始化数据
 			StartCoroutine("InitData");
 		}

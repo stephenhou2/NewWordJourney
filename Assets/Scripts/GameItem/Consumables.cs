@@ -35,6 +35,7 @@ namespace WordJourney
 
 		public bool isShowInBagOnly;
 
+		public string audioName;
 	
 //		public bool isOnlyExploreUse;
 
@@ -56,6 +57,8 @@ namespace WordJourney
 
 			this.type = consumablesModel.type;
 			this.isShowInBagOnly = consumablesModel.isShowInBagOnly;
+          
+			this.audioName = consumablesModel.audioName;
 
 		}
 

@@ -119,6 +119,8 @@ namespace WordJourney
 
 		public Transform effectAnimContainer;
 
+        public float effectAnimYScaler;//特效动画在y轴方向上的调整系数（按照实际场景中相对玩家角色的大小【高度1.2】来定）
+
 
 		protected virtual void Awake(){
 
@@ -217,6 +219,10 @@ namespace WordJourney
 		/// <param name="type">Type.</param>
 		/// <param name="specialAttack">Special attack.</param>
 		public void AddHurtAndShow(int hurt,HurtType type,MyTowards textTowards){
+
+			if(hurt == 0){
+				hurt = 1;
+			}
 
 			string hurtString = string.Empty;
 			if (agent.shenLuTuTengScaler == 0) {
@@ -510,9 +516,14 @@ namespace WordJourney
 					
 				skillEffect = exploreManager.newMapGenerator.GetEffectAnim (effectName,effectAnimContainer);
 
+				//skillEffect.transform.localPosition = 
+
 				if (skillEffect != null) {
-					skillEffect.PlayAnim ("effect1", 1, cb);
+                    // 所有的特效播放名称都是default
+                    skillEffect.PlayAnim ("default", 1, cb, effectAnimYScaler);
 				}
+
+
 			}
 
 		}

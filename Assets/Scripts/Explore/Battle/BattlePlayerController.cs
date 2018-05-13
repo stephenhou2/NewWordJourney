@@ -538,7 +538,7 @@ namespace WordJourney
             if (!ArriveEndPoint())
             {
 
-                GameManager.Instance.soundManager.PlayAudioClip("Other/sfx_Footstep");
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.footstepAudioName);
 
                 // 记录下一节点位置
                 singleMoveEndPos = nextPos;
@@ -687,7 +687,7 @@ namespace WordJourney
             singleMoveEndPos = fixedPosition;
             moveDestination = fixedPosition;
             isInPosFixAfterFight = true;
-            transform.DOMove(fixedPosition, 0.05f).OnComplete(() =>
+            transform.DOMove(fixedPosition, 0.1f).OnComplete(() =>
             {
                 isInPosFixAfterFight = false;
                 escapeFromFight = false;
@@ -1160,6 +1160,8 @@ namespace WordJourney
 			enemy.boxCollider.enabled = true;
 
 			QuitFight ();
+
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.playerDieAudioName);
 
 			PlayRoleAnim (CommonData.roleDieAnimName, 1, ()=>{
 				StartCoroutine("QueryBuyLife");

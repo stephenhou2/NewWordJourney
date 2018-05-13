@@ -17,7 +17,9 @@ namespace WordJourney
 
 		private IEnumerator effectCouroutine;
 
-		public void PlayAnim(string effectName,int playTime,CallBack cb){
+        public void PlayAnim(string effectName,int playTime,CallBack cb,float yScaler){
+
+            //transform.position = new Vector3(localPos.x, localPos.y * yScaler, localPos.z);
 
 			effectCom.animation.Play (effectName, playTime);
 

@@ -29,7 +29,7 @@ namespace WordJourney
 		}
 
         // 奖励的物品id范围，如果数组为null或者数组长度为0，代表随机生成奖励，否则在id数组内随机生成奖励物品
-        public int[] rewardItemIds;
+        //public int[] rewardItemIds;
 
         // 标记怪s物是否是boss
         public bool isBoss;
@@ -116,35 +116,35 @@ namespace WordJourney
 			int extraGoldRecord = extraGold;
 			int extraExperienceRecord = extraExperience;
 
-			maxHealth = originalMaxHealth;
-			maxMana = originalMaxMana;
+            maxHealth = originalMaxHealth + maxHealthChangeFromSkill;
+            maxMana = originalMaxMana + maxManaChangeFromSkill;
 
-			attack = originalAttack;
-			magicAttack = originalMagicAttack;
+            attack = originalAttack + attackChangeFromSkill;
+            magicAttack = originalMagicAttack + magicAttackChangeFromSkill;
 
-			armor = originalArmor;
-			magicResist = originalMagicResist;
+            armor = originalArmor + armorChangeFromSkill;
+            magicResist = originalMagicResist + magicResistChangeFromSkill;
 
-			armorDecrease = originalArmorDecrease;
-			magicResistDecrease = originalMagicResistDecrease;
+            armorDecrease = originalArmorDecrease + armorDecreaseChangeFromSkill;
+            magicResistDecrease = originalMagicResistDecrease + magicResistChangeFromSkill;
 
-			moveSpeed = originalMoveSpeed;
+            moveSpeed = originalMoveSpeed + moveSpeedChangeFromSkill;
 
-			crit = originalCrit;
-			dodge = originalDodge;
+            crit = originalCrit + critChangeFromSkill;
+            dodge = originalDodge + dodgeChangeFromSkill;
 
-			critHurtScaler = originalCritHurtScaler;
-			physicalHurtScaler = originalPhysicalHurtScaler;
-			magicalHurtScaler = originalMagicalHurtScaler;
+            critHurtScaler = originalCritHurtScaler + critHurtScalerChangeFromSkill;
+            physicalHurtScaler = originalPhysicalHurtScaler + physicalHurtScalerChangeFromSkill;
+            magicalHurtScaler = originalMagicalHurtScaler + magicalHurtScalerChangeFromSkill;
 
-			extraGold = originalExtraGold;
-			extraExperience = originalExtraExperience;
+            extraGold = originalExtraGold + extraGoldChangeFromSkill;
+            extraExperience = originalExtraExperience + extraExperienceChangeFromSkill;
 
-			healthRecovery = originalHealthRecovery;
-			magicRecovery = originalMagicRecovery;
+            healthRecovery = originalHealthRecovery + healthRecoveryChangeFromSkill;
+            magicRecovery = originalMagicRecovery + magicRecoveryChangeFromSkill;
 
-			shenLuTuTengScaler = 0;
-			poisonHurtScaler = 1f;
+			//shenLuTuTengScaler = 0;
+			//poisonHurtScaler = 1f;
 
 			if (toOriginalState) {
 				health = maxHealth;
@@ -188,53 +188,85 @@ namespace WordJourney
 
             Item rewardItem = null;
 
-            if (rewardItemIds == null || rewardItemIds.Length == 0)
-            {
+            //if (rewardItemIds == null || rewardItemIds.Length == 0)
+            //{
+				if(isBoss)
+				{
+				    int index = 0;
+    				if(monsterId % 2 == 0){
+    					index = (Player.mainPlayer.currentLevelIndex / 5 + 1) * 10;
 
-                int randomSeed = Random.Range(0, 100);
-
-                if (randomSeed >= 0 && randomSeed < 90)
-                {
-                    rewardItem = null;
-                }
-                else
-                {
-
-                    randomSeed = Random.Range(0, 2);
-
-                    if (randomSeed == 0)
-                    {
-                        int index = 0;
-                        if (!isBoss)
-                        {
-                            index = Player.mainPlayer.currentLevelIndex / 5 + 1;
-                        }
-                        else
-                        {
-                            index = (Player.mainPlayer.currentLevelIndex / 5 + 1) * 10;
-                        }
-                        List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
+    					List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
                         {
                             return obj.equipmentGrade == index;
                         });
-                        randomSeed = Random.Range(0, ems.Count);
+
+                        int randomSeed = Random.Range(0, ems.Count);
+
                         rewardItem = new Equipment(ems[randomSeed], 1);
+    				}else{
+    					index = Player.mainPlayer.currentLevelIndex / 5 + 2;
+    					if(index == 10){
+    						index = 9;
+    					}
+    					List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
+                        {
+                            return obj.equipmentGrade == index;
+                        });
+
+                        int randomSeed = Random.Range(0, ems.Count);
+
+                        rewardItem = new Equipment(ems[randomSeed], 1);
+
+    					(rewardItem as Equipment).SetToGoldQuality();
+    				}
+
+				}
+				else
+				{
+
+					int randomSeed = Random.Range(0, 100);
+
+                    if (randomSeed >= 0 && randomSeed < 90)
+                    {
+                        rewardItem = null;
                     }
                     else
                     {
-                        randomSeed = Random.Range(300, 316);
-                        rewardItem = Item.NewItemWith(randomSeed, 1);
-                    }
 
-                }
+                        randomSeed = Random.Range(0, 2);
 
-            }
-            else
-            {
-                int randomSeed = Random.Range(0, rewardItemIds.Length);
-                rewardItem = Item.NewItemWith(rewardItemIds[randomSeed], 1);
+                        if (randomSeed == 0)
+                        {
 
-            }
+                            int index = Player.mainPlayer.currentLevelIndex / 5 + 1;
+                            
+						if (index == 10)
+                        {
+                            index = 9;
+                        }
+
+                            List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
+                            {
+                                return obj.equipmentGrade == index;
+                            });
+                            randomSeed = Random.Range(0, ems.Count);
+                            rewardItem = new Equipment(ems[randomSeed], 1);
+                        }
+                        else
+                        {
+                            randomSeed = Random.Range(300, 316);
+                            rewardItem = Item.NewItemWith(randomSeed, 1);
+                        }
+				    }               
+                }            
+            //}
+            //else
+            //{
+            //    int randomSeed = Random.Range(0, rewardItemIds.Length);
+            //    rewardItem = Item.NewItemWith(rewardItemIds[randomSeed], 1);
+
+            //}
 
             return rewardItem;
         }

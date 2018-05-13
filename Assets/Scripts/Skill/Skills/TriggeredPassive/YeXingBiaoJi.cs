@@ -7,9 +7,15 @@ namespace WordJourney
 {
 	public class YeXingBiaoJi : TriggeredPassiveSkill {
 
+		public int armorDecreaseBase;
+
 		protected override void BeforeFightTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
 		{
-			enemy.agent.armor -= (int)(self.agent.agentLevel * skillSourceValue);
+			int armorChange = -(int)(self.agent.agentLevel * armorDecreaseBase);
+
+            enemy.agent.armorChangeFromSkill += armorChange;
+
+            enemy.agent.armor += armorChange;
 		}
 
 	}

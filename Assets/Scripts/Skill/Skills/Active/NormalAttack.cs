@@ -37,7 +37,11 @@ namespace WordJourney
 			int actualMagicalHurt = 0;
 
 			if (self.agent.attack > 0) {
-				int oriPhysicalHurt = self.agent.attack + self.agent.armorDecrease / 4;
+				
+				//int oriPhysicalHurt = self.agent.attack + self.agent.armorDecrease / 4;
+
+				int oriPhysicalHurt = self.agent.attack;
+
 				float crit = self.agent.crit;
 
 				if (isEffective (crit)) {
@@ -45,8 +49,10 @@ namespace WordJourney
 					oriPhysicalHurt = (int)(oriPhysicalHurt * self.agent.critHurtScaler);
 				}
 
+				actualPhysicalHurt = (int)(oriPhysicalHurt / ((enemy.agent.armor - self.agent.armorDecrease) / 100f + 1));
 
-				actualPhysicalHurt = oriPhysicalHurt - enemy.agent.armor / 4;
+
+				//actualPhysicalHurt = oriPhysicalHurt - enemy.agent.armor / 4;
 
 				if (actualPhysicalHurt < 0) {
 					actualPhysicalHurt = 0;
@@ -58,7 +64,9 @@ namespace WordJourney
 
 			if (self.agent.magicAttack > 0) {
 				
-				actualMagicalHurt = self.agent.magicAttack + self.agent.magicResistDecrease / 4 - enemy.agent.magicResist / 4;
+				//actualMagicalHurt = self.agent.magicAttack + self.agent.magicResistDecrease / 4 - enemy.agent.magicResist / 4;
+
+				actualMagicalHurt = (int)(self.agent.magicAttack / ((enemy.agent.magicResist - self.agent.magicResistDecrease) / 100f + 1));
 
 				if (actualMagicalHurt < 0) {
 					actualMagicalHurt = 0;

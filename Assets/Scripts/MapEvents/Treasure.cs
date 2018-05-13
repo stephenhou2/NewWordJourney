@@ -40,8 +40,18 @@ namespace WordJourney
 		public virtual void PlayAnimAndAudio(CallBack cb){
 
 			animEndCallBack = cb;
+			switch(treasureType){
+				case TreasureType.Pot:
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.potAudioName);
+					break;
+				case TreasureType.Bucket:
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.bucketAudioName);
+					break;
+				//case TreasureType.TreasuerBox:
+					//GameManager.Instance.soundManager.PlayAudioClip(CommonData.treasureBoxAudioName);
+					//break;
+			}
 
-			GameManager.Instance.soundManager.PlayAudioClip ("MapEffects/" + audioClipName);
 
 			mapItemRenderer.enabled = false;
 
@@ -82,7 +92,10 @@ namespace WordJourney
 
 		}
 
-		protected void AnimEnd (){
+		protected virtual void AnimEnd (){
+
+			mapItemAnimator.ResetTrigger("Play");
+
 			if (animEndCallBack != null) {
 				animEndCallBack ();
 			}

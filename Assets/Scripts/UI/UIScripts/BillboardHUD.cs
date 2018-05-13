@@ -46,6 +46,7 @@ namespace WordJourney{
                 StopCoroutine(zoomCoroutine);
             }
 
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
             zoomCoroutine = HUDZoomIn();
 
             StartCoroutine(zoomCoroutine);
@@ -60,6 +61,7 @@ namespace WordJourney{
                 StopCoroutine(zoomCoroutine);
             }
 
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
             zoomCoroutine = HUDZoomOut();
 
             StartCoroutine(zoomCoroutine);

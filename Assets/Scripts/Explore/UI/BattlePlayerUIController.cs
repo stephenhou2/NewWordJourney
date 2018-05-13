@@ -237,10 +237,14 @@ namespace WordJourney
 				player.magicAttack += 1;
 				break;
 			}
-//			ExploreManager.Instance.EnableExploreInteractivity ();
+
 			UpdateAgentStatusPlane ();
 			levelUpPlane.gameObject.SetActive (false);
 			ExploreManager.Instance.AllWalkableEventsStartMove ();
+            ExploreManager.Instance.EnableExploreInteractivity ();
+
+			bpCtr.SetEffectAnim(CommonData.propertyIncreaseEffectName);
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.propertyIncreaseAudioName);
 		}
 			
 

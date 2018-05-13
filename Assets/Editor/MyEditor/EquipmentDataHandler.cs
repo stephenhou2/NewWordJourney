@@ -24,7 +24,7 @@ namespace WordJourney
 
 			loader.LoadAllItemsWithFullDataString (newItemDataString);
 
-			string newItemModelsDataPath = CommonData.originDataPath + "GameItems/EquipmentDatas.json";
+			string newItemModelsDataPath = CommonData.originDataPath + "/GameItems/EquipmentDatas.json";
 
 			DataHandler.SaveInstanceListToFile<EquipmentModel> (loader.newItemModels, newItemModelsDataPath);
 

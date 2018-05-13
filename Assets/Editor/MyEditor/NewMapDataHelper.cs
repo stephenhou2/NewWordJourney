@@ -198,10 +198,17 @@ namespace WordJourney
 
 					List<object> attachedInfoList = (List<object>)layerDataDic ["objects"];
 
+					//int monsterCount = 0;
+
 					for (int k = 0; k < attachedInfoList.Count; k++) {
 
 						Dictionary<string,object> attachedInfo = attachedInfoList [k] as Dictionary<string,object>;
 						string type = attachedInfo ["type"].ToString ();
+
+						//Debug.Log(type);
+						//if(type=="monster"){
+						//	monsterCount++;
+						//}
 
 						float posX = float.Parse(attachedInfo ["x"].ToString());
 						float posY = float.Parse (attachedInfo ["y"].ToString ());
@@ -237,10 +244,14 @@ namespace WordJourney
 						}
 
 						attachedInfoTile = new MapAttachedInfoTile (type, pos, kvPairs);
-
+                        
 						attachedInfoTiles.Add (attachedInfoTile);
 
 					}
+
+					//if(monsterCount != 0 && monsterCount != 16){
+					//	Debug.LogFormat("monster count:{0},map name:{1}",monsterCount,fi.Name);
+					//}
 
 					MapAttachedInfoLayer attachedInfoLayer = new MapAttachedInfoLayer (layerName, attachedInfoTiles);
 

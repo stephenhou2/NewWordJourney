@@ -198,6 +198,7 @@ namespace WordJourney
 
 				} else {
 					OpenTheDoor ();
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.doorAudioName);
 				}
 			}
 		}

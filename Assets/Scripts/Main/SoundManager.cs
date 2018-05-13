@@ -51,7 +51,7 @@ namespace WordJourney
 
 			bgmAS.loop = isLoop;
 
-			bgmAS.volume = GameManager.Instance.gameDataCenter.gameSettings.systemVolume;
+			bgmAS.volume = GameManager.Instance.gameDataCenter.gameSettings.systemVolume * 0.5f;
 
 			bgmAS.Play ();
 
@@ -118,6 +118,8 @@ namespace WordJourney
 				Debug.LogFormat ("未找到名为{0}的音乐", audioPath);
 				return;
 			}
+
+			//Debug.Log(audioPath);
 
 			int idleASIndex = GetIdleAudioSourceIndex ();
 

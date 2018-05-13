@@ -17,7 +17,9 @@ namespace WordJourney
 
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self,BattleAgentController enemy){
 
-			int hurt = (int)((self.agent.attack + self.agent.armorDecrease / 4) * hurtScaler - enemy.agent.armor / 4);
+			//int hurt = (int)((self.agent.attack + self.agent.armorDecrease / 4) * hurtScaler - enemy.agent.armor / 4);
+
+			int hurt = Mathf.RoundToInt(self.agent.attack /((enemy.agent.armor - self.agent.armorDecrease)/100f + 1));
 
 			enemy.AddHurtAndShow (hurt, HurtType.Physical,self.towards);
 
@@ -39,7 +41,7 @@ namespace WordJourney
 
 			while (count < poisonDuration) {
 
-				int hurt = (int)(poisonBase * self.agent.agentLevel * self.agent.poisonHurtScaler) ;
+				int hurt = Mathf.RoundToInt(poisonBase * self.agent.agentLevel * self.agent.poisonHurtScaler) ;
 
 				enemy.AddHurtAndShow (hurt, HurtType.Physical,self.towards);
 

@@ -10,22 +10,27 @@ namespace WordJourney
 	/// </summary>
 	public class Juhezhan : ActiveSkill {
 
-		public float hurtScaler;
+		//public float hurtScaler;
 		public float critScalerGain;
+		public float baseHurtScaler;
 
 		protected override void ExcuteActiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
 
 			float crit = self.agent.crit + critScalerGain;
 
-			int hurt = (int)((self.agent.attack  + self.agent.armorDecrease / 4) * (1 + hurtScaler));
+			//int hurt = (int)((self.agent.attack  + self.agent.armorDecrease / 4) * (1 + hurtScaler));
+
+			int hurt = self.agent.attack;
 
 			if (isEffective (crit)) {
-				hurt = (int)(hurt * self.agent.critHurtScaler);
+				hurt = (int)(self.agent.attack * self.agent.critHurtScaler);
 				enemy.AddTintTextToQueue ("暴击");
 			}
 
-			hurt -= enemy.agent.armor / 4;
+			hurt = Mathf.RoundToInt(self.agent.attack * baseHurtScaler / ((enemy.agent.armor - self.agent.armorDecrease) / 100f + 1));
+
+			//hurt -= enemy.agent.armor / 4;
 
 			enemy.AddHurtAndShow (hurt, HurtType.Physical,self.towards);
 

@@ -7,15 +7,21 @@ namespace WordJourney
 {
 	public class JueDuiFangYu : TriggeredPassiveSkill {
 
+		public float triggeredProbabilityBase;
+
+		public float refrectScaler;
+
 		protected override void BeHitTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
 		{
-			float triggeredPropability = skillSourceValue * self.agent.agentLevel;
+			float triggeredProbability = triggeredProbabilityBase * self.agent.agentLevel;
 
-			if (isEffective (triggeredPropability)) {
+			if (isEffective (triggeredProbability)) {
 
-				int hurt = self.agent.armor;
+				int hurt =(int)(self.agent.armor * refrectScaler);
 
 				enemy.AddHurtAndShow (hurt, HurtType.Physical,self.towards);
+
+                enemy.UpdateStatusPlane();
 
 				enemy.PlayShakeAnim ();
 			}

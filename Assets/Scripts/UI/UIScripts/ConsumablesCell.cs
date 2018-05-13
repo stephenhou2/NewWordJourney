@@ -50,6 +50,7 @@ namespace WordJourney
     				Player.mainPlayer.mana += cons.manaGain + Player.mainPlayer.magicRecovery;
     				Player.mainPlayer.experience += cons.experienceGain;
     				Player.mainPlayer.RemoveItem (cons, 1);
+					GameManager.Instance.soundManager.PlayAudioClip(cons.audioName);
 
     				break;  
     			case ConsumablesType.ChongZhuShi:
@@ -59,7 +60,9 @@ namespace WordJourney
 			    case ConsumablesType.YinShenJuanZhou:
 				    ExploreManager.Instance.PlayerFade ();
                     Player.mainPlayer.RemoveItem(cons, 1);
+					GameManager.Instance.soundManager.PlayAudioClip(cons.audioName);
 				break;
+
 			}
 			if (refreshCallBack != null) {
 				refreshCallBack ();

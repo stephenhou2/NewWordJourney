@@ -76,6 +76,8 @@ namespace WordJourney
 				(bp.agent as Player).PlayerPropertyChange (propertyType,gainAmount);
 
 				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(extraInfo);
+
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.crystalAudioName);
 			} 
 
 			isExausted = true;

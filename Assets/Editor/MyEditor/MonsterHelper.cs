@@ -17,7 +17,7 @@ namespace WordJourney
 
 			MonsterModel[] monsterModels = LoadMonsterModels ();
 
-			Transform other = GameObject.Find ("Other").transform;
+			//Transform other = GameObject.Find ("Other").transform;
 
 			for (int i = 0; i < monsterModels.Length; i++) {
 
@@ -32,62 +32,62 @@ namespace WordJourney
 					continue;
 				}
 
-				monster.gameObject.layer = 11;
+				//monster.gameObject.layer = 11;
 
-				monster.GetComponent<UnityArmatureComponent>().sortingLayerName = "roleAndEvent";
+				//monster.GetComponent<UnityArmatureComponent>().sortingLayerName = "roleAndEvent";
 
 				Monster monsterScript = monster.gameObject.GetComponent<Monster> ();
 				if (monsterScript == null) {
 					monsterScript = monster.gameObject.AddComponent<Monster> ();
 				}
 
-				BattleMonsterController bmcScript = monster.gameObject.GetComponent<BattleMonsterController> ();
-				if (bmcScript == null) {
-					bmcScript = monster.gameObject.AddComponent<BattleMonsterController> ();
-				}
+				//BattleMonsterController bmcScript = monster.gameObject.GetComponent<BattleMonsterController> ();
+				//if (bmcScript == null) {
+				//	bmcScript = monster.gameObject.AddComponent<BattleMonsterController> ();
+				//}
 
 
-				NormalAttack na = monster.gameObject.GetComponent<NormalAttack> ();
-				if (na == null) {
-					na = monster.gameObject.AddComponent<NormalAttack> ();
-				}
+				//NormalAttack na = monster.gameObject.GetComponent<NormalAttack> ();
+				//if (na == null) {
+				//	na = monster.gameObject.AddComponent<NormalAttack> ();
+				//}
 
-				BoxCollider2D bc2d = monster.gameObject.GetComponent<BoxCollider2D> ();
-				if (bc2d == null) {
-					bc2d = monster.gameObject.AddComponent<BoxCollider2D> ();
-				}
+				//BoxCollider2D bc2d = monster.gameObject.GetComponent<BoxCollider2D> ();
+				//if (bc2d == null) {
+				//	bc2d = monster.gameObject.AddComponent<BoxCollider2D> ();
+				//}
 
-				MapMonster mmScript = monster.gameObject.GetComponent<MapMonster> ();
-				if (mmScript == null) {
-					mmScript = monster.gameObject.AddComponent<MapMonster> ();
-				}
+				//MapMonster mmScript = monster.gameObject.GetComponent<MapMonster> ();
+				//if (mmScript == null) {
+				//	mmScript = monster.gameObject.AddComponent<MapMonster> ();
+				//}
 
-				Transform mynewOther = monster.Find ("Other");
+				//Transform mynewOther = monster.Find ("Other");
 
-				if (mynewOther != null) {
-					if (mynewOther.Find ("AlertAreasContainer") != null) {
-						GameObject.DestroyImmediate (mynewOther.Find ("AlertAreasContainer").gameObject);
-					}
-					Transform newAlertAreas = GameObject.Instantiate (other.Find ("AlertAreasContainer").gameObject, mynewOther).transform;
-					newAlertAreas.name = "AlertAreasContainer";
-					newAlertAreas.localPosition = Vector3.zero;
-					newAlertAreas.localRotation = Quaternion.identity;
-					newAlertAreas.localScale = Vector3.one;
-				}
+				//if (mynewOther != null) {
+				//	if (mynewOther.Find ("AlertAreasContainer") != null) {
+				//		GameObject.DestroyImmediate (mynewOther.Find ("AlertAreasContainer").gameObject);
+				//	}
+				//	Transform newAlertAreas = GameObject.Instantiate (other.Find ("AlertAreasContainer").gameObject, mynewOther).transform;
+				//	newAlertAreas.name = "AlertAreasContainer";
+				//	newAlertAreas.localPosition = Vector3.zero;
+				//	newAlertAreas.localRotation = Quaternion.identity;
+				//	newAlertAreas.localScale = Vector3.one;
+				//}
 
-				if (mynewOther == null) {
-					mynewOther = GameObject.Instantiate (other.gameObject).transform;
-					mynewOther.transform.SetParent (monster);
+				//if (mynewOther == null) {
+				//	mynewOther = GameObject.Instantiate (other.gameObject).transform;
+				//	mynewOther.transform.SetParent (monster);
 
-					mynewOther.name = "Other";
+				//	mynewOther.name = "Other";
 
-					mynewOther.localPosition = Vector3.zero;
-					mynewOther.localScale = Vector3.one;
-					mynewOther.localRotation = Quaternion.identity;
+				//	mynewOther.localPosition = Vector3.zero;
+				//	mynewOther.localScale = Vector3.one;
+				//	mynewOther.localRotation = Quaternion.identity;
 
-				} 
+				//} 
 
-				Transform skillsContainer = mynewOther.transform.Find ("SkillsContainer");
+				//Transform skillsContainer = mynewOther.transform.Find ("SkillsContainer");
 
 
 				monsterScript.monsterId = mm.monsterId;
@@ -138,39 +138,39 @@ namespace WordJourney
 
 				monsterScript.poisonHurtScaler = 1f;
 
-				monsterScript.skillsContainer = skillsContainer;
+				//monsterScript.skillsContainer = skillsContainer;
 
-				bc2d.size = new Vector2 (0.9f, 0.9f);
+				//bc2d.size = new Vector2 (0.9f, 0.9f);
 
-				na.skillType = SkillType.Active;
-				na.selfRoleAnimName = "attack";
-				na.sfxName = "hitNormal";
-				na.skillId = 0;
-				na.skillName = "普通攻击";
+				//na.skillType = SkillType.Active;
+				//na.selfRoleAnimName = "attack";
+				//na.sfxName = "hitNormal";
+				//na.skillId = 0;
+				//na.skillName = "普通攻击";
 
-				bmcScript.isIdle = true;
+				//bmcScript.isIdle = true;
 
 
-				bmcScript.collosionLayer = 1<<11;
-				bmcScript.boxCollider = bc2d;
-				bmcScript.normalAttack = na;
-				Transform effectAnimContainer = mynewOther.transform.Find ("EffectAnimContainer");
-				bmcScript.effectAnimContainer = effectAnimContainer;
+				//bmcScript.collosionLayer = 1<<11;
+				//bmcScript.boxCollider = bc2d;
+				//bmcScript.normalAttack = na;
+				//Transform effectAnimContainer = mynewOther.transform.Find ("EffectAnimContainer");
+				//bmcScript.effectAnimContainer = effectAnimContainer;
 
-				Transform alertAreasContainer = mynewOther.transform.Find ("AlertAreasContainer");
-				Transform alertIcon = mynewOther.transform.Find ("AlertIcon");
+				//Transform alertAreasContainer = mynewOther.transform.Find ("AlertAreasContainer");
+				//Transform alertIcon = mynewOther.transform.Find ("AlertIcon");
 
-				mmScript.alertAreas = alertAreasContainer.GetComponentsInChildren<MonsterAlertArea> ();
-				mmScript.alertToFightIcon = alertIcon.GetComponent<SpriteRenderer> ();
+				//mmScript.alertAreas = alertAreasContainer.GetComponentsInChildren<MonsterAlertArea> ();
+				//mmScript.alertToFightIcon = alertIcon.GetComponent<SpriteRenderer> ();
 
-				mmScript.collisionLayer = 1<<11;
+				//mmScript.collisionLayer = 1<<11;
 
-				mmScript.alertToFightIcon.sortingLayerName = "effect";
+				//mmScript.alertToFightIcon.sortingLayerName = "effect";
 
-				for (int j = 0; j < mmScript.alertAreas.Length; j++) {
-					mmScript.alertAreas [j].mapMonster = mmScript;
-					mmScript.alertAreas [j].GetComponent<UnityArmatureComponent>().sortingLayerName = "wall";
-				}
+				//for (int j = 0; j < mmScript.alertAreas.Length; j++) {
+				//	mmScript.alertAreas [j].mapMonster = mmScript;
+				//	mmScript.alertAreas [j].GetComponent<UnityArmatureComponent>().sortingLayerName = "wall";
+				//}
 
 
 			}
@@ -203,31 +203,33 @@ namespace WordJourney
 
 				mm.monsterSkeName = detailDatas [3];
 
-				mm.attackInterval = float.Parse (detailDatas [4]);
+				mm.attackInterval = float.Parse (detailDatas [5]);
 
-				mm.gold = int.Parse (detailDatas [5]);
+				//mm.attackInterval = float.Parse(detailDatas[5]);
 
-				mm.experience = int.Parse (detailDatas [6]);
+				mm.gold = int.Parse (detailDatas [6]);
 
-				mm.maxHealth = int.Parse (detailDatas [7]);
+				mm.experience = int.Parse (detailDatas [7]);
 
-				mm.attack = int.Parse (detailDatas [8]);
+				mm.maxHealth = int.Parse (detailDatas [8]);
 
-				mm.armor = int.Parse (detailDatas [9]);
+				mm.attack = int.Parse (detailDatas [9]);
 
-				mm.magicAttack = int.Parse (detailDatas [10]);
+				mm.armor = int.Parse (detailDatas [10]);
 
-				mm.magicResist = int.Parse (detailDatas [11]);
+				mm.magicAttack = int.Parse (detailDatas [11]);
 
-				mm.crit = float.Parse (detailDatas [12]);
+				mm.magicResist = int.Parse (detailDatas [12]);
 
-				mm.dodge = float.Parse (detailDatas [13]);
+				mm.crit = float.Parse (detailDatas [13]);
 
-				mm.armorDecrease = int.Parse (detailDatas [14]);
+				mm.dodge = float.Parse (detailDatas [14]);
 
-				mm.magicResistDecrease = int.Parse (detailDatas [15]);
+				mm.armorDecrease = int.Parse (detailDatas [15]);
 
-				mm.critHurtScaler = float.Parse (detailDatas [16]);
+				mm.magicResistDecrease = int.Parse (detailDatas [16]);
+
+				mm.critHurtScaler = float.Parse (detailDatas [17]);
 
 //				mm.skillId = int.Parse (detailDatas [17]);
 			}

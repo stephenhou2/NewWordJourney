@@ -427,7 +427,7 @@ namespace WordJourney
 			if (selectWord.wordId == currentExamination.question.wordId) {
 //				Debug.Log ("选择正确");
 
-				GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_RightTint");
+				GameManager.Instance.soundManager.PlayAudioClip (CommonData.correctTintAudioName);
 
 				correctWordCount++;
 
@@ -454,7 +454,7 @@ namespace WordJourney
 				// 如果选择错误
 //				Debug.Log ("选择错误");
 
-				GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_WrongTint");
+				GameManager.Instance.soundManager.PlayAudioClip (CommonData.wrongTintAudioName);
 
 				// 单词的背错次数+1
 				GetWordFromWordsToLearnArrayWith(currentExamination.question.wordId).ungraspTimes++;

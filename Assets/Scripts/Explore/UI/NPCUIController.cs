@@ -397,7 +397,7 @@ namespace WordJourney
 
 		public void SetUpTrade(){
 
-			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Trader");
+			GameManager.Instance.soundManager.PlayAudioClip (CommonData.merchantAudioName);
 
 			ClearItemDetail ();
 			UpdateGoodsDisplay ();
@@ -419,7 +419,7 @@ namespace WordJourney
 
 		public void SetUpSpecialOperation(){
 			
-			GameManager.Instance.soundManager.PlayAudioClip ("UI/sfx_UI_Trader");
+			GameManager.Instance.soundManager.PlayAudioClip (CommonData.merchantAudioName);
 
 			ClearItemDetail ();
 
@@ -524,6 +524,7 @@ namespace WordJourney
 			Player player = Player.mainPlayer;
 
 			player.totalGold -= currentSelectedItem.price;
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.goldAudioName);
 
 			player.AddItem (currentSelectedItem);
 
@@ -559,6 +560,8 @@ namespace WordJourney
 			Player player = Player.mainPlayer;
 
 			player.totalGold += currentSelectedItem.price / 8;
+
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.goldAudioName);
 
 			bool totallyRemoveFromBag = player.RemoveItem (currentSelectedItem, 1);
 
@@ -641,6 +644,7 @@ namespace WordJourney
 			case HLHRewardType.Gold:
 				player.totalGold += reward.rewardValue;
 				ExploreManager.Instance.expUICtr.SetUpGoldGainTintHUD (reward.rewardValue);
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.goldAudioName);
 				break;
 			case HLHRewardType.Experience:
 				player.experience += reward.rewardValue;

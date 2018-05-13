@@ -141,6 +141,8 @@ namespace WordJourney
 
 			}
 
+			OnPronunceButtonClick();
+
 		}
 
 
@@ -300,6 +302,8 @@ namespace WordJourney
 				extraInfoText.enabled = false;
 			}
 
+			OnPronunceButtonClick();
+
 			canQuitWhenClickBackground = false;
 				
 		}
@@ -342,12 +346,14 @@ namespace WordJourney
             {
                 choiceTexts[index].color = Color.green;
                 StartCoroutine("ShowChooseResultForAWhile", true);
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.correctTintAudioName);
             }
             else
             {
                 choiceTexts[index].color = Color.red;
                 choiceTexts[answerIndex].color = Color.green;
                 StartCoroutine("ShowChooseResultForAWhile", false);
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.wrongTintAudioName);
             }
 
             MySQLiteHelper sql = MySQLiteHelper.Instance;

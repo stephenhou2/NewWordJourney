@@ -7,10 +7,15 @@ namespace WordJourney
 {
 	public class WanQuanJIanShi : TriggeredPassiveSkill {
 
+		public float dodgeDecreaseBase;
 
 		protected override void BeforeFightTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
 		{
-			enemy.agent.dodge -= self.agent.agentLevel * skillSourceValue;
+			int dodgeChange = -(int)(self.agent.agentLevel * dodgeDecreaseBase * enemy.agent.armor);
+
+            enemy.agent.dodgeChangeFromSkill += dodgeChange;
+
+            enemy.agent.dodge += dodgeChange;
 		}
 
 	}

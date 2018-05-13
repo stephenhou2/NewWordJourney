@@ -37,7 +37,7 @@ namespace WordJourney
         }
 
         public static bool IsBossLevel(){
-            return (Player.mainPlayer.currentLevelIndex + 1) % 10 == 0;
+            return (Player.mainPlayer.currentLevelIndex + 1) % 5 == 0;
         }
 
 		public HLHGameLevelData(int gameLevelIndex, List<int> itemIdsInPot,List<int> itemIdsInBucket,List<int> itemIdsInTreasureBox,List<int> monsterIds,int bossId,Count goldAmountRange){

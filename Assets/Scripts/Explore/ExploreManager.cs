@@ -109,14 +109,14 @@ namespace WordJourney
 
 			DisableExploreInteractivity ();
 
-			if (!GameManager.Instance.soundManager.bgmAS.isPlaying 
-				|| GameManager.Instance.soundManager.bgmAS.clip.name != CommonData.exploreBgmName) {
+			if (!Player.mainPlayer.isNewPlayer && (!GameManager.Instance.soundManager.bgmAS.isPlaying 
+			                                       || GameManager.Instance.soundManager.bgmAS.clip.name != CommonData.exploreBgmName)) {
 				GameManager.Instance.soundManager.PlayBgmAudioClip (CommonData.exploreBgmName);
 			}
 
 			newMapGenerator.SetUpMap();
 
-			ExploreUICotroller expUICtr = TransformManager.FindTransform ("ExploreCanvas").GetComponent <ExploreUICotroller> ();
+			//ExploreUICotroller expUICtr = TransformManager.FindTransform ("ExploreCanvas").GetComponent <ExploreUICotroller> ();
 
 			expUICtr.SetUpExploreCanvas ();
 
@@ -487,6 +487,7 @@ namespace WordJourney
 				return;
 			}
 
+
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);
 
@@ -508,7 +509,14 @@ namespace WordJourney
 
 			FightEndCallBacks ();
 
+            battlePlayerCtr.agent.ClearPropertyChangesFromSkill();
+
 			battlePlayerCtr.agent.ResetBattleAgentProperties (false);
+
+            battleMonsterCtr.agent.ClearPropertyChangesFromSkill();
+
+            battleMonsterCtr.agent.ResetBattleAgentProperties(false);
+
 
             battlePlayerCtr.FixPositionToStandard ();
 
@@ -517,24 +525,7 @@ namespace WordJourney
 			Vector3 monsterPos = trans.position;
 
 			walkableEvent.RefreshWalkableInfoWhenQuit (true);
-
-            //更新玩家金钱
-            int goldGain = monster.rewardGold + player.extraGold;
-            player.totalGold += goldGain;
-            expUICtr.SetUpGoldGainTintHUD (goldGain);
-
-			player.experience += monster.rewardExperience + player.extraExperience;//更新玩家经验值
-
-			bool isLevelUp = player.LevelUpIfExperienceEnough ();//判断是否升级
-
-			if (isLevelUp) {
-				PlayLevelUpAnim ();
-				DisableExploreInteractivity ();
-				expUICtr.ShowLevelUpPlane ();
-			}
-
-			expUICtr.GetComponent<BattlePlayerUIController> ().UpdateAgentStatusPlane ();
-
+                     
 			MapMonster mm = bmCtr.GetComponent<MapMonster> ();
 
             if (mm != null) {
@@ -578,20 +569,47 @@ namespace WordJourney
 
 			battlePlayerCtr.boxCollider.enabled = true;
 
-			AllWalkableEventsStartMove ();
+            //更新玩家金钱
+            int goldGain = monster.rewardGold + player.extraGold;
+            player.totalGold += goldGain;
+
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.goldAudioName);
+
+            expUICtr.SetUpGoldGainTintHUD(goldGain);
+
+            player.experience += monster.rewardExperience + player.extraExperience;//更新玩家经验值
+
+            bool isLevelUp = player.LevelUpIfExperienceEnough();//判断是否升级
+
+            if (isLevelUp)
+            {
+                PlayLevelUpAnim();
+                DisableExploreInteractivity();
+                expUICtr.ShowLevelUpPlane();
+            }
+            else
+            {
+                AllWalkableEventsStartMove();
+            }
+
+			battlePlayerCtr.UpdateStatusPlane();
+
 
 		}
 
 
 
 		private void PlayLevelUpAnim(){
-			battlePlayerCtr.SetEffectAnim ("LevelUp");
-			GameManager.Instance.soundManager.PlayAudioClip ("Other/sfx_LevelUp");
+			battlePlayerCtr.SetEffectAnim (CommonData.levelUpEffectName);
+            GameManager.Instance.soundManager.PlayAudioClip (CommonData.levelUpAudioName);
 		}
 
 		public void BattlePlayerLose(){
 
-//			detectFight = false;
+            battlePlayerCtr.agent.ClearPropertyChangesFromSkill();
+            battleMonsterCtr.agent.ClearPropertyChangesFromSkill();
+
+            battleMonsterCtr.agent.ResetBattleAgentProperties(false);
 
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);
@@ -692,7 +710,7 @@ namespace WordJourney
 
 			player.currentLevelIndex++;
 
-			if (player.currentLevelIndex >= 20) {
+			if (player.currentLevelIndex >= 50) {
 				Debug.Log ("通关");
 				return;
 			}
