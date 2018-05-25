@@ -6,10 +6,10 @@ using UnityEngine;
 namespace WordJourney
 {
 	public class XieEZhiHun : TriggeredPassiveSkill {
-
-//		public float triggerProbability;
-//
+    
 		public int manaRecoveryBase;
+
+		public int manaRecoveryExtra;
 
 		public float triggeredProbability;
 
@@ -17,9 +17,13 @@ namespace WordJourney
 		{
 			if (isEffective (triggeredProbability)) {
 
-				self.agent.mana += self.agent.agentLevel * manaRecoveryBase + self.agent.magicRecovery;
+				int manaGain = skillLevel * manaRecoveryBase + manaRecoveryExtra + self.agent.magicRecovery;
+
+				self.agent.mana += manaGain;
 
 				self.UpdateStatusPlane ();
+
+				SetEffectAnims(self, enemy);
 
                 if(self.isInFight && self is BattlePlayerController){
                     ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();

@@ -11,7 +11,7 @@ namespace WordJourney
 
 		protected override void HitTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
 		{
-			int hurt = Mathf.RoundToInt(self.agent.agentLevel * hurtBase);
+			int hurt = Mathf.RoundToInt(skillLevel * hurtBase);
 
 			enemy.AddHurtAndShow (hurt, HurtType.Physical,self.towards);
 

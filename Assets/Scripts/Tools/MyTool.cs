@@ -217,13 +217,9 @@ namespace WordJourney
 		};
 
 		public static string GetNpcName(int npcId){
-			string npcName = string.Empty;
-			if (npcId >= 2) {
-				int nameIndexInArray = (npcId - 2) / 5 + 2;
-				npcName = npcNames [nameIndexInArray];
-			} else {
-				npcName = npcNames [npcId];
-			}
+	
+			string npcName = npcNames [npcId];
+
 			return npcName;
 		}
 
@@ -232,10 +228,10 @@ namespace WordJourney
 			string propertyName = string.Empty;
 			switch (type) {
 			case PropertyType.MaxHealth:
-				propertyName = "生命";
+				propertyName = "生命上限";
 				break;
 			case PropertyType.MaxMana:
-				propertyName = "魔法";
+				propertyName = "魔法上限";
 				break;
 			case PropertyType.Attack:
 				propertyName = "物理伤害";

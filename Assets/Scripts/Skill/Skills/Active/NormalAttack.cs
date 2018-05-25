@@ -79,7 +79,7 @@ namespace WordJourney
 			enemy.PlayShakeAnim ();
 			SetEffectAnims (self, enemy);
 
-			self.agent.hurtToEnemyFromNormalAttack = actualPhysicalHurt + actualMagicalHurt;
+			self.agent.hurtToEnemy = actualPhysicalHurt + actualMagicalHurt;
 
 
 			// 执行己方攻击命中的回调

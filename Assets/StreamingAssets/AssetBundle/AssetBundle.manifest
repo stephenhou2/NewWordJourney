@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 902683171
+CRC: 3234061021
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -18,49 +18,54 @@ AssetBundleManifest:
       Name: ui/common
       Dependencies: {}
     Info_5:
-      Name: item/gemstone_icons
-      Dependencies: {}
-    Info_6:
       Name: skills/icons
       Dependencies: {}
-    Info_7:
+    Info_6:
       Name: home/canvas
       Dependencies:
         Dependency_0: ui/common
-    Info_8:
+    Info_7:
       Name: record/canvas
       Dependencies:
         Dependency_0: ui/common
-    Info_9:
+    Info_8:
       Name: bag/canvas
       Dependencies:
         Dependency_0: ui/common
-    Info_10:
-      Name: shaders
-      Dependencies: {}
-    Info_11:
+        Dependency_1: skills/icons
+    Info_9:
       Name: explore/monsters
-      Dependencies: {}
-    Info_12:
-      Name: skills/skills
-      Dependencies: {}
-    Info_13:
-      Name: explore/effects
-      Dependencies: {}
-    Info_14:
-      Name: explore/npcs
-      Dependencies: {}
-    Info_15:
-      Name: materials
-      Dependencies: {}
-    Info_16:
-      Name: explore/scene
       Dependencies:
         Dependency_0: explore/mapicons
-        Dependency_1: ui/common
-        Dependency_2: skills/icons
-        Dependency_3: shaders
-    Info_17:
+    Info_10:
+      Name: skills/skills
+      Dependencies: {}
+    Info_11:
+      Name: explore/npcs
+      Dependencies: {}
+    Info_12:
+      Name: materials
+      Dependencies: {}
+    Info_13:
+      Name: explore/scene
+      Dependencies:
+        Dependency_0: item/icons
+        Dependency_1: explore/mapicons
+        Dependency_2: ui/common
+        Dependency_3: skills/icons
+    Info_14:
       Name: setting/canvas
       Dependencies:
         Dependency_0: ui/common
+    Info_15:
+      Name: explore/effects
+      Dependencies: {}
+    Info_16:
+      Name: item/propertygemstone_icons
+      Dependencies: {}
+    Info_17:
+      Name: item/skillscroll_icons
+      Dependencies: {}
+    Info_18:
+      Name: item/specialitem_icons
+      Dependencies: {}

@@ -23,18 +23,16 @@ namespace WordJourney
 
 
 		private bool quitWhenClickBackground = true;
-		private CallBack quitCallBack;
-		private CallBack refreshCallBack;
 		private CallBack backHomeCallBack;
 		private CallBack settingsCallBack;
+		private CallBack quitPauseCallBack;
 
 
-		public void InitPauseHUD(bool quitWhenClickBackground,CallBack refreshCallBack,CallBack backHomeCallBack,CallBack quitCallBack,CallBack settingsCallBack){
+		public void InitPauseHUD(bool quitWhenClickBackground,CallBack backHomeCallBack,CallBack settingsCallBack,CallBack quitPauseCallBack){
 			this.quitWhenClickBackground = quitWhenClickBackground;
-			this.refreshCallBack = refreshCallBack;
 			this.backHomeCallBack = backHomeCallBack;
-			this.quitCallBack = quitCallBack;
 			this.settingsCallBack = settingsCallBack;
+			this.quitPauseCallBack = quitPauseCallBack;
 		}
 
 
@@ -53,30 +51,27 @@ namespace WordJourney
 		}
 
 
-		public void OnRefreshButtonClick(){
+//		public void OnRefreshButtonClick(){
 
-			queryType = QueryType.Refresh;
+//			queryType = QueryType.Refresh;
 
-			if (refreshCallBack != null) {
-				refreshCallBack ();
-			}
+//			if (refreshCallBack != null) {
+//				refreshCallBack ();
+//			}
 
-			query.text = "是否确认重新开始本关？";
+//			query.text = "是否确认重新开始本关？";
 
-			queryContainer.gameObject.SetActive (true);
+//			queryContainer.gameObject.SetActive (true);
 
-//			QuitPauseHUD ();
+////			QuitPauseHUD ();
 
-		}
+		//}
 
 
 		public void OnBackHomeButtonClick(){
 
 			queryType = QueryType.BackHome;
 
-			if (backHomeCallBack != null) {
-				backHomeCallBack ();
-			}
 
 			query.text = "本次探险进度将会丢失\n是否确认返回主界面？";
 
@@ -98,22 +93,19 @@ namespace WordJourney
 
 		}
 
-		public void OnConfirmButtonClick(){
+		public void OnConfirmBackHomeButtonClick(){
 			
 			queryContainer.gameObject.SetActive (false);
 
 			QuitPauseHUD ();
 
-			ExploreManager exploreManager = ExploreManager.Instance;
-
-			switch (queryType) {
-			case QueryType.BackHome:
-				exploreManager.QuitExploreScene (false);
-				break;
+			if(backHomeCallBack != null){
+				backHomeCallBack();
 			}
+
 		}
 
-		public void OnCancelButtonClick(){
+		public void OnCancelBackHomeButtonClick(){
 
 			queryContainer.gameObject.SetActive (false);
 
@@ -126,8 +118,8 @@ namespace WordJourney
 
 			Time.timeScale = 1f;
 
-			if (quitCallBack != null) {
-				quitCallBack ();
+			if (quitPauseCallBack != null) {
+				quitPauseCallBack ();
 			}
 
 			gameObject.SetActive (false);

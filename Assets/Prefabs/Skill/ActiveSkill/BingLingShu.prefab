@@ -54,13 +54,15 @@ MonoBehaviour:
   skillName: "\u51B0\u51CC\u672F"
   sfxName: player_skill2
   skillId: 13
-  skillDescription: "\u9020\u6210220%\u7684\u9B54\u6CD5\u4F24\u5BB3\uFF0C\u540C\u65F6\u964D\u4F4E\u654C\u65B930%\u7684\u884C\u52A8\u901F\u5EA6"
+  skillDescription: "\u9020\u6210\uFF08\u6280\u80FD\u7B49\u7EA7\xD712+25\uFF09\u7684\u9B54\u6CD5\u4F24\u5BB3,\u540C\u65F6\u4F7F\u654C\u4EBA\u8FDB\u5165\u51B0\u51BB\u72B6\u6001"
   skillIconName: 13_bingLingShu
   selfEffectAnimName: 
   enemyEffectAnimName: 04_ice_effect1
   skillType: 0
+  skillLevel: 1
   selfRoleAnimName: magical_skill
   skillCoolenTime: 4
   manaConsume: 35
-  baseHurtScaler: 2.2
-  attackSpeedDecreaseScaler: 0.3
+  fixHurt: 25
+  hurtBase: 12
+  attackSpeedDecreaseScaler: 0.2

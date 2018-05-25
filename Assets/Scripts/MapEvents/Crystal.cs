@@ -66,6 +66,7 @@ namespace WordJourney
 			extraInfo = string.Format("{0}+{1}",propertyName,gainAmount);
 			ExploreManager.Instance.ShowWordsChoosePlane (wordsArray,extraInfo);
 
+
 		}
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
@@ -78,6 +79,8 @@ namespace WordJourney
 				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(extraInfo);
 
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.crystalAudioName);
+
+				ExploreManager.Instance.battlePlayerCtr.SetEffectAnim(CommonData.propertyIncreaseEffectName);
 			} 
 
 			isExausted = true;

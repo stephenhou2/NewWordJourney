@@ -35,16 +35,8 @@ namespace WordJourney
 
             StartCoroutine(poisonCoroutine);
 
-            if (selfEffectAnimName != string.Empty)
-            {
-                self.SetEffectAnim(selfEffectAnimName);
-            }
 
-            if (enemyEffectAnimName != string.Empty)
-            {
-                enemy.SetEffectAnim(enemyEffectAnimName);
-            }
-
+                     
         }
 
 
@@ -53,17 +45,18 @@ namespace WordJourney
 
             int count = 0;
 
-			int hurt = Mathf.RoundToInt((enemy.agent.agentLevel * durativeHurtBase + extraHurtBase) * self.agent.poisonHurtScaler);
+			int hurt = durativeHurtBase * skillLevel + extraHurtBase + self.agent.extraPoisonHurt;
 
             while (count < duration)
             {
+				SetEffectAnims(self, enemy);
 
                 enemy.AddHurtAndShow(hurt, HurtType.Physical, self.towards);
 
+				enemy.UpdateStatusPlane();
+
                 yield return new WaitForSeconds(1f);
-
-                enemy.UpdateStatusPlane();
-
+                            
                 count++;
             }
 

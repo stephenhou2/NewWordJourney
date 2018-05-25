@@ -29,8 +29,20 @@ namespace WordJourney
 				enemy.agent.attackChangeFromSkill += -attackDecrease;
 
 				hasTriggered = true;
+
+
+
 			}
            
+			if (selfEffectAnimName != string.Empty)
+            {
+                self.SetEffectAnim(selfEffectAnimName);
+            }
+
+            if (enemyEffectAnimName != string.Empty)
+            {
+                enemy.SetEffectAnim(enemyEffectAnimName);
+            }
 
             enemy.UpdateStatusPlane();
 

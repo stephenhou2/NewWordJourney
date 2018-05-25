@@ -45,25 +45,31 @@ namespace WordJourney{
 			new KVPair("MyGameDB","/Data/MyGameDB.db"),
 			new KVPair("EquipmentDatas","/Data/GameItems/EquipmentDatas.json"),
 			new KVPair("ConsumablesDatas","/Data/GameItems/ConsumablesDatas.json"),
-			new KVPair("SkillGemstoneDatas","/Data/GameItems/SkillGemstoneDatas.json"),
+			new KVPair("PropertyGemstoneDatas","/Data/GameItems/PropertyGemstoneDatas.json"),
+			new KVPair("SkillScrollDatas","/Data/GameItems/SkillScrollDatas.json"),
+			new KVPair("SpecialItemDatas","/Data/GameItems/SpecialItemDatas.json"),
+			new KVPair("SpellItemDatas","/Data/GameItems/SpellItemDatas.json"),
 			new KVPair("OriginalPlayerData","/Data/OriginalPlayerData.json"),
 			new KVPair("Level","/Data/MapData/Level"),
 			new KVPair("NPC","/Data/NPCs"),
-            new KVPair("ProverbData","/Data/HLHSentenceAndPoemData.json")
+            new KVPair("ProverbData","/Data/HLHSentenceAndPoemData.json")         
 		};
 
 
 		public static string assetBundleRootName = "AssetBundle";
-
-		//public static string effectsDataFilePath = persistDataPath + "/TestEffectString.txt";
+        
 		public static string gameLevelDataFilePath = persistDataPath + "/GameLevelDatas.json";
 		public static string equipmentDataFilePath = persistDataPath + "/GameItems/EquipmentDatas.json";
 		public static string consumablesDataFilePath = persistDataPath + "/GameItems/ConsumablesDatas.json";
-		public static string skillGemstoneDataFilePath = persistDataPath + "/GameItems/SkillGemstoneDatas.json";
+		public static string propertyGemstoneDataFilePath = persistDataPath + "/GameItems/PropertyGemstoneDatas.json";
+		public static string skillScrollDataFilePath = persistDataPath + "/GameItems/SkillScrollDatas.json";
+		public static string specialItemDataFilePath = persistDataPath + "/GameItems/SpecialItemDatas.json";
+		public static string spellItemDataFilePath = persistDataPath + "/GameItems/SpellItemDatas.json";
         public static string proverbsDataFilePath = persistDataPath + "/HLHSentenceAndPoemData.json";
 		public static string npcsDataDirPath = persistDataPath + "/NPCs";
 
 		public static string buyRecordFilePath = persistDataPath + "/BuyRecord.json";
+		public static string chatRecordsFilePath = persistDataPath + "/ChatRecords.json";
 
 
 
@@ -101,7 +107,9 @@ namespace WordJourney{
 
 		public static string allEquipmentSpritesBundleName = "item/equipment_icons";
 		public static string allConsumablesSpritesBundleName = "item/consumables_icons";
-		public static string allSkillGemstoneSpritesBundleName = "item/gemstone_icons";
+		public static string allPropertyGemstoneSpritesBundleName = "item/propertygemstone_icons";
+		public static string allSkillScrollSpritesBundleName = "item/skillscroll_icons";
+		public static string allSpecialItemSpritesBundleName = "item/specialitem_icons";
 		public static string allMapSpritesBundleName = "explore/mapicons";
 		public static string allSkillsBundleName = "skills/skills";
 		public static string allSkillSpritesBundleName = "skills/icons";
@@ -111,7 +119,8 @@ namespace WordJourney{
 		public static string skillsContainerName = CommonData.instanceContainerName + "/AllSkills";
 		public static string monstersContainerName = CommonData.instanceContainerName + "/AllMonsters";
 
-		public static string exploreMaskAnimName = "default";
+		public static string exploreDarktMaskAnimName = "dark";
+		public static string exploreLightMaskAnimName = "light";
 
         public static string regularEffectAnimName = "default";
 
@@ -165,7 +174,7 @@ namespace WordJourney{
 		public static string propertyDecreaseEffectName = "07_attribute_down";
 		public static string bleedingEffectName = "08_bleeding";
 		public static string shieldEffectName = "09_shiled";
-		public static string frozenAEffectName = "10_frozen";
+		public static string frozenEffectName = "10_frozen";
 		public static string paralizedEffectName = "11_paralized";
 		public static string propertyIncreaseEffectName = "12_attribute_up";
 
@@ -186,7 +195,7 @@ namespace WordJourney{
 
 
 		// 物品 音效 名称
-		public static string dianJinAudioName = "Item/sfx_dianjin";
+		public static string gemstoneAudioName = "Item/sfx_gemstone";
 		public static string chongzhuAudioName = "Item/sfx_chongzhu";
 		public static string xiaoMoAudioName = "";
 		public static string yinShenAudioName = "";
@@ -198,6 +207,8 @@ namespace WordJourney{
 		public static string footstepAudioName = "Other/sfx_footstep";
 		public static string goldAudioName = "Other/sfx_gold";
 		public static string playerDieAudioName = "Other/sfx_playerDie";
+		public static string drinkAudioName = "Item/sfx_drink";
+		public static string eatAudoiName = "Item/sfx_eat";
 
 
 		// 地图事件 音效 名称

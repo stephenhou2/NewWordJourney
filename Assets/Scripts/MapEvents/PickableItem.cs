@@ -11,7 +11,7 @@ namespace WordJourney
 
 		public Item item;
 
-//		public SpriteRenderer itemIcon;
+		public SpriteRenderer itemIcon;
 
 		public float floatingInterval = 2f;
 		public float floatingDistance = 0.1f;
@@ -41,7 +41,7 @@ namespace WordJourney
 
 			Sprite s = GameManager.Instance.gameDataCenter.GetGameItemSprite (item);
 
-			itemTrans.GetComponent<SpriteRenderer>().sprite = s;
+			itemIcon.sprite = s;
 
 			oriPosY = itemTrans.localPosition.y;
 

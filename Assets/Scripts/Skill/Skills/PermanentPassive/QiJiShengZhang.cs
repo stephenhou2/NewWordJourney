@@ -9,7 +9,10 @@ namespace WordJourney
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			(self.agent as Player).extraExperience += (int)(self.agent.agentLevel * skillSourceValue);
+
+			int extraExperienceGain = Mathf.RoundToInt(skillSourceValue * skillLevel);
+
+			(self.agent as Player).extraExperience += extraExperienceGain;
 		}
 	}
 }

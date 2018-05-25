@@ -58,25 +58,25 @@ namespace WordJourney
 		// 每次升级所需要的经验值
 		public int upgradeExprience{
 			get{
-				return 50 * agentLevel * (agentLevel + 1);
+				return 2 * agentLevel * agentLevel + 100 * agentLevel;
 			}
 		}
 
 		public override  float attackInterval{
 			get{
-				float interval = 1.0f;
+				float interval = 1.1f;
 				switch (attackSpeed) {
     				case AttackSpeed.Slow:
-    					interval = 1.0f;
+    					interval = 1.1f;
     					break;
     				case AttackSpeed.Medium:
-    					interval = 0.9f;
-    					break;
-    				case AttackSpeed.Fast:
     					interval = 0.8f;
     					break;
-    				case AttackSpeed.VeryFast:
+    				case AttackSpeed.Fast:
     					interval = 0.6f;
+    					break;
+    				case AttackSpeed.VeryFast:
+    					interval = 0.4f;
     					break;
     			}
 				return interval;
@@ -84,30 +84,54 @@ namespace WordJourney
 		}
 
 		public List<Item> allItemsInBag = new List<Item>();//背包中要显示的所有物品（已穿戴的装备和已解锁的卷轴将会从这个表中删除）
-		public List<Consumables> allConsumablesInBag = new List<Consumables> ();
-		public List<TaskItem> allTaskItemsInBag = new List<TaskItem> ();
-//		public List<UnlockScroll> allUnlockScrollsInBag = new List<UnlockScroll>();//所有背包中的解锁卷轴
-//		public List<CraftingRecipe> allCraftingRecipesInBag = new List<CraftingRecipe>();//所有背包中的合成配方
-		public List<SkillGemstone> allSkillGemstonesInBag = new List<SkillGemstone>();//背包中所有的技能宝石
 
-		public List<HLHTask> inProgressTasks = new List<HLHTask> ();
+		public List<Consumables> allConsumablesInBag = new List<Consumables> ();
+
+		public List<PropertyGemstone> allPropertyGemstonesInBag = new List<PropertyGemstone>();//背包中所有的属性宝石
+
+		public List<SkillScroll> allSkillScrollsInBag = new List<SkillScroll>();//背包中所有的技能卷轴
+
+		//public List<SpellItem> allSpellItemsInBag = new List<SpellItem>();//背包中所有的拼写物品
+
+		public List<SpecialItem> allSpecialItemsInBag = new List<SpecialItem>();//背包中所有的特殊物品
+
+		public List<char> allCollectedCharacters = new List<char>();//所有收集到的字母碎片
 
         // 地图初始化记录
         public List<int> mapIndexRecord = new List<int>();
 
 		public int robTime;
 
-//		public int maxUnlockLevelIndex;
 
 		public int currentLevelIndex;
 
+		public int maxUnlockLevelIndex;
+
 		// 是否是新建的玩家
 		public bool isNewPlayer = true;
-
-//		public bool hasCompass = false;
-
+      
 		private int maxBagCount{ get{ return BuyRecord.Instance.extraBagUnlocked ? 4 : 3; } }
-//		private int singleBagVolume = 24;
+
+		public List<int> allLearnedSkillIds = new List<int>();
+
+		public int skillNumLeft;
+
+		private int maxSkillCount = 6;
+
+		// 探索界面遮罩的状态  【0:黑暗状态，使用黑暗动画】 【1:明亮状态，使用明亮动画】
+		public int exploreMaskStatus = 0;
+
+
+        // 开宝箱的幸运度 
+		// 0:  65%灰色装备 30%蓝色装备 5%金色装备
+		// 1:  60%灰色装备 30%蓝色装备 10%金色装备
+		public int luckInOpenTreasure;
+
+        // 怪物掉落物品的幸运度
+		// 0: 10%掉落物品
+		// 1: 15%掉落物品
+		public int luckInMonsterTreasure;
+
 
 		public void SetUpPlayerWithPlayerData(PlayerData playerData){
 
@@ -186,9 +210,24 @@ namespace WordJourney
 
 			this.allEquipmentsInBag = playerData.allEquipmentsInBag;
 			this.allConsumablesInBag = playerData.allConsumablesInBag;
-			this.allSkillGemstonesInBag = playerData.allSkillGemstonesInBag;
+			this.allPropertyGemstonesInBag = playerData.allPropertyGemstonesInBag;
+			this.allSkillScrollsInBag = playerData.allSkillScrollsInBag;
+			this.allSpecialItemsInBag = playerData.allSpecialItemsInBag;
 
             this.mapIndexRecord = playerData.mapIndexRecord;
+
+			this.allLearnedSkillIds = playerData.allLearnedSkillIds;
+
+
+
+			for (int i = 0; i < allLearnedSkillIds.Count;i++){
+				
+				int learnedSkillId = allLearnedSkillIds[i];
+
+				Skill skill = SkillGenerator.GenerateSkill(learnedSkillId);
+
+                AddSkill(skill);
+			}
 
 			allEquipedEquipments = new Equipment[7];
 			for(int i = 0;i<allEquipedEquipments.Length;i++){
@@ -216,15 +255,17 @@ namespace WordJourney
 
 //			this.maxUnlockLevelIndex = playerData.maxUnlockLevelIndex;
 			this.currentLevelIndex = playerData.currentLevelIndex;
-//			this.currentLevelIndex = 0;
+			this.maxUnlockLevelIndex = playerData.maxUnlockLevelIndex;
 
-			this.inProgressTasks = playerData.inProgressTasks;
+			this.exploreMaskStatus = playerData.exploreMaskStatus;
 
 			this.totalGold = playerData.totalGold;
 			this.experience = playerData.experience;
 			this.robTime = playerData.robTime;
 
 			this.isNewPlayer = playerData.isNewPlayer;
+
+			this.skillNumLeft = playerData.skillNumLeft;
 
 			this.attachedTriggeredSkills.Clear ();
 			this.allStatus.Clear ();
@@ -241,47 +282,51 @@ namespace WordJourney
 				allItemsInBag.Add(allConsumablesInBag[i]);
 			}
 
-			for (int i = 0; i < allSkillGemstonesInBag.Count; i++) {
-				allItemsInBag.Add (allSkillGemstonesInBag [i]);
+			for (int i = 0; i < allPropertyGemstonesInBag.Count; i++) {
+				allItemsInBag.Add (allPropertyGemstonesInBag [i]);
 			}
 
-//			for (int i = 0; i < allUnlockScrollsInBag.Count; i++) {
-//				if (!allUnlockScrollsInBag [i].unlocked) {
-//					allItemsInBag.Add (allUnlockScrollsInBag [i]);
-//				}
-//			}
-
-//			for (int i = 0; i < allCraftingRecipesInBag.Count; i++) {
-//				allItemsInBag.Add(allCraftingRecipesInBag[i]);
-//			}
-
-			for(int i = 0;i<skillsContainer.childCount;i++) {
-				Destroy (skillsContainer.GetChild (i).gameObject);
-				attachedActiveSkills.Clear ();
-				attachedTriggeredSkills.Clear ();
-				attachedPermanentPassiveSkills.Clear ();
+			for (int i = 0; i < allSkillScrollsInBag.Count;i++){
+				allItemsInBag.Add(allSkillScrollsInBag[i]);
 			}
 
-			for (int i = 0; i < allEquipedEquipments.Length; i++) {
+			for (int i = 0; i < allSpecialItemsInBag.Count;i++){
+				allItemsInBag.Add(allSpecialItemsInBag[i]);
+			}
 
-				Equipment equipment = allEquipedEquipments [i];
+			//for(int i = 0;i<skillsContainer.childCount;i++) {
+			//	Destroy (skillsContainer.GetChild (i).gameObject);
+			//	attachedActiveSkills.Clear ();
+			//	attachedTriggeredSkills.Clear ();
+			//	attachedPermanentPassiveSkills.Clear ();
+			//}
 
-				if (equipment.itemId < 0) {
-					continue;
-				}
+			//for (int i = 0; i < allEquipedEquipments.Length; i++) {
 
-				if (equipment.attachedSkillId <= 0) {
-					continue;
-				}
+			//	Equipment equipment = allEquipedEquipments [i];
+
+			//	if (equipment.itemId < 0) {
+			//		continue;
+			//	}
+
+			//	if (equipment.attachedSkillId <= 0) {
+			//		continue;
+			//	}
 					
-				Skill skill = SkillGenerator.GenerateTriggeredSkill (equipment.attachedSkillId);
+			//	Skill skill = SkillGenerator.GenerateSkill (equipment.attachedSkillId);
 
-				AddSkill (skill);
+			//	AddSkill (skill);
 
-				equipment.attachedSkill = skill;
-			}
+			//	//equipment.attachedSkill = skill;
+			//}
 
 			ResetBattleAgentProperties (false);
+
+		}
+
+		public void ClearCollectedCharacters(){
+
+			allCollectedCharacters.Clear();
 
 		}
 
@@ -361,8 +406,8 @@ namespace WordJourney
             healthRecovery = originalHealthRecovery + healthRecoveryChangeFromSkill;
             magicRecovery = originalMagicRecovery + magicRecoveryChangeFromSkill;
 
-			//shenLuTuTengScaler = 0;
-			//poisonHurtScaler = 1f;
+			shenLuTuTengScaler = 0;
+			extraPoisonHurt = 0;
 
 			for (int i = 0; i < allEquipedEquipments.Length; i++) {
 
@@ -401,17 +446,15 @@ namespace WordJourney
 
 				healthRecovery += eqp.healthRecoveryGain;
 				magicRecovery += eqp.magicRecoveryGain;
-
-
-				Skill equipmentAttachedSkill = eqp.attachedSkill;
-				if(equipmentAttachedSkill != null && equipmentAttachedSkill.skillType == SkillType.PermanentPassive){
-					PermanentPassiveSkill pps = equipmentAttachedSkill as PermanentPassiveSkill;
-					pps.AffectAgents (battleAgentCtr, null);
-				}
+                            
 
 			}
 
-
+		    for (int i = 0; i < attachedPermanentPassiveSkills.Count;i++){
+				PermanentPassiveSkill pps = attachedPermanentPassiveSkills[i];
+				pps.AffectAgents(battleAgentCtr, null);
+              
+		    }
 
 
 			if (toOriginalState) {
@@ -492,19 +535,6 @@ namespace WordJourney
 				allItemsInBag.Insert (indexInBag, equipment);
 			}
 
-			Skill attachedSkill = equipment.attachedSkill;
-
-			if (attachedSkill != null) {
-				if (!bpCtr.isInFight) {
-					RemoveSkill (attachedSkill);
-					equipment.DestroyAttachedSkillGameObject ();
-				} else {
-					RemoveSkill (attachedSkill);
-				}
-			}
-				
-//			Equipment emptyEquipment = new Equipment();
-
 			allEquipedEquipments [equipmentIndexInPanel] = new Equipment();
 
 			PropertyChange pc = ResetBattleAgentProperties (false);
@@ -524,20 +554,7 @@ namespace WordJourney
 			return pc;
 
 		}
-
-
-		public void DestroyEquipmentInBagAttachedSkills(){
-
-			for (int j = 0; j < allEquipmentsInBag.Count; j++) {
-				Equipment equipment = allEquipmentsInBag [j];
-				if (!equipment.equiped && equipment.attachedSkill != null) {
-					Skill attachedSkill = equipment.attachedSkill;
-					Destroy (attachedSkill.gameObject);
-					equipment.attachedSkill = null;
-				}
-			}
-
-		}
+        
 
 		public void PlayerPropertyChange(PropertyType type,int change){
 			switch (type) {
@@ -585,17 +602,17 @@ namespace WordJourney
 				moveSpeed += change;
 				break;
 			case PropertyType.Dodge:
-				float changeInFloat = (float)change / 100;
+				float changeInFloat = (float)change / 1000;
 				originalDodge += changeInFloat;
 				dodge += changeInFloat;
 				break;
 			case PropertyType.Crit:
-				changeInFloat = (float)change / 100;
+				changeInFloat = (float)change / 1000;
 				originalCrit += changeInFloat;
 				crit += changeInFloat;
 				break;
 			case PropertyType.CritHurtScaler:
-				changeInFloat = (float)change / 100;
+				changeInFloat = (float)change / 1000;
 				originalCritHurtScaler += changeInFloat;
 				critHurtScaler += changeInFloat;
 				break;
@@ -614,18 +631,6 @@ namespace WordJourney
 			case PropertyType.MagicRecovery:
 				originalMagicRecovery += change;
 				magicRecovery += change;
-				break;
-			case PropertyType.HealthPunish:
-				maxHealthRecord = maxHealth;
-				originalMaxHealth += change * robTime;
-				maxHealth += change * robTime;
-				health = (int)(health * (float)maxHealth / maxHealthRecord);
-				robTime = 0;
-				break;
-			case PropertyType.AttackPunish:
-				originalAttack += change * robTime;
-				attack += change * robTime;
-				robTime = 0;
 				break;
 			}
 		}
@@ -670,23 +675,23 @@ namespace WordJourney
 
 			BattlePlayerController bpCtr = battleAgentCtr as BattlePlayerController;
 
-			if (equipment.attachedSkillId > 0) {
+			//if (equipment.attachedSkillId > 0) {
 				
-				if (equipment.attachedSkill == null) {
+			//	if (equipment.attachedSkill == null) {
 
-					Skill attachedSkill = SkillGenerator.GenerateTriggeredSkill (equipment.attachedSkillId);
+			//		Skill attachedSkill = SkillGenerator.GenerateSkill (equipment.attachedSkillId);
 
-					equipment.attachedSkill = attachedSkill;
+			//		equipment.attachedSkill = attachedSkill;
 
-					AddSkill (attachedSkill);
+			//		AddSkill (attachedSkill);
 
-				}else {
+			//	}else {
 					
-					Skill attachedSkill = equipment.attachedSkill;
+			//		Skill attachedSkill = equipment.attachedSkill;
 
-					AddSkill (attachedSkill);
-				}
-			}
+			//		AddSkill (attachedSkill);
+			//	}
+			//}
 
 			allItemsInBag.Remove (equipment);
 
@@ -782,6 +787,127 @@ namespace WordJourney
 			return index;
 		}
 
+
+        /// <summary>
+        /// 学习技能
+        /// </summary>
+        /// <param name="skill">Skill.</param>
+		public PropertyChange LearnSkill(Skill skill){
+
+			PropertyChange propertyChange = new PropertyChange();
+
+            // 已学习技能id列表中记录技能id
+			allLearnedSkillIds.Add(skill.skillId);
+
+            // 人物添加技能
+			AddSkill(skill);
+         
+			// 如果是永久性被动，则直接实现技能效果（永久提升属性)
+            if (skill.skillType == SkillType.PermanentPassive)
+            {
+				propertyChange = ResetBattleAgentProperties(false);
+            }
+
+			return propertyChange;
+		}
+        
+        /// <summary>
+        /// 遗忘技能
+        /// </summary>
+        /// <param name="skill">Skill.</param>
+		public PropertyChange ForgetSkill(Skill skill){
+
+			PropertyChange propertyChange = new PropertyChange();
+
+			allLearnedSkillIds.Remove(skill.skillId);
+
+			RemoveSkill(skill);
+
+			skillNumLeft += skill.skillLevel * (skill.skillLevel - 1) / 4;
+
+			// 如果是永久性被动，则直接实现技能效果（永久提升属性)
+            if (skill.skillType == SkillType.PermanentPassive)
+            {
+				propertyChange = ResetBattleAgentProperties(false);
+            }
+
+			Destroy(skill.gameObject);
+
+			return propertyChange;
+
+		}
+
+		public PropertyChange UpgradeSkill(Skill skill){
+
+			PropertyChange propertyChange = new PropertyChange();
+         
+            // 扣除升级所需技能点
+			skillNumLeft -= skill.skillLevel;
+
+            // 技能等级提升1级
+			skill.skillLevel++;
+
+			// 如果是永久性被动，则直接实现技能效果（永久提升属性)
+			if(skill.skillType == SkillType.PermanentPassive){
+				propertyChange = ResetBattleAgentProperties(false);
+			}
+
+			return propertyChange;
+
+		}
+
+        /// <summary>
+        /// 检查技能是否已经学习过
+        /// </summary>
+        /// <returns><c>true</c>, if skill has learned was checked, <c>false</c> otherwise.</returns>
+        /// <param name="skill">Skill.</param>
+		public bool CheckSkillHasLearned(Skill skill){
+			
+			bool skillLearned = false;
+
+            for (int i = 0; i < allLearnedSkillIds.Count; i++)
+            {
+
+                if (allLearnedSkillIds[i] == skill.skillId)
+                {
+                    skillLearned = true;
+                    break;
+                }
+
+            }
+
+			return skillLearned;
+
+		}
+
+		public bool CheckSkillHasLearned(int skillId){
+
+			bool SkillLearned = false;
+
+			for (int i = 0; i < allLearnedSkillIds.Count;i++){
+
+				if(allLearnedSkillIds[i] == skillId){
+
+					SkillLearned = true;
+					break;
+
+				}
+			}
+
+			return SkillLearned;
+
+		}
+
+        /// <summary>
+		/// 检查玩家是否还可以学习新技 
+        /// </summary>
+        /// 玩家已经学满了6个技能,返回true；
+		public bool CheckSkillFull(){
+			return allLearnedSkillIds.Count == maxSkillCount;
+
+		}
+
+
 		/// <summary>
 		/// NPC的奖励如果是惩罚的话，检验是否可以满足惩罚的要求（为了方便，惩罚的数据也写在了奖励里面，数值为负的）
 		/// </summary>
@@ -794,9 +920,9 @@ namespace WordJourney
 			bool canHandOut = true;
 
 			switch (type) {
-			case HLHRewardType.Property:
-			case HLHRewardType.Experience:
-				break;
+			//case HLHRewardType.Property:
+			//case HLHRewardType.Experience:
+				//break;
 			case HLHRewardType.Gold:
 				canHandOut = totalGold + value >= 0;
 				break;
@@ -817,31 +943,31 @@ namespace WordJourney
 
 
 
-		public bool CheckTaskExistFromTaskId(int taskId){
+		//public bool CheckTaskExistFromTaskId(int taskId){
 
-			bool taskExist = false;
-			for (int i = 0; i < inProgressTasks.Count; i++) {
-				HLHTask inProgressTask = inProgressTasks [i];
-				if (inProgressTask.taskId == taskId) {
-					taskExist = true;
-					break;
-				}
-			}
-			return taskExist;
+		//	bool taskExist = false;
+		//	for (int i = 0; i < inProgressTasks.Count; i++) {
+		//		HLHTask inProgressTask = inProgressTasks [i];
+		//		if (inProgressTask.taskId == taskId) {
+		//			taskExist = true;
+		//			break;
+		//		}
+		//	}
+		//	return taskExist;
 
-		}
+		//}
 
-		public bool CheckTaskExistFromTriggeredDialogGroupId(int dialogGroupId){
-			bool taskExist = false;
-			for (int i = 0; i < inProgressTasks.Count; i++) {
-				HLHTask inProgressTask = inProgressTasks [i];
-				if (inProgressTask.dialogGroupId == dialogGroupId) {
-					taskExist = true;
-					break;
-				}
-			}
-			return taskExist;
-		}
+		//public bool CheckTaskExistFromTriggeredDialogGroupId(int dialogGroupId){
+		//	bool taskExist = false;
+		//	for (int i = 0; i < inProgressTasks.Count; i++) {
+		//		HLHTask inProgressTask = inProgressTasks [i];
+		//		if (inProgressTask.dialogGroupId == dialogGroupId) {
+		//			taskExist = true;
+		//			break;
+		//		}
+		//	}
+		//	return taskExist;
+		//}
 
 		/// <summary>
 		/// 检查任务是否完成
@@ -849,87 +975,87 @@ namespace WordJourney
 		/// <returns><c>true</c>, if task finish was checked, <c>false</c> otherwise.</returns>
 		/// <param name="player">Player.</param>
 		/// <param name="taskId">Task identifier.</param>
-		public bool CheckTaskFinish(HLHTask task){
+		//public bool CheckTaskFinish(HLHTask task){
 
-			bool isTaskFinish = false;
+		//	bool isTaskFinish = false;
 
-			int tempTaskItemId = task.taskItemId;
+		//	int tempTaskItemId = task.taskItemId;
 
-			Item taskItem = allItemsInBag.Find (delegate(Item obj) {
-				return obj.itemId == tempTaskItemId;
-			});
+		//	Item taskItem = allItemsInBag.Find (delegate(Item obj) {
+		//		return obj.itemId == tempTaskItemId;
+		//	});
 
-			if (taskItem != null) {
-				isTaskFinish = taskItem.itemCount >= task.taskItemCount;
-			}
+		//	if (taskItem != null) {
+		//		isTaskFinish = taskItem.itemCount >= task.taskItemCount;
+		//	}
 
-			return isTaskFinish;
+		//	return isTaskFinish;
 
-		}
+		//}
 
 
 		/// <summary>
 		/// 接受任务
 		/// </summary>
 		/// <param name="task">Task.</param>
-		public void ReceiveTask(HLHTask task){
-			bool taskExist = CheckTaskExistFromTaskId (task.taskId);
-			if (!taskExist) {
-				inProgressTasks.Add (task);
-			}
-		}
+		//public void ReceiveTask(HLHTask task){
+		//	bool taskExist = CheckTaskExistFromTaskId (task.taskId);
+		//	if (!taskExist) {
+		//		inProgressTasks.Add (task);
+		//	}
+		//}
 
 		/// <summary>
 		/// 提交任务
 		/// </summary>
 		/// <param name="task">Task.</param>
-		public void HandInTask(HLHTask task){
+		//public void HandInTask(HLHTask task){
 
-			inProgressTasks.Remove (task);
+		//	inProgressTasks.Remove (task);
 
-		}
+		//}
 
 		/// <summary>
 		/// 移除任务
 		/// </summary>
 		/// <param name="task">Task.</param>
-		public void FinishTask(HLHTask task){
+		//public void FinishTask(HLHTask task){
 			
-			for (int i = 0; i < inProgressTasks.Count; i++) {
+		//	for (int i = 0; i < inProgressTasks.Count; i++) {
 				
-				HLHTask inProgressTask = inProgressTasks [i];
+		//		HLHTask inProgressTask = inProgressTasks [i];
 
-				if (inProgressTask.taskId == task.taskId) {
+		//		if (inProgressTask.taskId == task.taskId) {
 
-					Item taskItem = allItemsInBag.Find (delegate(Item obj) {
-						return obj.itemId == task.taskItemId;
-					});
+		//			Item taskItem = allItemsInBag.Find (delegate(Item obj) {
+		//				return obj.itemId == task.taskItemId;
+		//			});
 
-					if (taskItem != null) {
-						RemoveItem (taskItem, task.taskItemCount);
-					}
+		//			if (taskItem != null) {
+		//				RemoveItem (taskItem, task.taskItemCount);
+		//			}
 
-					inProgressTasks.Remove (inProgressTask);
+		//			inProgressTasks.Remove (inProgressTask);
 
-					break;
-				}
-			}
-		}
+		//			break;
+		//		}
+		//	}
+		//}
 
-		public void RefreshTasksWhenEnterNextLevel(){
+		//public void RefreshTasksWhenEnterNextLevel(){
 
-			for (int i = 0; i < inProgressTasks.Count; i++) {
+		//	for (int i = 0; i < inProgressTasks.Count; i++) {
 
-				HLHTask task = inProgressTasks [i];
+		//		HLHTask task = inProgressTasks [i];
 
-				if (task.isCurrentLevelTask) {
+		//		if (task.isCurrentLevelTask) {
 
-					inProgressTasks.RemoveAt (i);
+		//			inProgressTasks.RemoveAt (i);
 
-				}
-			}
+		//		}
+		//	}
 
-		}
+		//}
 
 		/// <summary>
 		/// 判断当前经验是否满足升级条件	
@@ -940,9 +1066,7 @@ namespace WordJourney
 			bool levelUp = false;
 
 			if (experience >= upgradeExprience) {
-		
-				agentLevel++;
-
+            
 				int maxHealthRecord = maxHealth;
 				originalMaxHealth += 10;
 				maxHealth += 10;
@@ -955,6 +1079,10 @@ namespace WordJourney
 				magicAttack++;
 				originalMagicResist++;
 				magicResist++;
+
+				Player.mainPlayer.experience -= Player.mainPlayer.upgradeExprience;
+
+				agentLevel++;
 
 				levelUp = true;
 			}
@@ -1016,65 +1144,82 @@ namespace WordJourney
 			}
 
 			switch(item.itemType){
-			case ItemType.Equipment:
-				for (int i = 0; i < item.itemCount; i++) {
-					Equipment equipment = item as Equipment;
-					allEquipmentsInBag.Add (equipment);
-					if (index == -1) {
-						allItemsInBag.Add (equipment);
-					} else {
-						allItemsInBag.Insert (index, equipment);
-					}
-				}
-				break;
-			// 如果是消耗品，且背包中已经存在该消耗品，则只合并数量
-			case ItemType.Consumables:
-				Consumables consumablesInBag = allConsumablesInBag.Find (delegate(Consumables obj) {
-					return obj.itemId == item.itemId;	
-				});
-				if (consumablesInBag != null) {
-					consumablesInBag.itemCount += item.itemCount;
-				} else {
-					consumablesInBag = item as Consumables;
-					allConsumablesInBag.Add (consumablesInBag);
-					if (index == -1) {
-						allItemsInBag.Add (consumablesInBag);
-					}else{
-						allItemsInBag.Insert (index, consumablesInBag);
-					}
-				}
-				break;
-			case ItemType.Gemstone:
-				SkillGemstone skillGemstoneInBag = allSkillGemstonesInBag.Find (delegate(SkillGemstone obj) {
-					return obj.itemId == item.itemId;	
-				});
-				if (skillGemstoneInBag != null) {
-					skillGemstoneInBag.itemCount += item.itemCount;
-				} else {
-					skillGemstoneInBag = item as SkillGemstone;
-					allSkillGemstonesInBag.Add (skillGemstoneInBag);
-					if (index == -1) {
-						allItemsInBag.Add (skillGemstoneInBag);
-					} else {
-						allItemsInBag.Insert (index, skillGemstoneInBag);
-					}
-				}
-				break;
-			case ItemType.Task:
-				TaskItem taskItemInBag = allTaskItemsInBag.Find (delegate(TaskItem obj) {
-					return obj.itemId == item.itemId;	
-				});
-				if (taskItemInBag != null) {
-					taskItemInBag.itemCount += item.itemCount;
-				} else {
-					taskItemInBag = item as TaskItem;
-					allTaskItemsInBag.Add (taskItemInBag);
-				}
-				break;
-//			case ItemType.CraftingRecipes:
-//				allItemsInBag.Add (item);
-//				allCraftingRecipesInBag.Add (item as CraftingRecipe);
-//				break;
+    			case ItemType.Equipment:
+    				for (int i = 0; i < item.itemCount; i++) {
+    					Equipment equipment = item as Equipment;
+    					allEquipmentsInBag.Add (equipment);
+    					if (index == -1) {
+    						allItemsInBag.Add (equipment);
+    					} else {
+    						allItemsInBag.Insert (index, equipment);
+    					}
+    				}
+    				break;
+    			// 如果是消耗品，且背包中已经存在该消耗品，则只合并数量
+    			case ItemType.Consumables:
+    				Consumables consumablesInBag = allConsumablesInBag.Find (delegate(Consumables obj) {
+    					return obj.itemId == item.itemId;	
+    				});
+    				if (consumablesInBag != null) {
+    					consumablesInBag.itemCount += item.itemCount;
+    				} else {
+    					consumablesInBag = item as Consumables;
+    					allConsumablesInBag.Add (consumablesInBag);
+    					if (index == -1) {
+    						allItemsInBag.Add (consumablesInBag);
+    					}else{
+    						allItemsInBag.Insert (index, consumablesInBag);
+    					}
+    				}
+    				break;
+				case ItemType.PropertyGemstone:
+					PropertyGemstone propertyGemstoneInBag = allPropertyGemstonesInBag.Find (delegate(PropertyGemstone obj) {
+    					return obj.itemId == item.itemId;	
+    				});
+					if (propertyGemstoneInBag != null) {
+						propertyGemstoneInBag.itemCount += item.itemCount;
+    				} else {
+						propertyGemstoneInBag = item as PropertyGemstone;
+						allPropertyGemstonesInBag.Add (propertyGemstoneInBag);
+    					if (index == -1) {
+							allItemsInBag.Add (propertyGemstoneInBag);
+    					} else {
+							allItemsInBag.Insert (index, propertyGemstoneInBag);
+    					}
+    				}
+    				break;
+				case ItemType.SkillScroll:
+					SkillScroll skillScroll = item as SkillScroll;
+					allSkillScrollsInBag.Add(skillScroll);
+					if (index == -1)
+                    {
+						allItemsInBag.Add(skillScroll);
+                    }
+                    else
+                    {
+						allItemsInBag.Insert(index, skillScroll);
+                    }               
+					break;
+				case ItemType.SpecialItem:               
+					SpecialItem specialItemInBag = allSpecialItemsInBag.Find(delegate (SpecialItem obj)
+    				{
+    					return obj.itemId == item.itemId;                  
+    				});
+					if (specialItemInBag != null) {
+						specialItemInBag.itemCount += item.itemCount;
+    				} else {
+						specialItemInBag = item as SpecialItem;
+						allSpecialItemsInBag.Add (specialItemInBag);
+						if (index == -1)
+                        {
+							allItemsInBag.Add(specialItemInBag);
+                        }
+                        else
+                        {
+							allItemsInBag.Insert(index, specialItemInBag);
+                        }
+    				}               
+    				break;               
 			}
 				
 		}
@@ -1084,87 +1229,115 @@ namespace WordJourney
 
 			bool totallyRemoveFromBag = false;
 
-			switch(item.itemType){
-			case ItemType.Equipment:
-				
-				Equipment equipment = allEquipmentsInBag.Find (delegate(Equipment obj) {
-					return obj == item;
-				});
-	
-				if (equipment == null) {
-					Debug.Log ("未找到物品");
-					return false;
-				}
+			switch (item.itemType)
+			{
+				case ItemType.Equipment:
 
-				if (equipment.equiped) {
-					for (int i = 0; i < allEquipedEquipments.Length; i++) {
-						if (allEquipedEquipments [i] == equipment) {
-							allEquipedEquipments [i] = new Equipment ();
+					Equipment equipment = allEquipmentsInBag.Find(delegate (Equipment obj)
+					{
+						return obj == item;
+					});
+
+					if (equipment == null)
+					{
+						Debug.Log("未找到物品");
+						return false;
+					}
+
+					if (equipment.equiped)
+					{
+						for (int i = 0; i < allEquipedEquipments.Length; i++)
+						{
+							if (allEquipedEquipments[i] == equipment)
+							{
+								allEquipedEquipments[i] = new Equipment();
+							}
 						}
 					}
-				}
 
-				allEquipmentsInBag.Remove (equipment);
+					allEquipmentsInBag.Remove(equipment);
 
-				allItemsInBag.Remove (equipment);
+					allItemsInBag.Remove(equipment);
 
-				totallyRemoveFromBag = true;
+					totallyRemoveFromBag = true;
 
-				break;
+					break;
 				// 如果是消耗品，且背包中已经存在该消耗品，则只合并数量
-			case ItemType.Consumables:
-				Consumables consumablesInBag = allConsumablesInBag.Find (delegate(Consumables obj) {
-					return obj.itemId == item.itemId;	
-				});
+				case ItemType.Consumables:
+					Consumables consumablesInBag = allConsumablesInBag.Find(delegate (Consumables obj)
+					{
+						return obj.itemId == item.itemId;
+					});
 
-				if (consumablesInBag == null) {
-					Debug.Log ("未找到物品");
-					return false;
-				}
+					if (consumablesInBag == null)
+					{
+						Debug.Log("未找到物品");
+						return false;
+					}
 
-				consumablesInBag.itemCount -= removeCount;
+					consumablesInBag.itemCount -= removeCount;
 
-				if (consumablesInBag.itemCount <= 0) {
-					allConsumablesInBag.Remove (consumablesInBag);
-					allItemsInBag.Remove (consumablesInBag);
-					totallyRemoveFromBag = true;
-				}
-				break;
-			case ItemType.Gemstone:
-				SkillGemstone skillGemstoneInBag = allSkillGemstonesInBag.Find (delegate(SkillGemstone obj) {
-					return obj.itemId == item.itemId;	
-				});
+					if (consumablesInBag.itemCount <= 0)
+					{
+						allConsumablesInBag.Remove(consumablesInBag);
+						allItemsInBag.Remove(consumablesInBag);
+						totallyRemoveFromBag = true;
+					}
+					break;
+				case ItemType.PropertyGemstone:
+					PropertyGemstone propertyGemstoneInBag = allPropertyGemstonesInBag.Find(delegate (PropertyGemstone obj)
+					{
+						return obj.itemId == item.itemId;
+					});
 
-				if (skillGemstoneInBag == null) {
-					Debug.Log ("未找到物品");
-					return false;
-				}
+					if (propertyGemstoneInBag == null)
+					{
+						Debug.Log("未找到物品");
+						return false;
+					}
 
-				skillGemstoneInBag.itemCount -= removeCount;
+					propertyGemstoneInBag.itemCount -= removeCount;
 
-				if (skillGemstoneInBag.itemCount <= 0) {
-					allSkillGemstonesInBag.Remove (skillGemstoneInBag);
-					allItemsInBag.Remove (skillGemstoneInBag);
-					totallyRemoveFromBag = true;
-				}
-				break;
-			case ItemType.Task:
-				TaskItem taskItemInBag = allTaskItemsInBag.Find (delegate(TaskItem obj) {
-					return obj.itemId == item.itemId;	
-				});
+					if (propertyGemstoneInBag.itemCount <= 0)
+					{
+						allPropertyGemstonesInBag.Remove(propertyGemstoneInBag);
+						allItemsInBag.Remove(propertyGemstoneInBag);
+						totallyRemoveFromBag = true;
+					}
+					break;
+				case ItemType.SkillScroll:
+					SkillScroll skillScrollInBag = allSkillScrollsInBag.Find(delegate (SkillScroll obj)
+					{
+						return obj.itemId == item.itemId;
+					});
+					if (skillScrollInBag == null)
+					{
+						Debug.Log("未找到物品");
+						return false;
+					}
 
-				if (taskItemInBag == null) {
-					Debug.Log ("未找到物品");
-					return false;
-				}
+					allSkillScrollsInBag.Remove(skillScrollInBag);
+					allItemsInBag.Remove(skillScrollInBag);
+                    totallyRemoveFromBag = true;
+               
+					break;
+				case ItemType.SpecialItem:
+					SpecialItem specialItem = allSpecialItemsInBag.Find(delegate (SpecialItem obj)
+					{
+						return obj.itemId == item.itemId;
+					});               
+					if (specialItem == null) {
+    					Debug.Log ("未找到物品");
+    					return false;
+    				}
 
-				taskItemInBag.itemCount -= removeCount;
+					specialItem.itemCount -= removeCount;
 
-				if (taskItemInBag.itemCount <= 0) {
-					allTaskItemsInBag.Remove (taskItemInBag);
-					totallyRemoveFromBag = true;
-				}
-				break;
+					if (specialItem.itemCount <= 0) {
+						allSpecialItemsInBag.Remove (specialItem);
+    					totallyRemoveFromBag = true;
+    				}
+    				break;
 			}
 			return totallyRemoveFromBag;
 		}
@@ -1409,16 +1582,16 @@ namespace WordJourney
 		public List<Equipment> allEquipmentsInBag;//背包中所有装备信息
 		public Equipment[] allEquipedEquipments;//已装备的所有装备信息
 		public List<Consumables> allConsumablesInBag;//背包中所有消耗品信息
-		public List<SkillGemstone> allSkillGemstonesInBag;//背包中所有的技能宝石
-//		public List<Item> allItemsInBag;
-//		public List<UnlockScroll> allUnlockScrollsInBag;
-//		public List<CraftingRecipe> allCraftRecipesInBag;
+		public List<PropertyGemstone> allPropertyGemstonesInBag;//背包中所有的技能宝石
+		public List<SkillScroll> allSkillScrollsInBag = new List<SkillScroll>();//背包中所有的技能卷轴
+		public List<SpecialItem> allSpecialItemsInBag = new List<SpecialItem>();//背包中所有的特殊物品
+		public List<int> allLearnedSkillIds = new List<int>();
 
-//		public int maxUnlockLevelIndex;//最大解锁关卡序号
+		public int maxUnlockLevelIndex;//最大解锁关卡序号
 		public int currentLevelIndex;//当前所在关卡序号
         public List<int> mapIndexRecord = new List<int>();
 
-		public List<HLHTask> inProgressTasks;
+		//public List<HLHTask> inProgressTasks;
 
 
 		public int experience;//人物经验值
@@ -1427,6 +1600,10 @@ namespace WordJourney
 
 		public bool isNewPlayer;
 
+		public int skillNumLeft;
+
+		// 探索界面遮罩的状态  【0:黑暗状态，使用黑暗动画】 【1:明亮状态，使用明亮动画】
+        public int exploreMaskStatus = 0;
 
 		public PlayerData(Player player){
 
@@ -1495,15 +1672,16 @@ namespace WordJourney
 			this.allEquipmentsInBag = player.allEquipmentsInBag;
 			this.allEquipedEquipments = player.allEquipedEquipments;
 			this.allConsumablesInBag = player.allConsumablesInBag;
-			this.allSkillGemstonesInBag = player.allSkillGemstonesInBag;
-//			this.allUnlockScrollsInBag = player.allUnlockScrollsInBag;
-//			this.allCraftRecipesInBag = player.allCraftingRecipesInBag;
+			this.allPropertyGemstonesInBag = player.allPropertyGemstonesInBag;
+			this.allSkillScrollsInBag = player.allSkillScrollsInBag;
+			this.allSpecialItemsInBag = player.allSpecialItemsInBag;
 
-//			this.maxUnlockLevelIndex = player.maxUnlockLevelIndex;
+			this.maxUnlockLevelIndex = player.maxUnlockLevelIndex;
 			this.currentLevelIndex = player.currentLevelIndex;
             this.mapIndexRecord = player.mapIndexRecord;
 
-			this.inProgressTasks = player.inProgressTasks;
+			this.allLearnedSkillIds = player.allLearnedSkillIds;
+			//this.inProgressTasks = player.inProgressTasks;
 
 
 
@@ -1512,6 +1690,9 @@ namespace WordJourney
 			this.robTime = player.robTime;
 
 			this.isNewPlayer = player.isNewPlayer;
+
+			this.skillNumLeft = player.skillNumLeft;
+			this.exploreMaskStatus = player.exploreMaskStatus;
 
 		}
 			

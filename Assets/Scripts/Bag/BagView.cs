@@ -9,8 +9,7 @@ namespace WordJourney
 	using UnityEngine.UI;
 	using DG.Tweening;
 	using System.Text;
-
-
+    
 
 	public class BagView : MonoBehaviour {
 
@@ -39,15 +38,18 @@ namespace WordJourney
 		public TintHUD tintHUD;
 
 		public ItemDetail itemDetail;
-//		public UnlockScrollDetailHUD unlockScrollDetail;
-//		public CraftingRecipesHUD craftRecipesDetail;
+
 		public Transform choiceHUDButtonsContainer;
 
-//		public Transform purchasePlane;
+
 		public PurchasePendingHUD purchaseHUD;
-//		public SpecialOperationHUD specialOperationHUD;
 
 		public Transform queryRemoveHUD;
+
+		public SkillsView skillsView;
+
+        // 0代表背包 1代表技能列表
+		private int panelIndex;
 
 //		private int minItemIndexOfCurrentBag {
 //			get {
@@ -84,6 +86,8 @@ namespace WordJourney
 		/// </summary>
 		public void SetUpBagView(bool setVisible){
 
+			panelIndex = 0;
+
 			if (setVisible) {
 
 				//获取所有item的图片
@@ -98,12 +102,14 @@ namespace WordJourney
 
 				itemDetail.ClearItemDetails ();
 
-				ShortClickCallBack shortClickCallback = GetComponent<BagViewController> ().OnItemInBagClick;
+				CallBackWithItem shortClickCallback = GetComponent<BagViewController> ().OnItemInBagClick;
 				CallBack initPurchaseBag = delegate {
 					SetUpPurchasePlane(PurchaseManager.extra_bag_id);
 				};
 
 				bagItemsDisplay.InitBagItemsDisplayPlane (shortClickCallback, initPurchaseBag);
+
+				skillsView.InitSkillsView(SetUpPlayerStatusPlane);
 
 				// 默认初始化 背包一
 				SetUpBagItemsPlane (0);
@@ -112,6 +118,8 @@ namespace WordJourney
 
 			}
 
+			skillsView.QuitSkillsView();
+
 
 		}
 			
@@ -119,6 +127,26 @@ namespace WordJourney
 			bagItemsDisplay.HideAllItemSelectedTintIcon ();
 		}
 
+
+		public void OnSkillsViewButtonClick(){
+
+			if(panelIndex == 1){
+				return;
+			}
+
+			panelIndex = 1;
+
+			skillsView.SetUpSkillView();
+
+		}
+
+		public void OnBagButtonClick(){
+
+			panelIndex = 0;
+
+			skillsView.QuitSkillsView();
+            
+		}
 
 		/// <summary>
 		/// 初始化玩家属性界面
@@ -133,7 +161,7 @@ namespace WordJourney
 		}
 
 		public void SetUpItemDetail(Item item){
-			itemDetail.SetUpItemDetail (item,RefreshBagViewAfterSpecialOperation);
+			itemDetail.SetUpItemDetail (item);
 		}
 
 		public void ClearItemDetail(){
@@ -160,11 +188,11 @@ namespace WordJourney
 //
 //		}
 
-		public void RefreshBagViewAfterSpecialOperation(PropertyChange propertyChange){
-			SetUpCurrentBagItemsPlane();
-			SetUpPlayerStatusPlane(propertyChange);
+		//public void RefreshBagViewAfterSpecialOperation(PropertyChange propertyChange){
+		//	SetUpCurrentBagItemsPlane();
+		//	SetUpPlayerStatusPlane(propertyChange);
 
-		}
+		//}
 			
 
 
@@ -239,17 +267,17 @@ namespace WordJourney
 				break;
 			case ItemType.Consumables:
 				Consumables csm = item as Consumables;
-				switch(csm.type){
-				case ConsumablesType.ShuXingTiSheng:
-				case ConsumablesType.YinShenJuanZhou:
-					SetUpOperationButtonsActive (false, false, true, false);
-					break;
-				case ConsumablesType.ChongZhuShi:
-				case ConsumablesType.DianJinShi:
-				case ConsumablesType.XiaoMoJuanZhou:
-					SetUpOperationButtonsActive (false, false, false, true);
-					break;
-				}
+				//switch(csm.type){
+				//case ConsumablesType.ShuXingTiSheng:
+				//case ConsumablesType.YinShenJuanZhou:
+				//	SetUpOperationButtonsActive (false, false, true, false);
+				//	break;
+				//case ConsumablesType.ChongZhuShi:
+				//case ConsumablesType.DianJinShi:
+				//case ConsumablesType.XiaoMoJuanZhou:
+				//	SetUpOperationButtonsActive (false, false, false, true);
+				//	break;
+				//}
 				break;
 			}
 
@@ -264,43 +292,45 @@ namespace WordJourney
 
 		}
 
-		public Equipment RebuildEquipment(){
-			Equipment eqp = itemDetail.SpecialOperationOnEquipment (SpecialOperation.ChongZhu, 0);
-			if (eqp == null) {
-				return null;
-			}
-			SetUpCurrentBagItemsPlane ();
-			itemDetail.SetUpItemDetail (eqp);
+		//public Equipment RebuildEquipment(){
+		//	int oriAttachedSkillId = 0;
+		//	Equipment eqp = itemDetail.SpecialOperationOnEquipment (SpecialOperation.ChongZhu, 0,out oriAttachedSkillId);
+		//	if (eqp == null) {
+		//		return null;
+		//	}
+		//	SetUpCurrentBagItemsPlane ();
+		//	itemDetail.SetUpItemDetail (eqp);
 
-			return eqp;
-		}
+		//	return eqp;
+		//}
 
-		public Equipment UpgradeEquipmentToGold(){
-			Equipment eqp = itemDetail.SpecialOperationOnEquipment (SpecialOperation.DianJin, 0);
-			if (eqp == null) {
-				return null;
-			}
-			SetUpCurrentBagItemsPlane ();
-			itemDetail.SetUpItemDetail (eqp);
+		//public Equipment UpgradeEquipmentToGold(){
+		//	int oriAttachedSkillId = 0;
+		//	Equipment eqp = itemDetail.SpecialOperationOnEquipment (SpecialOperation.DianJin, 0,out oriAttachedSkillId);
+		//	if (eqp == null) {
+		//		return null;
+		//	}
+		//	SetUpCurrentBagItemsPlane ();
+		//	itemDetail.SetUpItemDetail (eqp);
 
-			return eqp;
-		}
+		//	return eqp;
+		//}
 
-		public Equipment RemoveEquipmentAttachedSkill(){
-			Equipment eqp = itemDetail.SpecialOperationOnEquipment (SpecialOperation.XiaoMo, 0);
-			if (eqp == null) {
-				return null;
-			}
-			SetUpCurrentBagItemsPlane ();
-			itemDetail.SetUpItemDetail (eqp);
-			return eqp;
-		}
+		//public Equipment RemoveEquipmentAttachedSkill(out int oriAttachedSkillId){
+		//	Equipment eqp = itemDetail.SpecialOperationOnEquipment (SpecialOperation.XiaoMo, 0, out oriAttachedSkillId);
+		//	if (eqp == null) {
+		//		return null;
+		//	}
+		//	SetUpCurrentBagItemsPlane ();
+		//	itemDetail.SetUpItemDetail(eqp);
+		//	return eqp;
+		//}
 
 		/// <summary>
 		/// 初始化背包物品界面
 		/// </summary>
 		public void SetUpBagItemsPlane(int bagIndex){
-
+                 
 			bagItemsDisplay.SetUpBagItemsPlane (bagIndex);
 		}
 

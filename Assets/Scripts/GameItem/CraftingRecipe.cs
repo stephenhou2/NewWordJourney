@@ -43,10 +43,10 @@ namespace WordJourney
 
 		}
 
-		public override string GetItemTypeString ()
-		{
-			return "合成配方";
-		}
+		//public override string GetItemTypeString ()
+		//{
+		//	return "合成配方";
+		//}
 
 
 	}

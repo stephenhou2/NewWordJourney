@@ -119,28 +119,15 @@ namespace WordJourney
 
 			}
 
-			// 如果是从已装备面板拖拽过来的物品
+			// 如果是从特殊操作面板拖拽过来的物品
 			if (dragControl is SpecialOperationItemDragControl) {
 
-				//if (Player.mainPlayer.CheckBagFull (draggedItem)) {
-				//	SetDropResult (eventData, false);
-				//	tintImage.enabled = false;
-				//	bagView.SetUpSingleTextTintHUD ("背包已满,请先整理背包");
-				//	return;
-				//}
+				SpecialOperationItemDragControl specialOperationItemDrag = dragControl as SpecialOperationItemDragControl;
 
-				//Equipment equipment = draggedItem as Equipment;
+				specialOperationItemDrag.Reset ();
+				SetDropResult (eventData, true);
 
-				//if (equipment.itemId >= 0) {
-					//Player.mainPlayer.AddItem (equipment);
-					//bagView.AddBagItem (equipment);
-					(dragControl as SpecialOperationItemDragControl).Reset ();
-					SetDropResult (eventData, true);
-				//} else {
-				//	SetDropResult (eventData, false);
-				//}
-
-
+				bagView.GetComponent<BagViewController>().itemForSpecialOperation = null;
 			}
 
 			tintImage.enabled = false;

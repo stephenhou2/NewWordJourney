@@ -97,7 +97,7 @@ namespace WordJourney
 			}
 
 
-			if (reward.itemType != ItemType.CharacterFragment && Player.mainPlayer.CheckBagFull (reward)) {
+			if (Player.mainPlayer.CheckBagFull (reward)) {
 				GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.bagCanvasBundleName, "BagCanvas", () => {
 					TransformManager.FindTransform ("BagCanvas").GetComponent<BagViewController> ().AddBagItemWhenBagFull (reward);
 				}, false, true);

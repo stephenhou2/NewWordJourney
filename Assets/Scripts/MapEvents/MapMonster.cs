@@ -6,6 +6,8 @@ using UnityEngine;
 namespace WordJourney
 {
 	using DragonBones;
+	using TMPro;
+	using System.Data;
 
 	public class MapMonster : MapWalkableEvent {
 
@@ -17,6 +19,9 @@ namespace WordJourney
 
 		private float alertIconOffsetX;
 		private float alertIconOffsetY;
+
+		private float wordOffsetX;
+		private float wordOffsetY;
 
 		public bool isReadyToFight;
 
@@ -33,9 +38,17 @@ namespace WordJourney
 
 		protected override void Awake ()
 		{
-			base.Awake ();
+
+			base.Awake();
+
 			alertIconOffsetX = alertToFightIcon.transform.localPosition.x;
 			alertIconOffsetY = alertToFightIcon.transform.localPosition.y;
+
+			if(tmPro != null){
+				wordOffsetX = tmPro.transform.localPosition.x + 1000;
+                wordOffsetY = tmPro.transform.localPosition.y;
+			}
+
 		}
 
 		public override void AddToPool (InstancePool pool)
@@ -48,7 +61,7 @@ namespace WordJourney
 			bc2d.enabled = false;
 			gameObject.SetActive (false);
 			pool.AddInstanceToPool (this.gameObject);
-			ExploreManager.Instance.newMapGenerator.allWalkableEventsInMap.Remove (this);
+			ExploreManager.Instance.newMapGenerator.allMonstersInMap.Remove (this);
 		}
 
 
@@ -246,6 +259,13 @@ namespace WordJourney
 
 			isTriggered = false;
 
+			alertToFightIcon.enabled = false;
+
+			if(tmPro != null){
+				tmPro.text = string.Empty;
+			}
+
+
 		}
 
 		private void RandomTowards(){
@@ -259,6 +279,10 @@ namespace WordJourney
 			case 1:
 				baCtr.TowardsLeft ();
 				alertToFightIcon.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
+					if(tmPro != null){
+						tmPro.transform.localPosition = new Vector3(-alertIconOffsetX - 1000, alertIconOffsetY, 0);
+					}
+
 				break;
 			case 2:
 				baCtr.TowardsUp ();
@@ -279,16 +303,50 @@ namespace WordJourney
 
 			yield return new WaitUntil (() => isReadyToFight);
 
-			for (int i = 0; i < 3; i++) {
+			//for (int i = 0; i < 3; i++) {
 
-				alertToFightIcon.enabled = true;
+			//	alertToFightIcon.enabled = true;
 
-				yield return new WaitForSeconds (0.1f);
+			//	yield return new WaitForSeconds (0.1f);
 
-				alertToFightIcon.enabled = false;
+			//	alertToFightIcon.enabled = false;
 
-				yield return new WaitForSeconds (0.1f);
+			//	yield return new WaitForSeconds (0.1f);
 
+			//}
+
+			HLHWord word = null;
+         
+			bool hasValidWord = false;
+            for (int i = 0; i < wordsArray.Length; i++)
+            {
+                if (wordsArray[i].spell.Length <= 12)
+                {
+                    hasValidWord = true;
+                    word = wordsArray[i];
+                    break;
+                }
+            }
+
+            if (!hasValidWord)
+            {
+                word = GetAValidWord();
+
+            }
+
+			alertToFightIcon.enabled = true;
+
+			if (tmPro != null)
+			{
+				tmPro.text = word.spell;
+			}
+			yield return new WaitForSeconds(1.0f);
+
+			alertToFightIcon.enabled = false;
+
+			if (tmPro != null)
+            {
+				tmPro.text = string.Empty;
 			}
 		}
 			
@@ -491,9 +549,12 @@ namespace WordJourney
 			}
 
 			if (battlePlayerCtr.isInFight) {
+				//Debug.LogFormat("anim name:{0}", playerCurrentAnimInfo.roleAnimName);
 				battlePlayerCtr.PlayRoleAnimByTime (playerCurrentAnimInfo.roleAnimName, playerCurrentAnimInfo.roleAnimTime,
 					playerCurrentAnimInfo.playTimes, playerCurrentAnimInfo.animEndCallback);
 			}
+
+			ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
 
             battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 				
@@ -546,9 +607,17 @@ namespace WordJourney
 				if (targetPosX >= oriPosX) {
 					baCtr.TowardsRight ();
 					alertToFightIcon.transform.localPosition = new Vector3 (alertIconOffsetX, alertIconOffsetY, 0);
+					if (tmPro != null)
+					{
+						tmPro.transform.localPosition = new Vector3(alertIconOffsetX-1000, alertIconOffsetY, 0);
+					}
 				} else {
 					baCtr.TowardsLeft ();
 					alertToFightIcon.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
+					if (tmPro != null)
+					{
+						tmPro.transform.localPosition = new Vector3(-alertIconOffsetX-1000, alertIconOffsetY, 0);
+					}
 				}
 			} 
 			else if(targetPosX == oriPosX){
@@ -637,6 +706,135 @@ namespace WordJourney
 			baCtr.SetSortingOrder (order);
 		}
 			
+
+		private HLHWord GetAValidWord()
+        {
+
+            MySQLiteHelper mySql = MySQLiteHelper.Instance;
+
+            mySql.GetConnectionWith(CommonData.dataBaseName);
+
+            string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
+
+			string[] condition = new string[] { "wordLength <= 12 ORDER BY RANDOM() LIMIT 1" };
+
+            IDataReader reader = mySql.ReadSpecificRowsOfTable(currentWordsTableName, null, condition, true);
+
+            reader.Read();
+
+            int wordId = reader.GetInt32(0);
+
+            string spell = reader.GetString(1);
+
+            string phoneticSymble = reader.GetString(2);
+
+            string explaination = reader.GetString(3);
+
+            string sentenceEN = reader.GetString(4);
+
+            string sentenceCH = reader.GetString(5);
+
+            string pronounciationURL = reader.GetString(6);
+
+            int wordLength = reader.GetInt16(7);
+
+            int learnedTimes = reader.GetInt16(8);
+
+            int ungraspTimes = reader.GetInt16(9);
+
+            HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+
+            
+            return word;
+        }
+
+
+          public Item GenerateRewardItem()
+        {
+			Monster monster = GetComponent<Monster>();
+
+            Item rewardItem = null;
+
+			if(monster.isBoss)
+            {
+                int index = 0;
+				if(monster.monsterId % 2 == 0){
+                    index = (Player.mainPlayer.currentLevelIndex / 5 + 1) * 1000;
+
+                    List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
+                    {
+                        return obj.equipmentGrade == index;
+                    });
+
+                    int randomSeed = Random.Range(0, ems.Count);
+
+                    rewardItem = new Equipment(ems[randomSeed], 1);
+                }else{
+					index = (Player.mainPlayer.currentLevelIndex / 5 + 1) * 10;
+
+                    List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
+                    {
+                        return obj.equipmentGrade == index;
+                    });
+
+                    int randomSeed = Random.Range(0, ems.Count);
+
+                    rewardItem = new Equipment(ems[randomSeed], 1);
+                }
+
+            }
+            else
+            {
+
+                int randomSeed = Random.Range(0, 100);
+
+				int dropItemSeed = 0;
+
+				switch(Player.mainPlayer.luckInMonsterTreasure){
+					case 0:
+						dropItemSeed = 10;
+						break;
+					case 1:
+						dropItemSeed = 15;
+						break;
+				}
+
+				if (randomSeed >= 0 && randomSeed < dropItemSeed)
+                {
+					randomSeed = Random.Range(0, 2);
+
+                    if (randomSeed == 0)
+                    {
+
+                        int index = Player.mainPlayer.currentLevelIndex / 5 + 1;
+                        
+                    if (index == 10)
+                    {
+                        index = 9;
+                    }
+
+                        List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
+                        {
+                            return obj.equipmentGrade == index;
+                        });
+                        randomSeed = Random.Range(0, ems.Count);
+                        rewardItem = new Equipment(ems[randomSeed], 1);
+                    }
+                    else
+                    {
+                        randomSeed = Random.Range(300, 316);
+                        rewardItem = Item.NewItemWith(randomSeed, 1);
+                    }
+                }else{
+				    rewardItem = null;
+			    }
+                   
+            }            
+
+            return rewardItem;
+        }
+
+       
 
 		
 	}

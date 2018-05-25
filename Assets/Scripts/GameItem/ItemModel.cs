@@ -79,9 +79,10 @@ namespace WordJourney
 
 		public int equipmentGrade;//装备评级
 
-		public int quality;//装备品质（同一件装备细分为灰／蓝／金,暗金4级）
+		public EquipmentDefaultQuality defaultQuality;//装备默认品质
+		public EquipmentQuality quality;//装备品质（同一件装备细分为灰／蓝／金／紫 4级）
 
-		public int attachedSkillId;
+		//public int attachedSkillId;
 
 		public WeaponType weaponType;
 
@@ -104,7 +105,25 @@ namespace WordJourney
 		public int manaGain;
 		public int experienceGain;
 
-		public ConsumablesType type;
+		public int maxHealthGain;
+        public int maxManaGain;
+        public int attackGain;
+        public int magicAttackGain;
+        public int armorGain;
+        public int magicResistGain;
+        public int armorDecreaseGain;
+        public int magicResistDecreaseGain;
+        public int moveSpeedGain;
+        public float critGain;
+        public float dodgeGain;
+        public float critHurtScalerGain;
+        public float physicalHurtScalerGain;
+        public float magicalHurtScalerGain;
+        public int extraGoldGain;
+        public int extraExperienceGain;
+        public int healthRecoveryGain;
+        public int magicRecoveryGain;
+
 		public bool isShowInBagOnly;
 
 		public string audioName;
@@ -112,23 +131,73 @@ namespace WordJourney
 	}
 
 	[System.Serializable]
-	public class SkillGemstoneModel:ItemModel{
+	public class PropertyGemstoneModel:ItemModel{
+
+		public int healthGain;
+        public int manaGain;
+        public int experienceGain;
+
+        public int maxHealthGain;
+        public int maxManaGain;
+        public int attackGain;
+        public int magicAttackGain;
+        public int armorGain;
+        public int magicResistGain;
+        public int armorDecreaseGain;
+        public int magicResistDecreaseGain;
+        public int moveSpeedGain;
+        public float critGain;
+        public float dodgeGain;
+        public float critHurtScalerGain;
+        public float physicalHurtScalerGain;
+        public float magicalHurtScalerGain;
+        public int extraGoldGain;
+        public int extraExperienceGain;
+        public int healthRecoveryGain;
+        public int magicRecoveryGain;
+
+		public GemstoneGrade grade;
+	}
+
+	[System.Serializable]
+	public class SkillScrollModel:ItemModel{
 
 		public int skillId;
 
-		public SkillType skillType;
+	}
 
-		public int manaConsume;
+	[System.Serializable]
+	public class SpecialItemModel:ItemModel{
 
-		public float coolenTime;
+		public SpecialItemType specialItemType;
 
-		public string skillName;
-
-		public string skillIconName;
-
-		public string skillDescription;
+		public bool isShowInBagOnly;
 
 	}
 
+
+	[System.Serializable]
+	public class SpellItemModel:ItemModel{
+		
+		public SpellItemType spellItemType;
+
+        // 物品的拼写
+        public string spell;
+
+        // 拼写的音标
+        public string phoneticSymbol;
+
+        // 单词发音URL
+        public string pronounciationURL;
+
+        // 如果是装备，代表装备类【0:武器  1:头盔  2:护甲  3:手套  4:鞋子  5:戒指】
+        // 其余物品对应物品id
+        public int attachInfo_1;
+
+        // 仅在拼写物品生成装备时，代表武器类型【0:剑 1:匕首 2:法杖 3:斧子】
+        public int attachInfo_2;
+
+
+	}
 
 }

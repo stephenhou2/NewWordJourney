@@ -15,9 +15,19 @@ namespace WordJourney
 
             int healthGain = (int)(self.agent.health * healthRecoverScaler);
 
-            self.agent.health += healthGain;
+            //self.agent.health += healthGain;
 
             self.AddHealthGainAndShow(healthGain);
+
+			if (selfEffectAnimName != string.Empty)
+            {
+                self.SetEffectAnim(selfEffectAnimName);
+            }
+
+            if (enemyEffectAnimName != string.Empty)
+            {
+                enemy.SetEffectAnim(enemyEffectAnimName);
+            }
 
             self.UpdateStatusPlane();
 		}

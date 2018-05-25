@@ -11,13 +11,23 @@ namespace WordJourney
 		public SpecialOperationItemDragControl soDragControl;
 
 		public SpecialOperationItemDropControl soDropControl;
-
-//		private CallBack dropCallBack;
-
-//		public void InitSpecialOperationCell(CallBack dropCallBack){
-//			soDropControl.InitSpecialOperationDropControl (dropCallBack);
-//		}
 			
+        
+		public void InitCell(Item item,CallBackWithItem itemClickCallBack){
+			
+			soDragControl.item = item;
+            
+			soDragControl.InitItemDragControl(item, itemClickCallBack);
+
+			soDropControl.InitItemDropCallBack(itemClickCallBack);
+
+			if (item != null)
+            {
+                soDragControl.itemImage.sprite = GameManager.Instance.gameDataCenter.GetGameItemSprite(item);
+                soDragControl.itemImage.enabled = true;
+                soDropControl.tintImage.enabled = false;
+            }
+		}
 	
 		public void ResetSpecialOperationCell(){
 

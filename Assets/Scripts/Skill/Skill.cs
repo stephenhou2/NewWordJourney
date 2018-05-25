@@ -33,6 +33,15 @@ namespace WordJourney
 
 		public SkillType skillType;
 
+		public int skillLevel = 1;
+
+		public int upgradeNum{
+			get{
+				return skillLevel;
+			}
+		}
+
+       
 
 		/// <summary>
 		/// 技能作用效果
@@ -42,7 +51,9 @@ namespace WordJourney
 		/// <param name="skillLevel">Skill level.</param>
 		public abstract void AffectAgents (BattleAgentController self, BattleAgentController enemy);
 			
-
+		public void SkillLevelUp(){
+			skillLevel++;
+		}
 
 
 		public void DestroySelf(){
@@ -52,7 +63,7 @@ namespace WordJourney
 		// 判断概率性技能是否生效
 		protected virtual bool isEffective(float chance){
 			float randomNum = Random.Range (0, 100)/100f;
-			return randomNum < chance;
+			return randomNum < chance - float.Epsilon;
 		}
 
 

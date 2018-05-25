@@ -23,6 +23,16 @@ namespace WordJourney
 			enemy.UpdateStatusPlane();
 
 			enemy.PlayShakeAnim();
+
+			if (selfEffectAnimName != string.Empty)
+            {
+                self.SetEffectAnim(selfEffectAnimName);
+            }
+
+            if (enemyEffectAnimName != string.Empty)
+            {
+                enemy.SetEffectAnim(enemyEffectAnimName);
+            }
                      
 			enemy.SetRoleAnimTimeScale(1 - actionSpeedDecrease);
 

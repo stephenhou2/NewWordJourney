@@ -34,11 +34,11 @@ namespace WordJourney
 				return minItemIndexOfCurrentBag + CommonData.singleBagItemVolume - 1;
 			}
 		}
-		private ShortClickCallBack shortClickCallBack;
+		private CallBackWithItem itemClickCallBack;
 		private CallBack initPurchaseBag;
 
-		public void InitBagItemsDisplayPlane(ShortClickCallBack shortClickCallBack,CallBack initPurchaseBag){
-			this.shortClickCallBack = shortClickCallBack;
+		public void InitBagItemsDisplayPlane(CallBackWithItem itemClickCallBack,CallBack initPurchaseBag){
+			this.itemClickCallBack = itemClickCallBack;
 			this.initPurchaseBag = initPurchaseBag;
 		}
 
@@ -226,11 +226,11 @@ namespace WordJourney
 			Transform bagItem = bagItemsPool.GetInstance<Transform> (bagItemModel.gameObject, bagItemsContainer);
 
 			ItemInBagDragControl dragItemScript = bagItem.GetComponent<ItemInBagDragControl> ();
-			dragItemScript.InitItemInBagDragControl (item, shortClickCallBack);
+			dragItemScript.InitItemDragControl (item, itemClickCallBack);
 
 
 			bagItem.GetComponent<ItemInBagCell> ().SetUpItemInBagCell (item);
-
+            
 
 			if (atIndex >= 0) {
 				bagItem.SetSiblingIndex (atIndex - minItemIndexOfCurrentBag);

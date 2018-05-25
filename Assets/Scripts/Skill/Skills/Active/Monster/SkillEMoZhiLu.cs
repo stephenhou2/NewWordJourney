@@ -29,7 +29,19 @@ namespace WordJourney
 			enemy.agent.magicResist += magicResistChange;
 			enemy.agent.magicResistChangeFromSkill += magicResistChange;
 
+			if (selfEffectAnimName != string.Empty)
+            {
+                self.SetEffectAnim(selfEffectAnimName);
+            }
+
+            if (enemyEffectAnimName != string.Empty)
+            {
+                enemy.SetEffectAnim(enemyEffectAnimName);
+            }
+
 			enemy.UpdateStatusPlane();
+
+
                      
 		}
 

@@ -164,14 +164,14 @@ namespace WordJourney
 
 			hurtText.transform.localPosition = originHurtPos;
 
-			hurtText.text = string.Format ("<b>{0}</b>", et.text);
+			hurtText.text = et.text;
 
 			hurtText.gameObject.SetActive (true);
 
 			float firstJumpPower = Random.Range (100f, 120f);
 
 			// 伤害文本跳跃动画
-			hurtText.transform.DOLocalJump (firstHurtPos, firstJumpPower, 1, 0.35f).OnComplete(()=>{
+			hurtText.transform.DOLocalJump (firstHurtPos, firstJumpPower, 1, 0.4f).OnComplete(()=>{
 
 				float secondJumpPower = Random.Range(20f,30f);
 
@@ -231,7 +231,7 @@ namespace WordJourney
 
 			Text tintText = exploreTextPool.GetInstance<Text> (exploreTextModel.gameObject, exploreTextContainer);
 
-			tintText.transform.localPosition = et.basePosition + new Vector3 (0, 1, 0);
+			tintText.transform.localPosition = et.basePosition + new Vector3 (0, 250, 0);
 
 			tintText.text = et.text;
 

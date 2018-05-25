@@ -9,7 +9,7 @@ namespace WordJourney
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			self.agent.poisonHurtScaler = skillSourceValue;
+			self.agent.extraPoisonHurt = Mathf.RoundToInt(skillSourceValue * skillLevel);
 		}
 
 	}

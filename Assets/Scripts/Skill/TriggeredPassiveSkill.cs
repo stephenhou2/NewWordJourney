@@ -7,9 +7,7 @@ namespace WordJourney
 {
  
 	public abstract class TriggeredPassiveSkill : Skill {
-
-
-		//public bool canOverlay;// 技能效果是否可以叠加
+    
 
 
 		public bool beforeFightTrigger;
@@ -20,18 +18,7 @@ namespace WordJourney
 		public bool fightEndTrigger;
 
 		public string statusName;//状态名称
-
-//		public float triggeredProbability;//触发概率
-
-		//public float skillSourceValue;//技能结算数据源
-
-//		public HurtType hurtType;
-
-		//技能持续事件或状态持续时间
-		//单次型技能代表技能对应状态的持续时间（如 ： 减少10点护甲，【持续】90秒）
-		//连续型技能代表技能持续时间(如 ：每秒损失10点生命，【持续】3秒）
-//		public float duration;
-
+      
 
 		void Awake(){
 			this.skillType = SkillType.TriggeredPassive;

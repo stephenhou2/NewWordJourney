@@ -10,7 +10,7 @@ namespace WordJourney
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			float critGain = skillSourceValue * self.agent.agentLevel;
+			float critGain = skillSourceValue * skillLevel;
 			self.agent.crit += critGain;
 		}
 

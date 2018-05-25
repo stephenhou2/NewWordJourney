@@ -8,7 +8,9 @@ namespace WordJourney
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			self.agent.moveSpeed = (int)(self.agent.moveSpeed * (1 + skillSourceValue));
+			int moveSpeedChange = Mathf.RoundToInt(self.agent.moveSpeed * (1 + skillSourceValue * skillLevel));
+
+			self.agent.moveSpeed += moveSpeedChange;
 		}
 
 	}

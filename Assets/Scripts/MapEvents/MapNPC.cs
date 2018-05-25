@@ -31,7 +31,6 @@ namespace WordJourney{
 			StopMoveImmidiately ();
 			gameObject.SetActive (false);
 			pool.AddInstanceToPool (this.gameObject);
-			ExploreManager.Instance.newMapGenerator.allWalkableEventsInMap.Remove (this);
 		}
 
 		public void SetNpcId(int npcId){
@@ -106,7 +105,7 @@ namespace WordJourney{
 
 			npc = GameManager.Instance.gameDataCenter.LoadNpc (npcId);
 
-			GetComponent<Monster> ().InitializeWithMonsterData (npc.monsterData);
+			//GetComponent<Monster> ().InitializeWithMonsterData (npc.monsterData);
 
 			InitAllAlertAreaDetect ();
 
@@ -202,9 +201,9 @@ namespace WordJourney{
 				return;
 			}
 
-			if (!npc.isExcutor) {
-				DisableAllAlertAreaDetect ();
-			}
+			//if (!npc.isExcutor) {
+			//	DisableAllAlertAreaDetect ();
+			//}
 
 			ExploreManager.Instance.DisableExploreInteractivity ();
 

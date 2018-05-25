@@ -9,11 +9,12 @@ namespace WordJourney
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			int maxHealthGain = (int)(skillSourceValue * self.agent.agentLevel);
+			int maxHealthGain = Mathf.RoundToInt(skillSourceValue * skillLevel);
 
 			int oriMaxHealth = self.agent.maxHealth;
 
 			self.agent.maxHealth += maxHealthGain;
+
 			self.agent.health = (int)(self.agent.health * self.agent.maxHealth / oriMaxHealth);
 		}
 	}

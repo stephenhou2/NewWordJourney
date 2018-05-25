@@ -7,7 +7,7 @@ namespace WordJourney
 {
 	public class SkillGenerator {
 
-		public static Skill GenerateTriggeredSkill(int skillId){
+		public static Skill GenerateSkill(int skillId){
 
 			Skill skillModel = GameManager.Instance.gameDataCenter.allSkills.Find (delegate(Skill obj) {
 				return obj.skillId == skillId;

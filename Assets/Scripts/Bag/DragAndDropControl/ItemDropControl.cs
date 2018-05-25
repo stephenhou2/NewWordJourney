@@ -11,6 +11,14 @@ namespace WordJourney
 
 		public Image tintImage;
 
+		protected CallBackWithItem dropCallBack;
+
+		public void InitItemDropCallBack(CallBackWithItem dropCallBack)
+        {
+			this.dropCallBack = dropCallBack;
+        }
+
+
 		protected Item GetDraggedItem(PointerEventData data){
 			
 			ItemDragControl dragControl = data.pointerDrag.GetComponent<ItemDragControl> ();

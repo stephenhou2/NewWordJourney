@@ -13,21 +13,36 @@ namespace WordJourney
 
 		public string npcName;
 
-		public bool isExcutor;
+		//public bool isExcutor;
 
-		public List<HLHDialogGroup> dialogGroups = new List<HLHDialogGroup>();
+		public bool isChatTriggered;
 
-		// 注意HLHTask是结构体，非引用类型
-		public List<HLHTask> taskList = new List<HLHTask> ();
+		public bool isTradeTriggered;
 
+		public bool isTransportTriggered;
+
+		public bool isLearnSkillTriggered;
+
+		public bool isPropertyPromotionTriggered;
+
+		public bool isAddGemStoneTriggered;
+        
+		public List<HLHPropertyPromotion> propertyPromotionList = new List<HLHPropertyPromotion>();
+
+		public List<HLHDialogGroup> levelDefiniteDialogGroups = new List<HLHDialogGroup>();
+
+		public List<HLHDialogGroup> levelUndefiniteDialogGroups = new List<HLHDialogGroup>();
+
+		public List<int> transportLevelList = new List<int>();
+      
 		public List<HLHNPCGoodsGroup> npcGoodsGroupList = new List<HLHNPCGoodsGroup> ();
 
-		public List<HLHDialogGroup> regularGreetings = new List<HLHDialogGroup> ();
+		public List<HLHDialog> regularGreetings = new List<HLHDialog> ();
 
 		// 单词选择正确时的对话组
-		public HLHDialogGroup wordRightDialogGroup;
+		//public HLHDialogGroup wordRightDialogGroup;
 		// 单词选择错误时的对话组
-		public HLHDialogGroup wordWrongDialogGroup;
+		//public HLHDialogGroup wordWrongDialogGroup;
 
 		// 标示当npc数据变化时是否需要保存npc数据
 		public bool saveOnChange;
@@ -37,19 +52,12 @@ namespace WordJourney
 
 		private List<HLHNPCGoods> goodsInSellRecord = new List<HLHNPCGoods>();
 
-		public MonsterData monsterData;
+		private bool isGoodsInitialized;
+      
+		public List<int> npcSkillIds = new List<int>();
+       
 
-		//******************************************************************************** start *************************************************************************//
-
-//		public void RefreshNPC(){
-//
-//			for (int i = 0; i < dialogGroups.Count; i++) {
-//				dialogGroups [i].isFinish = false;
-//			}
-//
-//			dialogGroupRecord = null;
-//
-//		}
+        
 
 
 		/// <summary>
@@ -59,119 +67,66 @@ namespace WordJourney
 		/// <param name="player">Player.</param>
 		public HLHDialogGroup FindQulifiedDialogGroup(Player player){
 
+			if (dialogGroupRecord != null && dialogGroupRecord.isMultiTimes)
+            {
+                return dialogGroupRecord;            
+            }
+
 			HLHDialogGroup targetDg = null;
 
-			if (dialogGroupRecord != null) {
-				if (!dialogGroupRecord.isFinish) {
-					return dialogGroupRecord;
-				} else {
-					targetDg = regularGreetings[dialogGroupRecord.dialogGroupId];
-					dialogGroupRecord = targetDg;
-					return targetDg;
-				}
-			}
+         
+			for (int i = 0; i < levelDefiniteDialogGroups.Count; i++) {
+                
+				HLHDialogGroup dg = levelDefiniteDialogGroups [i];
 
-			if (isExcutor && player.robTime == 0) {
-				targetDg = regularGreetings [0];
-				dialogGroupRecord = null;
-//				dialogGroupRecord = targetDg;
-				return targetDg;
-			}
+				if(dg.triggerLevel == player.currentLevelIndex){
 
-			for (int i = 0; i < dialogGroups.Count; i++) {
-
-				HLHDialogGroup dg = dialogGroups [i];
-
-				for (int j = 0; j < player.inProgressTasks.Count; j++) {
-
-					HLHTask t = player.inProgressTasks [j];
-
-					if (t.dialogGroupId == dg.dialogGroupId) {
-
-						targetDg = dg;
-						dialogGroupRecord = dg;
-
-						return dg;
+					if(CheckDialogGroupFinished(dg)){
+						break;
 					}
-				}
-			}
 
-			List<HLHDialogGroup> possibleDialogGroups = new List<HLHDialogGroup> ();
-
-			for (int i = 0; i < dialogGroups.Count; i++) {
-
-				HLHDialogGroup dg = dialogGroups [i];
-
-				if (dg.isFinish) {
-					continue;
-				}
-					
-				if (dg.triggerLevel == -1) {
-
-					// 如果符合条件的对话组不是任务触发的对话组
-					if (!dg.isTaskTriggeredDg) {
-						possibleDialogGroups.Add (dg);
-					} else {
-						// 如果符合添加的对话组是从任务触发的对话组
-						bool hasPlayerReceiveTask = player.CheckTaskExistFromTriggeredDialogGroupId (dg.dialogGroupId);
-						if (hasPlayerReceiveTask) {
-							targetDg = dg;
-							break;
-						}
-					}
-				} else if(dg.triggerLevel == player.currentLevelIndex && !dg.isFinish){
 					targetDg = dg;
+
 					dialogGroupRecord = dg;
+                                   
 					return targetDg;
 				}
+
 			}
 
-			if (targetDg == null && possibleDialogGroups.Count > 0) {
-				int randomSeed = Random.Range (0, possibleDialogGroups.Count);
-				targetDg = possibleDialogGroups [randomSeed];
-			}
+			int randomSeed = Random.Range(0, levelUndefiniteDialogGroups.Count);
 
-
-			if (targetDg == null) {
-				int randomSeed = Random.Range (0, regularGreetings.Count);
-				targetDg = regularGreetings[randomSeed];
-				dialogGroupRecord = targetDg;
-			}
+			targetDg = levelUndefiniteDialogGroups[randomSeed];
 
 			dialogGroupRecord = targetDg;
-
+                     
 			return targetDg;
 
 		}
 
-		public HLHTask GetTask(int taskId){
+		public bool CheckDialogGroupFinished(HLHDialogGroup dialogGroup){
 
-			HLHTask task = taskList.Find (delegate(HLHTask obj) {
-				return obj.taskId == taskId;
-			});
+			bool dialogGroupFinished = false;
 
-			return task;
+			List<HLHNPCChatRecord> dialogRecords = GameManager.Instance.gameDataCenter.chatRecords;
+
+			for (int i = 0; i < dialogRecords.Count;i++){
+
+				HLHNPCChatRecord dialogRecord = dialogRecords[i];
+
+				if(dialogRecord.npcId == npcId && dialogRecord.npcDialogGroupID == dialogGroup.dialogGroupId){
+					dialogGroupFinished = true;
+					break;
+				}
+			}
+
+			return dialogGroupFinished;
 
 		}
-
-
-		/// <summary>
-		/// 查找玩家所有在当前npc处接受的任务
-		/// </summary>
-		/// <returns>The qulified task.</returns>
-		/// <param name="taskId">Task identifier.</param>
-		public List<HLHTask> FindAllTasksReceiveFromCurrentNpc(Player player){
-
-			List<HLHTask> allTasksReceiveFromCurrentNpc = player.inProgressTasks.FindAll (delegate(HLHTask obj) {
-				return obj.npcId == npcId;
-			});
-
-			return allTasksReceiveFromCurrentNpc;
-		}
-
+        
 		public List<HLHNPCGoods> GetCurrentLevelGoods(){
 
-			if (goodsInSellRecord.Count != 0) {
+			if (goodsInSellRecord.Count != 0 || isGoodsInitialized) {
 				return goodsInSellRecord;
 			}
 
@@ -186,6 +141,8 @@ namespace WordJourney
 			GenerateRandomGoods(gg.goodsList_3);
 			GenerateRandomGoods(gg.goodsList_4);
 			GenerateRandomGoods(gg.goodsList_5);
+
+			isGoodsInitialized = true;
 
 			return goodsInSellRecord;
 		}
@@ -218,44 +175,7 @@ namespace WordJourney
 
 			goodsInSellRecord.RemoveAt (goodsDisplayIndex);
 
-		}
-
-
-
-		/// <summary>
-		/// 玩家交付任务
-		/// </summary>
-		/// <returns>如果任务完成，则返回完后任务后的对话组，否则返回null</returns>
-		/// <param name="player">Player.</param>
-		public HLHDialogGroup PlayerHandInTask(Player player){
-
-			HLHDialogGroup taskFinishDialogGroup = null;
-
-			List<HLHTask> allTasksQualified = FindAllTasksReceiveFromCurrentNpc (player);
-
-			for (int i = 0; i < allTasksQualified.Count; i++) {
-
-				HLHTask task = allTasksQualified [i];
-
-				if (player.CheckTaskFinish (task)) {
-
-					player.FinishTask (task);
-
-					taskFinishDialogGroup = dialogGroups.Find (delegate(HLHDialogGroup obj) {
-						return obj.dialogGroupId == task.dialogGroupId;
-					});
-
-					break;
-
-				}
-
-			}
-
-			return taskFinishDialogGroup;
-		}
-
-
-		//***************************************************************************** end ****************************************************************************//
+		}      
 
 	}
 
@@ -266,51 +186,33 @@ namespace WordJourney
 		public int dialogGroupId;
 
 		// 对话的触发关卡序号【-1代表对话不跟关卡走】
-		public int triggerLevel;
+		public int triggerLevel = -1;
 
 		public List<HLHDialog> dialogs;
 
-		public List<HLHChoice> choices;
+		public bool isRewardTriggered;
+
+		public HLHNPCReward reward;
 
 		public bool isFinish;
 
-		// 是否可以反复触发
-		public bool isMultiOff;
-
-		public bool isTaskTriggeredDg;
-
-
-		public HLHDialog GetDialog(HLHChoice choice){
-			return dialogs.Find (delegate(HLHDialog obj) {
-				return obj.dialogId == choice.nextDialogId;
-			});
-		}
-
-		//***************************************************************************** start *******************************************************************************//
-
-		public HLHChoice[] GetChoices(HLHDialog dialog){
-
-			HLHChoice[] choicesArray = new HLHChoice[dialog.choiceIds.Count];
-
-			for (int i = 0; i < choicesArray.Length; i++) {
-
-				int choiceId = dialog.choiceIds [i];
-
-				HLHChoice choice = choices.Find (delegate (HLHChoice obj) {
-					return obj.choiceId == choiceId;
-				});
-
-				choicesArray [i] = choice;
-
-			}
-
-			return choicesArray;
-
-		}
-		//****************************************************************************** end *******************************************************************************//
+		public bool isMultiTimes;
+      
 
 	}
 
+
+	[System.Serializable]
+	public struct HLHNPCChatRecord
+	{
+		public int npcId;
+		public int npcDialogGroupID;
+
+		public HLHNPCChatRecord(int npcId,int npcDialogGroupID){
+			this.npcId = npcId;
+			this.npcDialogGroupID = npcDialogGroupID;
+		}
+	}
 		
 
 	[System.Serializable]
@@ -323,85 +225,79 @@ namespace WordJourney
 		public List<int> choiceIds;
 
 	}
-
+   
 	[System.Serializable]
-	public class HLHChoice{
-
-		public int choiceId;
-
-		public string choiceContent;
-
-		public int nextDialogId;
-
-		public bool isTradeTriggered;
-
-		public bool isFightTriggered;
-
-		public bool isWeaponChangeTriggered;
-
-		public bool isEquipmentLoseTriggered;
-
-		public bool isRewardTriggered;
-
-		public bool isWordLearningTriggered;
-
-		public bool isReceiveTaskTriggered;
-
-		public bool isHandInTaskTriggered;
-
-		public bool isAddSkillTriggered;
-
-		public bool isRobTriggered;
-
-		public List<HLHNPCReward> rewards;
-
-		public int triggeredTaskId;
-
-		// 标示是否退出对话
-		public bool isEnd;
-
-		// 标示该对话组是否标记为结束【该项应该只在isEnd = true的情况下进行设定】
-		public bool finishCurrentDialog;
-
-
-	}
-
-	[System.Serializable]
-	public struct HLHTask{
-
-		public int npcId;
-
-		public int taskId;
-
-		public int taskItemId;
-
-		public int taskItemCount;// 需要交付的任务物品数量
-
-		public int dialogGroupId;
-
-		public string taskDescription;
-
-		public bool isCurrentLevelTask;// 是否是本层任务
-
-		public HLHTask(int npcId,int taskId,int taskItemId,int taskItemCount,int dialogGroupId,string taskDescription,bool isCurrentTask){
-			this.npcId = npcId;
-			this.taskId = taskId;
-			this.taskItemId = taskItemId;
-			this.taskItemCount = taskItemCount;
-			this.dialogGroupId = dialogGroupId;
-			this.taskDescription = taskDescription;
-			this.isCurrentLevelTask = isCurrentTask;
+	public struct HLHPropertyPromotion{
+		public PropertyType propertyType;
+		public int promotion;
+		public int promotionPrice;
+		public HLHPropertyPromotion(PropertyType propertyType,int promotion,int promotionPrice){
+			this.propertyType = propertyType;
+			this.promotion = promotion;
+			this.promotionPrice = promotionPrice;
 		}
+      
+		public string GetPropertyPromotionTint(){
+			string propertyPromotionTint = string.Empty;
+			switch(propertyType){
+				case PropertyType.MaxHealth:
+					propertyPromotionTint = string.Format("最大生命+{0}",promotion);
+					break;
+				case PropertyType.MaxMana:
+					propertyPromotionTint = string.Format("最大魔法+{0}", promotion);
+					break;
+				case PropertyType.Attack:
+					propertyPromotionTint = string.Format("物理攻击+{0}", promotion);
+					break;
+				case PropertyType.MagicAttack:
+					propertyPromotionTint = string.Format("魔法攻击+{0}", promotion);
+					break;
+				case PropertyType.Armor:
+					propertyPromotionTint = string.Format("护甲+{0}", promotion);
+					break;
+				case PropertyType.MagicResist:
+					propertyPromotionTint = string.Format("抗性+{0}", promotion);
+					break;
+				case PropertyType.ArmorDecrease:
+					propertyPromotionTint = string.Format("护甲穿透+{0}", promotion);
+					break;
+				case PropertyType.MagicResistDecrease:
+					propertyPromotionTint = string.Format("抗性穿透+{0}", promotion);
+					break;
+				case PropertyType.Crit:
+					propertyPromotionTint = string.Format("暴击+{0}%", ((float)promotion/1000).ToString("F1"));
+					break;
+				case PropertyType.Dodge:
+					propertyPromotionTint = string.Format("闪避+{0}", ((float)promotion / 1000).ToString("F1"));
+					break;
+				case PropertyType.CritHurtScaler:
+					propertyPromotionTint = string.Format("暴击倍率+{0}", ((float)promotion / 1000).ToString("F1"));
+					break;
+				case PropertyType.ExtraGold:
+					propertyPromotionTint = string.Format("额外金钱+{0}", promotion);
+					break;
+				case PropertyType.ExtraExperience:
+					propertyPromotionTint = string.Format("额外经验+{0}", promotion);
+					break;
+				case PropertyType.HealthRecovery:
+					propertyPromotionTint = string.Format("生命回复+{0}", promotion);
+					break;
+				case PropertyType.MagicRecovery:
+					propertyPromotionTint = string.Format("魔法回复+{0}", promotion);
+					break;
+				case PropertyType.MoveSpeed:
+					propertyPromotionTint = string.Format("移动速度+{0}", promotion);
+					break;               
+			}
 
+			return propertyPromotionTint;
 
-		
+		}
 	}
-
+   
 	public enum HLHRewardType{
 		Gold,
-		Item,
-		Property,
-		Experience
+		Item
 	}
 
 
@@ -415,6 +311,12 @@ namespace WordJourney
 
 		// 如果奖励的是物品，则该数据代表物品数量，如果奖励的是属性，则该数据代表属性变化值
 		public int attachValue;
+
+		public HLHNPCReward(HLHRewardType rewardType,int rewardValue,int attachValue){
+			this.rewardType = rewardType;
+			this.rewardValue = rewardValue;
+			this.attachValue = attachValue;
+		}
 
 	}
 

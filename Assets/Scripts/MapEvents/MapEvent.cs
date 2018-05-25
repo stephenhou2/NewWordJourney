@@ -53,7 +53,7 @@ namespace WordJourney
 
 		protected SpriteRenderer mapItemRenderer;
 
-		protected TextMeshPro tmPro;
+		public TextMeshPro tmPro;
 
 		protected CallBack animEndCallBack;
 
@@ -84,12 +84,10 @@ namespace WordJourney
 
 			bc2d = GetComponent<BoxCollider2D> ();
 
-//			isDroppable = false;
-
-			Transform wordTrans = transform.Find ("Word");
-			if (wordTrans != null) {
-				tmPro = wordTrans.GetComponent<TextMeshPro> ();
-			}
+			//Transform wordTrans = transform.Find ("Word");
+			//if (wordTrans != null) {
+			//	tmPro = wordTrans.GetComponent<TextMeshPro> ();
+			//}
 		}
 
 //		public abstract void InitMapItem ();
@@ -112,7 +110,7 @@ namespace WordJourney
 		/// </summary>
 		protected virtual void CheckIsWordTriggeredAndShow(){
 
-			if (isWordTriggered) {
+			if (isWordTriggered && tmPro != null) {
 
 				HLHWord targetWord = wordsArray [0];
 

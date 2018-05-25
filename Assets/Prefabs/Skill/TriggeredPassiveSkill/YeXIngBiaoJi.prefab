@@ -54,16 +54,18 @@ MonoBehaviour:
   skillName: "\u91CE\u6027\u6807\u8BB0"
   sfxName: 
   skillId: 30
-  skillDescription: "\u654C\u4EBA\u7684\u62A4\u7532\u964D\u4F4E\uFF08\u7B49\u7EA7x2\uFF09\u70B9"
+  skillDescription: "\u6BCF\u6B21\u653B\u51FB\u670920%\u7684\u6982\u7387\u964D\u4F4E\u654C\u4EBA\uFF08\u6280\u80FD\u7B49\u7EA7\xD71\uFF09\u7684\u62A4\u7532,\u53EF\u53E0\u52A0"
   skillIconName: 30_yeXingBiaoJi
   selfEffectAnimName: 
   enemyEffectAnimName: 07_attribute_down
   skillType: 2
-  beforeFightTrigger: 1
+  skillLevel: 1
+  beforeFightTrigger: 0
   attackTrigger: 0
-  hitTrigger: 0
+  hitTrigger: 1
   beAttackTrigger: 0
   beHitTrigger: 0
   fightEndTrigger: 0
   statusName: 
-  armorDecreaseBase: 2
+  armorDecreaseBase: 1
+  triggerProbability: 0.2

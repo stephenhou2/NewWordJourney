@@ -140,15 +140,19 @@ namespace WordJourney
 		/// <summary>
 		/// 初始化主动技能按钮
 		/// </summary>
-		public void SetUpActiveSkillButtons(){
-			activeSkillButtonPool.AddChildInstancesToPool (activeSkillButtonContainer);
-			for (int i = 0; i < player.attachedActiveSkills.Count; i++) {
-				ActiveSkill skill = player.attachedActiveSkills [i];
-				ActiveSkillButton activeSkillButton = activeSkillButtonPool.GetInstance<ActiveSkillButton> (activeSkillButtonModel.gameObject, activeSkillButtonContainer);
-				int index = i;
-				activeSkillButton.SetUpActiveSkillButton (skill, index, activeSkillButtonContainer);
-				activeSkillButton.AddListener (OnActiveSkillButtonClick);
-			}
+		public void SetUpActiveSkillButtons()
+		{
+			activeSkillButtonPool.AddChildInstancesToPool(activeSkillButtonContainer);
+			if (bpCtr.towards == MyTowards.Left || bpCtr.towards == MyTowards.Right) { 
+    			for (int i = 0; i < player.attachedActiveSkills.Count; i++)
+    			{
+    				ActiveSkill skill = player.attachedActiveSkills[i];
+    				ActiveSkillButton activeSkillButton = activeSkillButtonPool.GetInstance<ActiveSkillButton>(activeSkillButtonModel.gameObject, activeSkillButtonContainer);
+    				int index = i;
+    				activeSkillButton.SetUpActiveSkillButton(skill, index, activeSkillButtonContainer);
+    				activeSkillButton.AddListener(OnActiveSkillButtonClick);
+    			}
+		    }
 		}
 
 		/// <summary>
@@ -210,31 +214,25 @@ namespace WordJourney
 			switch (type) {
 			case 0:
 				int maxHealthRecord = player.maxHealth;
-				player.originalMaxHealth += 10;
-				player.maxHealth += 10;
+				player.originalMaxHealth += 20;
+				player.maxHealth += 20;
 				player.health = (int)((float)player.maxHealth / maxHealthRecord * player.health);
 				break;
 			case 1:
-				player.originalAttack += 1;
-				player.attack += 1;
+				player.originalAttack += 2;
+				player.attack += 2;
 				break;
 			case 2:
-				int maxManaRecord = player.maxMana;
-				player.originalMaxMana += 5;
-				player.maxMana += 5;
-				player.mana = (int)((float)player.maxMana / maxManaRecord * player.mana);
+				player.originalMagicAttack += 2;
+                player.magicAttack += 2;
 				break;
 			case 3:
-				player.originalArmor += 1;
-				player.armor += 1;
+				player.originalArmor += 2;
+				player.armor += 2;
 				break;
 			case 4:
-				player.originalMagicResist += 1;
-				player.magicResist += 1;
-				break;
-			case 5:
-				player.originalMagicAttack += 1;
-				player.magicAttack += 1;
+				player.originalMagicResist += 2;
+				player.magicResist += 2;
 				break;
 			}
 

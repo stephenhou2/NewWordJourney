@@ -45,17 +45,21 @@ namespace WordJourney
 
 		private Sequence[] changeTintFromEqSequences = new Sequence[12];
 
+		public void UpdateStatusBars(){
+			Player player = Player.mainPlayer;
+            healthBar.maxValue = player.maxHealth;
+            healthBar.value = player.health;
+            manaBar.maxValue = player.maxMana;
+            manaBar.value = player.mana;
+            experienceBar.maxValue = player.upgradeExprience;
+            experienceBar.value = player.experience;
+            goldText.text = player.totalGold.ToString();
+            levelText.text = string.Format("等级 Lv.{0}", player.agentLevel);         
+		}
 
 		public void UpdatePropertyDisplay(PropertyChange pc){
 			Player player = Player.mainPlayer;
-			healthBar.maxValue = player.maxHealth;
-			healthBar.value = player.health;
-			manaBar.maxValue = player.maxMana;
-			manaBar.value = player.mana;
-			experienceBar.maxValue = player.upgradeExprience;
-			experienceBar.value = player.experience;
-			goldText.text = player.totalGold.ToString ();
-			levelText.text = string.Format ("等级 Lv.{0}", player.agentLevel);
+			UpdateStatusBars();
 			attackText.text = player.attack.ToString ();
 			magicAttackText.text = player.magicAttack.ToString ();
 			armorText.text = player.armor.ToString ();

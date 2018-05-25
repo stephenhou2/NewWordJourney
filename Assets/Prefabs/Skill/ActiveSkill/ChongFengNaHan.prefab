@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1088435542795754}
+  m_IsPrefabParent: 1
+--- !u!1 &1088435542795754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4367027512188914}
+  - component: {fileID: 114779008706307124}
+  m_Layer: 0
+  m_Name: ChongFengNaHan
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4367027512188914
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1088435542795754}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114779008706307124
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1088435542795754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d3a363fc77844b6e8b1d721632547c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillName: "\u51B2\u950B\u5450\u558A"
+  sfxName: player_skill1
+  skillId: 33
+  skillDescription: "\u964D\u4F4E\u654C\u4EBA\uFF08\u6280\u80FD\u7B49\u7EA7\xD72\uFF09\u7684\u7269\u7406\u653B\u51FB,\u540C\u65F6\u63D0\u5347\u81EA\u5DF1\uFF08\u6280\u80FD\u7B49\u7EA7\xD72\uFF09\u7684\u7269\u7406\u653B\u51FB\u81F3\u6218\u6597\u7ED3\u675F,\u4E0D\u53EF\u53E0\u52A0"
+  skillIconName: 33_chongFengNaHan
+  selfEffectAnimName: 
+  enemyEffectAnimName: 
+  skillType: 0
+  skillLevel: 1
+  selfRoleAnimName: physical_skill
+  skillCoolenTime: 3
+  manaConsume: 5
+  attackChangeBase: 2

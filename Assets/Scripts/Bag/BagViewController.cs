@@ -11,40 +11,16 @@ namespace WordJourney
 
 		public Item currentSelectItem;
 
-//		public PurchaseManager purchaseManager;
-
-//		private int currentBagIndex;
+		public Item itemForSpecialOperation;
 
 		private Item itemToAddWhenBagFull;
 
 		void Awake(){
-			
-			for (int i = 1; i < 33; i++) {
-				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
+
+			for (int i = 300; i < 350;i++){
+				Player.mainPlayer.AddItem(Item.NewItemWith(i, 1));
+
 			}
-
-			Player.mainPlayer.AddItem(Item.NewItemWith(409, 1));
-
-			Player.mainPlayer.AddItem (Item.NewItemWith (305, 20));
-//
-//			for (int i = 401; i < 433; i++) {
-//				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
-//			}
-//
-//			Equipment eqp = Item.NewItemWith (1, 1) as Equipment;
-//
-//			eqp.SetToGoldQuality ();
-//
-//			Player.mainPlayer.AddItem (eqp);
-//
-//			for (int i = 0; i < 32; i++) {
-//				Player.mainPlayer.AddItem (Item.NewItemWith (i, 1));
-//			}
-////
-			//Player.mainPlayer.AddItem (Item.NewItemWith (305, 5));
-//			Player.mainPlayer.AddItem (Item.NewItemWith (302, 5));
-//
-//			Player.mainPlayer.totalGold = 2000;
 		}
 
 		public void AddBagItemWhenBagFull(Item item){
@@ -107,14 +83,11 @@ namespace WordJourney
 		public void OnItemInBagClick(Item item){
 
 			currentSelectItem = item;
+         
+			bagView.SetUpItemDetail (item);
 
-//			if (item is CraftingRecipe) {
-//				bagView.SetUpCraftRecipesDetailHUD (item);
-//			} else {
-				bagView.SetUpItemDetail (item);
 			bagView.HideAllItemSelectedTintIcon ();
 
-//			}
 
 		}
 
@@ -238,90 +211,81 @@ namespace WordJourney
 			}
 		}
 			
-
+        
 		/// <summary>
-		/// 在物品详细信息页点击了使用按钮（消耗品）
+		/// 在物品详细信息页点击了使用按钮
 		/// </summary>
 		public void OnUseButtonClick(){
 
 			if (currentSelectItem == null) {
 				return;
 			}
-			
-			Consumables consumables = currentSelectItem as Consumables;
-
-			Player player = Player.mainPlayer;
 
 			bool clearItemDetail = false;
 
-			switch (consumables.type) {
-    			case ConsumablesType.ShuXingTiSheng:
+			switch(currentSelectItem.itemType){
+				case ItemType.Consumables:
+					
+					Consumables consumables = currentSelectItem as Consumables;
 
-    				player.health += consumables.healthGain + player.healthRecovery;
-    				player.mana += consumables.manaGain + player.magicRecovery;
-    				player.experience += consumables.experienceGain + player.extraExperience;
+                    PropertyChange propertyChange = consumables.UseConsumables();
 
-    				clearItemDetail = player.RemoveItem (consumables, 1);
-
-    				bool isLevelUp = player.LevelUpIfExperienceEnough ();
-    				if (isLevelUp) {
-    					ExploreManager.Instance.expUICtr.ShowLevelUpPlane ();
-    				}
-
-    				bagView.SetUpPlayerStatusPlane (new PropertyChange());
-
-                    if (ExploreManager.Instance.battlePlayerCtr.isInFight)
-                    {
-                        ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
-                    }
+					bagView.SetUpPlayerStatusPlane(propertyChange);
 
 					GameManager.Instance.soundManager.PlayAudioClip(consumables.audioName);
 
-    				break;  
-    			case ConsumablesType.ChongZhuShi:
-    				Equipment eqp = bagView.RebuildEquipment ();
-					GameManager.Instance.soundManager.PlayAudioClip(CommonData.chongzhuAudioName);
-    				if (eqp != null) {
-    					currentSelectItem = eqp;
-    				}
-    				player.RemoveItem (consumables, 1);
-    				break;
-    			case ConsumablesType.DianJinShi:
-    				eqp = bagView.UpgradeEquipmentToGold ();
-					GameManager.Instance.soundManager.PlayAudioClip(CommonData.dianJinAudioName);
-    				if (eqp != null) {
-    					currentSelectItem = eqp;
-    				}
-    				player.RemoveItem (consumables, 1);
-    				break;
-    			case ConsumablesType.XiaoMoJuanZhou:
-    				eqp = bagView.RemoveEquipmentAttachedSkill ();
-					GameManager.Instance.soundManager.PlayAudioClip(CommonData.xiaoMoAudioName);
-    				if (eqp != null) {
-    					currentSelectItem = eqp;
-    				}
-    				player.RemoveItem (consumables, 1);
-    				break;
-    			case ConsumablesType.YinShenJuanZhou:
-    				ExploreManager.Instance.PlayerFade ();
-    				clearItemDetail = player.RemoveItem (consumables, 1);
-					GameManager.Instance.soundManager.PlayAudioClip(CommonData.xiangQianJiNengAudioName);
-    				break;
+					break;
+				case ItemType.SkillScroll:
+					
+					SkillScroll skillScroll = currentSelectItem as SkillScroll;
+
+					propertyChange = skillScroll.UseSkillScroll();
+
+					bagView.SetUpPlayerStatusPlane(propertyChange);
+
+					break;
+				case ItemType.SpecialItem:
+
+					SpecialItem specialItem = currentSelectItem as SpecialItem;
+
+					specialItem.UseSpecialItem(itemForSpecialOperation,bagView.itemDetail.SetUpItemDetail);
+
+					bagView.propertyDisplay.UpdateStatusBars();
+
+					break;
+
 			}
+
+
+			bool isLevelUp = Player.mainPlayer.LevelUpIfExperienceEnough();
+            if (isLevelUp)
+            {
+                ExploreManager.Instance.expUICtr.ShowLevelUpPlane();
+            }
+
+			if (ExploreManager.Instance.battlePlayerCtr.isInFight)
+            {
+                ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
+            }
+
+			clearItemDetail = Player.mainPlayer.RemoveItem(currentSelectItem, 1);
 
 
 			if (itemToAddWhenBagFull != null && !Player.mainPlayer.CheckBagFull (itemToAddWhenBagFull)) {
 				AddItemInWait ();
 			}
+                     
+			bagView.SetUpCurrentBagItemsPlane();
 
-
-			bagView.SetUpCurrentBagItemsPlane ();
 			if (clearItemDetail) {
 				bagView.ClearItemDetail ();
 			}
+            
+
+
 
 		}
-
+      
 
 		public void OnRemoveButtonClick(){
 			if (currentSelectItem == null) {

@@ -7,14 +7,19 @@ namespace WordJourney
 {
 	public class Taozu : ActiveSkill {
 
+		public float escapeTimeBase;
+		public float escapeTimeDecreaseBase;
+
 		protected override void ExcuteActiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
+
+			float escapeTime = escapeTimeBase - escapeTimeDecreaseBase * skillLevel;
 
 			self.QuitFight ();
 
 			(self as BattlePlayerController).isInEscaping = true;
 
-			ExploreManager.Instance.expUICtr.ShowEscapeBar (skillCoolenTime, delegate {
+			ExploreManager.Instance.expUICtr.ShowEscapeBar (escapeTime, delegate {
 				EscapeCallBack(self,enemy);
 			});
 		}

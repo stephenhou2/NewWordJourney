@@ -8,14 +8,21 @@ namespace WordJourney
 	public class YeXingBiaoJi : TriggeredPassiveSkill {
 
 		public int armorDecreaseBase;
+		public float triggerProbability;
 
-		protected override void BeforeFightTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
+		protected override void HitTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
 		{
-			int armorChange = -(int)(self.agent.agentLevel * armorDecreaseBase);
+			if(!isEffective(triggerProbability)){
+				return;
+			}
 
-            enemy.agent.armorChangeFromSkill += armorChange;
+			int armorChange = skillLevel * armorDecreaseBase;
 
-            enemy.agent.armor += armorChange;
+            enemy.agent.armorChangeFromSkill -= armorChange;
+
+            enemy.agent.armor -= armorChange;
+
+			enemy.SetEffectAnim(enemyEffectAnimName);
 		}
 
 	}

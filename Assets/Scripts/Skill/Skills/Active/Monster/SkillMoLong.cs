@@ -31,6 +31,16 @@ namespace WordJourney
 
 			enemy.PlayShakeAnim();
 
+			if (selfEffectAnimName != string.Empty)
+            {
+                self.SetEffectAnim(selfEffectAnimName);
+            }
+
+            if (enemyEffectAnimName != string.Empty)
+            {
+                enemy.SetEffectAnim(enemyEffectAnimName);
+            }
+
 			if(durativeHurtCoroutine != null){
 				StopCoroutine(durativeHurtCoroutine);
 			}

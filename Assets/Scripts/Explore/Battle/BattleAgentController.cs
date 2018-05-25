@@ -90,7 +90,8 @@ namespace WordJourney
 
 
 		// 移动速度
-		public float moveDuration{ get{return 1 / (agent.moveSpeed * 0.025f + 2.5f); }}
+		//public float moveDuration{ get{return 1 / (agent.moveSpeed * 0.015f + 2f); }}
+		public float moveDuration { get { return agent.moveSpeed / (agent.moveSpeed /0.26f - 19.7803f); } }
 
 		// 骨骼动画控制器
 		protected UnityArmatureComponent armatureCom{
@@ -245,12 +246,31 @@ namespace WordJourney
 				}
 			}
 
+			string colorText = string.Empty;
+
+
 			switch (type) {
 			case HurtType.Physical:
-				hurtString = string.Format ("<color=red>{0}</color>", hurt);
+					if (this is BattlePlayerController)
+                    {
+                        colorText = "red";
+                    }
+                    else
+                    {
+						colorText = "white";
+                    }
+					hurtString = string.Format ("<color={0}>{1}</color>", colorText, hurt);
 				break;
 			case HurtType.Magical:
-				hurtString = string.Format ("<color=blue>{0}</color>", hurt);
+					if (this is BattlePlayerController)
+                    {
+                        colorText = "purple";
+                    }
+                    else
+                    {
+						colorText = "lightblue";
+                    }
+					hurtString = string.Format ("<color={0}>{1}</color>", colorText, hurt);
 				break;
 
 			}
@@ -267,9 +287,19 @@ namespace WordJourney
 
 			agent.health += gain;
 
-			string hurtString = string.Format ("<color=green>{0}</color>", gain);
+			string healthGainString = string.Format ("<color=green>{0}</color>", gain);
 
-			AddTintTextToQueue (hurtString);
+			AddTintTextToQueue (healthGainString);
+
+		}
+
+		public void AddManaGainAndShow(int gain){
+
+			agent.mana += gain;
+
+			string manaGainString = string.Format("<color=blue>{0}</color>", gain);
+
+			AddTintTextToQueue(manaGainString);
 
 		}
 
@@ -374,6 +404,8 @@ namespace WordJourney
 				yield return null;
 
 			}
+
+			//Debug.Log(skill.skillName);
 
 			UseSkill (skill);
 
@@ -509,21 +541,17 @@ namespace WordJourney
 			if (effectName == string.Empty || exploreManager == null) {
 				return;
 			}
-
-			if (agent.health > 0) {
+            
 			
-				EffectAnim skillEffect = null;
-					
-				skillEffect = exploreManager.newMapGenerator.GetEffectAnim (effectName,effectAnimContainer);
+			EffectAnim skillEffect = null;
+				
+			skillEffect = exploreManager.newMapGenerator.GetEffectAnim (effectName,effectAnimContainer);
 
-				//skillEffect.transform.localPosition = 
+			int playTime = (effectName == CommonData.frozenEffectName || effectName == CommonData.paralizedEffectName) ? 0 : 1;
 
-				if (skillEffect != null) {
-                    // 所有的特效播放名称都是default
-                    skillEffect.PlayAnim ("default", 1, cb, effectAnimYScaler);
-				}
-
-
+			if (skillEffect != null) {
+                // 所有的特效播放名称都是default
+                skillEffect.PlayAnim ("default", 1, cb, effectAnimYScaler);
 			}
 
 		}
@@ -547,37 +575,16 @@ namespace WordJourney
 		public abstract void QuitFight ();
 
 		protected virtual void StopCoroutinesWhenFightEnd (){
-			
-//			if (attackCoroutine != null) {
-//				StopCoroutine (attackCoroutine);
-//			}
-//
-//			if (waitRoleAnimEndCoroutine != null) {
-//				StopCoroutine (waitRoleAnimEndCoroutine);
-//			}
-//
-//			for (int i = 0; i < allSkillEffectReuseCoroutines.Count; i++) {
-//				IEnumerator skillEffectReuseCoroutine = allSkillEffectReuseCoroutines [i];
-//				if (skillEffectReuseCoroutine != null) {
-//					StopCoroutine (skillEffectReuseCoroutine);
-//				}
-//
-//			}
 
 			StopAllCoroutines ();
 
 			CancelInvoke ();
 
-			AllEffectAnimsIntoPool ();
+			//AllEffectAnimsIntoPool ();
 
-//			allSkillEffectReuseCoroutines.Clear ();
-
-//			StopCoroutine ("PlayAgentShake");
-
-//			modelActive.transform.localPosition = Vector3.zero;
 		}
 
-		private void AllEffectAnimsIntoPool(){
+		protected void AllEffectAnimsIntoPool(){
 
 			for (int i = 0; i < effectAnimContainer.childCount; i++) {
 

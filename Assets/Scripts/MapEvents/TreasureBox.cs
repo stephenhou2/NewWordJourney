@@ -85,21 +85,33 @@ namespace WordJourney
 
 				int randomSeed = Random.Range (0, 100);
 
+				int graySeed = 0;
+				int blueSeed = 0;
+
+				switch(Player.mainPlayer.luckInOpenTreasure){
+					case 0:
+						graySeed = 65;
+						blueSeed = 95;
+						break;
+					case 1:
+						graySeed = 60;
+						blueSeed = 90;
+						break;
+				}
+
 				EquipmentQuality quality = EquipmentQuality.Gray;
+
 				if (!isGoldTreasureBox) {
-					if (randomSeed < 80) {
+					if (randomSeed < graySeed) {
 						quality = EquipmentQuality.Gray;
-					} else if (randomSeed < 95) {
+					} else if (randomSeed < blueSeed) {
 						quality = EquipmentQuality.Blue;
 					} else {
 						quality = EquipmentQuality.Gold;
 					}
 				} else {
-					if (randomSeed < 30) {
-						quality = EquipmentQuality.Blue;
-					} else {
-						quality = EquipmentQuality.Gold;
-					}
+                    quality = EquipmentQuality.Gold;
+
 				}
 
 				eqp.ResetPropertiesByQuality (quality);

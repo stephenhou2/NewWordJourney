@@ -118,5 +118,17 @@ namespace WordJourney
 
 		}
 
+		public void SaveChatRecords(int npcId,int npcDialogGroupId){
+			
+			List<HLHNPCChatRecord> chatRecords = GameManager.Instance.gameDataCenter.chatRecords;
+
+			HLHNPCChatRecord chatRecord = new HLHNPCChatRecord(npcId, npcDialogGroupId);
+
+			chatRecords.Add(chatRecord);
+
+			DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(chatRecords, CommonData.chatRecordsFilePath);
+
+		}
+
 	}
 }

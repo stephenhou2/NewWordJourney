@@ -9,11 +9,12 @@ namespace WordJourney
 		
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			int maxManaGain = (int)(skillSourceValue * self.agent.agentLevel);
+			int maxManaGain = Mathf.RoundToInt(skillSourceValue * skillLevel);
 
 			int oriMaxMana = self.agent.maxMana;
 
 			self.agent.maxMana += maxManaGain;
+
 			self.agent.mana = (int)(self.agent.mana * self.agent.maxMana / oriMaxMana);
 		}
 	}

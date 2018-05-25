@@ -54,11 +54,12 @@ MonoBehaviour:
   skillName: "\u90AA\u6076\u4E4B\u9B42"
   sfxName: 
   skillId: 16
-  skillDescription: "\u6BCF\u6B21\u653B\u51FB\u670920%\u51E0\u7387\u6062\u590D\uFF08\u7B49\u7EA7x2\uFF09\u7684\u9B54\u6CD5"
+  skillDescription: "\u6BCF\u6B21\u653B\u51FB\u670920%\u6982\u7387\u56DE\u590D\uFF08\u6280\u80FD\u7B49\u7EA7\xD71+5\uFF09\u7684\u9B54\u6CD5"
   skillIconName: 16_xieEZhiHun
-  selfEffectAnimName: 12_attribute_up
+  selfEffectAnimName: 02_magic_heal
   enemyEffectAnimName: 
   skillType: 2
+  skillLevel: 1
   beforeFightTrigger: 0
   attackTrigger: 1
   hitTrigger: 0
@@ -66,5 +67,6 @@ MonoBehaviour:
   beHitTrigger: 0
   fightEndTrigger: 0
   statusName: 
-  manaRecoveryBase: 2
+  manaRecoveryBase: 1
+  manaRecoveryExtra: 5
   triggeredProbability: 0.2

@@ -24,6 +24,8 @@ namespace WordJourney
 		// 地图上怪物和npc位置信息数组(有怪物的位置或者行走中的怪物的行走终点为1，没有怪物的位置或者行走中的怪物的行走原点为0)
 		public int[,] mapWalkableEventInfoArray;
 
+		//private HLHGameLevelData levelData;
+
 
 		//************* 模型 *************//
 		public Transform floorModel;//地板模型
@@ -70,6 +72,8 @@ namespace WordJourney
 
 		public Transform rewardModel;//奖励物品模型
 
+		public Transform characterFragmentModel;//字母碎片模型
+
 
 		//************ 容器 **************//
 		public Transform floorsContainer;//地板容器
@@ -86,7 +90,7 @@ namespace WordJourney
 
 		public Transform rewardContainer;//奖励物品容器
 
-//		public Transform effectAnimContainer;//
+		public Transform characterFragmentContainer;//字母碎片容器
 
 
 		//************ 缓存池 ************//
@@ -106,6 +110,8 @@ namespace WordJourney
 
 		public InstancePool effectAnimPool;//技能效果缓存池
 
+		public InstancePool characterFragmentPool;//字母碎片缓存池
+
 
 		// 行走提示动画
 		public Transform destinationAnimation;
@@ -117,7 +123,8 @@ namespace WordJourney
 		private List<Vector2> playerStartPosList = new List<Vector2> ();
 
 		private List<TriggeredGear> allTriggeredMapEvents = new List<TriggeredGear> ();
-		public List<MapWalkableEvent> allWalkableEventsInMap = new List<MapWalkableEvent> ();
+		private List<Trap> allTrapsInMap = new List<Trap>();
+		public List<MapMonster> allMonstersInMap = new List<MapMonster> ();
 
 
 		public Transform fogOfWarPlane;
@@ -125,7 +132,9 @@ namespace WordJourney
 		// 本层出口位置
 		private Vector2 exitPos;
 
+		private List<Vector3> validCharacterFragmentPositions = new List<Vector3>();
 
+		public SpellItem spellItemOfCurrentLevel;
 
 
 //		void Update(){
@@ -143,7 +152,7 @@ namespace WordJourney
 
 		public void SetUpMap()
 		{
-
+			GameManager.Instance.gameDataCenter.LoadGameLevelDatas();
 
 			Reset ();
 
@@ -162,6 +171,8 @@ namespace WordJourney
 
 			DestroyUnusedMonsterAndNpc ();
 
+			GenerateCharacterFragments();
+
 			#if UNITY_EDITOR || UNITY_IOS 
 			fogOfWarPlane.gameObject.SetActive(true);
 			InitFogOfWarPlane ();
@@ -171,6 +182,44 @@ namespace WordJourney
 
 
 
+		}
+
+		private void GenerateCharacterFragments(){
+
+			int randomSeed = Random.Range(0, GameManager.Instance.gameDataCenter.allSpellItemModels.Count);
+
+			SpellItemModel spellItemModel = GameManager.Instance.gameDataCenter.allSpellItemModels[randomSeed];
+
+			spellItemOfCurrentLevel = new SpellItem(spellItemModel,1);
+
+			string spell = spellItemModel.spell;
+
+			char[] characters = spell.ToCharArray();
+
+			for (int i = 0; i < characters.Length;i++){
+
+				char character = characters[i];
+
+				CharacterFragment characterFragment = characterFragmentPool.GetInstance<CharacterFragment>(characterFragmentModel.gameObject, characterFragmentContainer);
+
+				characterFragment.SetPool(characterFragmentPool);
+
+				randomSeed = Random.Range(0, validCharacterFragmentPositions.Count);
+
+				Vector3 characterFragmentPosition = validCharacterFragmentPositions[randomSeed];
+
+				characterFragment.GenerateCharacterFragment(character, characterFragmentPosition, PlayerObtainCharacterFragment);
+
+                // 保证碎片不重合
+				validCharacterFragmentPositions.Remove(characterFragmentPosition);
+
+			}
+            
+		}
+
+		private void PlayerObtainCharacterFragment(char character){
+			Player.mainPlayer.allCollectedCharacters.Add(character);
+			ExploreManager.Instance.expUICtr.UpdateCharacterFragmentsHUD();         
 		}
 
 		private void DestroyUnusedMonsterAndNpc(){
@@ -187,7 +236,7 @@ namespace WordJourney
 			
 			allTriggeredMapEvents.Clear ();
 
-			allWalkableEventsInMap.Clear ();
+			allMonstersInMap.Clear ();
 
 			playerStartPosList.Clear ();
 
@@ -205,6 +254,13 @@ namespace WordJourney
 
 			mapWalkableInfoArray = new int[columns, rows];
 			mapWalkableEventInfoArray = new int[columns, rows];
+
+			//for (int i = 0; i < columns;i++){
+			//	for (int j = 0; j < rows;j++){
+			//		validCharacterFragmentPositions.Add(new Vector3(i, j, 0));
+			//	}
+			//}
+
 			InitMapWalkableInfoAndMonsterPosInfo ();
 
 			AllMapInstancesToPool ();
@@ -410,7 +466,7 @@ namespace WordJourney
                             (mapEvent as MapMonster).SetPosTransferSeed(rows);
                             mapWalkableInfoArray[posX, posY] = 5;
                             mapWalkableEventInfoArray[posX, posY] = 1;
-                            allWalkableEventsInMap.Add(mapEvent as MapMonster);
+                            allMonstersInMap.Add(mapEvent as MapMonster);
                         }
                         break;
                     case "boss":
@@ -420,7 +476,7 @@ namespace WordJourney
                             (mapEvent as MapMonster).SetPosTransferSeed(rows);
                             mapWalkableInfoArray[posX, posY] = 5;
                             mapWalkableEventInfoArray[posX, posY] = 1;
-                            allWalkableEventsInMap.Add(mapEvent as MapMonster);
+                            allMonstersInMap.Add(mapEvent as MapMonster);
                             exitOpen = false;
                         }
                         break;
@@ -471,6 +527,7 @@ namespace WordJourney
                         mapEvent = mapEventsPool.GetInstanceWithName<ThornTrap>(thornTrapModel.name, thornTrapModel.gameObject, mapEventsContainer);
                         mapWalkableInfoArray[posX, posY] = 0;
                         allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+						allTrapsInMap.Add(mapEvent as ThornTrap);
                         break;
                     case "pressSwitch":
                         mapEvent = mapEventsPool.GetInstanceWithName<PressSwitch>(pressSwitchModel.name, pressSwitchModel.gameObject, mapEventsContainer);
@@ -491,13 +548,13 @@ namespace WordJourney
                     case "fireTrap":
                         mapEvent = mapEventsPool.GetInstanceWithName<FireTrap>(fireTrapModel.name, fireTrapModel.gameObject, mapEventsContainer);
                         mapWalkableInfoArray[posX, posY] = 1;
+						allTrapsInMap.Add(mapEvent as Trap);
                         break;
                     case "npc":
                         mapEvent = GetMapNPC(eventTile);
                         if (mapEvent != null){
                             mapWalkableInfoArray[posX, posY] = 5;
                             mapWalkableEventInfoArray[posX, posY] = 1;
-                            //allWalkableEventsInMap.Add(mapEvent as MapNPC);
                         }
 					    break;
 				    case "tombstone":
@@ -520,6 +577,11 @@ namespace WordJourney
 					mapEvent.wordsArray = wordsArray;
 					
 					mapEvent.InitializeWithAttachedInfo (eventTile);
+
+					if (validCharacterFragmentPositions.Contains(eventTile.position))
+                    {
+						validCharacterFragmentPositions.Remove(eventTile.position);
+                    }
 
 				}
 
@@ -614,7 +676,6 @@ namespace WordJourney
 		/// <param name="info">Info.</param>
 		private MapEvent GetMonster(MapAttachedInfoTile info){
 
-         
 			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];
 
 			int randomSeed = Random.Range (0, levelData.monsterIds.Count);
@@ -693,7 +754,7 @@ namespace WordJourney
             }
 
 			if (npcId == -1) {
-				npcId = Random.Range (2,57);
+				npcId = Random.Range (2,12);
                 //npcId = 8;
 			}
 
@@ -742,57 +803,72 @@ namespace WordJourney
 		/// 将人物放置在人物初始点
 		/// </summary>
 		/// <param name="position">Position.</param>
-		private void InitializePlayerAndSetCamera(){
+		private void InitializePlayerAndSetCamera()
+		{
 
-			int randomIndex = Random.Range (0, playerStartPosList.Count);
+			int randomIndex = Random.Range(0, playerStartPosList.Count);
 
-			Vector3 position = playerStartPosList [randomIndex];
-			
-			Transform player = Player.mainPlayer.transform.Find ("BattlePlayer");
+			Vector3 position = playerStartPosList[randomIndex];
+
+			Transform player = Player.mainPlayer.transform.Find("BattlePlayer");
 			player.position = position;
 
-			BattlePlayerController bp = player.GetComponent<BattlePlayerController> ();
+			BattlePlayerController bp = player.GetComponent<BattlePlayerController>();
 			bp.singleMoveEndPos = position;
 
-			bp.pathPosList.Clear ();
-			bp.ActiveBattlePlayer (true, true, true);
-			bp.SetSortingOrder (-Mathf.RoundToInt(position.y));
+			bp.pathPosList.Clear();
+			bp.ActiveBattlePlayer(true, true, true);
+			bp.SetSortingOrder(-Mathf.RoundToInt(position.y));
 
-			bp.TowardsDown ();
-			bp.StopMoveAndWait ();
+			bp.TowardsDown();
+			bp.StopMoveAndWait();
 			bp.isInFight = false;
 
 			Camera mainCamera = Camera.main;
-			mainCamera.transform.SetParent (player,false);
-			mainCamera.transform.localPosition = new Vector3 (0, 0, -10);
+			mainCamera.transform.SetParent(player, false);
+			mainCamera.transform.localPosition = new Vector3(0, 0, -10);
 			mainCamera.transform.localScale = Vector3.one;
 			mainCamera.transform.localRotation = Quaternion.identity;
 
-			#if UNITY_EDITOR || UNITY_IOS
-			bp.transform.Find ("FowBrush").gameObject.SetActive (true);
+#if UNITY_EDITOR || UNITY_IOS
+			bp.transform.Find("FowBrush").gameObject.SetActive(true);
 			// 初始化迷雾相机的视窗大小
-			Camera fowCamera = TransformManager.FindTransform ("FogOfWarBrushCamera").GetComponent<Camera> ();
+			Camera fowCamera = TransformManager.FindTransform("FogOfWarBrushCamera").GetComponent<Camera>();
 			fowCamera.gameObject.SetActive(true);
-			fowCamera.orthographicSize = (float)Mathf.Max (rows, columns) / 2;
-			fowCamera.transform.position = new Vector3 (columns / 2, rows / 2, -5);
+			fowCamera.orthographicSize = (float)Mathf.Max(rows, columns) / 2;
+			fowCamera.transform.position = new Vector3(columns / 2, rows / 2, -5);
 
-			UpdateFogOfWar ();
+			UpdateFogOfWar();
 
-			#elif UNITY_ANDROID 
+#elif UNITY_ANDROID
 			bp.transform.Find ("FowBrush").gameObject.SetActive (false);
 			Transform fowCamera = TransformManager.FindTransform ("FogOfWarBrushCamera");
 			if(fowCamera != null){
 				fowCamera.gameObject.SetActive(false);
 			}
 
-			#endif
+#endif
 
 			ExploreManager.Instance.expUICtr.GetComponent<BattlePlayerUIController>().RefreshMiniMap();
 
-			Transform exploreMask = mainCamera.transform.Find ("ExploreMask");
-			exploreMask.gameObject.SetActive (true);
-			exploreMask.GetComponent<UnityArmatureComponent> ().animation.Play (CommonData.exploreMaskAnimName, 0);
+			SetUpExploreMask();
 
+		}
+
+		public void SetUpExploreMask(){
+
+			Transform exploreMask = Camera.main.transform.Find("ExploreMask");
+            exploreMask.gameObject.SetActive(true);
+            UnityArmatureComponent maskArmCom = exploreMask.GetComponent<UnityArmatureComponent>();
+            switch (Player.mainPlayer.exploreMaskStatus)
+            {
+                case 0:
+                    maskArmCom.animation.Play(CommonData.exploreDarktMaskAnimName, 0);
+                    break;
+                case 1:
+                    maskArmCom.animation.Play(CommonData.exploreLightMaskAnimName, 0);
+                    break;
+            }
 
 		}
 
@@ -835,8 +911,24 @@ namespace WordJourney
 				int posX = Mathf.RoundToInt (tile.position.x);
 				int posY = Mathf.RoundToInt (tile.position.y);
 
+				if(layer.layerName.Equals("FloorLayer")){
+					validCharacterFragmentPositions.Add(tile.position);
+				}
+
+				if(layer.layerName.Equals("WallLayer")){
+					if(validCharacterFragmentPositions.Contains(tile.position)){
+						validCharacterFragmentPositions.Remove(tile.position);
+					}
+
+				}
+
 				if (layer.layerName.Equals ("DecorationLayer")) {
 					sr.sortingOrder = -posY;
+					if (validCharacterFragmentPositions.Contains(tile.position))
+                    {
+                        validCharacterFragmentPositions.Remove(tile.position);
+                    }
+					validCharacterFragmentPositions.Remove(tile.position);
 				}
 
 
@@ -953,7 +1045,7 @@ namespace WordJourney
 
 			//			Vector3 newPos = effectContainer.position + effectAnim.localPos;
 
-			Debug.LogFormat("effectAnim pos:{0},container Pos:{1}", effectAnim.localPos, effectContainer.position);
+			//Debug.LogFormat("effectAnim pos:{0},container Pos:{1}", effectAnim.localPos, effectContainer.position);
 
 			effectAnim.transform.localPosition = new Vector3 (effectAnim.localPos.x, effectAnim.localPos.y, 0);
 			effectAnim.transform.localRotation = Quaternion.identity;
@@ -968,10 +1060,42 @@ namespace WordJourney
 			effectAnimPool.AddInstanceToPool (ea.gameObject);
 		}
 
+        
 
+        /// <summary>
+        /// 驱散部分怪物（怪物放入缓存池中）
+        /// </summary>
+        /// <param name="percentage">Percentage.</param>
+		public void SomeMonstersToPool(float percentage){
 
+			int monsterToPoolCount = (int)(allMonstersInMap.Count * percentage);
 
+			for (int i = 0; i < monsterToPoolCount;i++){
+                
+				int randomSeed = Random.Range(0, allMonstersInMap.Count);
 
+				MapMonster mapMonster = allMonstersInMap[i];
+
+				mapMonster.AddToPool(monstersPool);
+
+			}
+
+		}
+        
+        /// <summary>
+        /// 使地图上所有陷阱失效
+        /// </summary>
+		public void AllTrapsOff(){
+
+			for (int i = 0; i < allTrapsInMap.Count;i++){
+
+				Trap trap = allTrapsInMap[i];
+
+				trap.SetTrapOff();
+
+			}
+
+		}
 
 		/// <summary>
 		/// 将场景中的地板，npc，地图物品，怪物加入缓存池中
@@ -988,6 +1112,8 @@ namespace WordJourney
 
 			rewardPool.AddChildInstancesToPool (rewardContainer);
 
+			characterFragmentPool.AddChildInstancesToPool(characterFragmentContainer);
+
 		}
 
 		private void AllMapEventsToPool(){
@@ -997,6 +1123,7 @@ namespace WordJourney
 			}
 			AllMonstersToPool ();
 			AllNpcsToPool ();
+
 		}
 
 		private void AllMonstersToPool(){
@@ -1012,6 +1139,7 @@ namespace WordJourney
 				mn.AddToPool (npcsPool);
 			}
 		}
+
 
 	
 	}

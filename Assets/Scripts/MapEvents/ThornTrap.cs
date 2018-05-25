@@ -17,7 +17,7 @@ namespace WordJourney
 		private IEnumerator thornTrapTriggeredCoroutine;
 
 		private Vector3 agentOriPos;
-		private Vector3 backgroundOriPos;
+		//private Vector3 backgroundOriPos;
 
 
 //		private bool isTrapOn;
@@ -157,7 +157,7 @@ namespace WordJourney
 
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
-			
+			MapEventTriggered(true, bp);
 		}
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)

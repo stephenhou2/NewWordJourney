@@ -59,9 +59,9 @@ namespace WordJourney
 				return;
 			}
 
-			if (mapNPC.npc.isExcutor && Player.mainPlayer.robTime <= 0) {
-				return;
-			}
+			//if (mapNPC.npc.isExcutor && Player.mainPlayer.robTime <= 0) {
+			//	return;
+			//}
 
 			BattlePlayerController bp = ba as BattlePlayerController;
 

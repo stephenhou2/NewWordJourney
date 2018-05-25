@@ -44,26 +44,54 @@ namespace WordJourney
 		}
 
 		public void OnConsumablesClick(){
-			switch (cons.type) {
-    			case ConsumablesType.ShuXingTiSheng:
-    				Player.mainPlayer.health += cons.healthGain + Player.mainPlayer.healthRecovery;
-    				Player.mainPlayer.mana += cons.manaGain + Player.mainPlayer.magicRecovery;
+
+			BattlePlayerController battlePlayerController = ExploreManager.Instance.battlePlayerCtr;
+
+			//switch (cons.type) {
+    			//case ConsumablesType.ShuXingTiSheng:
+
+					if (cons.healthGain > 0)
+                    {
+
+						int healthGain = cons.healthGain + Player.mainPlayer.healthRecovery;
+
+						battlePlayerController.AddHealthGainAndShow(healthGain);
+
+						battlePlayerController.SetEffectAnim(CommonData.healthHealEffecttName);
+					}
+                    
+					//if(cons.manaGain != 0){
+					//	int manaGain = cons.manaGain + Player.mainPlayer.magicRecovery;
+					//}
+
+					if (cons.manaGain > 0)
+                    {            
+						battlePlayerController.AddManaGainAndShow(cons.manaGain + Player.mainPlayer.magicRecovery);
+
+						battlePlayerController.SetEffectAnim(CommonData.magicHealAudioName);
+
+					}else if (cons.manaGain < 0){
+
+						Player.mainPlayer.mana += cons.manaGain;
+
+					}                
+    				
     				Player.mainPlayer.experience += cons.experienceGain;
     				Player.mainPlayer.RemoveItem (cons, 1);
 					GameManager.Instance.soundManager.PlayAudioClip(cons.audioName);
+					ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
+    				//break;  
+    			//case ConsumablesType.ChongZhuShi:
+    			//case ConsumablesType.DianJinShi:
+    			//case ConsumablesType.XiaoMoJuanZhou:
+    				//break;
+			//    case ConsumablesType.YinShenJuanZhou:
+			//	    ExploreManager.Instance.PlayerFade ();
+   //                 Player.mainPlayer.RemoveItem(cons, 1);
+			//		GameManager.Instance.soundManager.PlayAudioClip(cons.audioName);
+			//	break;
 
-    				break;  
-    			case ConsumablesType.ChongZhuShi:
-    			case ConsumablesType.DianJinShi:
-    			case ConsumablesType.XiaoMoJuanZhou:
-    				break;
-			    case ConsumablesType.YinShenJuanZhou:
-				    ExploreManager.Instance.PlayerFade ();
-                    Player.mainPlayer.RemoveItem(cons, 1);
-					GameManager.Instance.soundManager.PlayAudioClip(cons.audioName);
-				break;
-
-			}
+			//}
 			if (refreshCallBack != null) {
 				refreshCallBack ();
 			}

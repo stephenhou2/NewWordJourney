@@ -9,9 +9,9 @@ namespace WordJourney
     {
 
 		public int hurt;
-		public int armorDecrease;
+		public int armorAndMagicReistDecrease;
 
-		private bool hasTriggered = false;
+		//private bool hasTriggered = false;
 
 
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
@@ -22,12 +22,25 @@ namespace WordJourney
 
 			enemy.PlayShakeAnim();
 
-			if(!hasTriggered){
-				enemy.agent.armor += -armorDecrease;
-				enemy.agent.armorChangeFromSkill += -armorDecrease;
-				hasTriggered = true;
-			}
+			int armorAndMagicResistChange = -armorAndMagicReistDecrease;
+	
+			enemy.agent.armor += armorAndMagicResistChange;
+			enemy.agent.armorChangeFromSkill += armorAndMagicResistChange;
 
+
+			enemy.agent.magicResist += armorAndMagicResistChange;
+			enemy.agent.magicResistChangeFromSkill += armorAndMagicResistChange;
+            
+         
+			if (selfEffectAnimName != string.Empty)
+            {
+                self.SetEffectAnim(selfEffectAnimName);
+            }
+
+            if (enemyEffectAnimName != string.Empty)
+            {
+                enemy.SetEffectAnim(enemyEffectAnimName);
+            }
 
 			enemy.UpdateStatusPlane();
 

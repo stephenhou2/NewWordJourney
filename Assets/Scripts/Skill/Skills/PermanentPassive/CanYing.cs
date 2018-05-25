@@ -10,7 +10,7 @@ namespace WordJourney
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			float dodgeGain = skillSourceValue * self.agent.agentLevel;
+			float dodgeGain = skillSourceValue * skillLevel;
 			self.agent.dodge += dodgeGain;
 		}
 

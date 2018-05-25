@@ -28,13 +28,15 @@ namespace WordJourney
 
 			DataHandler.SaveInstanceListToFile<EquipmentModel> (loader.newItemModels, newItemModelsDataPath);
 
+			Debug.Log("装备数据完成");
+
+
 		}
 
 
 
 		public class NewItemDataLoader{
-
-//			private List<TempItemModel> tempItemModels = new List<TempItemModel>();
+        
 
 			public List<EquipmentModel> newItemModels= new List<EquipmentModel>();
 
@@ -51,10 +53,7 @@ namespace WordJourney
 					string[] equipmentDataArray = equipmentDataString.Split (new char[]{ ',' }, StringSplitOptions.None);
 
 					int dataLength = equipmentDataArray.Length;
-
-//					TempItemModel tempItemModel = new TempItemModel ();
-
-//					tempItemModels.Add (tempItemModel);
+                    
 
 					EquipmentModel em = new EquipmentModel();
 
@@ -74,7 +73,7 @@ namespace WordJourney
 
 					em.price = FromStringToInt16(equipmentDataArray [7]);
 
-					em.attachedSkillId = FromStringToInt16 (equipmentDataArray [8]);
+					em.defaultQuality = (EquipmentDefaultQuality)FromStringToInt16(equipmentDataArray [8]);
 
 					if (!IsSpecialProperty (equipmentDataArray [9])) {
 						em.maxHealthGain = FromStringToInt16 (equipmentDataArray [9]);
@@ -200,6 +199,7 @@ namespace WordJourney
 			}
 
 			private int FromStringToInt16(string str){
+				//Debug.Log(str);
 				return str == "" ? 0 : Convert.ToInt16 (str);
 			}
 

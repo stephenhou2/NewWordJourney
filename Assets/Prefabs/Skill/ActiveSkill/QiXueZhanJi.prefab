@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4985942909627198}
-  - component: {fileID: 114176390628086428}
+  - component: {fileID: 114748522776338306}
   m_Layer: 0
   m_Name: QiXueZhanJi
   m_TagString: Untagged
@@ -40,7 +40,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114176390628086428
+--- !u!114 &114748522776338306
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -48,19 +48,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1026563884479254}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c81a4bb05ec904ce681e174f6f4f01af, type: 3}
+  m_Script: {fileID: 11500000, guid: 64916f65bcf274cf8b6c0cf5cf08fb0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   skillName: "\u6CE3\u8840\u65A9\u51FB"
   sfxName: player_skill1
   skillId: 20
-  skillDescription: "\u9020\u6210260%\u7684\u653B\u51FB\u4F24\u5BB3\uFF0C\u56DE\u590D\u9020\u6210\u4F24\u5BB330%\u7684\u751F\u547D"
+  skillDescription: "\u672C\u6B21\u653B\u51FB\u9020\u6210\u989D\u5916\uFF08\u6280\u80FD\u7B49\u7EA7\xD712+25\uFF09\u70B9\u7269\u7406\u4F24\u5BB3,\u5E76\u5C0650%\u7684\u4F24\u5BB3\u503C\u8F6C\u5316\u4E3A\u81EA\u8EAB\u751F\u547D"
   skillIconName: 20_qiXueZhanJi
   selfEffectAnimName: 01_health_heal
   enemyEffectAnimName: 
   skillType: 0
+  skillLevel: 1
   selfRoleAnimName: physical_skill
   skillCoolenTime: 4
   manaConsume: 15
-  hurtScaler: 2.6
-  absorbScaler: 0.3
+  fixHurt: 25
+  hurtBase: 12
+  absorbScaler: 0.5

@@ -136,7 +136,7 @@ namespace WordJourney
 				monsterScript.originalMagicalHurtScaler = 1f;
 				monsterScript.magicalHurtScaler = 1f;
 
-				monsterScript.poisonHurtScaler = 1f;
+				monsterScript.extraPoisonHurt = 0;
 
 				//monsterScript.skillsContainer = skillsContainer;
 

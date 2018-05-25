@@ -25,9 +25,7 @@ namespace WordJourney
 		ExtraExperience,
 		HealthRecovery,
 		MagicRecovery,
-		Health,
-		HealthPunish,
-		AttackPunish
+		Health
 	}
 		
 
@@ -248,9 +246,9 @@ namespace WordJourney
 			
 
 		public int shenLuTuTengScaler = 0;
-		public float poisonHurtScaler = 1;
+		public int extraPoisonHurt = 0;
 
-		public int hurtToEnemyFromNormalAttack;
+		public int hurtToEnemy;
 
 //		public float dodgeFixScaler;//闪避修正系数
 //		public float critFixScaler;//暴击修正系数
@@ -263,6 +261,8 @@ namespace WordJourney
 
 
 		public Equipment[] allEquipedEquipments;
+
+
 
 		public List<ActiveSkill> attachedActiveSkills = new List<ActiveSkill> ();
 		public List<PermanentPassiveSkill> attachedPermanentPassiveSkills = new List<PermanentPassiveSkill> ();

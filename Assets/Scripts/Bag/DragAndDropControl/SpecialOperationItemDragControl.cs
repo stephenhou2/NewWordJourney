@@ -27,7 +27,9 @@ namespace WordJourney
 
 		protected override void OnUserShortClick (PointerEventData eventData)
 		{
-			return;
+			if(shortClickCallBack != null){
+				shortClickCallBack(item);
+			}
 		}
 
 		protected override void OnUserLongPress (PointerEventData eventData)
@@ -65,6 +67,10 @@ namespace WordJourney
 			}
 
 			itemImage.enabled = false;
+
+			//if(longPressCallBack != null){
+			//	longPressCallBack(item);
+			//}
 		}
 
 		protected override void OnUserDrag (PointerEventData eventData)
@@ -98,7 +104,7 @@ namespace WordJourney
 				}
 				break;
 			}
-
+            
 		}
 
 

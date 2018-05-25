@@ -8,7 +8,7 @@ namespace WordJourney
 	using UnityEngine.UI;
 	using UnityEngine.EventSystems;
 
-	public delegate void ShortClickCallBack(Item item);
+	public delegate void CallBackWithItem(Item item);
 
 
 	public abstract class ItemDragControl : MyDragControl,IPointerDownHandler {
@@ -32,11 +32,13 @@ namespace WordJourney
 
 		public abstract void OnDropFailed ();
 
-		protected ShortClickCallBack shortClickCallBack;
+		protected CallBackWithItem shortClickCallBack;
+		//protected CallBackWithItem longPressCallBack; 
 
-		public void InitItemInBagDragControl(Item item,ShortClickCallBack shortClickCallBack){
+		public void InitItemDragControl(Item item,CallBackWithItem shortClickCallBack){
 			this.item = item;
 			this.shortClickCallBack = shortClickCallBack;
+			//this.longPressCallBack = longPressCallBack;
 		}
 
 

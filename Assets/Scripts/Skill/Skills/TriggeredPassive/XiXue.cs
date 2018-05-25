@@ -7,26 +7,24 @@ namespace WordJourney
 {
 	public class XiXue : TriggeredPassiveSkill {
 
-		public float triggerProbability;
+		public float fixTriggerProbability;
+
+		public float triggerProbabilityBase;
 
 		public float healthAbsorbScaler;
 
-		public int fixedHealthAbsorb;
-
 		protected override void HitTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
 		{
+			float triggerProbability = fixTriggerProbability + triggerProbabilityBase * skillLevel;
+
 			if (isEffective (triggerProbability)) {
-
-
-				int healthGain = (int)(fixedHealthAbsorb + self.agent.hurtToEnemyFromNormalAttack * healthAbsorbScaler);
-                            
-                //if(skillSourceValue >= 1){
-                //    healthGain = (int)(skillSourceValue);
-                //}else{
-                //    healthGain = (int)(self.agent.hurtToEnemyFromNormalAttack * skillSourceValue + self.agent.healthRecovery);
-                //}
+				
+				int healthGain = Mathf.RoundToInt(self.agent.hurtToEnemy * healthAbsorbScaler + self.agent.healthRecovery);
 				
 				self.AddHealthGainAndShow (healthGain);
+
+				SetEffectAnims(self, enemy);
+
 				self.UpdateStatusPlane ();
 			}
 		}

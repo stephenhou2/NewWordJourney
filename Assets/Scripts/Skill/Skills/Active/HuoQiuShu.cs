@@ -7,26 +7,31 @@ namespace WordJourney
 {
 	public class HuoQiuShu : ActiveSkill {
 
-		public float skillSourceValue;
+		public int fixHurt;
+
+		public int hurtBase;
 
 		protected override void ExcuteActiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
+            // 原始魔法伤害
+			int hurt = fixHurt + hurtBase * skillLevel;
 
-			//int hurt = (int)((self.agent.magicAttack + self.agent.magicResistDecrease / 4) * skillSourceValue) - enemy.agent.magicResist / 4;
-
-			int hurt = Mathf.RoundToInt(self.agent.magicAttack / ((enemy.agent.magicResist - self.agent.magicResistDecrease) / 100f + 1));
+			// 结算抗性和抗性穿透之后的实际伤害
+			hurt = Mathf.RoundToInt(hurt / ((enemy.agent.magicResist - self.agent.magicResistDecrease) / 100f + 1));
 
 			if (hurt < 0) {
 				hurt = 0;
 			}
 
+            // 伤害生效并显示
 			enemy.AddHurtAndShow (hurt, HurtType.Magical,self.towards);
 
+            // 敌方被击中后退
 			enemy.PlayShakeAnim ();
 
-			self.UpdateStatusPlane ();
-			enemy.UpdateStatusPlane ();
-
+			// 播放技能特效
+			SetEffectAnims(self, enemy);
+         
 		}
 	}
 }

@@ -18,6 +18,7 @@ namespace WordJourney
 		public Sprite grayFrame;
 		public Sprite blueFrame;
 		public Sprite goldFrame;
+		public Sprite purpleFrame;
 
 
 		public void SetUpItemInBagCell(Item item){
@@ -26,7 +27,7 @@ namespace WordJourney
 			newItemTintIcon.enabled = false;
 
 
-			if (item.itemType == ItemType.Consumables) {
+			if (item.itemType == ItemType.Consumables || item.itemType == ItemType.PropertyGemstone) {
 				itemCount.text = item.itemCount.ToString ();
 				itemCount.enabled = true;
 			} else {
@@ -37,15 +38,18 @@ namespace WordJourney
 			if (item.itemType == ItemType.Equipment) {
 				Equipment eqp = item as Equipment;
 				switch (eqp.quality) {
-				case EquipmentQuality.Gray:
-					itemIconBackground.sprite = grayFrame;
-					break;
-				case EquipmentQuality.Blue:
-					itemIconBackground.sprite = blueFrame;
-					break;
-				case EquipmentQuality.Gold:
-					itemIconBackground.sprite = goldFrame;
-					break;
+        			case EquipmentQuality.Gray:
+        				itemIconBackground.sprite = grayFrame;
+        				break;
+        			case EquipmentQuality.Blue:
+        				itemIconBackground.sprite = blueFrame;
+        				break;
+        			case EquipmentQuality.Gold:
+        				itemIconBackground.sprite = goldFrame;
+        				break;
+        			case EquipmentQuality.Purple:
+						itemIconBackground.sprite = purpleFrame;
+        			    break;
 				}
 			} else {
 				itemIconBackground.sprite = grayFrame;

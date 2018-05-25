@@ -9,7 +9,7 @@ namespace WordJourney
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			int armorGain = (int)(self.agent.agentLevel * skillSourceValue);
+			int armorGain = Mathf.RoundToInt(skillLevel * skillSourceValue);
 
 			self.agent.armor += armorGain;
 		}

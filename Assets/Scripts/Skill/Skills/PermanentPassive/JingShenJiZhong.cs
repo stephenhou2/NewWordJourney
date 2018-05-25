@@ -9,7 +9,9 @@ namespace WordJourney
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			self.agent.magicResist += (int)(self.agent.agentLevel * skillSourceValue);
+			int magicResistGain = Mathf.RoundToInt(skillSourceValue * skillLevel);
+
+			self.agent.magicResist += magicResistGain;
 		}
 
 	}

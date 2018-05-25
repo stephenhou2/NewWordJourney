@@ -116,8 +116,8 @@ namespace WordJourney
 
 			newMapGenerator.SetUpMap();
 
-			//ExploreUICotroller expUICtr = TransformManager.FindTransform ("ExploreCanvas").GetComponent <ExploreUICotroller> ();
-
+			Player.mainPlayer.ClearCollectedCharacters();
+         
 			expUICtr.SetUpExploreCanvas ();
 
 			battlePlayerCtr.InitBattlePlayer ();
@@ -303,11 +303,11 @@ namespace WordJourney
 
 			if (me is MapNPC) {
 				MapNPC mn = me as MapNPC;
-				if (isChooseCorret) {
-					expUICtr.SetUpNPCWhenWordChooseRight (mn.npc);
-				} else {
-					expUICtr.SetUpNPCWhenWordChooseWrong (mn.npc);
-				}
+				//if (isChooseCorret) {
+				//	expUICtr.SetUpNPCWhenWordChooseRight (mn.npc);
+				//} else {
+				//	expUICtr.SetUpNPCWhenWordChooseWrong (mn.npc);
+				//}
 			} else {
 				me.MapEventTriggered (isChooseCorret, battlePlayerCtr);
 			}
@@ -357,8 +357,8 @@ namespace WordJourney
 		}
 
 		public void AllWalkableEventsStopMove(){
-			for (int i = 0; i < newMapGenerator.allWalkableEventsInMap.Count; i++) {
-				newMapGenerator.allWalkableEventsInMap [i].StopMoveAtEndOfCurrentMove ();
+			for (int i = 0; i < newMapGenerator.allMonstersInMap.Count; i++) {
+				newMapGenerator.allMonstersInMap [i].StopMoveAtEndOfCurrentMove ();
 			}
 		}
 
@@ -366,8 +366,8 @@ namespace WordJourney
 			if (battlePlayerCtr.isInEvent) {
 				return;
 			}
-			for (int i = 0; i < newMapGenerator.allWalkableEventsInMap.Count; i++) {
-				newMapGenerator.allWalkableEventsInMap [i].StartMove ();
+			for (int i = 0; i < newMapGenerator.allMonstersInMap.Count; i++) {
+				newMapGenerator.allMonstersInMap [i].StartMove ();
 			}
 		}
 
@@ -501,7 +501,7 @@ namespace WordJourney
 
 			Player player = Player.mainPlayer;
 
-			player.DestroyEquipmentInBagAttachedSkills ();
+			//player.DestroyEquipmentInBagAttachedSkills ();
 
 			battlePlayerCtr.enemy = null;
 
@@ -530,7 +530,7 @@ namespace WordJourney
 
             if (mm != null) {
 
-                Item rewardItem = monster.GenerateRewardItem();
+                Item rewardItem = mm.GenerateRewardItem();
 
 				if (rewardItem != null) {
 					newMapGenerator.SetUpRewardInMap (rewardItem, trans.position);
@@ -582,9 +582,12 @@ namespace WordJourney
             bool isLevelUp = player.LevelUpIfExperienceEnough();//判断是否升级
 
             if (isLevelUp)
-            {
+			{
+
                 PlayLevelUpAnim();
+
                 DisableExploreInteractivity();
+
                 expUICtr.ShowLevelUpPlane();
             }
             else
@@ -593,8 +596,7 @@ namespace WordJourney
             }
 
 			battlePlayerCtr.UpdateStatusPlane();
-
-
+         
 		}
 
 
@@ -614,7 +616,7 @@ namespace WordJourney
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);
 
-			(battlePlayerCtr.agent as Player).DestroyEquipmentInBagAttachedSkills ();
+			//(battlePlayerCtr.agent as Player).DestroyEquipmentInBagAttachedSkills ();
 
 			battlePlayerCtr.enemy = null;
 
@@ -694,32 +696,44 @@ namespace WordJourney
 //
 //		}
 
-		public void EnterNextLevel(){
+        
 
-			AllWalkableEventsStopMove ();
+		public void EnterLevel(int level){
+
+			AllWalkableEventsStopMove();
 
             GameManager.Instance.pronounceManager.ClearPronunciationCache();
 
-			Time.timeScale = 1;
+            Time.timeScale = 1;
 
-			DisableExploreInteractivity ();
+            DisableExploreInteractivity();
 
-			Player player = Player.mainPlayer;
+            Player player = Player.mainPlayer;
 
-			player.RefreshTasksWhenEnterNextLevel ();
+			player.currentLevelIndex = level;
 
-			player.currentLevelIndex++;
+            if (player.currentLevelIndex > player.maxUnlockLevelIndex)
+            {
+                player.maxUnlockLevelIndex = player.currentLevelIndex;
+            }
 
-			if (player.currentLevelIndex >= 50) {
-				Debug.Log ("通关");
-				return;
-			}
+            if (player.currentLevelIndex >= 50)
+            {
+                Debug.Log("通关");
+                return;
+            }
 
-			GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
-	
-			SetUpExploreView ();
+            GameManager.Instance.persistDataManager.SaveCompletePlayerData();
 
-//			EnableExploreInteractivity ();
+            SetUpExploreView();
+
+		}
+
+		public void EnterNextLevel(){
+
+			int level = Player.mainPlayer.currentLevelIndex + 1;
+
+			EnterLevel(level);
 
 		}
 

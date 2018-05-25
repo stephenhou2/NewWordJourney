@@ -9,9 +9,8 @@ namespace WordJourney
 
 	public enum ValidDropType{
 		Equipment,
-		EquipmentWithoutSkill,
-		Consumables,
-		SkillGemstone
+		EquipmentWithoutGemstone,
+        PropertyGemstone
 	}
 
 	public class SpecialOperationItemDropControl : ItemDropControl {
@@ -20,12 +19,19 @@ namespace WordJourney
 
 		public SpecialOperationItemDragControl soDragControl;
 
-//		private CallBack dropCallBack;
-//
-//		public void InitSpecialOperationDropControl(CallBack dropCallBack){
-//			this.dropCallBack = dropCallBack;
-//		}
-
+	
+		private BagView mBagView;
+        private BagView bagView
+        {
+            get
+            {
+                if (mBagView == null)
+                {
+                    mBagView = TransformManager.FindInParents<BagView>(this.gameObject);
+                }
+                return mBagView;
+            }
+        }
 
 		protected override void OnUserPointerEnter (PointerEventData eventData)
 		{
@@ -62,37 +68,32 @@ namespace WordJourney
 			bool isValid = true;
 
 			switch (validDropType) {
-			case ValidDropType.Equipment:
-				if (draggedItem.itemType != ItemType.Equipment) {
-					isValid = false;
-				}
-				break;
-			case ValidDropType.EquipmentWithoutSkill:
-				if (draggedItem.itemType != ItemType.Equipment) {
-					isValid = false;
-				} else {
-					isValid = (draggedItem as Equipment).attachedSkillId == 0;
-				}
-				break;
-			case ValidDropType.Consumables:
-				if (draggedItem.itemType != ItemType.Consumables
-					|| ((draggedItem as Consumables).type != ConsumablesType.ChongZhuShi
-						&& (draggedItem as Consumables).type != ConsumablesType.DianJinShi
-						&& (draggedItem as Consumables).type != ConsumablesType.XiaoMoJuanZhou)) {
-					isValid = false;
-				}
-				break;
-			case ValidDropType.SkillGemstone:
-				if (draggedItem.itemType != ItemType.Gemstone) {
-					isValid = false;
-				}
-				break;
+    			case ValidDropType.Equipment:
+    				if (draggedItem.itemType != ItemType.Equipment) {
+    					isValid = false;
+    				}
+    				break;
+    			case ValidDropType.EquipmentWithoutGemstone:
+    				if (draggedItem.itemType != ItemType.Equipment) {
+    					isValid = false;
+    				} else {
+						isValid = (draggedItem as Equipment).attachedPropertyGemstone == null;
+    				}
+    				break;
+    			case ValidDropType.PropertyGemstone:
+    				if (draggedItem.itemType != ItemType.PropertyGemstone) {
+    					isValid = false;
+    				}
+    				break;
 			}
 			return isValid;
 		}
 
 		protected override void OnUserPointerExit (PointerEventData eventData)
 		{
+
+			tintImage.enabled = false;
+
 			if (!eventData.dragging) {
 				return;
 			}
@@ -130,6 +131,8 @@ namespace WordJourney
 				return;
 			}
 
+			bagView.GetComponent<BagViewController>().itemForSpecialOperation = draggedItem;
+
 			// 装备面板内的装备
 			if (draggedObject.GetComponent<EquipedItemDragControl> () != null) {
 
@@ -138,7 +141,7 @@ namespace WordJourney
 				soDragControl.itemImage.sprite = dc.itemImage.sprite;
 				soDragControl.itemImage.enabled = true;
 
-				soDragControl.item = draggedItem;
+				soDragControl.item = draggedItem;            
 
 				SetDropResult (eventData, true);
 			}
@@ -158,6 +161,12 @@ namespace WordJourney
 				}
 
 				SetDropResult (eventData, true);
+			}
+
+            
+
+			if(dropCallBack != null){
+				dropCallBack(draggedItem);
 			}
 
 			tintImage.enabled = false;

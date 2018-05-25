@@ -18,29 +18,36 @@ namespace WordJourney
 			EquipmentSprites,
 			ConsumablesSprites,
 			SkillGemstoneSprites,
+			SpellItemSprites,
 			MapSprites,
 			Skills,
 			SkillSprites,
 			Monsters,
 			NPCs,
 			Effects,
-            Proverbs
+            Proverbs,
+            ChatRecord
 		}
 
 		private GameSettings mGameSettings;
 		private List<HLHGameLevelData> mGameLevelDatas = new List<HLHGameLevelData>();
 		private List<EquipmentModel> mAllEquipmentModels = new List<EquipmentModel> ();
 		private List<ConsumablesModel> mAllConsumablesModels = new List<ConsumablesModel>();
-		private List<SkillGemstoneModel> mAllSkillGemstoneModels = new List<SkillGemstoneModel> ();
+		private List<PropertyGemstoneModel> mAllPropertyGemstoneModels = new List<PropertyGemstoneModel> ();
+		private List<SkillScrollModel> mAllSkillScrollModels = new List<SkillScrollModel>();
+		private List<SpecialItemModel> mAllSpecialItemModels = new List<SpecialItemModel>();
+		private List<SpellItemModel> mAllSpellItemModels = new List<SpellItemModel>();
 		private List<Sprite> mAllEquipmentSprites = new List<Sprite>();
 		private List<Sprite> mAllConsumablesSprites = new List<Sprite> ();
-		private List<Sprite> mAllSkillGemstoneSprites = new List<Sprite> ();
+		private List<Sprite> mAllPropertyGemstoneSprites = new List<Sprite> ();
+		private List<Sprite> mAllSkillScrollSprites = new List<Sprite>();
+		private List<Sprite> mAllSpecialItemSprites = new List<Sprite>();
 		private List<Sprite> mAllMapSprites = new List<Sprite> ();
 		private List<Skill> mAllSkills = new List<Skill>();
 		private List<Sprite> mAllSkillSprites = new List<Sprite>();
 		private List<EffectAnim> mAllEffects = new List<EffectAnim>();
         private List<HLHSentenceAndPoem> mAllProverbs = new List<HLHSentenceAndPoem>();
-
+		private List<HLHNPCChatRecord> mChatRecords = new List<HLHNPCChatRecord>();
 
 		public void InitPersistentGameData(){
 			LoadEquipmentModels ();
@@ -109,9 +116,11 @@ namespace WordJourney
 
 		}
 
-		private void LoadGameLevelDatas(){
+		public void LoadGameLevelDatas(){
 			HLHGameLevelData[] gameLevelDatasArray = DataHandler.LoadDataToModelsWithPath<HLHGameLevelData> (CommonData.gameLevelDataFilePath);
-			for (int i = 0; i < gameLevelDatasArray.Length; i++) {
+			mGameLevelDatas.Clear();
+			for (int i = 0; i < gameLevelDatasArray.Length; i++)
+			{
 				mGameLevelDatas.Add(gameLevelDatasArray[i]);
 			}
 		}
@@ -157,23 +166,89 @@ namespace WordJourney
 			}
 		}
 
-		public List<SkillGemstoneModel> allSkillGemstoneModels{
+		public List<PropertyGemstoneModel> allPropertyGemstoneModels{
 			get{
-				if (mAllSkillGemstoneModels.Count == 0) {
-					LoadSkillGemstoneModels ();
+				if (mAllPropertyGemstoneModels.Count == 0) {
+					LoadPropertyGemstoneModels ();
 				}
-				return mAllSkillGemstoneModels;
+				return mAllPropertyGemstoneModels;
 			}
 
 		}
 
-		private void LoadSkillGemstoneModels(){
-			if (mAllSkillGemstoneModels.Count > 0) {
+		private void LoadPropertyGemstoneModels(){
+			if (mAllPropertyGemstoneModels.Count > 0) {
 				return;
 			}
-			SkillGemstoneModel[] skillGemstoneModels = DataHandler.LoadDataToModelsWithPath<SkillGemstoneModel> (CommonData.skillGemstoneDataFilePath);
-			for (int i = 0; i < skillGemstoneModels.Length; i++) {
-				mAllSkillGemstoneModels.Add (skillGemstoneModels [i]);
+			PropertyGemstoneModel[] propertyGemstoneModels = DataHandler.LoadDataToModelsWithPath<PropertyGemstoneModel> (CommonData.propertyGemstoneDataFilePath);
+			for (int i = 0; i < propertyGemstoneModels.Length; i++) {
+				mAllPropertyGemstoneModels.Add (propertyGemstoneModels [i]);
+			}
+		}
+        
+
+		public List<SkillScrollModel> allSkillScrollModels{
+			get{
+				if(mAllSkillScrollModels.Count == 0){
+					
+				}
+				return mAllSkillScrollModels;
+			}
+		}
+
+		private void LoadSkillScrollModels(){
+			if(mAllSkillScrollModels.Count > 0){
+				return;
+			}
+			SkillScrollModel[] skillScrollModels = DataHandler.LoadDataToModelsWithPath<SkillScrollModel>(CommonData.skillScrollDataFilePath);
+			for (int i = 0; i < skillScrollModels.Length; i++)
+			{
+				mAllSkillScrollModels.Add(skillScrollModels[i]);
+			}
+		}
+
+		public List<SpecialItemModel> allSpecialItemModels{
+			get{
+				if(mAllSpecialItemModels.Count == 0){
+					
+				}
+				return mAllSpecialItemModels;
+			}
+		}
+
+		private void LoadAllSpecialItemModels(){
+			if(mAllSpecialItemModels.Count > 0){
+				return;
+			}
+			SpecialItemModel[] specialItemModels = DataHandler.LoadDataToModelsWithPath<SpecialItemModel>(CommonData.specialItemDataFilePath);
+
+			for (int i = 0; i < specialItemModels.Length; i++)
+			{
+				mAllSpecialItemModels.Add(specialItemModels[i]);
+			}
+
+		}
+
+		public List<SpellItemModel> allSpellItemModels{
+			get{
+				if(mAllSpellItemModels.Count == 0){
+					LoadAllSpellItemModels();
+				}
+				return mAllSpellItemModels;
+			}
+		}
+
+		private void LoadAllSpellItemModels(){
+
+			if(mAllSpellItemModels.Count > 0){
+				return;
+			}
+
+			SpellItemModel[] spellItemModels = DataHandler.LoadDataToModelsWithPath<SpellItemModel>(CommonData.spellItemDataFilePath);
+
+ 			for (int i = 0; i < spellItemModels.Length; i++)
+			{
+				mAllSpellItemModels.Add(spellItemModels[i]);
 			}
 		}
 
@@ -259,44 +334,95 @@ namespace WordJourney
 			}
 		}
 
-		public List<Sprite> allSkillGemstoneSprites{
+		public List<Sprite> allPropertyGemstoneSprites{
 			get{
-				if (mAllSkillGemstoneSprites.Count == 0) {
-					LoadAllSkillGemstoneSprites();
+				if (mAllPropertyGemstoneSprites.Count == 0) {
+					LoadAllPropertyGemstoneSprites();
 				}
-				return mAllSkillGemstoneSprites;
+				return mAllPropertyGemstoneSprites;
 			}
 
 		}
 
-		private void LoadAllSkillGemstoneSprites(){
-			if (mAllSkillGemstoneSprites.Count > 0) {
+		private void LoadAllPropertyGemstoneSprites(){
+			if (mAllPropertyGemstoneSprites.Count > 0) {
 				return;
 			}
-			Sprite[] spriteCache = MyResourceManager.Instance.LoadAssets<Sprite> (CommonData.allSkillGemstoneSpritesBundleName);
+			Sprite[] spriteCache = MyResourceManager.Instance.LoadAssets<Sprite> (CommonData.allPropertyGemstoneSpritesBundleName);
 			for (int i = 0; i < spriteCache.Length; i++) {
-				mAllSkillGemstoneSprites.Add (spriteCache[i]);
+				mAllPropertyGemstoneSprites.Add (spriteCache[i]);
 			}
+		}
+
+
+		public List<Sprite> allSkillScrollSprites{
+			get{
+				if(mAllSkillScrollSprites.Count == 0){
+					LoadAllSkillScrollSprites();
+				}
+				return mAllSkillScrollSprites;
+			}
+		}
+
+		private void LoadAllSkillScrollSprites(){
+			if(mAllSkillScrollSprites.Count > 0){
+				return;
+			}
+
+			Sprite[] spriteCache = MyResourceManager.Instance.LoadAssets<Sprite>(CommonData.allSkillScrollSpritesBundleName);
+
+            for (int i = 0; i < spriteCache.Length; i++)
+            {
+				mAllSkillScrollSprites.Add(spriteCache[i]);
+            }
+		}
+        
+
+		public List<Sprite> allSpecialItemSprites{
+			get{
+				if(mAllSpecialItemSprites.Count == 0){
+					LoadAllSpecialItemSprites();
+				}
+				return mAllSpecialItemSprites;
+			}
+		}
+
+
+
+		private void LoadAllSpecialItemSprites(){
+			if(mAllSpecialItemSprites.Count > 0){
+				return;
+			}
+			Sprite[] spriteCache = MyResourceManager.Instance.LoadAssets<Sprite>(CommonData.allSpecialItemSpritesBundleName);
+
+			for (int i = 0; i < spriteCache.Length;i++){
+				mAllSpecialItemSprites.Add(spriteCache[i]);
+			}
+
+
 		}
 
 		public Sprite GetGameItemSprite(Item item){
 			Sprite s = null;
 			switch (item.itemType) {
-			case ItemType.Equipment:
-				s = allEquipmentSprites.Find (delegate(Sprite obj) {
-					return obj.name == item.spriteName;
-				});
-				break;
-			case ItemType.Consumables:
-				s = allConsumablesSprites.Find (delegate(Sprite obj) {
-					return obj.name == item.spriteName;
-				});
-				break;
-			case ItemType.Gemstone:
-				s = allSkillGemstoneSprites.Find (delegate(Sprite obj) {
-					return obj.name == item.spriteName;
-				});
-				break;
+    			case ItemType.Equipment:
+    				s = allEquipmentSprites.Find (delegate(Sprite obj) {
+    					return obj.name == item.spriteName;
+    				});
+    				break;
+    			case ItemType.Consumables:
+    				s = allConsumablesSprites.Find (delegate(Sprite obj) {
+    					return obj.name == item.spriteName;
+    				});
+    				break;
+    			case ItemType.PropertyGemstone:
+    				s = allPropertyGemstoneSprites.Find (delegate(Sprite obj) {
+    					return obj.name == item.spriteName;
+    				});
+					break;
+				case ItemType.SkillScroll:
+					
+    				break;
 			}
 			return s;
 		}
@@ -316,7 +442,7 @@ namespace WordJourney
 			}
 
 			if (s == null) {
-				s = allSkillGemstoneSprites.Find (delegate(Sprite obj) {
+				s = allPropertyGemstoneSprites.Find (delegate(Sprite obj) {
 					return obj.name == spriteName;
 				});
 			}
@@ -461,7 +587,7 @@ namespace WordJourney
 		public GameObject LoadMapNpc(string npcName){
 			
 			GameObject[] assets = MyResourceManager.Instance.LoadAssets<GameObject> (CommonData.allMapNpcBundleName, npcName);
-
+            
 			GameObject mapNpc = GameObject.Instantiate (assets [0]);
 
 			mapNpc.name = assets [0].name;
@@ -470,7 +596,35 @@ namespace WordJourney
 
 		}
 
+		public List<HLHNPCChatRecord> chatRecords{
 
+			get
+			{
+				if (mChatRecords.Count == 0)
+				{
+					LoadChatRecords();
+				}
+
+				return mChatRecords;
+			}
+
+		}
+
+		private void LoadChatRecords(){
+
+			if(!DataHandler.FileExist(CommonData.chatRecordsFilePath)){
+				return;
+			}
+
+			HLHNPCChatRecord[] chatRecordsArray = DataHandler.LoadDataToModelsWithPath<HLHNPCChatRecord>(CommonData.chatRecordsFilePath);
+
+			for (int i = 0; i < chatRecordsArray.Length;i++){
+
+				mChatRecords.Add(chatRecordsArray[i]);
+
+			}
+
+		}
 
 		public GameObject LoadMonster(string monsterName){
 
@@ -528,10 +682,6 @@ namespace WordJourney
 			case GameDataType.GameSettings:
 				mGameSettings = null;
 				break;
-//			case GameDataType.LearnInfo:
-//				mLearnInfo = null;
-//				dataReadyDic [GameDataType.LearnInfo] = false;
-//				break;
 			case GameDataType.GameLevelDatas:
 				mGameLevelDatas.Clear ();
 				break;
@@ -542,7 +692,7 @@ namespace WordJourney
 				mAllConsumablesModels.Clear ();
 				break;
 			case GameDataType.SkillGemstoneModels:
-				mAllSkillGemstoneModels.Clear ();
+				mAllPropertyGemstoneModels.Clear ();
 				break;
 			case GameDataType.EquipmentSprites:
 				mAllEquipmentSprites.Clear ();
@@ -553,8 +703,8 @@ namespace WordJourney
 				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allConsumablesSpritesBundleName,true);
 				break;
 			case GameDataType.SkillGemstoneSprites:
-				mAllSkillGemstoneSprites.Clear ();
-				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allSkillGemstoneSpritesBundleName,true);
+				mAllPropertyGemstoneSprites.Clear ();
+				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allPropertyGemstoneSpritesBundleName,true);
 				break;
 			case GameDataType.MapSprites:
 				mAllMapSprites.Clear ();

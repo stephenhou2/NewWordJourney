@@ -52,6 +52,10 @@ namespace WordJourney
 		public BuyLifeQueryView buyLifeQueryHUD;
 		public Transform enterNextLevelQueryHUD;
 
+		public CharacterFragmentsHUD characterFragmentsHUD;
+
+		public SpellItemView spellItemView;
+
 		public Transform fullMask;// 覆盖整个屏幕的遮罩，禁止一切点击响应
 
         // 记录上一个碰到的单词
@@ -61,7 +65,7 @@ namespace WordJourney
 
 			transitionMask.gameObject.SetActive (true);
 
-			pauseHUD.InitPauseHUD (true, null, null, null, null);
+			pauseHUD.InitPauseHUD (true, ConfirmQuitToHomeView, null, null);
 
             wordHUD.InitWordHUD (true, QuitWordHUDCallBack,ChooseAnswerInWordHUDCallBack,ConfirmCharacterFillInWordHUDCallBack);
 
@@ -97,6 +101,8 @@ namespace WordJourney
 				ExploreManager.Instance.AllWalkableEventsStopMove ();
 				transitionView.PlayTransition (TransitionType.Introduce,ShowExploreSceneSlowly);
 			}
+
+			characterFragmentsHUD.InitCharacterFragmentsHUD(SetUpSpellItemView);
 
 		}
 
@@ -134,36 +140,45 @@ namespace WordJourney
 
 		}
 
-		public void UpdateTasksDescription(){
+		//public void UpdateTasksDescription(){
 
-			taskDescriptionPool.AddChildInstancesToPool (tasksDescriptionContainer);
+		//	taskDescriptionPool.AddChildInstancesToPool (tasksDescriptionContainer);
 
-			Player player = Player.mainPlayer;
+		//	Player player = Player.mainPlayer;
 
-			for (int i = 0; i < player.inProgressTasks.Count; i++) {
+		//	for (int i = 0; i < player.inProgressTasks.Count; i++) {
 
-				HLHTask task = player.inProgressTasks [i];
+		//		HLHTask task = player.inProgressTasks [i];
 
-				Text taskDescription = taskDescriptionPool.GetInstance<Text> (taskDescriptionModel.gameObject, tasksDescriptionContainer);
+		//		Text taskDescription = taskDescriptionPool.GetInstance<Text> (taskDescriptionModel.gameObject, tasksDescriptionContainer);
 
-				bool isTaskFinish = player.CheckTaskFinish (task);
+		//		bool isTaskFinish = player.CheckTaskFinish (task);
 
-				if (isTaskFinish) {
-					taskDescription.text = string.Format ("<color=green>{0} {1}/{2}</color>", task.taskDescription, task.taskItemCount, task.taskItemCount);
-				} else {
-					Item taskItem = player.allTaskItemsInBag.Find (delegate(TaskItem obj) {
-						return obj.itemId == task.taskItemId;
-					});
+		//		if (isTaskFinish) {
+		//			taskDescription.text = string.Format ("<color=green>{0} {1}/{2}</color>", task.taskDescription, task.taskItemCount, task.taskItemCount);
+		//		} else {
+		//			Item taskItem = player.allTaskItemsInBag.Find (delegate(TaskItem obj) {
+		//				return obj.itemId == task.taskItemId;
+		//			});
 
-					int taskItemCountInBag = 0;
+		//			int taskItemCountInBag = 0;
 
-					if (taskItem != null) {
-						taskItemCountInBag = taskItem.itemCount;
-					}
+		//			if (taskItem != null) {
+		//				taskItemCountInBag = taskItem.itemCount;
+		//			}
 
-					taskDescription.text = string.Format("<color=white>{0} {1}/{2}</color>", task.taskDescription, taskItemCountInBag, task.taskItemCount);
-				}
-			}
+		//			taskDescription.text = string.Format("<color=white>{0} {1}/{2}</color>", task.taskDescription, taskItemCountInBag, task.taskItemCount);
+		//		}
+		//	}
+		//}
+
+		public void SetUpSpellItemView(){
+
+			spellItemView.SetUpSpellView(ExploreManager.Instance.newMapGenerator.spellItemOfCurrentLevel);
+		}
+
+		public void UpdateCharacterFragmentsHUD(){
+			characterFragmentsHUD.UpdateCharactersCollected();
 		}
 
 		public void ShowExploreMask(){
@@ -253,13 +268,13 @@ namespace WordJourney
 			npcUIController.SetUpNpcPlane (npc);
 		}
 
-		public void SetUpNPCWhenWordChooseRight(HLHNPC npc){
-			npcUIController.SetUpChooseRightDialog (npc);
-		}
+		//public void SetUpNPCWhenWordChooseRight(HLHNPC npc){
+		//	npcUIController.SetUpChooseRightDialog (npc);
+		//}
 
-		public void SetUpNPCWhenWordChooseWrong(HLHNPC npc){
-			npcUIController.SetUpChooseWrongDialog (npc);
-		}
+		//public void SetUpNPCWhenWordChooseWrong(HLHNPC npc){
+		//	npcUIController.SetUpChooseWrongDialog (npc);
+		//}
 
 
 		public void ShowNPCPlane(){
@@ -440,6 +455,16 @@ namespace WordJourney
 				transitionMask.color = Color.black;
 				GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal ();
 				ExploreManager.Instance.QuitExploreScene (true);
+			});
+		}
+
+		private void ConfirmQuitToHomeView(){
+			transitionView.PlayTransition(TransitionType.Quit, delegate
+			{
+				transitionMask.gameObject.SetActive(true);
+				transitionMask.color = Color.black;
+				//GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
+				ExploreManager.Instance.QuitExploreScene(true);
 			});
 		}
 			

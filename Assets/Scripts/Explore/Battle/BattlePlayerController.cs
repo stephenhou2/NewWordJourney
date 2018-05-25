@@ -57,7 +57,7 @@ namespace WordJourney
 
         public TextMeshPro stepCount;
         private int mFadeStepsLeft;
-        private int fadeStepsLeft
+		public int fadeStepsLeft
         {
             get { return mFadeStepsLeft; }
             set
@@ -290,7 +290,7 @@ namespace WordJourney
 
             if (MyTool.ApproximatelySamePosition2D(moveDestination, transform.position))
             {
-                //				Debug.Log ("到达终点");
+            //			Debug.Log ("到达终点");
                 return true;
             }
             //			Debug.Log ("继续移动");
@@ -794,10 +794,7 @@ namespace WordJourney
 
 		}
 
-
-
-
-
+      
 		/// <summary>
 		/// 使用技能
 		/// </summary>
@@ -817,8 +814,7 @@ namespace WordJourney
 
 				// 播放等待动画
 				this.PlayRoleAnim(CommonData.roleAttackIntervalAnimName,0,null);
-
-
+               
 			});
 
 		}
@@ -841,8 +837,11 @@ namespace WordJourney
 				return;
 			}
 
-			// 播放技能对应的音效
-			GameManager.Instance.soundManager.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);
+			if(currentUsingActiveSkill.sfxName != string.Empty){
+				// 播放技能对应的音效
+                GameManager.Instance.soundManager.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);
+			}
+
 
 			MapMonster mm = enemy.GetComponent<MapMonster> ();
 
@@ -1154,17 +1153,18 @@ namespace WordJourney
 			ExploreManager.Instance.DisableAllInteractivity ();
 
 			enemy.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-
-			enemy.QuitFight ();
-
+         
 			enemy.boxCollider.enabled = true;
 
-			QuitFight ();
+			enemy.QuitFight();
+            QuitFight();
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.playerDieAudioName);
 
 			PlayRoleAnim (CommonData.roleDieAnimName, 1, ()=>{
 				StartCoroutine("QueryBuyLife");
+				AllEffectAnimsIntoPool();
+				//exploreManager.BattlePlayerLose();
 			});
 
 		}

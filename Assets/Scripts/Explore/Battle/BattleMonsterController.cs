@@ -187,9 +187,16 @@ namespace WordJourney
                 return;
             }
 			
-			GameManager.Instance.soundManager.PlayAudioClip ("Skill/" + currentUsingActiveSkill.sfxName);
+			if (currentUsingActiveSkill.sfxName != string.Empty)
+            {
+                // 播放技能对应的音效
+                GameManager.Instance.soundManager.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);
+            }
 
+            // 技能效果
 			currentUsingActiveSkill.AffectAgents (this, enemy);
+            // 技能特效
+			currentUsingActiveSkill.SetEffectAnims(this, enemy);
 
 			UpdateStatusPlane ();
 
@@ -276,22 +283,27 @@ namespace WordJourney
 			GetComponent<MapWalkableEvent> ().ResetWhenDie ();
 
 			expUICtr.QuitFight ();
+           
+			this.armatureCom.animation.Stop ();
 
 			enemy.QuitFight();
 
-			QuitFight ();
+            QuitFight();
 
-			this.armatureCom.animation.Stop ();
-
-			exploreManager.BattlePlayerWin (new Transform[]{ transform });
-
+			exploreManager.BattlePlayerWin(new Transform[] { transform });
+         
 			PlayRoleAnim (CommonData.roleDieAnimName, 1, delegate {
+				
 				MapWalkableEvent mwe = GetComponent<MapWalkableEvent>();
 				if(mwe is MapMonster){
 					mwe.AddToPool(exploreManager.newMapGenerator.monstersPool);
 				}else if (mwe is MapNPC){
 					mwe.AddToPool(exploreManager.newMapGenerator.npcsPool);
 				}
+
+				AllEffectAnimsIntoPool();
+            
+               
 
 			});
 		}

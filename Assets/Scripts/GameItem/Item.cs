@@ -10,9 +10,10 @@ namespace WordJourney{
 	public enum ItemType{
 		Equipment,
 		Consumables,
-		CharacterFragment,
-		Gemstone,
-		Task
+        PropertyGemstone,
+        SkillScroll,
+        SpecialItem,
+        SpellItem
 	}
 
 	[System.Serializable]
@@ -20,7 +21,6 @@ namespace WordJourney{
 
 		public string itemName;
 		public string itemDescription;
-//		public string itemPropertyDescription;
 		public string spriteName;
 		public int itemId;
 		public ItemType itemType;
@@ -48,43 +48,79 @@ namespace WordJourney{
 
 			Item newItem = null;
 
-			if (itemId < 300) {
-				EquipmentModel equipmentModel = GameManager.Instance.gameDataCenter.allEquipmentModels.Find (delegate (EquipmentModel obj) {
-					return obj.itemId == itemId;
-				});
-					
-				if (equipmentModel == null) {
-					string error = string.Format ("未找到id为{0}的物品", itemId);
-					Debug.LogError (error);
-				}
-
-				newItem = new Equipment (equipmentModel, itemCount);
-	
-			} else if (itemId >= 300 && itemId < 400) {
-
-				ConsumablesModel cm = GameManager.Instance.gameDataCenter.allConsumablesModels.Find (delegate(ConsumablesModel obj) {
+			if (itemId < 300)
+			{
+				EquipmentModel equipmentModel = GameManager.Instance.gameDataCenter.allEquipmentModels.Find(delegate (EquipmentModel obj)
+				{
 					return obj.itemId == itemId;
 				});
 
-				if (cm == null) {
-					string error = string.Format ("未找到id为{0}的物品", itemId);
-					Debug.LogError (error);
+				if (equipmentModel == null)
+				{
+					string error = string.Format("未找到id为{0}的物品", itemId);
+					Debug.LogError(error);
 				}
 
-				newItem = new Consumables (cm, itemCount);
-			} else if (itemId >= 400 && itemId < 500) {
+				newItem = new Equipment(equipmentModel, itemCount);
 
-				SkillGemstoneModel sgm = GameManager.Instance.gameDataCenter.allSkillGemstoneModels.Find (delegate (SkillGemstoneModel obj) {
+			}
+			else if (itemId >= 300 && itemId < 400)
+			{
+
+				ConsumablesModel cm = GameManager.Instance.gameDataCenter.allConsumablesModels.Find(delegate (ConsumablesModel obj)
+				{
 					return obj.itemId == itemId;
 				});
 
-				if (sgm == null) {
-					string error = string.Format ("未找到id为{0}的物品", itemId);
-					Debug.LogError (error);
+				if (cm == null)
+				{
+					string error = string.Format("未找到id为{0}的物品", itemId);
+					Debug.LogError(error);
 				}
 
-				newItem = new SkillGemstone (sgm, itemCount);
+				newItem = new Consumables(cm, itemCount);
+			}
+			else if (itemId >= 400 && itemId < 500)
+			{
 
+				PropertyGemstoneModel propertyGemstoneModel = GameManager.Instance.gameDataCenter.allPropertyGemstoneModels.Find(delegate (PropertyGemstoneModel obj)
+				{
+					return obj.itemId == itemId;
+				});
+
+				if (propertyGemstoneModel == null)
+				{
+					string error = string.Format("未找到id为{0}的物品", itemId);
+					Debug.LogError(error);
+				}
+
+				newItem = new PropertyGemstone(propertyGemstoneModel, itemCount);
+
+			}else if(itemId >= 500 && itemId < 600){
+
+				SkillScrollModel skillScrollModel = GameManager.Instance.gameDataCenter.allSkillScrollModels.Find(delegate (SkillScrollModel obj)
+				{
+					return obj.itemId == itemId;
+				});
+
+				if (skillScrollModel == null)
+                {
+                    string error = string.Format("未找到id为{0}的物品", itemId);
+                    Debug.LogError(error);
+                }
+
+				newItem = new SkillScroll(skillScrollModel, itemCount);
+			}else if(itemId >= 600 && itemId < 700){
+
+				SpecialItemModel specialItemModel = GameManager.Instance.gameDataCenter.allSpecialItemModels.Find(delegate (SpecialItemModel obj)
+				{               
+					return obj.itemId == itemId;
+				});
+				if(specialItemModel == null){
+					string error = string.Format("未找到id为{0}的物品", itemId);
+                    Debug.LogError(error);
+				}
+				newItem = new SpecialItem(specialItemModel, 1);
 			}
 
 			return newItem;
@@ -161,7 +197,7 @@ namespace WordJourney{
 		/// 获取物品类型字符串
 		/// </summary>
 		/// <returns>The item type string.</returns>
-		public abstract string GetItemTypeString ();
+		//public abstract string GetItemTypeString ();
 
 		/// <summary>
 		/// 获取物品属性字符串

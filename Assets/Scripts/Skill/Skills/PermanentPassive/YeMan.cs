@@ -7,13 +7,21 @@ namespace WordJourney
 {
 	public class YeMan : PermanentPassiveSkill {
 
+        
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			self.agent.maxMana -= (int)(self.agent.agentLevel * skillSourceValue * self.agent.maxMana);
-			self.agent.mana = (int)(self.agent.agentLevel * skillSourceValue * self.agent.mana);
-			self.agent.maxHealth += (int)(self.agent.agentLevel * skillSourceValue * self.agent.maxHealth);
-			self.agent.health = (int)(self.agent.agentLevel / skillSourceValue * self.agent.health);
+			int maxHealthChange = Mathf.RoundToInt(skillLevel * skillSourceValue * self.agent.maxHealth);
+			int maxManaChange = Mathf.RoundToInt(skillLevel * skillSourceValue * 2 * self.agent.maxMana);
+
+			int maxHealthRecord = self.agent.maxHealth;
+			int maxManaRecord = self.agent.maxMana;
+
+			self.agent.maxMana -= maxManaChange;
+			self.agent.mana = Mathf.RoundToInt(self.agent.mana * (float)self.agent.maxMana / maxManaRecord);
+				
+			self.agent.maxHealth += maxHealthChange;
+			self.agent.health = Mathf.RoundToInt(self.agent.health * (float)self.agent.maxHealth / maxHealthRecord);
 		}
 
 	}

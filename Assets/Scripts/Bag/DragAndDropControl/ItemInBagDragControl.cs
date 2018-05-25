@@ -86,6 +86,10 @@ namespace WordJourney
 			newItemTintIcon.enabled = false;
 			extroInfo.enabled = false;
 			selectedTintIcon.enabled = false;
+
+			//if(longPressCallBack != null){
+			//	longPressCallBack(item);
+			//}
 		}
 
 		protected override void OnUserDrag (PointerEventData eventData)

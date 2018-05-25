@@ -9,6 +9,7 @@ namespace WordJourney
 
 	public enum TransitionType{
 		Introduce,
+        Quit,
 		Death,
         End
 	}
@@ -88,111 +89,123 @@ namespace WordJourney
 
 			yield return new WaitForSeconds (1.0f);
 
-			int totalSentenceCount = transitionStrings.Length;
+			if(transitionStrings != null){
 
-			transitionTextContainer.localPosition = new Vector3 (0, totalSentenceCount * heightBase / 2, 0);
+				int totalSentenceCount = transitionStrings.Length;
 
-			transitionPlaneMask.enabled = false;
+                transitionTextContainer.localPosition = new Vector3(0, totalSentenceCount * heightBase / 2, 0);
 
-			clickTintText.enabled = false;
+                transitionPlaneMask.enabled = false;
 
-			float alphaChangeSpeed = 1.0f / fadeInTime;
+                clickTintText.enabled = false;
 
-			float alpha = 0;
+                float alphaChangeSpeed = 1.0f / fadeInTime;
 
-			for (int i = 0; i < totalSentenceCount; i++) {
+                float alpha = 0;
 
-				Text t = Instantiate (transitionTextModel.gameObject,transitionTextContainer).GetComponent<Text> ();
+                for (int i = 0; i < totalSentenceCount; i++)
+                {
 
-				t.text = transitionStrings [i];
+                    Text t = Instantiate(transitionTextModel.gameObject, transitionTextContainer).GetComponent<Text>();
+
+                    t.text = transitionStrings[i];
+
+                    alpha = 0;
+
+
+                    while (alpha < 1)
+                    {
+
+                        t.color = new Color(1, 1, 1, alpha);
+
+                        alpha += alphaChangeSpeed * Time.deltaTime;
+
+                        yield return null;
+
+                    }
+
+                    yield return new WaitForSeconds(sentenceInterval);
+                }
+
+				switch (transitionType)
+                {
+                    case TransitionType.Introduce:
+                        transitionPlaneMask.enabled = true;
+                        transitionPlaneMask.color = new Color(0, 0, 0, 0);
+                        transitionPlaneMask.raycastTarget = true;
+                        clickTintText.enabled = true;
+                        alpha = 0.5f;
+
+                        while (!hasUserClick)
+                        {
+
+                            while (alpha < 1f)
+                            {
+
+                                clickTintText.color = new Color(1, 1, 1, alpha);
+
+                                alpha += alphaChangeSpeed * Time.deltaTime / 2;
+
+                                if (hasUserClick)
+                                {
+                                    break;
+                                }
+
+                                yield return null;
+
+                            }
+
+                            while (alpha > 0.5f)
+                            {
+
+                                clickTintText.color = new Color(1, 1, 1, alpha);
+
+                                alpha -= alphaChangeSpeed * Time.deltaTime / 2;
+
+                                if (hasUserClick)
+                                {
+                                    break;
+                                }
+
+                                yield return null;
+
+                            }
+                        }
+                        break;
+                    case TransitionType.Quit:
+                        break;
+                    case TransitionType.Death:
+                        break;
+                    case TransitionType.End:
+                        break;
+                }
 
 				alpha = 0;
 
+                while (alpha < 1)
+                {
 
-				while (alpha < 1) {
+                    transitionPlaneMask.color = new Color(0, 0, 0, alpha);
 
-					t.color = new Color (1, 1, 1, alpha);
+                    alpha += alphaChangeSpeed * Time.deltaTime;
 
-					alpha += alphaChangeSpeed * Time.deltaTime;
-
-					yield return null;
-
-				}
-
-				yield return new WaitForSeconds (sentenceInterval);
+                    yield return null;
+                }
+            
 			}
 
-			switch (transitionType) {
-    			case TransitionType.Introduce:
-    				transitionPlaneMask.enabled = true;
-    				transitionPlaneMask.color = new Color (0, 0, 0, 0);
-    				transitionPlaneMask.raycastTarget = true;
-    				clickTintText.enabled = true;
-    				alpha = 0.5f;
-
-    				while (!hasUserClick) {
-
-    					while (alpha < 1f) {
-
-    						clickTintText.color = new Color (1, 1, 1, alpha);
-
-    						alpha += alphaChangeSpeed * Time.deltaTime / 2;
-
-    						if (hasUserClick) {
-    							break;
-    						}
-
-    						yield return null;
-
-    					}
-
-    					while (alpha > 0.5f) {
-
-    						clickTintText.color = new Color (1, 1, 1, alpha);
-
-    						alpha -= alphaChangeSpeed * Time.deltaTime / 2;
-
-    						if (hasUserClick) {
-    							break;
-    						}
-
-    						yield return null;
-
-    					}
-    				}
-
-                    
-
-    				break;
-    			case TransitionType.Death:
-    				break;
-				case TransitionType.End:
-
-					break;
-			}
-				
-			alpha = 0;
-
-			while (alpha < 1) {
-
-				transitionPlaneMask.color = new Color (0, 0, 0, alpha);
-
-				alpha += alphaChangeSpeed * Time.deltaTime;
-
-				yield return null;
-			}
-
-			switch(transitionType){
-				case TransitionType.Introduce:
-					GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.exploreBgmName);
-					break;
-				case TransitionType.Death:
-					GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
-					break;
-				case TransitionType.End:
-					GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
-					break;
-			}
+			switch (transitionType)
+            {
+                case TransitionType.Introduce:
+                    GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.exploreBgmName);
+                    break;
+                case TransitionType.Quit:
+                case TransitionType.Death:
+                case TransitionType.End:
+                    GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
+                    break;
+            }
+		
 
 			finishTransitionCallBack ();
 

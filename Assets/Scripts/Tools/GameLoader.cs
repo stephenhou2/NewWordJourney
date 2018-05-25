@@ -161,7 +161,7 @@ namespace WordJourney
 					}
 				} else if (fileName.Equals ("NPC")) {
 					//执行npc的循环操作
-					for (int j = 0; j < 57; j++) {
+					for (int j = 0; j < 13; j++) {
 						filePath = "/Data/NPCs/NPC_" + j + ".json";
 						WWW data = MyResourceManager.Instance.LoadAssetsUsingWWW (filePath);
 

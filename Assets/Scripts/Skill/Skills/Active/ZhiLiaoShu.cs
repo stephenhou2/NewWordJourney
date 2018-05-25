@@ -7,14 +7,15 @@ namespace WordJourney
 {
 	public class ZhiLiaoShu : ActiveSkill {
 
-		public int recoverBase;
-		public int recoverSeed;
+		public int fixHealthGain;
+		public int healthGainBase;
 
 		protected override void ExcuteActiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			int healthGain = self.agent.agentLevel * recoverSeed + recoverBase + self.agent.healthRecovery;
+			// 计算生命回复值
+			int healthGain = self.agent.agentLevel * healthGainBase + fixHealthGain + self.agent.healthRecovery;
+            // 生命回复生效
 			self.AddHealthGainAndShow (healthGain);
-			self.UpdateStatusPlane ();
 		}
 
 	}
