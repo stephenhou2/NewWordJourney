@@ -51,15 +51,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df8fbd6283f8849dfbb25a86a0e593bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillName: "\u6D85\u69C3"
-  sfxName: player_skill2
+  skillName: "\u89C9\u9192"
+  sfxName: Skill/se_xianJi
   skillId: 14
-  skillDescription: "\u56DE\u590D\uFF08\u9B54\u6CD5\u4E0A\u9650\xD72\uFF09\u7684\u751F\u547D\u3002"
-  skillIconName: 14_niePanShu
-  selfEffectAnimName: 01_health_heal
+  skillDescription: "\u6D88\u8017\u5927\u91CF\u9B54\u6CD5,\u56DE\u590D<color=orange>\u9B54\u6CD5\u4E0A\u9650\xD70.5\xD7\u6280\u80FD\u7B49\u7EA7+50</color>\u7684\u751F\u547D"
+  skillIconName: 14_jueXing
+  selfEffectAnimName: se_xianJi
   enemyEffectAnimName: 
   skillType: 0
   skillLevel: 1
+  price: 200
+  hasTriggered: 0
   selfRoleAnimName: magical_skill
-  skillCoolenTime: 30
-  manaConsume: 50
+  skillCoolenTime: 35
+  coolenPercentage: 0
+  manaConsume: 70
+  scaler: 0.5
+  fixHealthRecover: 50

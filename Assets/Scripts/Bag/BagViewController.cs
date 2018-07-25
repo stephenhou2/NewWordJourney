@@ -11,56 +11,48 @@ namespace WordJourney
 
 		public Item currentSelectItem;
 
-		public Item itemForSpecialOperation;
+		//public Item itemForSpecialOperation;
 
-		private Item itemToAddWhenBagFull;
+		//private Item itemToAddWhenBagFull;
 
 		void Awake(){
 
-			for (int i = 300; i < 350;i++){
-				Player.mainPlayer.AddItem(Item.NewItemWith(i, 1));
-
-			}
+			//for (int i = 501; i < 545;i++){
+			//	Player.mainPlayer.AddItem(Item.NewItemWith(i, 1));
+			//}
+            
+			//Player.mainPlayer.AddItem(Item.NewItemWith(540, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(1, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(2, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(3, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(604, 9));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(605, 9));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(606, 9));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(400, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(401, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(600, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(601, 1));
 		}
 
-		public void AddBagItemWhenBagFull(Item item){
+		//public void AddBagItemWhenBagFull(Item item){
 
-			SetUpBagView (true);
+		//	SetUpBagView (true);
 
-			bagView.SetUpSingleTextTintHUD ("背包已满，请先整理背包");
+		//	bagView.SetUpSingleTextTintHUD ("背包已满，请先整理背包");
 
-			itemToAddWhenBagFull = item;
+		//	itemToAddWhenBagFull = item;
 
-		}
+		//}
 
 
 
 		public void SetUpBagView(bool setVisible){
 
-//			StartCoroutine ("SetUpViewAfterDataReady",setVisible);
-//		}
-//
-//		private IEnumerator SetUpViewAfterDataReady(bool setVisible){
-//
-//			bool dataReady = false;
-//
-//			while (!dataReady) {
-//				dataReady = GameManager.Instance.gameDataCenter.CheckDatasReady (new GameDataCenter.GameDataType[] {
-//					GameDataCenter.GameDataType.UISprites,
-//					GameDataCenter.GameDataType.ItemModels,
-//					GameDataCenter.GameDataType.ItemSprites,
-//					GameDataCenter.GameDataType.Skills
-//				});
-//				yield return null;
-//			}
-
 			bagView.SetUpBagView (setVisible);
 
 			if(setVisible){
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.bagAudioName);
-			}
-
-
+			}         
 		}
 
 		public void OnItemInEquipmentPlaneClick(Item item,int equipmentIndexInPanel){
@@ -73,8 +65,13 @@ namespace WordJourney
 				return;
 			}
 
-			OnItemInBagClick (item);
+			currentSelectItem = item;
 
+            bagView.SetUpItemDetail(item);
+         
+			bagView.HideAllEquipedEquipmentsSelectIcon();
+			bagView.HideAllItemSelectedTintIcon();
+         
 		}
 
 
@@ -87,8 +84,8 @@ namespace WordJourney
 			bagView.SetUpItemDetail (item);
 
 			bagView.HideAllItemSelectedTintIcon ();
-
-
+			bagView.HideAllEquipedEquipmentsSelectIcon();
+         
 		}
 
 		/// <summary>
@@ -118,6 +115,7 @@ namespace WordJourney
             if (Player.mainPlayer.allEquipedEquipments [equipmentIndexInPanel].itemId >= 0) {
 				Equipment equipmentToUnload = Player.mainPlayer.allEquipedEquipments [equipmentIndexInPanel];
 				propertyChangeFromUnload = Player.mainPlayer.UnloadEquipment (equipmentToUnload, equipmentIndexInPanel);
+				bagView.AddBagItem(equipmentToUnload);
 			}
 
 			PropertyChange propertyChangeFromEquip = Player.mainPlayer.EquipEquipment (currentSelectItem as Equipment, equipmentIndexInPanel);
@@ -128,9 +126,11 @@ namespace WordJourney
 
 			bagView.SetUpPlayerStatusPlane (finalPropertyChange);
 
-			bagView.RemoveBagItemAt (oriItemIndexInBag);
+			//bagView.RemoveBagItemAt (oriItemIndexInBag);
 
-			AddItemInWait ();
+			bagView.SetUpCurrentBagItemsPlane();
+
+			//AddItemInWait ();
 
 			bagView.SetUpEquipedEquipmentsPlane ();
 
@@ -143,39 +143,39 @@ namespace WordJourney
 		}
 
 
-		public void AddItemInWait(){
+//		public void AddItemInWait(){
 
-			if (itemToAddWhenBagFull == null) {
-				return;
-			}
-			
-			Player.mainPlayer.AddItem (itemToAddWhenBagFull);
-
-			bagView.AddBagItem (itemToAddWhenBagFull);
-
-			itemToAddWhenBagFull = null;
-
-//			string tint = "";
-//
-//			switch (itemToAddWhenBagFull.itemType) {
-//			case ItemType.UnlockScroll:
-//				tint = string.Format ("获得 解锁卷轴{0}{1}{2}", CommonData.diamond, itemToAddWhenBagFull.itemName, CommonData.diamond);
-//				break;
-//			case ItemType.CraftingRecipes:
-//				tint = string.Format ("获得 合成卷轴{0}{1}{2}", CommonData.diamond, itemToAddWhenBagFull.itemName, CommonData.diamond);
-//				break;
-//			default:
-//				tint = string.Format ("获得 {0} x1", itemToAddWhenBagFull.itemName);
-//				break;
+//			if (itemToAddWhenBagFull == null) {
+//				return;
 //			}
-//
-//			Sprite goodsSprite = GameManager.Instance.gameDataCenter.allItemSprites.Find (delegate(Sprite obj) {
-//				return obj.name == itemToAddWhenBagFull.spriteName;
-//			});
-//
-//			bagView.SetUpTintHUD (tint,goodsSprite);
+			
+//			Player.mainPlayer.AddItem (itemToAddWhenBagFull);
 
-		}
+//			bagView.AddBagItem (itemToAddWhenBagFull);
+
+//			itemToAddWhenBagFull = null;
+
+////			string tint = "";
+////
+////			switch (itemToAddWhenBagFull.itemType) {
+////			case ItemType.UnlockScroll:
+////				tint = string.Format ("获得 解锁卷轴{0}{1}{2}", CommonData.diamond, itemToAddWhenBagFull.itemName, CommonData.diamond);
+////				break;
+////			case ItemType.CraftingRecipes:
+////				tint = string.Format ("获得 合成卷轴{0}{1}{2}", CommonData.diamond, itemToAddWhenBagFull.itemName, CommonData.diamond);
+////				break;
+////			default:
+////				tint = string.Format ("获得 {0} x1", itemToAddWhenBagFull.itemName);
+////				break;
+////			}
+////
+////			Sprite goodsSprite = GameManager.Instance.gameDataCenter.allItemSprites.Find (delegate(Sprite obj) {
+////				return obj.name == itemToAddWhenBagFull.spriteName;
+////			});
+////
+////			bagView.SetUpTintHUD (tint,goodsSprite);
+
+		//}
 
 		/// <summary>
 		/// 在物品详细信息页点击了卸下按钮（装备）
@@ -187,7 +187,7 @@ namespace WordJourney
 			}
 
 			if (Player.mainPlayer.CheckBagFull (currentSelectItem)) {
-				bagView.SetUpSingleTextTintHUD ("背包已满,请先整理背包");
+				bagView.SetUpSingleTextTintHUD ("背包已满");
 				return;
 			}
 
@@ -228,7 +228,15 @@ namespace WordJourney
 					
 					Consumables consumables = currentSelectItem as Consumables;
 
-                    PropertyChange propertyChange = consumables.UseConsumables();
+					PropertyChange propertyChange = consumables.UseConsumables(null);
+
+					bool isLevelUp = Player.mainPlayer.LevelUpIfExperienceEnough();
+                    if (isLevelUp)
+                    {
+						ExploreManager.Instance.battlePlayerCtr.SetEffectAnim(CommonData.levelUpEffectName);
+                        GameManager.Instance.soundManager.PlayAudioClip(CommonData.levelUpAudioName);
+                        ExploreManager.Instance.expUICtr.ShowLevelUpPlane();
+                    }
 
 					bagView.SetUpPlayerStatusPlane(propertyChange);
 
@@ -236,10 +244,24 @@ namespace WordJourney
 
 					break;
 				case ItemType.SkillScroll:
-					
+
 					SkillScroll skillScroll = currentSelectItem as SkillScroll;
 
+					if(Player.mainPlayer.allLearnedSkills.Count >= 6){
+						bagView.SetUpSingleTextTintHUD("只能学习6个技能");
+						return;
+					}
+
+					bool skillHasLearned = Player.mainPlayer.CheckSkillHasLearned(skillScroll.skillId);
+
+					if(skillHasLearned){
+						bagView.SetUpSingleTextTintHUD("不能重复学习技能");
+						return;
+					}
+               
 					propertyChange = skillScroll.UseSkillScroll();
+
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
 
 					bagView.SetUpPlayerStatusPlane(propertyChange);
 
@@ -248,20 +270,44 @@ namespace WordJourney
 
 					SpecialItem specialItem = currentSelectItem as SpecialItem;
 
-					specialItem.UseSpecialItem(itemForSpecialOperation,bagView.itemDetail.SetUpItemDetail);
+					Item itemForSpecialOperation = bagView.itemDetail.soCell.itemInCell;
 
-					bagView.propertyDisplay.UpdateStatusBars();
+					switch(specialItem.specialItemType){
+						case SpecialItemType.ChongZhuShi:
+						case SpecialItemType.DianJinFuShi:
+							if(itemForSpecialOperation == null){
+								return;
+							}                     
+							break;
+						case SpecialItemType.TuiMoJuanZhou:
+							if (itemForSpecialOperation == null)
+                            {
+                                return;
+                            }
+							Equipment equipment = itemForSpecialOperation as Equipment;
+							if(equipment.attachedPropertyGemstone.itemId == -1)
+							{
+								return;
+							}
+
+							break;
+						default:
+							break;
+
+					}
+
+					propertyChange = specialItem.UseSpecialItem(itemForSpecialOperation,bagView.itemDetail.SetUpItemDetail);
+
+					bagView.SetUpEquipedEquipmentsPlane();
+
+					bagView.SetUpPlayerStatusPlane(propertyChange);
 
 					break;
 
 			}
 
 
-			bool isLevelUp = Player.mainPlayer.LevelUpIfExperienceEnough();
-            if (isLevelUp)
-            {
-                ExploreManager.Instance.expUICtr.ShowLevelUpPlane();
-            }
+
 
 			if (ExploreManager.Instance.battlePlayerCtr.isInFight)
             {
@@ -271,18 +317,16 @@ namespace WordJourney
 			clearItemDetail = Player.mainPlayer.RemoveItem(currentSelectItem, 1);
 
 
-			if (itemToAddWhenBagFull != null && !Player.mainPlayer.CheckBagFull (itemToAddWhenBagFull)) {
-				AddItemInWait ();
-			}
+			//if (itemToAddWhenBagFull != null && !Player.mainPlayer.CheckBagFull (itemToAddWhenBagFull)) {
+			//	AddItemInWait ();
+			//}
                      
 			bagView.SetUpCurrentBagItemsPlane();
 
 			if (clearItemDetail) {
 				bagView.ClearItemDetail ();
 			}
-            
-
-
+                     
 
 		}
       
@@ -312,6 +356,7 @@ namespace WordJourney
 			}
 
 			bagView.SetUpCurrentBagItemsPlane ();
+			ExploreManager.Instance.expUICtr.UpdateBottomBar();
 
 			if (currentSelectItem.itemType == ItemType.Equipment) {
 				Equipment eqp = currentSelectItem as Equipment;
@@ -331,136 +376,13 @@ namespace WordJourney
 
 		public void OnCancelRemoveButtonClick(){
 			bagView.HideRemoveQueryHUD ();
-		}
-
-
-		/// <summary>
-		/// 在物品详细信息页点击了分解按钮
-		/// </summary>
-//		public void OnResolveButtonClick(){
-//			bagView.ShowQueryResolveHUD ();
-//		}
-
-
-		/// <summary>
-		/// 在分解确认页点击了确认按钮
-		/// </summary>
-//		public void OnConfirmResolveButtonClick(){
-////			ResolveCurrentSelectItemAndGetCharacters ();
-//			bagView.QuitQueryResolveHUD ();
-//			bagView.QuitItemDetailHUD ();
-//			if (!Player.mainPlayer.CheckBagFull ()) {
-//				AddItemInWait ();
-//			}
-//		}
-
-		/// <summary>
-		/// 在分解确认页点击了取消按钮
-		/// </summary>
-//		public void OnCancelResolveButtonClick(){
-//			bagView.QuitQueryResolveHUD ();
-//		}
-
-
-
-
-		/// <summary>
-		/// 分解物品并获得字母碎片
-		/// </summary>
-		/// <param name="item">Item.</param>
-//		public void ResolveCurrentSelectItemAndGetCharacters(){
-//
-//			List<char> charactersReturn = Player.mainPlayer.ResolveItemAndGetCharacters (currentSelectItem,1);
-//
-////			List<CharacterFragment> resolveGainCharacterFragments = new List<CharacterFragment> ();
-//
-//			// 返回的有字母，生成字母碎片表
-////			if (charactersReturn.Count > 0) {
-////
-////				foreach (char c in charactersReturn) {
-////					resolveGainCharacterFragments.Add (new CharacterFragment (c));
-////				}
-////
-////			}
-//
-////			Item itemInBag = Player.mainPlayer.allItemsInBag.Find (delegate(Item obj) {
-////				return obj == currentSelectItem;
-////			});
-////
-////			if (itemInBag == null) {
-////				bagView.QuitItemDetailHUD ();
-////			}
-//
-//			if (currentSelectItem is Equipment && (currentSelectItem as Equipment).equiped) {
-//				bagView.SetUpEquipedEquipmentsPlane ();
-//			}
-//
-//
-//			bagView.SetUpBagItemsPlane (currentBagIndex);
-//				
-//			bagView.SetUpResolveGainHUD (charactersReturn);
-//		}
-
-//		public void CraftCurrentSelectItem(){
-//
-//			CraftingRecipe craftRecipe = currentSelectItem as CraftingRecipe;
-//
-//			EquipmentModel craftItemModel = GameManager.Instance.gameDataCenter.allItemModels.Find (delegate(EquipmentModel obj) {
-//				return obj.itemId == craftRecipe.craftItemId;
-//			});
-//
-//			for (int i = 0; i < craftItemModel.itemInfosForProduce.Length; i++) {
-//				EquipmentModel.ItemInfoForProduce itemInfo = craftItemModel.itemInfosForProduce [i];
-//				for (int j = 0; j < itemInfo.itemCount; j++) {
-//					Item item = Player.mainPlayer.allItemsInBag.Find (delegate (Item obj) {
-//						return obj.itemId == itemInfo.itemId;
-//					});
-////					bagView.RemoveBagItem (item);
-//
-//					if (item == null) {
-//						item = Player.mainPlayer.GetEquipedEquipment (itemInfo.itemId);
-//					}
-//
-//					if (item != null) {
-//						Player.mainPlayer.RemoveItem (item, 1);
-//					}
-//				}
-//			}
-//
-//			Item craftedItem = Item.NewItemWith (craftItemModel,1);
-////			bagView.AddBagItem (craftedItem);
-//
-//			string tint = string.Format ("获得 <color=orange>{0}</color> x1", craftedItem.itemName);
-//
-//			Sprite itemSprite = GameManager.Instance.gameDataCenter.allItemSprites.Find (delegate(Sprite obj) {
-//				return obj.name == craftedItem.spriteName;
-//			});
-//
-////			int oriIndexOfCraftingRecipe = Player.mainPlayer.GetItemIndexInBag (currentSelectItem);
-//			Player.mainPlayer.RemoveItem (currentSelectItem,1);
-//			Player.mainPlayer.AddItem (craftedItem);
-//
-//			bagView.SetUpTintHUD (tint,itemSprite);
-////			bagView.RemoveBagItemAt (oriIndexOfCraftingRecipe);
-//
-//			if (Player.mainPlayer.CheckBagFull ()) {
-//				AddItemInWait ();
-//			}
-//
-//			bagView.SetUpCurrentBagItemsPlane ();
-//			bagView.SetUpEquipedEquipmentsPlane ();
-//
-//		}
-
-
-	
-
+		}      
 
 
 		// 退出背包界面
 		public void OnQuitBagPlaneButtonClick(){
 
-			itemToAddWhenBagFull = null;
+			//itemToAddWhenBagFull = null;
 
 			bagView.QuitBagPlane ();
 

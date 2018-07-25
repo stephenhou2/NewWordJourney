@@ -47,8 +47,11 @@ namespace WordJourney
 			Debug.LogFormat ("{0}####木桶", dataStrings [2]);
 			List<int> itemIdsInBucket = InitIntArrayWithString (dataStrings [2]);
 
-			Debug.LogFormat ("{0}####箱子", dataStrings [3]);
-			List<int> itemIdsInTreasureBox = InitIntArrayWithString (dataStrings [3]);
+			Debug.LogFormat ("{0}####普通宝箱", dataStrings [3]);
+			List<int> itemIdsInNormalTreasureBox = InitIntArrayWithString (dataStrings [3]);
+
+			//Debug.LogFormat("{0}####金色宝箱", dataStrings[4]);
+            //List<int> itemIdsInGoldTreasureBox = InitIntArrayWithString(dataStrings[4]);
 
 			Debug.LogFormat ("{0}####怪物", dataStrings [4]);
 			List<int> monsterIds = InitIntArrayWithString (dataStrings [4]);
@@ -58,7 +61,7 @@ namespace WordJourney
 			Debug.LogFormat ("{0}####钱袋", dataStrings [6]);
 			Count goldAmountRange = InitCountWithString (dataStrings [6]);
 
-			HLHGameLevelData levelData = new HLHGameLevelData (gameLevelIndex, itemIdsInPot, itemIdsInBucket, itemIdsInTreasureBox, monsterIds,bossId,goldAmountRange);
+			HLHGameLevelData levelData = new HLHGameLevelData (gameLevelIndex, itemIdsInPot, itemIdsInBucket, itemIdsInNormalTreasureBox, monsterIds,bossId,goldAmountRange);
 
 			return levelData;
 

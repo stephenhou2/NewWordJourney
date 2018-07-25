@@ -9,6 +9,7 @@ namespace WordJourney
 
 	public class ItemDisplayView : ZoomHUD
     {
+		public Image itemIconBackground;
 
 		public Image itemIcon;
 
@@ -16,42 +17,77 @@ namespace WordJourney
 
 		public Text itemDecription;
 
+		public Text attachedItemDescription;
+
+		public Sprite grayFrame;
+		public Sprite blueFrame;
+		public Sprite goldFrame;
+		public Sprite purpleFrame;
+
 		public void SetUpItemDisplayView(Item item){
 
 			this.gameObject.SetActive(true);
 
-			if(item.itemType == ItemType.Equipment){            
-				itemIcon.sprite = GameManager.Instance.gameDataCenter.allEquipmentSprites.Find(delegate (Sprite obj)
-                {
-                    return obj.name == item.spriteName;
-                });
+			itemIconBackground.sprite = grayFrame;
 
-			}else if(item.itemType == ItemType.Consumables){
-				itemIcon.sprite = GameManager.Instance.gameDataCenter.allConsumablesSprites.Find(delegate (Sprite obj)
-				{
-					return obj.name == item.spriteName;
-				});
-			}else if(item.itemType == ItemType.PropertyGemstone){
-				itemIcon.sprite = GameManager.Instance.gameDataCenter.allPropertyGemstoneSprites.Find(delegate (Sprite obj)
-				{
-					return obj.name == item.spriteName;
-				});
+			if (item.itemType == ItemType.Equipment)
+			{
+				//itemIcon.sprite = GameManager.Instance.gameDataCenter.allEquipmentSprites.Find(delegate (Sprite obj)
+				//{
+				//    return obj.name == item.spriteName;
+				//});
 
-			}else if(item.itemType == ItemType.SkillScroll){
-				itemIcon.sprite = GameManager.Instance.gameDataCenter.allSkillScrollSprites.Find(delegate (Sprite obj)
+				Equipment equipment = item as Equipment;
+
+				switch (equipment.quality)
 				{
-					return obj.name == item.spriteName;
-				});
-			}else if(item.itemType == ItemType.SpecialItem){            
-				itemIcon.sprite = GameManager.Instance.gameDataCenter.allSpecialItemSprites.Find(delegate (Sprite obj)
-                {
-                    return obj.name == item.spriteName;
-                });            
-			}
+					case EquipmentQuality.Gray:
+						itemIconBackground.sprite = grayFrame;
+						break;
+					case EquipmentQuality.Blue:
+						itemIconBackground.sprite = blueFrame;
+						break;
+					case EquipmentQuality.Gold:
+						itemIconBackground.sprite = goldFrame;
+						break;
+					case EquipmentQuality.Purple:
+						itemIconBackground.sprite = purpleFrame;
+						break;
+				}
+			}         
+
+			Sprite itemSprite = GameManager.Instance.gameDataCenter.GetGameItemSprite(item);
+
+			itemIcon.sprite = itemSprite;
+
+			itemIcon.enabled = itemSprite != null;
 
 			itemName.text = item.itemName;
 
-            itemDecription.text = item.itemDescription;
+
+			switch(item.itemType){
+				case ItemType.Equipment:
+					itemDecription.text = item.itemDescription;
+					attachedItemDescription.text = (item as Equipment).attachedPropertyDescription;
+					break;
+				case ItemType.Consumables:
+					attachedItemDescription.text = item.itemDescription;
+					itemDecription.text = string.Empty;
+					break;
+				case ItemType.SkillScroll:
+					attachedItemDescription.text = item.itemDescription;
+                    itemDecription.text = string.Empty;
+					break;
+				case ItemType.PropertyGemstone:
+					attachedItemDescription.text = item.itemDescription;
+                    itemDecription.text = string.Empty;
+					break;
+				case ItemType.SpecialItem:
+					attachedItemDescription.text = item.itemDescription;
+                    itemDecription.text = string.Empty;
+					break;
+			}
+            //itemDecription.text = item.itemDescription;
 
 			if (zoomCoroutine != null)
             {
@@ -68,9 +104,16 @@ namespace WordJourney
          
 			QuitItemDisplayView();
 
+			ExploreManager.Instance.MapWalkableEventsStartAction();
+
 		}
 
 		private void QuitItemDisplayView(){
+			
+			if (inZoomingOut)
+            {
+                return;
+            }
 
 			if(zoomCoroutine != null){
 				StopCoroutine(zoomCoroutine);
@@ -79,6 +122,9 @@ namespace WordJourney
 			zoomCoroutine = HUDZoomOut();
 
 			StartCoroutine(zoomCoroutine);
+
+			ExploreManager.Instance.MapWalkableEventsStartAction();
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 
 		}
 

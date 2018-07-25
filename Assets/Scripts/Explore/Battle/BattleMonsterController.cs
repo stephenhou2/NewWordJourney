@@ -36,8 +36,13 @@ namespace WordJourney
 		protected override void Awake(){
 
 			agent = GetComponent<Monster> ();
+            
+			if((agent as Monster).isBoss){
+				modelActive = transform.Find("DragonBones").gameObject;
+			}else{
+				modelActive = this.gameObject;
+			}
 
-			modelActive = this.gameObject;
 
 			base.Awake ();
 
@@ -49,7 +54,9 @@ namespace WordJourney
 
 		public void KillRoleAnim(){
 			armatureCom.animation.Stop ();
+			isIdle = false;
 		}
+
 
 		public void SetAlive(){
 			boxCollider.enabled = true;
@@ -86,13 +93,17 @@ namespace WordJourney
 		}
 
 
-
 		/// <summary>
 		/// 怪物进入战斗
 		/// </summary>
 		/// <param name="bpCtr">Bp ctr.</param>
 		/// <param name="playerWinCallBack">Player window call back.</param>
 		public void StartFight(BattlePlayerController bpCtr){
+
+			if (isInFight)
+            {
+                return;
+            }
 
 			boxCollider.enabled = false;
 
@@ -131,7 +142,7 @@ namespace WordJourney
 
             for (int i = 0; i < jointsList.Count; i++)
             {
-                if(i <= jointsList.Count - 2 && randomSeed >= jointsList[i] && randomSeed < jointsList[i + 1]){
+                if(i <= jointsList.Count - 1 && randomSeed <= jointsList[i]){
                     randomAS = activeSkills[i].skill;
                     break;
                 }  
@@ -145,7 +156,7 @@ namespace WordJourney
 		/// 角色战斗逻辑
 		/// </summary>
 		public void Fight(){
-			currentUsingActiveSkill = normalAttack;
+			currentUsingActiveSkill = AutoRandomActiveSkill();
 			UseSkill (currentUsingActiveSkill);
 		}
 
@@ -157,6 +168,11 @@ namespace WordJourney
 		/// <param name="skill">Skill.</param>
 		public override void UseSkill (ActiveSkill skill)
 		{
+			if (isDead)
+            {
+                return;
+            }
+
 			if (attackCoroutine != null) {
 				StopCoroutine (attackCoroutine);
 			}
@@ -165,6 +181,9 @@ namespace WordJourney
 			// 播放技能对应的角色动画，角色动画结束后播放攻击间隔动画
 			this.PlayRoleAnim (skill.selfRoleAnimName, 1, () => {
 
+				if(isDead){
+					return;
+				}
 				this.PlayRoleAnim(CommonData.roleAttackIntervalAnimName,0,null);
 
 			});
@@ -175,7 +194,7 @@ namespace WordJourney
 
 		protected override void AgentExcuteHitEffect ()
 		{
-            if(isDead || (enemy != null && isDead)){
+			if(isDead){
                 return;
             }
 
@@ -190,13 +209,13 @@ namespace WordJourney
 			if (currentUsingActiveSkill.sfxName != string.Empty)
             {
                 // 播放技能对应的音效
-                GameManager.Instance.soundManager.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);
+                GameManager.Instance.soundManager.PlayAudioClip(currentUsingActiveSkill.sfxName);
             }
 
             // 技能效果
 			currentUsingActiveSkill.AffectAgents (this, enemy);
             // 技能特效
-			currentUsingActiveSkill.SetEffectAnims(this, enemy);
+			//currentUsingActiveSkill.SetEffectAnims(this, enemy);
 
 			UpdateStatusPlane ();
 
@@ -208,7 +227,7 @@ namespace WordJourney
 			if((enemy as BattlePlayerController).isInFight && !CheckFightEnd()){
 				// 播放等待动画
 
-				currentUsingActiveSkill = normalAttack;
+				currentUsingActiveSkill = AutoRandomActiveSkill();
 				attackCoroutine = InvokeAttack (currentUsingActiveSkill);
 				StartCoroutine (attackCoroutine);
 			}
@@ -241,13 +260,16 @@ namespace WordJourney
 		public override void UpdateStatusPlane(){
 			bmUICtr.UpdateAgentStatusPlane ();
 		}
-
+        
 
 		public override void QuitFight ()
 		{
+			for (int i = 0; i < activeSkills.Length;i++){
+				activeSkills[i].skill.hasTriggered = false;
+			}
+
 			StopCoroutinesWhenFightEnd ();
 			GetComponent<MapWalkableEvent> ().isTriggered = false;
-			enemy = null;
             isInFight = false;
 			currentUsingActiveSkill = null;
 			SetRoleAnimTimeScale (1.0f);
@@ -269,7 +291,17 @@ namespace WordJourney
 
 			isDead = true;
 
-			boxCollider.enabled = false;
+			GetComponent<MapMonster>().DisableAllDetect();
+
+			enemy.QuitFight();
+
+            QuitFight();
+
+			enemy.AllEffectAnimsIntoPool();
+
+			exploreManager.BattlePlayerWin(new Transform[] { transform });
+
+			exploreManager.expUICtr.QuitFight();
 
 			StartCoroutine ("LatelyDie");
 		}
@@ -278,20 +310,10 @@ namespace WordJourney
 
 			yield return new WaitForSeconds (0.1f);
 
-			ExploreUICotroller expUICtr = bmUICtr.GetComponent<ExploreUICotroller> ();
-
 			GetComponent<MapWalkableEvent> ().ResetWhenDie ();
-
-			expUICtr.QuitFight ();
-           
+            
 			this.armatureCom.animation.Stop ();
 
-			enemy.QuitFight();
-
-            QuitFight();
-
-			exploreManager.BattlePlayerWin(new Transform[] { transform });
-         
 			PlayRoleAnim (CommonData.roleDieAnimName, 1, delegate {
 				
 				MapWalkableEvent mwe = GetComponent<MapWalkableEvent>();
@@ -300,11 +322,14 @@ namespace WordJourney
 				}else if (mwe is MapNPC){
 					mwe.AddToPool(exploreManager.newMapGenerator.npcsPool);
 				}
-
-				AllEffectAnimsIntoPool();
             
-               
+				AllEffectAnimsIntoPool();
 
+				if ((enemy as BattlePlayerController).fadeStepsLeft > 0)
+                {
+					enemy.SetEffectAnim(CommonData.yinShenEffectName, null, 0, 0);
+                }
+				enemy = null;
 			});
 		}
 

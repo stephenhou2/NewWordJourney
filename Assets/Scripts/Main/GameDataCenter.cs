@@ -20,13 +20,15 @@ namespace WordJourney
 			SkillGemstoneSprites,
 			SpellItemSprites,
 			MapSprites,
+            CharacterSprites,
 			Skills,
 			SkillSprites,
 			Monsters,
 			NPCs,
 			Effects,
             Proverbs,
-            ChatRecord
+            ChatRecord,
+            Diary
 		}
 
 		private GameSettings mGameSettings;
@@ -43,11 +45,14 @@ namespace WordJourney
 		private List<Sprite> mAllSkillScrollSprites = new List<Sprite>();
 		private List<Sprite> mAllSpecialItemSprites = new List<Sprite>();
 		private List<Sprite> mAllMapSprites = new List<Sprite> ();
+		private List<Sprite> mAllCharacterSprites = new List<Sprite>();
 		private List<Skill> mAllSkills = new List<Skill>();
 		private List<Sprite> mAllSkillSprites = new List<Sprite>();
 		private List<EffectAnim> mAllEffects = new List<EffectAnim>();
         private List<HLHSentenceAndPoem> mAllProverbs = new List<HLHSentenceAndPoem>();
 		private List<HLHNPCChatRecord> mChatRecords = new List<HLHNPCChatRecord>();
+		private List<MapEventsRecord> mMapEventsRecords = new List<MapEventsRecord>();
+		private List<DiaryModel> mDiaryModels = new List<DiaryModel>();
 
 		public void InitPersistentGameData(){
 			LoadEquipmentModels ();
@@ -80,6 +85,20 @@ namespace WordJourney
 			}
 		}
 
+		public HLHMapData LoadMapDataOfLevel(int level)
+        {
+
+            string mapDataFilePath = string.Format("{0}/MapData/Level_{1}.json", CommonData.persistDataPath, level);
+
+            //Debug.Log(DataHandler.FileExist(mapDataFilePath));
+
+            HLHMapData mapData = DataHandler.LoadDataToSingleModelWithPath<HLHMapData>(mapDataFilePath);
+
+            //Debug.Log(mapData);
+
+            return mapData;
+
+        }
 
 
 
@@ -190,13 +209,13 @@ namespace WordJourney
 		public List<SkillScrollModel> allSkillScrollModels{
 			get{
 				if(mAllSkillScrollModels.Count == 0){
-					
+					LoadAllSkillScrollModels();
 				}
 				return mAllSkillScrollModels;
 			}
 		}
 
-		private void LoadSkillScrollModels(){
+		private void LoadAllSkillScrollModels(){
 			if(mAllSkillScrollModels.Count > 0){
 				return;
 			}
@@ -210,7 +229,7 @@ namespace WordJourney
 		public List<SpecialItemModel> allSpecialItemModels{
 			get{
 				if(mAllSpecialItemModels.Count == 0){
-					
+					LoadAllSpecialItemModels();
 				}
 				return mAllSpecialItemModels;
 			}
@@ -288,6 +307,36 @@ namespace WordJourney
             return allProverbs[randomIndex];
 
         }
+
+		public List<DiaryModel> diaryModels{         
+			get{
+				if(mDiaryModels.Count == 0){
+					LoadDiaryModels();
+				}
+				return mDiaryModels;
+			}          
+		}
+
+		private void LoadDiaryModels(){
+
+			if(mDiaryModels.Count > 0){
+				return;
+			}
+
+			DiaryModel[] diaryModelArray = DataHandler.LoadDataToModelsWithPath<DiaryModel>(CommonData.diaryDataFilePath);
+
+			for (int i = 0; i < diaryModelArray.Length;i++){
+				mDiaryModels.Add(diaryModelArray[i]);
+			}         
+		}
+
+		public DiaryModel GetDiaryInLevel(int level){
+			DiaryModel diaryModel = diaryModels.Find(delegate(DiaryModel obj)
+			{
+				return obj.triggeredLevel == level;
+			});
+			return diaryModel;
+		}
 
 	
 		public List<Sprite> allEquipmentSprites{
@@ -421,8 +470,15 @@ namespace WordJourney
     				});
 					break;
 				case ItemType.SkillScroll:
-					
+					s = allSkillScrollSprites.Find(delegate (Sprite obj) {
+                        return obj.name == item.spriteName;
+                    });
     				break;
+				case ItemType.SpecialItem:
+					s = allSpecialItemSprites.Find(delegate (Sprite obj) {
+                        return obj.name == item.spriteName;
+                    });
+					break;
 			}
 			return s;
 		}
@@ -460,6 +516,84 @@ namespace WordJourney
 				}
 				return mAllMapSprites;
 			}
+		}
+
+		public List<Sprite> allCHaracterSprites{
+			get{
+				if(mAllCharacterSprites.Count == 0){
+					Sprite[] spriteCache = MyResourceManager.Instance.LoadAssets<Sprite>(CommonData.allCharacterSpritesBundleName);
+
+					for (int i = 0; i < spriteCache.Length;i++){
+						mAllCharacterSprites.Add(spriteCache[i]);
+					}
+				}
+				return mAllCharacterSprites;
+			}
+		}
+        
+
+		private string GetMapTilesetSpriteBundleName(string tilesetImageName)
+        {
+
+            string tilesetSpriteBundleName = string.Empty;
+
+            switch (tilesetImageName)
+            {
+                case "Dungeon_1":
+                    tilesetSpriteBundleName = CommonData.mapTileset_1_BundleName;
+                    break;
+                case "Dungeon_2":
+                    tilesetSpriteBundleName = CommonData.mapTileset_2_BundleName;
+                    break;
+                case "Dungeon_3":
+                    tilesetSpriteBundleName = CommonData.mapTileset_3_BundleName;
+                    break;
+                case "Dungeon_4":
+                    tilesetSpriteBundleName = CommonData.mapTileset_4_BundleName;
+                    break;
+                case "Dungeon_5":
+                    tilesetSpriteBundleName = CommonData.mapTileset_5_BundleName;
+                    break;
+
+            }
+            return tilesetSpriteBundleName;
+
+        }
+
+		public List<Sprite> GetMapTileSpritesFrom(string mapTileName){
+
+			string bundleName = GetMapTilesetSpriteBundleName(mapTileName);
+
+			List<Sprite> mapTileList = new List<Sprite>();
+
+			if(CommonData.mapTileset_1_BundleName != bundleName){
+				MyResourceManager.Instance.UnloadAssetBundle(CommonData.mapTileset_1_BundleName,true);
+			}
+			if (CommonData.mapTileset_2_BundleName != bundleName)
+            {
+				MyResourceManager.Instance.UnloadAssetBundle(CommonData.mapTileset_2_BundleName, true);
+            }
+			if (CommonData.mapTileset_3_BundleName != bundleName)
+            {
+				MyResourceManager.Instance.UnloadAssetBundle(CommonData.mapTileset_3_BundleName, true);
+            }
+			if (CommonData.mapTileset_4_BundleName != bundleName)
+            {
+				MyResourceManager.Instance.UnloadAssetBundle(CommonData.mapTileset_4_BundleName, true);
+            }
+			if (CommonData.mapTileset_5_BundleName != bundleName)
+            {
+				MyResourceManager.Instance.UnloadAssetBundle(CommonData.mapTileset_5_BundleName, true);
+            }
+
+            
+			Sprite[] mapTiles = MyResourceManager.Instance.LoadAssets<Sprite>(bundleName);
+
+			for (int i = 0; i < mapTiles.Length;i++){
+				mapTileList.Add(mapTiles[i]);
+			}
+
+			return mapTileList;         
 		}
 
 
@@ -626,6 +760,37 @@ namespace WordJourney
 
 		}
 
+
+		public List<MapEventsRecord> mapEventsRecords{
+			get{
+				if(mMapEventsRecords.Count == 0){
+					LoadMapEventsRecords();
+				}
+				return mMapEventsRecords;
+			}
+		}
+
+
+		private void LoadMapEventsRecords(){
+			
+			if(mMapEventsRecords.Count > 0){
+				return;
+			}
+
+			MapEventsRecord[] mapEventsRecordsArray = DataHandler.LoadDataToModelsWithPath<MapEventsRecord>(CommonData.mapEventsRecordFilePath);
+
+			if(mapEventsRecordsArray.Length == 0){
+				GameManager.Instance.persistDataManager.ResetMapEventsRecord();
+				mapEventsRecordsArray = DataHandler.LoadDataToModelsWithPath<MapEventsRecord>(CommonData.mapEventsRecordFilePath);
+			}
+
+			for (int i = 0; i < mapEventsRecordsArray.Length; i++)
+			{
+				mMapEventsRecords.Add(mapEventsRecordsArray[i]);
+			}
+
+		}
+
 		public GameObject LoadMonster(string monsterName){
 
 			GameObject[] assets = MyResourceManager.Instance.LoadAssets<GameObject> (CommonData.allMonstersBundleName, monsterName);
@@ -665,6 +830,13 @@ namespace WordJourney
                 effect.transform.SetParent (effectsContainer,false);
 				mAllEffects.Add(effect.GetComponent<EffectAnim>());
 			}
+		}
+
+		public void ResetGameData(){
+			mChatRecords.Clear();
+			mMapEventsRecords.Clear();
+			mGameSettings = null;
+              
 		}
 
 

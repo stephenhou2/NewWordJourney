@@ -11,11 +11,11 @@ namespace WordJourney
 
 		public Image tintImage;
 
-		protected CallBackWithItem dropCallBack;
+		protected CallBackWithItem dropSucceedCallBack;
 
-		public void InitItemDropCallBack(CallBackWithItem dropCallBack)
+		public void InitItemDropCallBack(CallBackWithItem dropSucceedCallBack)
         {
-			this.dropCallBack = dropCallBack;
+			this.dropSucceedCallBack = dropSucceedCallBack;
         }
 
 

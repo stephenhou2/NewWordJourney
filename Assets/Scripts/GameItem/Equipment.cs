@@ -19,7 +19,8 @@ namespace WordJourney
 	public enum EquipmentDefaultQuality{
 		Random,
         Gold,
-        Purple
+        Purple,
+        Gray
 	}
 
 	public enum EquipmentQuality{
@@ -50,7 +51,7 @@ namespace WordJourney
 		public int oriMagicAttackGain;//魔法攻击增益
 
 		public int oriArmorGain;//护甲增益
-		public int oriMagicResistGain;//魔抗增益
+		public int oriMagicResistGain;//抗性增益
 
 		public int oriArmorDecreaseGain;//护甲穿刺增益
 		public int oriMagicResistDecreaseGain;//抗性穿刺增益
@@ -70,7 +71,7 @@ namespace WordJourney
 		public int oriHealthRecoveryGain;//生命回复效果增益
 		public int oriMagicRecoveryGain;//魔法回复效果增益
 
-
+		private int oriPrice; //原始价格 
 
 		public int maxHealthGain;//最大生命增益
 		public int maxManaGain;//最大魔法增益
@@ -79,7 +80,7 @@ namespace WordJourney
 		public int magicAttackGain;//魔法攻击增益
 
 		public int armorGain;//护甲增益
-		public int magicResistGain;//魔抗增益
+		public int magicResistGain;//抗性增益
 
 		public int armorDecreaseGain;//护甲穿刺增益
 		public int magicResistDecreaseGain;//抗性穿刺增益
@@ -105,11 +106,7 @@ namespace WordJourney
 		public EquipmentDefaultQuality defaultQuality;//装备默认品质
         public EquipmentQuality quality;//装备品质（同一件装备细分为灰／蓝／金／紫 4级）
 
-		//public int oriAttachedSkillId;//原始附带技能id
-
-		//public int attachedSkillId;//附带技能id
-
-		//public Skill attachedSkill;//附带的技能
+		//public int attachedPropertyGemstoneId;// 镶嵌的属性宝石的id
 
 		public List<PropertySet> specProperties;//装备的特殊属性（蓝色/金色/暗金装备会增加1/2/2个特殊属性）
 
@@ -146,9 +143,6 @@ namespace WordJourney
 			// 初始化物品基本属性
 			InitBaseProperties (equipmentModel);
 
-			//this.oriAttachedSkillId = equipmentModel.attachedSkillId;
-			//this.attachedSkillId = equipmentModel.attachedSkillId;
-
 			// 初始化装备属性(默认初始化为灰色装备)
 			this.oriMaxHealthGain = equipmentModel.maxHealthGain;
 			this.oriMaxManaGain = equipmentModel.maxManaGain;
@@ -177,6 +171,7 @@ namespace WordJourney
 			this.oriHealthRecoveryGain = equipmentModel.healthRecoveryGain;
 			this.oriMagicRecoveryGain = equipmentModel.magicRecoveryGain;
 
+			this.oriPrice = equipmentModel.price;
 			this.price = equipmentModel.price;
 			this.defaultQuality = equipmentModel.defaultQuality;
 
@@ -197,10 +192,16 @@ namespace WordJourney
 					quality = EquipmentQuality.Purple;
 					ResetPropertiesByQuality(quality);
 					break;
+				case EquipmentDefaultQuality.Gray:
+					quality = EquipmentQuality.Gray;
+					ResetPropertiesByQuality(quality);
+					break;
 			}
             
 
 			this.weaponType = equipmentModel.weaponType;
+
+			attachedPropertyGemstone = new PropertyGemstone();
 
 			InitDescription ();
 		}
@@ -236,110 +237,63 @@ namespace WordJourney
 		}
 
 		public void AddPropertyGemstone(PropertyGemstone propertyGemstone){
+         
+			propertyGemstone.GemStonePropertyConfigure();
 
-			maxHealthGain += propertyGemstone.maxHealthGain;
+			attachedPropertyGemstone = propertyGemstone;
 
-			maxManaGain += propertyGemstone.maxManaGain;
-
-			attackGain += propertyGemstone.attackGain;
-
-			magicAttackGain += propertyGemstone.magicAttackGain;
-
-			armorGain += propertyGemstone.armorGain;
-
-			magicResistGain += propertyGemstone.magicResistGain;
-
-			armorDecreaseGain += propertyGemstone.armorDecreaseGain;
-
-			magicResistDecreaseGain += propertyGemstone.magicResistDecreaseGain;
-
-			moveSpeedGain += propertyGemstone.moveSpeedGain;
-
-			critGain += propertyGemstone.critGain;
-
-			dodgeGain += propertyGemstone.dodgeGain;
-
-			critHurtScalerGain += propertyGemstone.critHurtScalerGain;
-
-			physicalHurtScalerGain += propertyGemstone.physicalHurtScalerGain;
-
-			magicalHurtScalerGain += propertyGemstone.magicalHurtScalerGain;
-
-			extraGoldGain += propertyGemstone.extraGoldGain;
-
-			extraExperienceGain += propertyGemstone.extraExperienceGain;
-
-			healthRecoveryGain += propertyGemstone.healthRecoveryGain;
-
-			magicResistGain += propertyGemstone.magicRecoveryGain;
-
-
+			//Debug.Log(attachedPropertyGemstone.itemCount);
 		}
 
 
 		public PropertyGemstone RemovePropertyGemstone(){
 
+			attachedPropertyGemstone.itemCount = 1;
+
 			PropertyGemstone propertyGemstone = attachedPropertyGemstone;
 
-			maxHealthGain -= propertyGemstone.maxHealthGain;
+			//maxHealthGain -= propertyGemstone.maxHealthGain;
 
-            maxManaGain -= propertyGemstone.maxManaGain;
+            //maxManaGain -= propertyGemstone.maxManaGain;
 
-            attackGain -= propertyGemstone.attackGain;
+            //attackGain -= propertyGemstone.attackGain;
 
-            magicAttackGain -= propertyGemstone.magicAttackGain;
+            //magicAttackGain -= propertyGemstone.magicAttackGain;
 
-            armorGain -= propertyGemstone.armorGain;
+            //armorGain -= propertyGemstone.armorGain;
 
-            magicResistGain -= propertyGemstone.magicResistGain;
+            //magicResistGain -= propertyGemstone.magicResistGain;
 
-            armorDecreaseGain -= propertyGemstone.armorDecreaseGain;
+            //armorDecreaseGain -= propertyGemstone.armorDecreaseGain;
 
-            magicResistDecreaseGain -= propertyGemstone.magicResistDecreaseGain;
+            //magicResistDecreaseGain -= propertyGemstone.magicResistDecreaseGain;
 
-            moveSpeedGain -= propertyGemstone.moveSpeedGain;
+            //moveSpeedGain -= propertyGemstone.moveSpeedGain;
 
-            critGain -= propertyGemstone.critGain;
+            //critGain -= propertyGemstone.critGain;
 
-            dodgeGain -= propertyGemstone.dodgeGain;
+            //dodgeGain -= propertyGemstone.dodgeGain;
 
-            critHurtScalerGain -= propertyGemstone.critHurtScalerGain;
+            //critHurtScalerGain -= propertyGemstone.critHurtScalerGain;
 
-            physicalHurtScalerGain -= propertyGemstone.physicalHurtScalerGain;
+            //physicalHurtScalerGain -= propertyGemstone.physicalHurtScalerGain;
 
-            magicalHurtScalerGain -= propertyGemstone.magicalHurtScalerGain;
+            //magicalHurtScalerGain -= propertyGemstone.magicalHurtScalerGain;
 
-            extraGoldGain -= propertyGemstone.extraGoldGain;
+            //extraGoldGain -= propertyGemstone.extraGoldGain;
 
-            extraExperienceGain -= propertyGemstone.extraExperienceGain;
+            //extraExperienceGain -= propertyGemstone.extraExperienceGain;
 
-            healthRecoveryGain -= propertyGemstone.healthRecoveryGain;
+            //healthRecoveryGain -= propertyGemstone.healthRecoveryGain;
 
-            magicResistGain -= propertyGemstone.magicRecoveryGain;
+            //magicResistGain -= propertyGemstone.magicRecoveryGain;
 
-			attachedPropertyGemstone = null;
+			attachedPropertyGemstone = new PropertyGemstone();
 
 			return propertyGemstone;
 
 		}
-
-		//public void DestroyAttachedSkillGameObject(){
-		//	if (attachedSkill != null) {
-		//		GameObject.Destroy (attachedSkill.gameObject);
-		//		attachedSkill = null;
-		//	}
-		//}
-
-		///// <summary>
-		///// 清除装备附加技能
-		///// </summary>
-		//public void RemoveAttachedSkill(){
-
-		//	attachedSkillId = 0;
-
-		//	DestroyAttachedSkillGameObject ();
-
-		//}
+        
 
 		/// <summary>
 		/// 根据装备品质初始化装备
@@ -384,36 +338,35 @@ namespace WordJourney
     			case EquipmentQuality.Gray:
     				gainScaler = Random.Range (1.0f, 1.2f);
 
-    				int randomSeed = Random.Range (0, 100);
+    				//int randomSeed = Random.Range (0, 100);
 
-    				//if (randomSeed < 5) {
-    				//	attachedSkillId = Random.Range (1, 33);
-    				//}
+					this.price = oriPrice;
 
     				break;
     			case EquipmentQuality.Blue:
     				gainScaler = Random.Range (1.2f, 1.3f);
 
-    				this.price = (int)(price * 1.5f);
+					this.price = oriPrice * 2;
 
-    				randomSeed = Random.Range (0, 100);
-
-    				//if (randomSeed < 5) {
-    				//	attachedSkillId = Random.Range (1, 33);
-    				//}
-
+    				//randomSeed = Random.Range (0, 100);
+                                   
     				break;
     			case EquipmentQuality.Gold:
-    				gainScaler = Random.Range (1.3f, 1.4f);
-    				
-    				this.price = price * 2;
+               
+                    // 特殊金色装备属性不浮动，普通金色装备属性浮动30%-40%
+					if(equipmentGrade >= 10){
+						gainScaler = 1.0f;
+						this.price = oriPrice;
+					}else{
+						gainScaler = Random.Range(1.3f, 1.4f);
+						this.price = oriPrice * 3;
+					}
     				break;
     			case EquipmentQuality.Purple:
     					
     				gainScaler = 1.0f;
     				
-    				this.price = price * 2;
-    				//attachedSkillId = oriAttachedSkillId;
+					this.price = oriPrice;
     				break;
 			}
 
@@ -642,15 +595,7 @@ namespace WordJourney
 			} else if (oriMagicRecoveryGain == 0 && magicRecoveryGain > 0) {
 				attachedSb.AppendFormat ("魔法回复 +{0}\n", magicRecoveryGain);
 			}
-
-//			if (attachedSkillId > 0) {
-//				Skill skill = GameManager.Instance.gameDataCenter.allSkills.Find (delegate(Skill obj) {
-//					return obj.skillId == attachedSkillId;
-//				});
-//				if (skill != null) {
-//					sb.AppendFormat ("\n<color=blue>{0}</color>:{1}\n", skill.skillName,skill.skillDescription);
-//				}
-//			} 
+            
 
 			if (sb.Length > 0) {
 				sb.Remove (sb.Length - 1, 1);
@@ -718,42 +663,7 @@ namespace WordJourney
 				break;
 			}
 
-		}
-
-
-		/// <summary>
-		/// 技能镶嵌到装备上
-		/// </summary>
-		/// <returns><c>true</c>, if skill was added, <c>false</c> otherwise.</returns>
-		/// <param name="skillId">Skill identifier.</param>
-		//public bool AddSkill(int skillId){
-
-		//	bool addSuccess = false;
-
-  //          // 理论上这中情况不应该存在
-		//	if (attachedSkill != null && attachedSkillId != skillId)
-  //          {
-
-		//		addSuccess = false;
-                
-		//	}else{
-
-		//		attachedSkillId = skillId;
-
-  //              addSuccess = true;
-
-  //              if (equiped)
-  //              {
-  //                  attachedSkill = SkillGenerator.GenerateSkill(skillId);
-		//			//Player.mainPlayer.AddSkill(attachedSkill);
-  //              }
-
-		//	}
-         
-
-		//	return addSuccess;
-		//}
-
+		}      
 
       
 	}

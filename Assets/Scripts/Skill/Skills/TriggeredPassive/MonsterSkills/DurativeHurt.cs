@@ -26,6 +26,8 @@ namespace WordJourney
                 return;
             }
 
+			enemy.SetEffectAnim(enemyEffectAnimName, null, 0, 3f);
+
             if (poisonCoroutine != null)
             {
                 StopCoroutine(poisonCoroutine);
@@ -34,9 +36,7 @@ namespace WordJourney
             poisonCoroutine = DurativePoison(self, enemy);
 
             StartCoroutine(poisonCoroutine);
-
-
-                     
+        
         }
 
 
@@ -45,13 +45,15 @@ namespace WordJourney
 
             int count = 0;
 
-			int hurt = durativeHurtBase * skillLevel + extraHurtBase + self.agent.extraPoisonHurt;
+			int hurt = durativeHurtBase * skillLevel + extraHurtBase;
 
             while (count < duration)
             {
 				SetEffectAnims(self, enemy);
 
                 enemy.AddHurtAndShow(hurt, HurtType.Physical, self.towards);
+
+				enemy.CheckFightEnd();
 
 				enemy.UpdateStatusPlane();
 

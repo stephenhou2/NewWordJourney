@@ -16,24 +16,21 @@ namespace WordJourney
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
 
-			int acutalHurt = Mathf.RoundToInt(hurt / ((enemy.agent.armor - self.agent.armorDecrease) / 100f + 1));
+			int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+
+			if (armorCal < -50)
+            {
+                armorCal = -50;
+            }
+
+			int acutalHurt = Mathf.RoundToInt(hurt / (armorCal / 100f + 1));
 
 			enemy.AddHurtAndShow(acutalHurt, HurtType.Physical, self.towards);
-            
-			enemy.UpdateStatusPlane();
 
 			enemy.PlayShakeAnim();
-
-			if (selfEffectAnimName != string.Empty)
-            {
-                self.SetEffectAnim(selfEffectAnimName);
-            }
-
-            if (enemyEffectAnimName != string.Empty)
-            {
-                enemy.SetEffectAnim(enemyEffectAnimName);
-            }
-                     
+         
+			enemy.SetEffectAnim(enemyEffectAnimName,null,0,0);
+     
 			enemy.SetRoleAnimTimeScale(1 - actionSpeedDecrease);
 
 		}

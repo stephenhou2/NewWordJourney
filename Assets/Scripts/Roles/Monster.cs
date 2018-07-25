@@ -90,8 +90,8 @@ namespace WordJourney
 			this.healthRecovery = originalHealthRecovery;
 			this.magicRecovery = originalMagicRecovery;
 
-			this.shenLuTuTengScaler = 0;
-			this.extraPoisonHurt = 0;
+			//this.shenLuTuTengScaler = 0;
+			//this.extraPoisonHurt = 0;
 			//this.isDead = false;
 		}
 
@@ -143,8 +143,8 @@ namespace WordJourney
             healthRecovery = originalHealthRecovery + healthRecoveryChangeFromSkill;
             magicRecovery = originalMagicRecovery + magicRecoveryChangeFromSkill;
 
-			shenLuTuTengScaler = 0;
-			extraPoisonHurt = 0;
+			//shenLuTuTengScaler = 0;
+			//extraPoisonHurt = 0;
 
 			if (toOriginalState) {
 				health = maxHealth;

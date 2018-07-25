@@ -58,7 +58,8 @@ namespace WordJourney
 				Debug.LogError (e);
 			}
 				
-				
+			mInstance.gameObject.SetActive(true);	
+
 			target = mInstance.GetComponent<T> ();
 
 			if (target == null) {
@@ -98,7 +99,7 @@ namespace WordJourney
 				mInstance.name = instanceModel.name;
 			}
 
-
+			mInstance.gameObject.SetActive(true);
 
 			return mInstance.GetComponent<T>();
 
@@ -125,6 +126,8 @@ namespace WordJourney
 				return null;
 			}
 
+			mInstance.gameObject.SetActive(true);
+
 			return mInstance.GetComponent<T>();
 		}
 
@@ -137,7 +140,9 @@ namespace WordJourney
 				GameObject instance = originalParent.GetChild (0).gameObject;
 
 				instance.transform.SetParent (this.transform);
-
+            
+				instance.SetActive(false);
+            
 				instance.transform.localPosition = Vector3.zero;
 
 				counter++;
@@ -163,24 +168,24 @@ namespace WordJourney
 			transform.DetachChildren ();
 		}
 
-		public void AddInstanceToPool(GameObject instance){
+		public void AddInstanceToPool(GameObject instance){         
 
 			instance.transform.SetParent (this.transform);
 			instance.transform.localPosition = Vector3.zero;
-//			mInstancePool.Add (instance);
 
+			instance.gameObject.SetActive(false);
 		}
 
 		private void ResetInstance(Transform instance){
 
 			instance.localRotation = Quaternion.identity;
 			instance.localScale = Vector3.one;
+			instance.gameObject.SetActive(false);
 
 		}
 
 		void OnDestroy(){
 			isDirty = true;
-//			mInstancePool = null;
 		}
 
 	}

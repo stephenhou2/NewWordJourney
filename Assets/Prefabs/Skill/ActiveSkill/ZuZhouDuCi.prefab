@@ -52,19 +52,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillName: "\u8BC5\u5492\u6BD2\u523A"
-  sfxName: player_skill1
+  sfxName: Skill/se_zuZhouDuCi
   skillId: 22
-  skillDescription: "\u672C\u6B21\u653B\u51FB\u9020\u6210\u989D\u5916\uFF08\u6280\u80FD\u7B49\u7EA7\xD710+30\uFF09\u70B9\u7269\u7406\u4F24\u5BB3,\u5E76\u4F7F\u654C\u4EBA\u4E2D\u6BD2,\u6BCF\u79D2\u635F\u5931\uFF08\u6280\u80FD\u7B49\u7EA7\xD72\uFF09\u7684\u751F\u547D,\u6301\u7EED3s"
-  skillIconName: 22_zuZhouChuoCi
+  skillDescription: "\u9020\u6210<color=orange>\u7269\u7406\u653B\u51FB+\u6280\u80FD\u7B49\u7EA7\xD730+30</color>\u70B9\u7269\u7406\u4F24\u5BB3\uFF0C\u5E76\u63D0\u5347\u81EA\u8EAB<color=orange>\u6280\u80FD\u7B49\u7EA7\xD73</color>\u7684\u9B54\u6CD5\u653B\u51FB\uFF0C\u53EF\u53E0\u52A0"
+  skillIconName: 22_zuZhouDuCi
   selfEffectAnimName: 
-  enemyEffectAnimName: 07_posion_effect1
+  enemyEffectAnimName: se_zuZhouDuCi
   skillType: 0
   skillLevel: 1
+  price: 150
+  hasTriggered: 0
   selfRoleAnimName: physical_skill
   skillCoolenTime: 4
+  coolenPercentage: 0
+  skillStatus: 0
   manaConsume: 15
   fixHurt: 30
-  hurtBase: 10
-  poisonBase: 2
-  poisonDuration: 3
-  poisonEffectName: 
+  hurtBase: 30
+  magicAttackGainBase: 3

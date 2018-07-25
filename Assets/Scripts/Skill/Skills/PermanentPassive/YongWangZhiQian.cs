@@ -5,23 +5,22 @@ using UnityEngine;
 
 namespace WordJourney
 {
+
+	// 永久提升<color=orange> 技能等级×4</color>的物理攻击
 	public class YongWangZhiQian : PermanentPassiveSkill {
+
+		public override string GetDisplayDescription()
+		{
+			int attackGain = Mathf.RoundToInt(skillLevel * skillSourceValue);
+			return string.Format("永久提升<color=white>(技能等级×4)</color><color=red>{0}</color>的物理攻击", attackGain);
+		}
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			int armorGain= Mathf.RoundToInt(skillLevel * skillSourceValue);
 
-			self.agent.armor += armorGain;
+			int attackIncrease = Mathf.RoundToInt(skillLevel * skillSourceValue);
 
-			int speed = (int)(self.agent as Player).attackSpeed;
-
-			speed++;
-
-			if (speed > 4) {
-				speed = 4;
-			}
-
-			(self.agent as Player).attackSpeed = (AttackSpeed)speed;
+			self.agent.attack += attackIncrease;
 
 		}
 	}

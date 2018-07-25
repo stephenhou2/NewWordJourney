@@ -9,7 +9,7 @@ namespace WordJourney
 
 	public class Door : TriggeredGear {
 
-		private int direction;
+		protected int direction;
 
 		// 关闭的门图片数组（0:上 1:下 2:左 3:右）
 		public Sprite[] doorCloseSprites;
@@ -20,48 +20,74 @@ namespace WordJourney
 
 		public Vector3 pairDoorPos;
 
-		private int mapHeight;
+		protected int mapHeight;
 
         private HLHWord word;
+
+		private bool isSwitchControledDoor;
+
+		protected int mapIndex;
+
+
 
 		public void SetPosTransferSeed(int mapHeight){
 			this.mapHeight = mapHeight;
 		}
 
-		public void OpenTheDoor(){
+		public virtual void OpenTheDoor(bool playAudio = true){
+			if(isOpen){
+				return;
+			}
+
+			if (isSwitchControledDoor)
+            {
+                MapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
+                MapEventsRecord.AddEventTriggeredRecord(mapIndex, pairDoorPos);
+            }
+
+
 			mapItemRenderer.sprite = null;
 			isOpen = true;
 			ExploreManager.Instance.newMapGenerator.ChangeMapEventStatusAtPosition (pairDoorPos);
+			if(playAudio){
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.doorAudioName);
+			}
+
 		}
 
-		public void CloseTheDoor(){
-			mapItemRenderer.enabled = true;
-			mapItemRenderer.sprite = doorCloseSprites[direction];
-			isOpen = false;
-		}
+		//public void CloseTheDoor(){
+		//	mapItemRenderer.enabled = true;
+		//	mapItemRenderer.sprite = doorCloseSprites[direction];
+		//	isOpen = false;
+		//	ExploreManager.Instance.newMapGenerator.ChangeMapEventStatusAtPosition(pairDoorPos);
+  //          GameManager.Instance.soundManager.PlayAudioClip(CommonData.doorAudioName);
+		//}
 
 
 
 		public override void AddToPool (InstancePool pool)
 		{
 			bc2d.enabled = false;
-			pool.AddInstanceToPool (this.gameObject);
-
+			pool.AddInstanceToPool (this.gameObject);         
 		}
+        
 
-//		public override bool IsPlayerNeedToStopWhenEntered ()
-//		{
-//			return false;
-//		}
-
-		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
+		public override void InitializeWithAttachedInfo(int mapIndex,MapAttachedInfoTile attachedInfo)
 		{
+			this.mapIndex = mapIndex;
+
 			transform.position = attachedInfo.position;
 
 			isWordTrigger = bool.Parse (KVPair.GetPropertyStringWithKey ("isWordTrigger", attachedInfo.properties));
 			isOpen = bool.Parse (KVPair.GetPropertyStringWithKey ("isOpen", attachedInfo.properties));
 
+			isSwitchControledDoor = !isWordTrigger && !isOpen;
+
 			direction = int.Parse(KVPair.GetPropertyStringWithKey("direction",attachedInfo.properties));
+
+			if(MapEventsRecord.IsMapEventTriggered(mapIndex,attachedInfo.position)){
+				OpenTheDoor(false);
+			}
 
 			if (!isOpen) {
 				mapItemRenderer.enabled = true;
@@ -98,8 +124,7 @@ namespace WordJourney
 
                 if (!hasValidWord)
                 {
-                    word = GetAValidWord();
-
+                    word = GetAValidWord();               
                 }
             }
 
@@ -109,18 +134,26 @@ namespace WordJourney
 
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
+
+
 			if (isOpen) {
 				MapEventTriggered (true, bp);
 				return;
 			}
 
+			if (!isOpen && !isWordTrigger)
+            {
+                ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("隐约听到齿轮转动的声音\n需要通过机关才能打开");
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.lockedDoorAudioName);
+                bp.isInEvent = false;
+			}else{
 
-            ExploreManager.Instance.ShowCharacterFillPlane(word);
+				ExploreManager.Instance.ShowCharacterFillPlane(word);
 
-			if (!isOpen && !isWordTrigger) {
-				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("隐约听到齿轮转动的声音,需要通过机关才能打开");
-				bp.isInEvent = false;
 			}
+
+           
+
 		}
 		private HLHWord GetAValidWord(){
 			
@@ -156,19 +189,21 @@ namespace WordJourney
 
 			int ungraspTimes = reader.GetInt16 (9);
 
-			HLHWord word = new HLHWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+			bool isFamiliar = reader.GetInt16(10) == 1;
 
-
+            HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes, isFamiliar);
+         
 			return word;
 		}
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
-			bp.isInEvent = false;
 
-			if (isSuccess) {
+			if (isSuccess) {            
 				
 				if (isOpen) {
+
+					bp.boxCollider.enabled = false;               
 
 					Vector3 continueMovePos = Vector3.zero;
 
@@ -186,28 +221,47 @@ namespace WordJourney
 						continueMovePos = pairDoorPos + new Vector3 (1, 0, 0);
 						break;
 					}
-
+                    
+               
 					ExploreManager.Instance.expUICtr.DisplayTransitionMaskAnim (delegate {
-						// 直接在门外的位置，没有移动动画
 						bp.transform.position = continueMovePos;
 						bp.singleMoveEndPos = continueMovePos;
 						bp.moveDestination = continueMovePos;
 
-						bp.SetSortingOrder(-(int)continueMovePos.y);
+						bp.isInEvent = false;
+						bp.boxCollider.enabled = bp.fadeStepsLeft == 0;
+						ExploreManager.Instance.newMapGenerator.miniMapPlayer.localPosition = (continueMovePos);
+						ExploreManager.Instance.newMapGenerator.ClearMiniMapMaskAround(continueMovePos);
+						ExploreManager.Instance.newMapGenerator.MiniMapCameraLatelySleep();
+						ExploreManager.Instance.expUICtr.UpdateMiniMapDisplay(continueMovePos);
+
 					});
 
 				} else {
 					OpenTheDoor ();
-					GameManager.Instance.soundManager.PlayAudioClip(CommonData.doorAudioName);
+					ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+
 				}
 			}
 		}
 
 		public override void ChangeStatus ()
-		{
-			isOpen = !isOpen;
-			mapItemRenderer.sprite = isOpen ? null : doorCloseSprites[direction];
+		{         
+			if (isOpen)
+            {
+                return;
+            }
 
+            if (isSwitchControledDoor)
+            {
+                MapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
+                MapEventsRecord.AddEventTriggeredRecord(mapIndex, pairDoorPos);
+            }
+
+
+            mapItemRenderer.sprite = null;
+            isOpen = true;
+            ExploreManager.Instance.newMapGenerator.ChangeMapEventStatusAtPosition(pairDoorPos);
 		}
 
 	}

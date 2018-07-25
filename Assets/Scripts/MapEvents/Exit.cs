@@ -5,14 +5,22 @@ using UnityEngine;
 
 namespace WordJourney
 {
+
+	public enum ExitType{
+		NextLevel,
+        LastLevel
+	}
+
 	public class Exit : TriggeredGear {
 
-		private int direction;
+		//private int direction;
 
 		// 关闭的门图片数组（0:上 1:下 2:左 3:右）
 		public Sprite[] exitCloseSprites;
 
 		public bool isOpen;
+
+		public ExitType exitType;
 
 
 		public override void AddToPool(InstancePool pool){
@@ -20,22 +28,27 @@ namespace WordJourney
 			pool.AddInstanceToPool (this.gameObject);
 		}
 
-		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
+		public void SetUpExitType(ExitType exitType){
+			this.exitType = exitType;
+		}
+
+
+		public override void InitializeWithAttachedInfo(int mapIndex,MapAttachedInfoTile attachedInfo)
 		{
 			transform.position = attachedInfo.position;
 
-			direction = int.Parse(KVPair.GetPropertyStringWithKey("direction",attachedInfo.properties));
-
-            //isOpen = bool.Parse(KVPair.GetPropertyStringWithKey("isOpen",attachedInfo.properties));
+			//if(exitType == ExitType.NextLevel){
+			//	direction = int.Parse(KVPair.GetPropertyStringWithKey("direction",attachedInfo.properties));      
+			//}
             isOpen = true;
 
-			if (!isOpen) {
-				mapItemRenderer.enabled = true;
-				mapItemRenderer.sprite = exitCloseSprites [direction];
-			} else {
-				mapItemRenderer.sprite = null;
-				mapItemRenderer.enabled = false;
-			}
+			//if (!isOpen) {
+			//	mapItemRenderer.enabled = true;
+			//	mapItemRenderer.sprite = exitCloseSprites [direction];
+			//} else {
+			//	mapItemRenderer.sprite = null;
+			//	mapItemRenderer.enabled = false;
+			//}
 
 			bc2d.enabled = true;
 
@@ -57,7 +70,14 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
-			ExploreManager.Instance.expUICtr.ShowEnterNextLevelQueryHUD ();
+			if (Player.mainPlayer.currentLevelIndex == 0 && exitType == ExitType.LastLevel)
+            {
+				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("这里好像没办法出去");
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.exitAudioName);
+				ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+                return;
+            }
+			ExploreManager.Instance.expUICtr.ShowEnterExitQueryHUD(exitType);
 		}
 
 		public override void ChangeStatus ()

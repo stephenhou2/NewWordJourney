@@ -9,6 +9,7 @@ namespace WordJourney
 
 	using Transform = UnityEngine.Transform;
 	using DragonBones;
+	using DG.Tweening;
 
 	public delegate void SkillCallBack(BattleAgentController selfBaCtr,BattleAgentController enemyBaCtr);
 
@@ -32,10 +33,7 @@ namespace WordJourney
 
 		// 控制的角色
 		[HideInInspector]public Agent agent;
-
-//		public AgentPropertyCalculator probpertyCalculator;
-
-		//protected ExploreUICotroller expUICtr;
+        
 
 		public BattleAgentController enemy;
 
@@ -87,7 +85,8 @@ namespace WordJourney
 
 		protected ActiveSkill currentUsingActiveSkill;
 
-
+        // 战斗中角色的位置偏移
+		//public Vector3 posDif;
 
 		// 移动速度
 		//public float moveDuration{ get{return 1 / (agent.moveSpeed * 0.015f + 2f); }}
@@ -100,17 +99,7 @@ namespace WordJourney
 			}
 		}
 
-
-//		protected ExploreManager mExploreManager;
-//		protected ExploreManager exploreManager{
-//			get{
-//				if (mExploreManager == null) {
-//					mExploreManager = ExploreManager.Instance.GetComponent<ExploreManager>();
-//				}
-//				return mExploreManager;
-//			}
-//		}
-
+      
 		protected ExploreManager exploreManager{get{ return ExploreManager.Instance; }}
 
 
@@ -141,7 +130,7 @@ namespace WordJourney
 				playerBackwardArmature.AddEventListener(EventObject.FRAME_EVENT, keyFrameListener);
 			}
 
-			isIdle = true;
+			//isIdle = true;
 
             isDead = false;
 
@@ -153,6 +142,7 @@ namespace WordJourney
 		/// <param name="self">Self.</param>
 		/// <param name="enemy">Enemy.</param>
 		public void InitTriggeredPassiveSkillCallBacks(BattleAgentController self,BattleAgentController enemy){
+			self.ClearAllSkillCallBacks();
 			for (int i = 0; i < self.agent.attachedTriggeredSkills.Count; i++) {
 				Skill skill = self.agent.attachedTriggeredSkills [i];
 				skill.AffectAgents (self, enemy);
@@ -168,11 +158,12 @@ namespace WordJourney
 
 			Vector3 basePosition = MyTool.ToPointInCanvas (transform.position);
 
-//			MyTowards textAnimTowards = GetReversedTowards ();
-
 			ExploreText ft = new ExploreText (text,towards,basePosition);
 
-			agentUICtr.exploreTextManager.AddHurtText (ft);
+			if(!isDead){
+				agentUICtr.exploreTextManager.AddHurtText(ft);
+			}
+         
 		}
 
 
@@ -226,25 +217,25 @@ namespace WordJourney
 			}
 
 			string hurtString = string.Empty;
-			if (agent.shenLuTuTengScaler == 0) {
+			//if (agent.shenLuTuTengScaler == 0) {
 				agent.health -= hurt;
-			}else{
+			//}else{
 
-				if ((float)agent.mana / agent.maxMana > 0.3f) {
+				//if ((float)agent.mana / agent.maxMana > 0.3f) {
 
-					int manaValid = agent.mana - (int)(agent.maxMana * 0.3f);
+				//	int manaValid = agent.mana - (int)(agent.maxMana * 0.3f);
 
-					if (manaValid >= hurt / 2) {
-						agent.mana -= hurt / 2;
-					} else {
-						agent.mana = (int)(agent.maxMana * 0.3f);
-						int healthChange = hurt - manaValid * 2;
-						agent.health -= healthChange;
-					}
-				} else {
-					agent.health -= hurt;
-				}
-			}
+				//	if (manaValid >= hurt / 2) {
+				//		agent.mana -= hurt / 2;
+				//	} else {
+				//		agent.mana = (int)(agent.maxMana * 0.3f);
+				//		int healthChange = hurt - manaValid * 2;
+				//		agent.health -= healthChange;
+				//	}
+				//} else {
+				//	agent.health -= hurt;
+				//}
+			//}
 
 			string colorText = string.Empty;
 
@@ -274,7 +265,7 @@ namespace WordJourney
 				break;
 
 			}
-
+                     
 			AddHurtTextToQueue (hurtString,textTowards);
 
 		}
@@ -287,7 +278,7 @@ namespace WordJourney
 
 			agent.health += gain;
 
-			string healthGainString = string.Format ("<color=green>{0}</color>", gain);
+			string healthGainString = string.Format ("<color=green><size=55>{0}</size></color>", gain);
 
 			AddTintTextToQueue (healthGainString);
 
@@ -297,7 +288,7 @@ namespace WordJourney
 
 			agent.mana += gain;
 
-			string manaGainString = string.Format("<color=blue>{0}</color>", gain);
+			string manaGainString = string.Format("<color=blue><size=55>{0}</size></color>", gain);
 
 			AddTintTextToQueue(manaGainString);
 
@@ -336,6 +327,12 @@ namespace WordJourney
 		public abstract void TowardsRight(bool andWait = true);
 		public abstract void TowardsUp (bool andWait = true);
 		public abstract void TowardsDown (bool andWait = true);
+
+
+		public bool IsInAnimPlaying()
+        {
+            return armatureCom.animation.isPlaying;
+        }
 
 
 		public void RemoveTriggeredSkillExcutor(TriggeredPassiveSkill skill){
@@ -405,7 +402,7 @@ namespace WordJourney
 
 			}
 
-			//Debug.Log(skill.skillName);
+			//Debug.LogFormat("skill name:{0},skill invoke Time:{1}", skill.skillName, Time.time);
 
 			UseSkill (skill);
 
@@ -419,6 +416,28 @@ namespace WordJourney
 			}
 			StartCoroutine ("PlayAgentShake");
 		}
+
+        /// <summary>
+		/// 位置调整
+        /// </summary>
+        /// <param name="pos">Position.</param>
+        /// <param name="callBack">Call back.</param>
+		public void FixPosTo(Vector3 pos, CallBack callBack = null)
+        {
+			float distance = (transform.position - pos).magnitude;
+
+			float duration = distance * 0.3f;
+
+            transform.DOMove(pos, duration).OnComplete(() =>
+            {
+                if (callBack != null)
+                {
+                    callBack();
+                }
+
+            });
+
+        }
 
 		/// <summary>
 		/// 角色被攻击时的抖动动画
@@ -478,7 +497,7 @@ namespace WordJourney
 		/// <param name="cb">动画完成回调.</param>
 		public virtual void PlayRoleAnim (string animName, int playTimes, CallBack cb)
 		{
-            
+         
 			isIdle = animName == CommonData.roleIdleAnimName;
 
 			// 如果还有等待上个角色动作结束的协程存在，则结束该协程
@@ -523,35 +542,22 @@ namespace WordJourney
 		/// 设置角色特效动画，trigger 型触发器
 		/// </summary>
 		/// <param name="animName">触发器名称</param>
-		public void SetEffectAnim(string effectName,CallBack cb = null){
-
-//			if(effectName != string.Empty && exploreManager != null){
-
-//				IEnumerator playEffectAnimCoroutine = LatelyPlayEffectAnim (triggerName, cb);
-//
-//				StartCoroutine (playEffectAnimCoroutine);
-//
-//			}
-//		}
-//
-//		private IEnumerator LatelyPlayEffectAnim(string triggerName,CallBack cb){
-//
-//			yield return new WaitUntil (() => Time.timeScale == 1);
+		public void SetEffectAnim(string effectName,CallBack cb = null,int playTimes = 1,float duration = 0){
 
 			if (effectName == string.Empty || exploreManager == null) {
 				return;
 			}
             
-			
-			EffectAnim skillEffect = null;
 				
-			skillEffect = exploreManager.newMapGenerator.GetEffectAnim (effectName,effectAnimContainer);
+			EffectAnim skillEffect = exploreManager.newMapGenerator.GetEffectAnim (effectName,effectAnimContainer);
 
-			int playTime = (effectName == CommonData.frozenEffectName || effectName == CommonData.paralizedEffectName) ? 0 : 1;
+			if (skillEffect != null)
+            {
 
-			if (skillEffect != null) {
+    			skillEffect.gameObject.SetActive(true);
+
                 // 所有的特效播放名称都是default
-                skillEffect.PlayAnim ("default", 1, cb, effectAnimYScaler);
+				skillEffect.PlayAnim ("default", cb, effectAnimYScaler, playTimes, duration);
 			}
 
 		}
@@ -580,11 +586,9 @@ namespace WordJourney
 
 			CancelInvoke ();
 
-			//AllEffectAnimsIntoPool ();
-
 		}
 
-		protected void AllEffectAnimsIntoPool(){
+		public void AllEffectAnimsIntoPool(){
 
 			for (int i = 0; i < effectAnimContainer.childCount; i++) {
 

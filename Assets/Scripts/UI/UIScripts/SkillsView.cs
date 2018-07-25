@@ -15,16 +15,14 @@ namespace WordJourney
 
 		public Text leftSkillNumText;
 
+		public Text learnedSkillCountText;
+
 		public Transform queryForgetSkillHUD;
-
-		public SimpleSkillDetail simpleSkillDetailModel;
-
-		public InstancePool simpleSkillDetailPool;
-
-		public Transform simpleSkillDetailContainer;
         
-		public SkillDetail skillDetail;
+        public SimpleSkillDetail[] simpleSkillDetails;
 
+		public SkillDetail skillDetail;
+            
 		private Skill currentSelectedSkill;
 
 		public TintHUD tintHUD;
@@ -40,38 +38,47 @@ namespace WordJourney
 			
 			gameObject.SetActive(true);
 
-			leftSkillNumText.text = Player.mainPlayer.skillNumLeft.ToString();
+			leftSkillNumText.text = string.Format("剩余技能点: {0}",Player.mainPlayer.skillNumLeft);
 
-			simpleSkillDetailPool.AddChildInstancesToPool(simpleSkillDetailContainer);
+			learnedSkillCountText.text = string.Format("已学习技能数量: {0}", Player.mainPlayer.allLearnedSkills.Count);
+                     
+			for (int i = 0; i < simpleSkillDetails.Length; i++){
 
-			for (int i = 0; i < Player.mainPlayer.allLearnedSkillIds.Count;i++){
+				SimpleSkillDetail simpleSkillDetail = simpleSkillDetails[i];
 
-				int skillId = Player.mainPlayer.allLearnedSkillIds[i];
+				bool selectedIconEnable = false;
 
-				Skill skill= GameManager.Instance.gameDataCenter.allSkills.Find(delegate(Skill obj)
-				{
-					return obj.skillId == skillId;
+				if(i<Player.mainPlayer.allLearnedSkills.Count){
+					Skill learnedSkill = Player.mainPlayer.allLearnedSkills[i];
+					simpleSkillDetail.SetUpSimpleSkillDetail(learnedSkill, OnSkillClick);
+					selectedIconEnable = currentSelectedSkill != null && currentSelectedSkill.skillId == learnedSkill.skillId;
+				}else{
+					simpleSkillDetail.ClearSimpleSkillDetail();
+				}
 
-				});
 
-				SimpleSkillDetail simpleSkillDetail = simpleSkillDetailPool.GetInstance<SimpleSkillDetail>(simpleSkillDetailModel.gameObject, simpleSkillDetailContainer);
-
-				simpleSkillDetail.SetUpSimpleSkillDetail(skill,OnSkillClick);
-            
+				simpleSkillDetail.SetUpSelectedIcon(selectedIconEnable);
 			}
 
 			if(currentSelectedSkill == null){
-				skillDetail.ClearSkillDetail();  
+				skillDetail.ClearSkillDetail();    
 			}else{
 				skillDetail.SetupSkillDetail(currentSelectedSkill);
-			}
-			       
 
+			}         
 		}
 
+        /// <summary>
+		/// 技能被点击回调（点击时将所有的技能选中框都禁用，SimpleSkillDetail里在回调之后会将自身选中框启用）
+        /// </summary>
+        /// <param name="skill">Skill.</param>
 		private void OnSkillClick(Skill skill){
 			currentSelectedSkill = skill;
 			skillDetail.SetupSkillDetail(skill);
+			for (int i = 0; i < simpleSkillDetails.Length;i++){
+				SimpleSkillDetail simpleSkillDetail = simpleSkillDetails[i];
+				simpleSkillDetail.SetUpSelectedIcon(false);
+			}
 		}
 		      
 		public void OnUpgradeButtonClick()
@@ -116,17 +123,13 @@ namespace WordJourney
 
 		}
 
-		public void OnCancelForgetButtonClick(){
-
-			queryForgetSkillHUD.gameObject.SetActive(false);
-
-
+		public void OnCancelForgetButtonClick(){         
+			queryForgetSkillHUD.gameObject.SetActive(false);         
 		}
 
 		public void QuitSkillsView(){
-
-			gameObject.SetActive(false);
-
+			currentSelectedSkill = null;
+			gameObject.SetActive(false);         
 		}
         
 

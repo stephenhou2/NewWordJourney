@@ -17,43 +17,114 @@ namespace WordJourney{
         public Text sentenceEN;
         public Text sentenceCH;
 
-        private HLHWord wordRecord;
-
+		public Text indexTint;
+              
         private CallBack quitCallBack;
 
+		private int wordIndex;
 
-        public void SetUpWordDetailHUD(HLHWord word, CallBack quitCallBack){
+		private List<HLHWord> wordRecords;
+		private HLHWord currentWord;
 
-            this.wordRecord = word;
 
-            spellText.text = word.spell;
-            phoneticSymbolText.text = word.phoneticSymbol;
-            explainationText.text = word.explaination;
-            sentenceEN.text = word.sentenceEN;
-            sentenceCH.text = word.sentenceCH;
+        public void SetUpWordDetailHUD(List<HLHWord> wordRecords, CallBack quitCallBack){
 
-            this.quitCallBack = quitCallBack;
+			this.wordRecords = wordRecords;
 
-            this.gameObject.SetActive(true);
-            if(zoomCoroutine != null){
+			this.quitCallBack = quitCallBack;
+
+			wordIndex = wordRecords.Count - 1;
+
+			currentWord = wordRecords[wordIndex];
+
+			SetUpWordDetailHUD(currentWord);
+
+			indexTint.text = string.Format("{0}/{1}", wordRecords.Count, wordRecords.Count);
+
+			this.gameObject.SetActive(true);
+            if (zoomCoroutine != null)
+            {
                 StopCoroutine(zoomCoroutine);
             }
-            zoomCoroutine = HUDZoomIn(OnPronunceButtonClick);
+
+			if (GameManager.Instance.gameDataCenter.gameSettings.isAutoPronounce)
+			{
+				zoomCoroutine = HUDZoomIn(OnPronunceButtonClick);
+			}else{
+				zoomCoroutine = HUDZoomIn();
+			}
+           
             StartCoroutine(zoomCoroutine);
-			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
+            GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
+
+
+
         }
 
-       
+		private void SetUpWordDetailHUD(HLHWord word){
+
+			spellText.text = word.spell;
+			phoneticSymbolText.text = word.phoneticSymbol;
+			explainationText.text = word.explaination;
+			sentenceEN.text = word.sentenceEN;
+			sentenceCH.text = word.sentenceCH;
+
+			if(GameManager.Instance.gameDataCenter.gameSettings.isAutoPronounce){
+				OnPronunceButtonClick();
+			}
+
+         
+		}
+
+		public void OnNextWordButtonClick(){
+			
+			if (wordIndex >= wordRecords.Count - 1)
+            {
+                return;
+            }
+         
+			wordIndex++;
+
+			indexTint.text = string.Format("{0}/{1}", wordIndex + 1, wordRecords.Count);
+         
+			currentWord = wordRecords[wordIndex];
+
+			SetUpWordDetailHUD(currentWord);      
+
+		}
+
+		public void OnLastWordButtonClick(){
+
+			if(wordIndex == 0){
+				return;
+			}
+
+			wordIndex--;
+
+			indexTint.text = string.Format("{0}/{1}", wordIndex + 1, wordRecords.Count);
+
+            currentWord = wordRecords[wordIndex];
+
+            SetUpWordDetailHUD(currentWord); 
+
+		}
+
+
         public void OnPronunceButtonClick(){
 
-            GameManager.Instance.pronounceManager.PronounceWord(wordRecord);
+			GameManager.Instance.pronounceManager.PronounceWord(currentWord);
         }
 
         public void QuitWordDetailHUD(){
 
+			if (inZoomingOut)
+            {
+                return;
+            }
+
             if(zoomCoroutine != null){
                 StopCoroutine(zoomCoroutine);
-            }
+            }         
 
             zoomCoroutine = HUDZoomOut();
 

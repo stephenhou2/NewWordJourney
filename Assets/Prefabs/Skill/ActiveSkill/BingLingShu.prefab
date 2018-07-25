@@ -52,17 +52,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillName: "\u51B0\u51CC\u672F"
-  sfxName: player_skill2
+  sfxName: Skill/se_bingLingShu
   skillId: 13
-  skillDescription: "\u9020\u6210\uFF08\u6280\u80FD\u7B49\u7EA7\xD712+25\uFF09\u7684\u9B54\u6CD5\u4F24\u5BB3,\u540C\u65F6\u4F7F\u654C\u4EBA\u8FDB\u5165\u51B0\u51BB\u72B6\u6001"
+  skillDescription: "\u9020\u6210<color=orange>\u9B54\u6CD5\u653B\u51FB+\u6280\u80FD\u7B49\u7EA7\xD725+20</color>\u7684\u9B54\u6CD5\u4F24\u5BB3,\u540C\u65F6\u4F7F\u654C\u4EBA\u8FDB\u5165\u51B0\u51BB\u72B6\u6001"
   skillIconName: 13_bingLingShu
   selfEffectAnimName: 
-  enemyEffectAnimName: 04_ice_effect1
+  enemyEffectAnimName: se_bingLingShu
   skillType: 0
   skillLevel: 1
+  price: 220
+  hasTriggered: 0
   selfRoleAnimName: magical_skill
   skillCoolenTime: 4
+  coolenPercentage: 0
+  skillStatus: 0
   manaConsume: 35
-  fixHurt: 25
-  hurtBase: 12
+  fixHurt: 20
+  hurtBase: 25
   attackSpeedDecreaseScaler: 0.2

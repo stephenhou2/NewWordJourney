@@ -4,6 +4,27 @@ using UnityEngine;
 
 namespace WordJourney{
 
+	public class LearnTitleQualification
+    {
+        public int totalWordsCount;
+        public float totalCorrectPercentage;
+        public int continuousCorrectWordCount;
+		public string title;
+		public string qualificationNeed;
+		public int rewardGold;
+
+		public LearnTitleQualification(int totalWordsCount, float totalCorrectPercentage, int continuousCorrectWordCount, string title,string qualificationNeed, int rewardGold)
+		{
+			this.totalWordsCount = totalWordsCount;
+			this.totalCorrectPercentage = totalCorrectPercentage;
+			this.continuousCorrectWordCount = continuousCorrectWordCount;
+			this.qualificationNeed = qualificationNeed;
+			this.title = title;
+			this.rewardGold = rewardGold;
+		}
+		
+
+    }
 
 
 	public delegate void CallBack ();
@@ -38,7 +59,7 @@ namespace WordJourney{
 //
 //		};
 
-		public static KVPair[] originDataArr = new KVPair[]{
+		public static KVPair[] originDataArr = {
 			new KVPair("BuyRecord","/Data/BuyRecord.json"),
 			new KVPair("GameLevelDatas","/Data/GameLevelDatas.json"),
 			new KVPair("GameSettings","/Data/GameSettings.json"),
@@ -52,7 +73,9 @@ namespace WordJourney{
 			new KVPair("OriginalPlayerData","/Data/OriginalPlayerData.json"),
 			new KVPair("Level","/Data/MapData/Level"),
 			new KVPair("NPC","/Data/NPCs"),
-            new KVPair("ProverbData","/Data/HLHSentenceAndPoemData.json")         
+            new KVPair("ProverbData","/Data/HLHSentenceAndPoemData.json"),
+			new KVPair("MapEventsRecord","/Data/MapEventsRecord.json"),
+			new KVPair("DiaryData","/Data/DiaryData.json")
 		};
 
 
@@ -66,19 +89,17 @@ namespace WordJourney{
 		public static string specialItemDataFilePath = persistDataPath + "/GameItems/SpecialItemDatas.json";
 		public static string spellItemDataFilePath = persistDataPath + "/GameItems/SpellItemDatas.json";
         public static string proverbsDataFilePath = persistDataPath + "/HLHSentenceAndPoemData.json";
+		public static string diaryDataFilePath = persistDataPath + "/DiaryData.json";
 		public static string npcsDataDirPath = persistDataPath + "/NPCs";
 
 		public static string buyRecordFilePath = persistDataPath + "/BuyRecord.json";
 		public static string chatRecordsFilePath = persistDataPath + "/ChatRecords.json";
+		public static string mapEventsRecordFilePath = persistDataPath + "/MapEventsRecord.json";
 
 
 
 		public static string dataBaseName = "MyGameDB.db";
 
-//		public static string NMETTable = "NMET";
-//		public static string CET46Table = "CET46";
-//		public static string GRETable = "GRE";
-//		public static string TOEFLTable = "TOEFL";
 
 		public static string simpleWordsTable = "SIMPLE";
 		public static string mediumWordsTabel = "MEDIUM";
@@ -94,16 +115,19 @@ namespace WordJourney{
 
 		public static string homeCanvasBundleName = "home/canvas";
 		public static string recordCanvasBundleName = "record/canvas";
-		public static string unlockedItemsCanvasBundleName = "unlockeditems/canvas";
 		public static string bagCanvasBundleName = "bag/canvas";
 		public static string settingCanvasBundleName = "setting/canvas";
 		public static string spellCanvasBundleName = "spell/canvas";
 		public static string exploreSceneBundleName = "explore/scene";
-		public static string produceCanvasBundleName = "produce/canvas";
+		public static string loadingCanvasBundleName = "loading/canvas";
+		public static string guideCanvasBundleName = "guide/canvas";
 		public static string learnCanvasBundleName = "learn/canvas";
+		public static string npcCanvasBundleName = "npc/canvas";
+		public static string shareCanvasBundleName = "share/canvas";
 		public static string allMonstersBundleName = "explore/monsters";
 		public static string allMapNpcBundleName = "explore/npcs";
-		public static string allEffectsBundleName = "explore/effects";
+		public static string allEffectsBundleName = "skills/effects";
+		public static string finalChapterCanvasBundleName = "finalchapter/canvas";
 
 		public static string allEquipmentSpritesBundleName = "item/equipment_icons";
 		public static string allConsumablesSpritesBundleName = "item/consumables_icons";
@@ -111,9 +135,16 @@ namespace WordJourney{
 		public static string allSkillScrollSpritesBundleName = "item/skillscroll_icons";
 		public static string allSpecialItemSpritesBundleName = "item/specialitem_icons";
 		public static string allMapSpritesBundleName = "explore/mapicons";
+		public static string allCharacterSpritesBundleName = "item/character_icons";
 		public static string allSkillsBundleName = "skills/skills";
 		public static string allSkillSpritesBundleName = "skills/icons";
 		public static string allUISpritesBundleName = "ui/common";
+
+		public static string mapTileset_1_BundleName = "explore/maptileset_1";
+		public static string mapTileset_2_BundleName = "explore/maptileset_2";
+		public static string mapTileset_3_BundleName = "explore/maptileset_3";
+		public static string mapTileset_4_BundleName = "explore/maptileset_4";
+		public static string mapTileset_5_BundleName = "explore/maptileset_5";
 	
 
 		public static string skillsContainerName = CommonData.instanceContainerName + "/AllSkills";
@@ -165,50 +196,58 @@ namespace WordJourney{
 
 
 		// 特效名称
-		public static string healthHealEffecttName = "01_health_heal";
-		public static string magicHealEffectName = "02_magic_heal";
-		public static string levelUpEffectName = "03_level_up";
-		public static string stealthEffectName = "04_stealth";
-		public static string poisonedEffectName = "05_poisoned";
-		public static string burnedEffectName = "06_burned";
-		public static string propertyDecreaseEffectName = "07_attribute_down";
-		public static string bleedingEffectName = "08_bleeding";
-		public static string shieldEffectName = "09_shiled";
-		public static string frozenEffectName = "10_frozen";
-		public static string paralizedEffectName = "11_paralized";
-		public static string propertyIncreaseEffectName = "12_attribute_up";
+		public static string healthHealEffecttName = "state_health_heal";
+		public static string magicHealEffectName = "state_magic_heal";
+		public static string levelUpEffectName = "state_level_up";
+		public static string yinShenEffectName = "state_stealth";
+		public static string poisonedEffectName = "state_poisoned";
+		public static string burnedEffectName = "state_burned";
+		public static string frozenEffectName = "state_frozen";
+		public static string paralyzedEffectName = "state_paralyzed";
+		public static string healthAddUpEffectName = "state_health_add_up";
+		public static string armorUpEffectName = "state_armor_up";
+		public static string attackUpEffectName = "state_attack_up";
+		public static string magicAttackUpEffectName = "state_magic_attack_up";
+		public static string magicResistUpEffectName = "state_resist_up";
+		public static string dodgeUpEffectName = "state_dodge_up";
+		public static string critUpEffectName = "state_crit_up";
+		public static string attackDownEffectName = "state_attack_down";
+		public static string armorDownEffectName = "state_armor_down";
+		public static string magicAttackDownEffectName = "state_magic_attack_down";
+		public static string magicResistDownEffectName = "state_resist_down";
+		public static string dodgeDownEffectName = "state_dodge_down";
+		public static string critDownEffectName = "state_crit_down";
+		public static string skillPointUpEffectName = "state_skill_point_up";
+			
 
 
-        // 技能 音效 名称
-        public static string healthHealAudiotName = "01_health_heal";
-        public static string magicHealAudioName = "02_magic_heal";
-        
-        public static string stealthAudioName = "04_stealth";
-        public static string poisonedAudioName = "05_poisoned";
-        public static string burnedAudioName = "06_burned";
-        public static string propertyDecreaseAudioName = "07_attribute_down";
-        public static string bleedingAudioName = "08_bleeding";
-        public static string shieldAudioName = "09_shiled";
-        public static string frozenAudioName = "10_frozen";
-        public static string paralizedAudioName = "11_paralized";
-        public static string propertyIncreaseAudioName = "12_attribute_up";
+  //      // 技能 音效 名称
+		//public static string poisonedAudioName = "MapEvents/sfx_poisonTrap";
+		//public static string burnedAudioName = "MapEvents/sfx_fireTrap";
+
 
 
 		// 物品 音效 名称
 		public static string gemstoneAudioName = "Item/sfx_gemstone";
-		public static string chongzhuAudioName = "Item/sfx_chongzhu";
-		public static string xiaoMoAudioName = "";
-		public static string yinShenAudioName = "";
-		public static string xiangQianJiNengAudioName = "Item/sfx_xiangqianjineng";
+		public static string dianjinAudioName = "Item/sfx_chongZhu";
+		public static string chongzhuAudioName = "Item/sfx_chongZhu";
+		public static string xiaoMoAudioName = "Item/sfx_gemstone";
+		public static string yinShenAudioName = "Item/sfx_yinShen";
 		public static string equipmentAudioName = "Item/sfx_equipment";
+		public static string siYeCaoAudioName = "Other/state_attribute_up";
+		public static string xingYunYuMaoAudioName = "Other/state_attribute_up";
 
 		// 其他 音效 名称
-		public static string levelUpAudioName = "Other/sfx_levelup";
+		public static string levelUpAudioName = "Other/state_level_up";
+		public static string skillUpgradeAudioName = "Other/sfx_skillUpgrade";
+		public static string propertyPromotionAudioName = "Skill/state_attribute_up";
+		public static string propertyDecreaseAudioName = "Skill/state_attribute_down";
 		public static string footstepAudioName = "Other/sfx_footstep";
 		public static string goldAudioName = "Other/sfx_gold";
 		public static string playerDieAudioName = "Other/sfx_playerDie";
 		public static string drinkAudioName = "Item/sfx_drink";
 		public static string eatAudoiName = "Item/sfx_eat";
+        
 
 
 		// 地图事件 音效 名称
@@ -219,6 +258,14 @@ namespace WordJourney{
         public static string crystalAudioName = "MapEvents/sfx_crystal";
 		public static string merchantAudioName = "MapEvents/sfx_merchant";
 		public static string billboardAudioName = "MapEvents/sfx_billboard";
+		public static string thornTrapAudioName = "MapEvents/sfx_thornTrap";
+		public static string fireTrapAudioName = "MapEvents/sfx_fire";
+		public static string poisonTrapAudioName = "MapEvents/sfx_poison";
+		public static string switchAudioName = "MapEvents/sfx_switch";
+		public static string keyAudioName = "MapEvents/sfx_key";
+		public static string lockOffAudioName = "MapEvents/sfx_lockOff";
+		public static string exitAudioName = "MapEvents/sfx_exit";
+		public static string lockedDoorAudioName = "MapEvents/sfx_lockedDoor";
 
 		// UI 音效 名称
 		public static string correctTintAudioName = "UI/sfx_UI_correctTint";
@@ -226,7 +273,7 @@ namespace WordJourney{
 		public static string buttonClickAudioName = "UI/sfx_UI_click";
 		public static string paperAudioName = "UI/sfx_UI_paper";
 		public static string addSkillAudioName= "UI/sfx_UI_xiangqianjineng";
-		public static string bagAudioName = "UI/sfx_UI_bag";
+		public static string bagAudioName = "UI/sfx_UI_Bag";
 		public static string dropItemAudioName = "UI/sfx_UI_dropItem";
 
 		public static int aInASCII = (int)('a');
@@ -234,13 +281,27 @@ namespace WordJourney{
 		// 当前屏幕分辨率和预设屏幕分辨率之间的转换比例
 		public static float scalerToPresetResulotion = 1920f / Camera.main.pixelHeight;
 
-		public static int singleBagItemVolume = 24;
+		public static int singleBagItemVolume = 21;
+		public static int singleWordsRecordsPageVolume = 7;
+
+		public static int maxLevel = 50;
 
 		public static char diamond = (char)6;
 		public static int totalFadeStep = 20;
 
-		public static Vector3 selectedColor = new Vector3 (238f/255, 206f/255, 149f/255);
-		public static Vector3 deselectedColor = new Vector3 (63f/255, 31f/255, 0);
+		public static Color selectedColor = new Color (243f/255, 152f/255, 0);
+		public static Color deselectedColor = new Color (166f/255, 147f/255, 124f/225);
+
+		public static Color grayEquipmentColor = new Color(222f / 255, 202f / 255, 170f / 255);
+		public static Color blueEquipmentColor = new Color(0, 219f / 255, 217f / 255);
+		public static Color goldEquipmentColor = new Color(243f / 255, 152f / 255, 0);
+		public static Color purpleEquipmentColor = new Color(195f / 255, 25f / 255, 186f / 255);
+
+		public static Color tabBarTitleNormalColor = new Color(166f / 255, 147f / 255, 124f / 255);
+		public static Color tabBarTitleSelectedColor = new Color(243f / 255, 152f / 255, 0);
+
+		public static Color regularTextColor = new Color(222f / 255, 202f / 255, 170f / 255);
+
 
 		public static string homeBgmName = "Castle";
 		public static string exploreBgmName = "Explore";
@@ -248,6 +309,18 @@ namespace WordJourney{
 		public static char[] wholeAlphabet = new char[]{'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
 
 		public static Vector2 iphoneXResolution = new Vector2(1125,2436);
+
+		// 获得称号所需的条件
+        public static LearnTitleQualification[] learnTitleQualifications = {
+            new LearnTitleQualification(30,0,0,"单词菜鸟","· 背诵单词30个",50),
+			new LearnTitleQualification(100,0.7f,0,"单词学徒","背诵单词100个\n· 正确率70%以上",100),
+			new LearnTitleQualification(500,0.8f,0,"单词达人","背诵单词500个\n· 正确率80%以上",200),
+			new LearnTitleQualification(1500,0.85f,50,"单词学霸","背诵单词1500个\n· 连续正确背诵单词50个\n· 正确率85%以上",400),
+			new LearnTitleQualification(2500,0.9f,150,"单词学者","背诵单词2500个\n· 连续正确背诵单词150个\n· 正确率90%以上",1000),
+			new LearnTitleQualification(3000,0.95f,300,"单词大师","背诵单词3000个\n· 连续正确背诵单词300个\n· 正确率95%以上",2000)
+        };
+              
+
 
 	}
 

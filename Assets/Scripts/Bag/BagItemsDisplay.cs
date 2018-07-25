@@ -9,55 +9,95 @@ namespace WordJourney
 
 	public class BagItemsDisplay : MonoBehaviour {
 
+        // 背包物品缓存池
 		public InstancePool bagItemsPool;
+        // 背包物品容器
 		public Transform bagItemsContainer;
+        // 背包物品模型
 		public Transform bagItemModel;
 
+        // 背包切换按钮数组
 		public Button[] bagTabs;
-		public Sprite bagTabSelectedIcon;
-		public Sprite bagTabDeselectedIcon;
-
-		public Text totalGoldText;
-
-
-//		private int singleBagItemVolume = 24;
+        
+        // 当前所在背包序号
         public int currentBagIndex;
 
+
+        // 获取当前背包理论上首个显示的物品在背包中的理论序号
 		private int minItemIndexOfCurrentBag {
 			get {
 				return currentBagIndex * CommonData.singleBagItemVolume;
 			}
 		}
 
+		// 获取当前背包理论上可容纳的最后一个物品在背包中的理论序号
 		private int maxItemIndexOfCurrentBag {
 			get {
 				return minItemIndexOfCurrentBag + CommonData.singleBagItemVolume - 1;
 			}
 		}
-		private CallBackWithItem itemClickCallBack;
-		private CallBack initPurchaseBag;
 
-		public void InitBagItemsDisplayPlane(CallBackWithItem itemClickCallBack,CallBack initPurchaseBag){
+        // 背包物品点击事件回调
+		private CallBackWithItem itemClickCallBack;
+
+        // 触发appstore购买行为的回调
+		private CallBackWithInt initPurchaseBag;
+        
+        /// <summary>
+        /// 初始化背包物品显示界面[不初始化任何显示，只初始化各种回调和背包切换按钮状态]
+        /// </summary>
+        /// <param name="itemClickCallBack">Item click call back.</param>
+        /// <param name="initPurchaseBag">Init purchase bag.</param>
+		public void InitBagItemsDisplayPlane(CallBackWithItem itemClickCallBack,CallBackWithInt initPurchaseBag){
+
+			currentBagIndex = 0;
+
 			this.itemClickCallBack = itemClickCallBack;
+
 			this.initPurchaseBag = initPurchaseBag;
+
+			UpdateBagTabs();
+
 		}
 
 		/// <summary>
-		/// 初始化背包物品界面
+		/// 初始化背包物品显示界面
 		/// </summary>
 		public void SetUpBagItemsPlane(int bagIndex){
 
-			totalGoldText.text = Player.mainPlayer.totalGold.ToString ();
+			currentBagIndex = bagIndex;
 
+            // 将所有的背包物品先放回缓存池中，等待接下来更新背包界面的时候再使用
 			bagItemsPool.AddChildInstancesToPool (bagItemsContainer);
 
-			for (int i = 0; i < bagTabs.Length; i++) {
-				if (i == currentBagIndex) {
-					bagTabs[i].GetComponent<Image>().sprite = bagTabSelectedIcon;
-				}else{
-					bagTabs[i].GetComponent<Image>().sprite = bagTabDeselectedIcon;
-				}
-			}
+            // 更新所有背包切换按钮的显示状态
+			for (int i = 0; i < bagTabs.Length; i++)
+            {
+				if (i == bagIndex)
+                {
+                    if (i != 4)
+                    {
+                        bagTabs[i].GetComponentInChildren<Text>().color = CommonData.tabBarTitleSelectedColor;
+                    }
+                    else
+                    {
+                        bagTabs[i].transform.Find("EquipmentIcon").GetComponent<Image>().color = CommonData.tabBarTitleSelectedColor;
+                    }
+
+                }
+                else
+                {
+                    if (i != 4)
+                    {
+                        bagTabs[i].GetComponentInChildren<Text>().color = CommonData.tabBarTitleNormalColor;
+                    }
+                    else
+                    {
+                        bagTabs[i].transform.Find("EquipmentIcon").GetComponent<Image>().color = Color.white;
+                    }
+                }
+            }
+
 
 			if (Player.mainPlayer.allItemsInBag.Count <= minItemIndexOfCurrentBag) {
 				return;
@@ -73,20 +113,33 @@ namespace WordJourney
 		}
 
         public void SetUpEquipedEquipments(){
-            
-            totalGoldText.text = Player.mainPlayer.totalGold.ToString();
 
             bagItemsPool.AddChildInstancesToPool(bagItemsContainer);
-
-            for (int i = 0; i < bagTabs.Length; i++)
+            
+			for (int i = 0; i < bagTabs.Length; i++)
             {
                 if (i == currentBagIndex)
                 {
-                    bagTabs[i].GetComponent<Image>().sprite = bagTabSelectedIcon;
+                    if (i != 4)
+                    {
+                        bagTabs[i].GetComponentInChildren<Text>().color = CommonData.tabBarTitleSelectedColor;
+                    }
+                    else
+                    {
+						bagTabs[i].transform.Find("EquipmentIcon").GetComponent<Image>().color = CommonData.tabBarTitleSelectedColor;
+                    }
+
                 }
                 else
                 {
-                    bagTabs[i].GetComponent<Image>().sprite = bagTabDeselectedIcon;
+                    if (i != 4)
+                    {
+                        bagTabs[i].GetComponentInChildren<Text>().color = CommonData.tabBarTitleNormalColor;
+                    }
+                    else
+                    {
+						bagTabs[i].transform.Find("EquipmentIcon").GetComponent<Image>().color = Color.white;
+                    }
                 }
             }
 
@@ -104,7 +157,17 @@ namespace WordJourney
         }
 
 		public void UpdateBagTabs(){
-			bagTabs [3].transform.Find ("LockIcon").gameObject.SetActive (!BuyRecord.Instance.extraBagUnlocked);
+			bagTabs[1].transform.Find("LockIcon").gameObject.SetActive(!BuyRecord.Instance.bag_2_unlocked);
+
+            bagTabs[1].transform.GetComponentInChildren<Text>().enabled = BuyRecord.Instance.bag_2_unlocked;
+
+			bagTabs[2].transform.Find("LockIcon").gameObject.SetActive(!BuyRecord.Instance.bag_3_unlocked);
+
+            bagTabs[2].transform.GetComponentInChildren<Text>().enabled = BuyRecord.Instance.bag_3_unlocked;
+
+            bagTabs[3].transform.Find("LockIcon").gameObject.SetActive(!BuyRecord.Instance.bag_4_unlocked);
+
+            bagTabs[3].transform.GetComponentInChildren<Text>().enabled = BuyRecord.Instance.bag_4_unlocked;
 		}
 
 		public void ArrangeBag(){
@@ -122,20 +185,51 @@ namespace WordJourney
         }
 			
 
-
+        
 		public void ChangeBag(int bagIndex){
 
-			if (bagIndex == 3 && !BuyRecord.Instance.extraBagUnlocked) {
-				initPurchaseBag ();
+			if (bagIndex == currentBagIndex)
+            {
+                return;
+            }
+
+
+			if (bagIndex == 1 && !BuyRecord.Instance.bag_2_unlocked)
+            {
+                initPurchaseBag(1);
+                return;
+            }         
+
+			if (bagIndex == 2 && !BuyRecord.Instance.bag_3_unlocked)
+            {
+				if(!BuyRecord.Instance.bag_2_unlocked){
+					initPurchaseBag(1);
+				}
+				else
+				{
+					initPurchaseBag(2);
+				}
+
+                return;
+            }
+
+
+			if (bagIndex == 3 && !BuyRecord.Instance.bag_4_unlocked) {
+				if (!BuyRecord.Instance.bag_2_unlocked)
+                {
+                    initPurchaseBag(1);
+                }
+                else if (!BuyRecord.Instance.bag_3_unlocked)
+                {
+                    initPurchaseBag(2);
+                }
+				else
+				{
+					initPurchaseBag(3);
+				}            
 				return;
 			}
-
-			if (bagIndex == currentBagIndex) {
-				return;
-			}
-
-			//GameManager.Instance.soundManager.PlayAudioClip(CommonData.bagAudioName);
-
+         
 			currentBagIndex = bagIndex;
 
             if(bagIndex != 4){
@@ -173,7 +267,7 @@ namespace WordJourney
 			int actualIndex = itemIndexInBag - minItemIndexOfCurrentBag;
 			Transform removedItem = bagItemsContainer.GetChild (actualIndex);
 			bagItemsPool.AddInstanceToPool (removedItem.gameObject);
-			AddSequenceItemsIfBagNotFull ();
+			//AddSequenceItemsIfBagNotFull ();
 		}
 
 		public void RemoveBagItem(Item item){
@@ -188,27 +282,27 @@ namespace WordJourney
 
 			bagItemsPool.AddInstanceToPool (removedItem.gameObject);
 
-			AddSequenceItemsIfBagNotFull ();
+			//AddSequenceItemsIfBagNotFull ();
 		}
 
-		public void AddSequenceItemsIfBagNotFull(){
+		//public void AddSequenceItemsIfBagNotFull(){
 
 
-			if (minItemIndexOfCurrentBag + bagItemsContainer.childCount >= Player.mainPlayer.allItemsInBag.Count) {
-				return;
-			}
+		//	if (minItemIndexOfCurrentBag + bagItemsContainer.childCount >= Player.mainPlayer.allItemsInBag.Count) {
+		//		return;
+		//	}
 
-			for (int i = minItemIndexOfCurrentBag + bagItemsContainer.childCount; i <= maxItemIndexOfCurrentBag; i++) {
+		//	for (int i = minItemIndexOfCurrentBag + bagItemsContainer.childCount; i <= maxItemIndexOfCurrentBag; i++) {
 
-				if (i >= Player.mainPlayer.allItemsInBag.Count) {
-					return;
-				}
+		//		if (i >= Player.mainPlayer.allItemsInBag.Count) {
+		//			return;
+		//		}
 
-				AddBagItem (Player.mainPlayer.allItemsInBag [i]);
+		//		AddBagItem (Player.mainPlayer.allItemsInBag [i]);
 
-			}
+		//	}
 
-		}
+		//}
 
 		/// <summary>
 		/// 背包中单个物品按钮的初始化方法,序号-1代表添加到背包尾部
@@ -236,6 +330,11 @@ namespace WordJourney
 				bagItem.SetSiblingIndex (atIndex - minItemIndexOfCurrentBag);
 			}
 
+		}
+
+		public void SetSelectionIcon(int index,bool active){
+			ItemInBagCell itemInBagCell = bagItemsContainer.GetChild(index).GetComponent<ItemInBagCell>();
+			itemInBagCell.SetSelectionIcon(active);
 		}
 
 		public void HideAllItemSelectedTintIcon(){

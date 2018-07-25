@@ -27,9 +27,7 @@ namespace WordJourney
 				return mExploreManager;
 			}
 		}
-
-		// 地图生成器
-		private MapGenerator mapGenerator;	
+        	
 
 		public NewMapGenerator newMapGenerator;	
 	
@@ -44,30 +42,18 @@ namespace WordJourney
 
 		[HideInInspector]public ExploreUICotroller expUICtr;
 
-		//private Transform crystalEntered;
-
-//		private Transform monsterEntered;
 
 		public MapEvent currentEnteredMapEvent;
 
-//		public bool isExploreClickValid;
-
-//		private bool detectFight;
-
-
-//		[HideInInspector]public bool clickForConsumablesPos;
-
-//		public float cameraRollSpeed = 6f;//镜头拉到传送阵的速度
-//		public float cameraStayDuration = 0.5f;//镜头停留时长
+		public bool exploreSceneReady;
 
 		private List<HLHWord> correctWordList = new List<HLHWord>();
 		private List<HLHWord> wrongWordList = new List<HLHWord>();
 
 
+
 		void Awake()
 		{
-
-			mapGenerator = GetComponent<MapGenerator>();
 
 			Transform battlePlayer = Player.mainPlayer.transform.Find ("BattlePlayer");
 
@@ -75,13 +61,11 @@ namespace WordJourney
 
 			battlePlayerCtr = Player.mainPlayer.GetComponentInChildren<BattlePlayerController> ();
 
-//			battlePlayerCtr.isInExplore = true;
-			battlePlayerCtr.ActiveBattlePlayer (false, false, false);
+			battlePlayerCtr.ActiveBattlePlayer (false, false, false);  
 
-			Transform exploreCanvas = TransformManager.FindTransform ("ExploreCanvas");
+			Transform exploreCanvas = TransformManager.FindTransform("ExploreCanvas");
 
-			expUICtr = exploreCanvas.GetComponent<ExploreUICotroller> ();
-
+			expUICtr = exploreCanvas.GetComponent<ExploreUICotroller>();
 		}
 
 		void Start(){
@@ -96,98 +80,54 @@ namespace WordJourney
 			}
 			#endif
 
-			#if UNITY_EDITOR || UNITY_IOS 
-			Material m = newMapGenerator.fogOfWarPlane.GetComponent<Renderer>().material;
-			m.shader = Resources.Load("FOWShader") as Shader;
-			#endif
+			//#if UNITY_EDITOR || UNITY_IOS 
+			//Material m = newMapGenerator.fogOfWarPlane.GetComponent<Renderer>().material;
+			//m.shader = Resources.Load("FOWShader") as Shader;
+			//#endif
 
 		}
 			
 		//Initializes the game for each level.
-		public void SetUpExploreView()
+		public void SetUpExploreView(bool fromLastLevel)
 		{
+			exploreSceneReady = false;
 
-			DisableExploreInteractivity ();
+			bool isFinalChapter = Player.mainPlayer.currentLevelIndex == CommonData.maxLevel;
 
-			if (!Player.mainPlayer.isNewPlayer && (!GameManager.Instance.soundManager.bgmAS.isPlaying 
-			                                       || GameManager.Instance.soundManager.bgmAS.clip.name != CommonData.exploreBgmName)) {
-				GameManager.Instance.soundManager.PlayBgmAudioClip (CommonData.exploreBgmName);
+			System.GC.Collect();
+
+            DisableExploreInteractivity();
+
+            newMapGenerator.SetUpMap(fromLastLevel);
+
+            Player.mainPlayer.ClearCollectedCharacters();
+
+            expUICtr.SetUpExploreCanvas();
+
+            battlePlayerCtr.InitBattlePlayer();
+
+			if(isFinalChapter){
+				expUICtr.transitionMask.color = new Color(0, 0, 0, 0.75f);
+				expUICtr.transitionMask.gameObject.SetActive(true);
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.finalChapterCanvasBundleName, "FinalChapterCanvas", delegate
+				{
+					TransformManager.FindTransform("FinalChapterCanvas").GetComponent<FinalChapterViewControlller>().SetUpFinalChapterView();
+				});
+			}else{
+				EnableExploreInteractivity();   
 			}
+            
+			exploreSceneReady = true;
 
-			newMapGenerator.SetUpMap();
+			//GameManager.Instance.UIManager.RemoveCanvasCache("HomeCanvas");
+			//GameManager.Instance.UIManager.RemoveCanvasCache("ShareCanvas");
+			//GameManager.Instance.UIManager.RemoveCanvasCache("SettingCanvas");
+			//GameManager.Instance.UIManager.RemoveCanvasCache("LoadingCanvas");
+			//GameManager.Instance.UIManager.RemoveCanvasCache("GuideCanvas");
 
-			Player.mainPlayer.ClearCollectedCharacters();
          
-			expUICtr.SetUpExploreCanvas ();
-
-			battlePlayerCtr.InitBattlePlayer ();
-
-			EnableExploreInteractivity ();
-
 		}
-
-//		private IEnumerator ShowTransportPosAndRollBack(){
-//
-//			yield return new WaitForSeconds (cameraStayDuration);
-//
-//			Vector3 transportPosInMap = mapGenerator.GetTransportPosInMap ();
-//
-//			Vector3 cameraPos = new Vector3(Camera.main.transform.position.x,Camera.main.transform.position.y,0);
-//
-//			Vector3 offsetVector = transportPosInMap - cameraPos;
-//
-//			float distance = offsetVector.magnitude;
-//
-////			Debug.Log (distance);
-//
-//			float cameraRollDuration = distance / cameraRollSpeed;
-//
-////			Debug.Log (cameraRollDuration);
-//
-//			float moveSpeedX = offsetVector.x / cameraRollDuration;
-//			float moveSpeedY = offsetVector.y / cameraRollDuration;
-//
-//			float timer = 0;
-//
-//			while (timer < cameraRollDuration) {
-//
-//				Vector3 moveVector = new Vector3 (moveSpeedX * Time.deltaTime, moveSpeedY * Time.deltaTime, 0);
-//
-//				Camera.main.transform.position += moveVector; 
-//
-//				timer += Time.deltaTime;
-//
-//				yield return null;
-//
-//			}
-//
-//			yield return new WaitForSeconds (cameraStayDuration);
-//
-//			timer = 0;
-//
-//			while (timer < cameraRollDuration) {
-//
-//				Vector3 moveVector = new Vector3 (moveSpeedX * Time.deltaTime, moveSpeedY * Time.deltaTime, 0);
-//
-//				Camera.main.transform.position -= moveVector; 
-//
-//				timer += Time.deltaTime;
-//
-//				yield return null;
-//
-//			}
-//
-//			Camera.main.transform.localPosition = new Vector3 (0, 0, -5);;
-//
-//			EnableExploreInteractivity ();
-//		}
-
-		public void ItemsAroundAutoIntoLifeWithBasePoint(Vector3 basePostion,CallBack cb = null){
-
-			mapGenerator.ItemsAroundAutoIntoLifeWithBasePoint (basePostion,cb);
-
-		}
-
+      
 
 		private void Update(){
 
@@ -279,21 +219,60 @@ namespace WordJourney
 		public void RecordWord(HLHWord word,bool isChooseRight){
 
 			if (isChooseRight) {
-				correctWordList.Add (word);
+				if(!correctWordList.Contains(word)){
+					correctWordList.Add (word);
+                }
 			} else {
-				wrongWordList.Add (word);
+				if(!wrongWordList.Contains(word)){
+					wrongWordList.Add(word);
+				}            
 			}
+
+		}
+
+		public void UpdateWordDataBase(){
+         
+			MySQLiteHelper sql = MySQLiteHelper.Instance;
+
+            sql.GetConnectionWith(CommonData.dataBaseName);
+
+            string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
+
+			string[] colFields = { "learnedTimes", "ungraspTimes","isFamiliar" };
+
+			HLHWord word = null;
+            
+			for (int i = 0; i < correctWordList.Count;i++){
+				word = correctWordList[i];
+
+				string familiarStr = word.isFamiliar ? "1" : "0";
+               
+				string[] conditions = { "wordId=" + word.wordId };
+				string[] values = { word.learnedTimes.ToString(), word.ungraspTimes.ToString(),familiarStr};
+				sql.UpdateValues(currentWordsTableName, colFields, values, conditions, true);
+			}
+
+			for (int i = 0; i < wrongWordList.Count;i++){
+				word = wrongWordList[i];
+				   
+				string familiarStr = word.isFamiliar ? "1" : "0";
+				string[] conditions = { "wordId=" + word.wordId };
+				string[] values = { word.learnedTimes.ToString(), word.ungraspTimes.ToString(),familiarStr };
+                sql.UpdateValues(currentWordsTableName, colFields, values, conditions, true);
+			}
+            
+			sql.CloseConnection(CommonData.dataBaseName);    
 
 		}
 
 
 		public void ShowWordsChoosePlane(HLHWord[] wordsArray,string extraInfo = null){
-			AllWalkableEventsStopMove ();
+			MapWalkableEventsStopAction ();
 			expUICtr.SetUpWordHUD (wordsArray,extraInfo);
 		}
 
 		public void ShowCharacterFillPlane(HLHWord word){
-			AllWalkableEventsStopMove ();
+			MapWalkableEventsStopAction ();
 			expUICtr.SetUpWordHUD (word);
 		}
 
@@ -301,18 +280,18 @@ namespace WordJourney
 
 			MapEvent me = currentEnteredMapEvent.GetComponent<MapEvent> ();
 
-			if (me is MapNPC) {
-				MapNPC mn = me as MapNPC;
-				//if (isChooseCorret) {
-				//	expUICtr.SetUpNPCWhenWordChooseRight (mn.npc);
-				//} else {
-				//	expUICtr.SetUpNPCWhenWordChooseWrong (mn.npc);
-				//}
-			} else {
+			//if (me is MapNPC) {
+			//	MapNPC mn = me as MapNPC;
+			//	//if (isChooseCorret) {
+			//	//	expUICtr.SetUpNPCWhenWordChooseRight (mn.npc);
+			//	//} else {
+			//	//	expUICtr.SetUpNPCWhenWordChooseWrong (mn.npc);
+			//	//}
+			//} else {
 				me.MapEventTriggered (isChooseCorret, battlePlayerCtr);
-			}
+			//}
 
-			AllWalkableEventsStartMove ();
+			MapWalkableEventsStartAction ();
 
 		}
 
@@ -323,14 +302,10 @@ namespace WordJourney
 
 			me.MapEventTriggered (true, battlePlayerCtr);
 
-			AllWalkableEventsStartMove ();
+			MapWalkableEventsStartAction ();
 
 		}
-
-//		public void ShowTint(string tintText){
-//			expUICtr.SetUpSingleTextTintHUD (tintText);
-//		}
-
+              
 
 		public void DisableExploreInteractivity(){
 			expUICtr.ShowExploreMask ();
@@ -354,20 +329,53 @@ namespace WordJourney
 
 			expUICtr.SetUpSimpleItemDetail (reward);
 
+			expUICtr.UpdateBottomBar();
+
 		}
 
-		public void AllWalkableEventsStopMove(){
+		public void MapWalkableEventsStopActionImmidiately()
+        {
+            for (int i = 0; i < newMapGenerator.allMonstersInMap.Count; i++)
+            {
+                MapMonster mapMonster = newMapGenerator.allMonstersInMap[i];
+				mapMonster.StopMoveImmidiately();
+            }
+
+            for (int i = 0; i < newMapGenerator.allNPCsInMap.Count; i++)
+            {
+				newMapGenerator.allNPCsInMap[i].StopMoveImmidiately();
+            }
+        }
+
+
+
+		public void MapWalkableEventsStopAction(){
 			for (int i = 0; i < newMapGenerator.allMonstersInMap.Count; i++) {
-				newMapGenerator.allMonstersInMap [i].StopMoveAtEndOfCurrentMove ();
+				MapMonster mapMonster = newMapGenerator.allMonstersInMap[i];
+				//if(!mapMonster.isInMoving){
+				//	continue;
+				//}
+				mapMonster.StopMoveAtEndOfCurrentMove ();
 			}
+
+			for (int i = 0; i < newMapGenerator.allNPCsInMap.Count; i++)
+            {
+				newMapGenerator.allNPCsInMap[i].StopMoveAtEndOfCurrentMove();
+            }
 		}
 
-		public void AllWalkableEventsStartMove(){
+		public void MapWalkableEventsStartAction(){
+         
 			if (battlePlayerCtr.isInEvent) {
 				return;
 			}
+
 			for (int i = 0; i < newMapGenerator.allMonstersInMap.Count; i++) {
 				newMapGenerator.allMonstersInMap [i].StartMove ();
+			}
+
+			for (int i = 0; i < newMapGenerator.allNPCsInMap.Count;i++){
+				newMapGenerator.allNPCsInMap [i].StartMove();
 			}
 		}
 
@@ -378,8 +386,6 @@ namespace WordJourney
 		/// <param name="monsterTrans">Monster trans.</param>
 		public void EnterFight(Transform monsterTrans){
 
-//			detectFight = true;
-
 			DisableExploreInteractivity ();
 
 			battleMonsterCtr = monsterTrans.GetComponent<BattleMonsterController> ();
@@ -389,7 +395,7 @@ namespace WordJourney
 			battlePlayerCtr.SetEnemy (battleMonsterCtr);
 			battleMonsterCtr.SetEnemy (battlePlayerCtr);
 
-//			battlePlayerCtr.isInFight = true;
+
 		}
 
 	
@@ -402,33 +408,35 @@ namespace WordJourney
 
 		public void PlayerAndMonsterStartFight(){
 
+			expUICtr.ShowFightPlane();
+
 			// 执行玩家角色战斗前技能回调
 			battleMonsterCtr.StartFight (battlePlayerCtr);
 			battlePlayerCtr.StartFight (battleMonsterCtr);
 
 			battlePlayerCtr.ExcuteBeforeFightSkillCallBacks(battleMonsterCtr);
 			battleMonsterCtr.ExcuteBeforeFightSkillCallBacks(battlePlayerCtr);
-
-			expUICtr.ShowFightPlane ();
 
 		}
 
 		public void PlayerStartFight(){
-			
+
+			expUICtr.ShowFightPlane();
+
 			battlePlayerCtr.StartFight (battleMonsterCtr);
 			// 执行玩家角色战斗前技能回调
 			battlePlayerCtr.ExcuteBeforeFightSkillCallBacks(battleMonsterCtr);
 
-			expUICtr.ShowFightPlane ();
-
 		}
 
 		public void MonsterStartFight(){
-			
+
+			expUICtr.ShowFightPlane();
+
 			battleMonsterCtr.StartFight (battlePlayerCtr);
 			// 执行怪物角色战斗前技能回调
 			battleMonsterCtr.ExcuteBeforeFightSkillCallBacks(battlePlayerCtr);
-			expUICtr.ShowFightPlane ();
+
 		}
 
 		public void ResetMapWalkableInfo(Vector3 position,int walkaleInfo){
@@ -437,45 +445,16 @@ namespace WordJourney
 			
 
 		public void ShowNPCPlane(MapNPC mapNPC){
-			AllWalkableEventsStopMove ();
+			MapWalkableEventsStopAction ();
 			expUICtr.EnterNPC (mapNPC.npc);
 		}
 			
 
 		public void ShowBillboard(Billboard bb){
-			AllWalkableEventsStopMove ();
+			MapWalkableEventsStopAction ();
 			expUICtr.SetUpBillboard (bb);
 		}
 
-
-
-
-//		public void ShowConsumablesValidPointTintAround(Consumables consumables){
-//
-////			Debug.Log ("显示消耗品使用范围提示");
-//
-//			if (battlePlayerCtr.pathPosList.Count > 0) {
-//				battlePlayerCtr.StopMoveAtEndOfCurrentStep ();
-//			}
-//
-//			StartCoroutine ("LatelyShowConsumablesValidTints",consumables);
-//
-//		}
-
-//		private IEnumerator LatelyShowConsumablesValidTints(Consumables consumables){
-//
-//			yield return new WaitUntil (() => battlePlayerCtr.isIdle);
-//
-//			mapGenerator.ShowConsumablesValidPointsTint (consumables);
-//
-//		}
-
-
-		//public void ChangeCrystalStatus(){
-		//	crystalEntered.GetComponent<Crystal> ().CrystalExausted ();
-		//	mapGenerator.mapWalkableInfoArray [(int)crystalEntered.position.x, (int)crystalEntered.position.y] = 1;
-		//	expUICtr.GetComponent<BattlePlayerUIController> ().UpdateAgentStatusPlane ();
-		//}
 
 		public void PlayerFade(){
 			battlePlayerCtr.PlayerFade ();
@@ -500,12 +479,7 @@ namespace WordJourney
 			MapWalkableEvent walkableEvent = trans.GetComponent<MapWalkableEvent> ();
 
 			Player player = Player.mainPlayer;
-
-			//player.DestroyEquipmentInBagAttachedSkills ();
-
-			battlePlayerCtr.enemy = null;
-
-			bmCtr.enemy = null;
+            
 
 			FightEndCallBacks ();
 
@@ -527,7 +501,7 @@ namespace WordJourney
 			walkableEvent.RefreshWalkableInfoWhenQuit (true);
                      
 			MapMonster mm = bmCtr.GetComponent<MapMonster> ();
-
+            
             if (mm != null) {
 
                 Item rewardItem = mm.GenerateRewardItem();
@@ -539,6 +513,14 @@ namespace WordJourney
 				if (mm.pairEventPos != -Vector3.one) {
 					newMapGenerator.ChangeMapEventStatusAtPosition (mm.pairEventPos);
 				}
+
+				//int posX = Mathf.RoundToInt(this.transform.position.x);
+                //int posY = Mathf.RoundToInt(this.transform.position.y);
+
+				if(monster.isBoss){
+					MapEventsRecord.AddEventTriggeredRecord(mm.mapIndex, mm.oriPos);
+				}
+
 
 			}
 
@@ -581,6 +563,8 @@ namespace WordJourney
 
             bool isLevelUp = player.LevelUpIfExperienceEnough();//判断是否升级
 
+			newMapGenerator.allMonstersInMap.Remove(mm);
+
             if (isLevelUp)
 			{
 
@@ -592,7 +576,7 @@ namespace WordJourney
             }
             else
             {
-                AllWalkableEventsStartMove();
+                MapWalkableEventsStartAction();
             }
 
 			battlePlayerCtr.UpdateStatusPlane();
@@ -607,7 +591,7 @@ namespace WordJourney
 		}
 
 		public void BattlePlayerLose(){
-
+         
             battlePlayerCtr.agent.ClearPropertyChangesFromSkill();
             battleMonsterCtr.agent.ClearPropertyChangesFromSkill();
 
@@ -615,12 +599,7 @@ namespace WordJourney
 
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);
-
-			//(battlePlayerCtr.agent as Player).DestroyEquipmentInBagAttachedSkills ();
-
-			battlePlayerCtr.enemy = null;
-
-			battleMonsterCtr.enemy = null;
+            
 
 			FightEndCallBacks ();
 
@@ -649,60 +628,32 @@ namespace WordJourney
 			battleMonsterCtr.ClearAllEffectStatesAndSkillCallBacks ();
 
 		}
-
-
-//		private void ResetCamareAndContinueMove(Vector3 oriMonsterPos){
-//
-////			StartCoroutine ("ResetCamera");
-//
-//			EnableExploreInteractivity ();
-//
-//			battlePlayerCtr.PlayerMoveToEnemyPosAfterFight (oriMonsterPos);
-//		}
-			
-
-//		public void RefrestCurrentLevel(){
-//
-//			Time.timeScale = 1;
-//
-////			StopCoroutine ("AdjustAgentsAndCameraAndStartFight");
-//
-//			mapGenerator.PrepareToResetMap ();
-//
-//			expUICtr.PrepareForRefreshment ();
-//
-//			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
-//
-//			Player.mainPlayer.SetUpPlayerWithPlayerData (playerData);
-//
-//			int gameLevel = Player.mainPlayer.currentLevelIndex;
-//
-//			// 游戏中统一使用关卡信息的拷贝，这样不会影响到原始数据
-//			GameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [gameLevel].Copy();
-//
-//			battlePlayerCtr.ResetAgent ();
-//
-//			if (monsterEntered != null) {
-//				monsterEntered.GetComponent<BattleMonsterController> ().ResetAgent ();
-//				monsterEntered = null;
-//			}
-//
-//			if (monsterEntered != null) {
-//				monsterEntered.GetComponent<Agent> ().ResetBattleAgentProperties (true);
-//			}
-//
-//
-//			SetUpExploreView (levelData);
-//
-//		}
-
         
 
-		public void EnterLevel(int level){
+		public void EnterLevel(int level,ExitType exitType){
 
-			AllWalkableEventsStopMove();
+			exploreSceneReady = false;
+
+			MapWalkableEventsStopAction();
+
+			correctWordList.Clear();
+			wrongWordList.Clear();
+
+			IEnumerator enterLevelCoroutine = LatelyEnterLevel(level, exitType);
+
+			StartCoroutine(enterLevelCoroutine);         
+
+		}
+
+		private IEnumerator LatelyEnterLevel(int level, ExitType exitType){
+
+			yield return new WaitForSeconds(0.1f);
+
+			MapWalkableEventsStopAction();
 
             GameManager.Instance.pronounceManager.ClearPronunciationCache();
+
+			//GameManager.Instance.persistDataManager.SaveMapEventsRecord();
 
             Time.timeScale = 1;
 
@@ -710,35 +661,69 @@ namespace WordJourney
 
             Player player = Player.mainPlayer;
 
-			player.currentLevelIndex = level;
+            player.currentLevelIndex = level;
 
             if (player.currentLevelIndex > player.maxUnlockLevelIndex)
             {
                 player.maxUnlockLevelIndex = player.currentLevelIndex;
             }
 
-            if (player.currentLevelIndex >= 50)
-            {
-                Debug.Log("通关");
-                return;
-            }
+			if (player.currentLevelIndex <= CommonData.maxLevel)
+			{
 
-            GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+				GameManager.Instance.persistDataManager.SaveCompletePlayerData();
 
-            SetUpExploreView();
+				bool fromLastLevel = true;
 
+				switch (exitType)
+				{
+					case ExitType.LastLevel:
+						fromLastLevel = false;
+						break;
+					case ExitType.NextLevel:
+						fromLastLevel = true;
+						break;
+				}
+
+				SetUpExploreView(fromLastLevel);
+			}
 		}
 
 		public void EnterNextLevel(){
 
-			int level = Player.mainPlayer.currentLevelIndex + 1;
+			UpdateWordDataBase();
 
-			EnterLevel(level);
+			int level = Player.mainPlayer.currentLevelIndex + 1;
+         
+
+			if(Player.mainPlayer.maxUnlockLevelIndex < level){
+				Player.mainPlayer.maxUnlockLevelIndex = level;
+			}
+
+			GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+
+			EnterLevel(level, ExitType.NextLevel);
+
+
 
 		}
 
+		public void EnterLastLevel(){
+         
+			UpdateWordDataBase();
 
-		public void QuitExploreScene(bool saveData){
+			int level = Player.mainPlayer.currentLevelIndex - 1;
+
+			GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+
+			EnterLevel(level,ExitType.LastLevel);
+
+
+			//Debug.LogFormat("finish loading time:{0}", Time.time);
+		}
+
+
+		public void QuitExploreScene(){
 
 			Time.timeScale = 1;
 
@@ -746,9 +731,9 @@ namespace WordJourney
 
 			GameManager.Instance.soundManager.StopBgm ();
 
-			if (saveData) {
-				GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
-			}
+			GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
+			GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+			UpdateWordDataBase();
 
 			Camera.main.transform.SetParent (null);
 
@@ -775,7 +760,7 @@ namespace WordJourney
 
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.homeCanvasBundleName, "HomeCanvas", () => {
 				TransformManager.FindTransform ("HomeCanvas").GetComponent<HomeViewController> ().SetUpHomeView ();
-			}, false, false);
+			}, true, false);
 
 			Destroy (this.gameObject,0.3f);
 		}

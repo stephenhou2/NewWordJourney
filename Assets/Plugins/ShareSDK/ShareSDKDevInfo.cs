@@ -48,7 +48,7 @@ namespace cn.sharesdk.unity3d
 		//public MeiPai meiPai;
 
 		#if UNITY_ANDROID
-		public FourSquare fourSquare;
+		//public FourSquare fourSquare;
 		#elif UNITY_IPHONE		
 		//public Copy copy;
 		//public YixinFavorites yixinFavorites;					//易信收藏，仅iOS端支持							[仅支持iOS端]
@@ -165,7 +165,7 @@ namespace cn.sharesdk.unity3d
 		public const int type = (int) PlatformType.WeChatMoments;
 		public string AppId = "wx4868b35061f87885";
 		public string AppSecret = "64020361b8ec4c99936c0e3999a9f249";
-		public bool BypassApproval = false;
+		public bool BypassApproval = true;
 		#elif UNITY_IPHONE
 		public const int type = (int) PlatformType.WeChatMoments;
 		public string app_id = "wx4868b35061f87885";

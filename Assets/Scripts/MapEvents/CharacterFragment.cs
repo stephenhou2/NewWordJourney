@@ -17,7 +17,7 @@ namespace WordJourney
 
 		public BoxCollider2D boxCollider;
 
-		private float oriPosY;
+		public float oriPosY;
 
 		public Transform fragmentTrans;
 
@@ -26,6 +26,8 @@ namespace WordJourney
 		public float fragmentFlyDuration = 0.5f;
 
 		private char character;
+
+		private Vector2 oriPos;
 
 		private InstancePool characterFragmentPool;
 
@@ -44,11 +46,15 @@ namespace WordJourney
 
 			this.transform.position = position;
 
+			oriPos = position;
+
 			this.obtainCharacterFragmentCallBack = obtainCharacterFragmentCallBack;
 
 			this.boxCollider.enabled = true;
 
-			oriPosY = fragmentTrans.localPosition.y;
+			//oriPosY = fragmentTrans.localPosition.y;
+
+			fragmentTrans.GetComponent<SpriteRenderer>().sortingOrder = -Mathf.RoundToInt(position.y);
 
 			BeginFloating();
 
@@ -61,6 +67,12 @@ namespace WordJourney
 			this.boxCollider.enabled = false;
 
 			this.gameObject.SetActive(false);
+
+			int posX = Mathf.RoundToInt(oriPos.x);
+			int posY = Mathf.RoundToInt(oriPos.y);
+
+			//Debug.LogFormat("{0}/{1}", posX, posY);
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[posX, posY] = 1;
 
 			pool.AddInstanceToPool(this.gameObject);
 

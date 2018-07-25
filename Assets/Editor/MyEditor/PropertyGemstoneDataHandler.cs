@@ -64,41 +64,41 @@ namespace WordJourney
 
                     propertyGemstoneModel.price = FromStringToInt32(consumablesDataArray[5]);
 
-                    propertyGemstoneModel.maxHealthGain = FromStringToInt16(consumablesDataArray[6]);
+                    propertyGemstoneModel.maxHealthGainBase = FromStringToInt16(consumablesDataArray[6]);
 
-                    propertyGemstoneModel.maxManaGain = FromStringToInt16(consumablesDataArray[7]);
+					propertyGemstoneModel.maxManaGainBase = FromStringToInt16(consumablesDataArray[7]);
 
-                    propertyGemstoneModel.attackGain = FromStringToInt16(consumablesDataArray[8]);
+					propertyGemstoneModel.attackGainBase = FromStringToInt16(consumablesDataArray[8]);
 
-                    propertyGemstoneModel.magicAttackGain = FromStringToInt16(consumablesDataArray[9]);
+					propertyGemstoneModel.magicAttackGainBase = FromStringToInt16(consumablesDataArray[9]);
 
-                    propertyGemstoneModel.armorGain = FromStringToInt16(consumablesDataArray[10]);
+					propertyGemstoneModel.armorGainBase = FromStringToInt16(consumablesDataArray[10]);
 
-                    propertyGemstoneModel.magicResistGain = FromStringToInt16(consumablesDataArray[11]);
+					propertyGemstoneModel.magicResistGainBase = FromStringToInt16(consumablesDataArray[11]);
 
-                    propertyGemstoneModel.armorDecreaseGain = FromStringToInt16(consumablesDataArray[12]);
+					propertyGemstoneModel.armorDecreaseGainBase = FromStringToInt16(consumablesDataArray[12]);
 
-                    propertyGemstoneModel.magicResistDecreaseGain = FromStringToInt16(consumablesDataArray[13]);
+					propertyGemstoneModel.magicResistDecreaseGainBase = FromStringToInt16(consumablesDataArray[13]);
 
-                    propertyGemstoneModel.moveSpeedGain = FromStringToInt16(consumablesDataArray[14]);
+					propertyGemstoneModel.moveSpeedGainBase = FromStringToInt16(consumablesDataArray[14]);
 
-                    propertyGemstoneModel.critGain = FromStringToInt16(consumablesDataArray[15]);
+					propertyGemstoneModel.critGainBase = FromStringToInt16(consumablesDataArray[15]);
 
-                    propertyGemstoneModel.dodgeGain = FromStringToInt16(consumablesDataArray[16]);
+					propertyGemstoneModel.dodgeGainBase = FromStringToInt16(consumablesDataArray[16]);
 
-                    propertyGemstoneModel.critHurtScalerGain = FromStringToInt16(consumablesDataArray[17]);
+					propertyGemstoneModel.critHurtScalerGainBase = FromStringToInt16(consumablesDataArray[17]);
 
-                    propertyGemstoneModel.physicalHurtScalerGain = FromStringToInt16(consumablesDataArray[18]);
+					propertyGemstoneModel.physicalHurtScalerGainBase = FromStringToInt16(consumablesDataArray[18]);
 
-                    propertyGemstoneModel.magicalHurtScalerGain = FromStringToInt16(consumablesDataArray[19]);
+					propertyGemstoneModel.magicalHurtScalerGainBase = FromStringToInt16(consumablesDataArray[19]);
 
-                    propertyGemstoneModel.extraGoldGain = FromStringToInt16(consumablesDataArray[20]);
+					propertyGemstoneModel.extraGoldGainBase = FromStringToInt16(consumablesDataArray[20]);
 
-                    propertyGemstoneModel.extraExperienceGain = FromStringToInt16(consumablesDataArray[21]);
+					propertyGemstoneModel.extraExperienceGainBase = FromStringToInt16(consumablesDataArray[21]);
 
-                    propertyGemstoneModel.healthRecoveryGain = FromStringToInt16(consumablesDataArray[22]);
+					propertyGemstoneModel.healthRecoveryGainBase = FromStringToInt16(consumablesDataArray[22]);
 
-                    propertyGemstoneModel.magicRecoveryGain = FromStringToInt16(consumablesDataArray[23]);
+					propertyGemstoneModel.magicRecoveryGainBase = FromStringToInt16(consumablesDataArray[23]);
 
 					propertyGemstoneModel.grade = (GemstoneGrade)FromStringToInt16(consumablesDataArray[24]);
 
@@ -111,42 +111,42 @@ namespace WordJourney
 
 				string propertyRangeString = string.Empty;
 
-				if(propertyGemstoneModel.maxHealthGain > 0){
-					propertyRangeString = string.Format("{0}~{1}",Mathf.RoundToInt(propertyGemstoneModel.maxHealthGain * 0.7f),Mathf.RoundToInt(propertyGemstoneModel.maxHealthGain * 1.3f));
-				}else if(propertyGemstoneModel.maxManaGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.maxManaGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.maxManaGain * 1.3f));
-				}else if(propertyGemstoneModel.attackGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.attackGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.attackGain * 1.3f));
-				}else if(propertyGemstoneModel.magicAttackGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.magicAttackGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.magicAttackGain * 1.3f));
-				}else if(propertyGemstoneModel.armorGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.armorGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.armorGain * 1.3f));
-				}else if(propertyGemstoneModel.magicResistGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.magicResistGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.magicResistGain * 1.3f));
-				}else if(propertyGemstoneModel.armorDecreaseGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.armorDecreaseGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.armorDecreaseGain * 1.3f));
-				}else if(propertyGemstoneModel.magicResistDecreaseGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.magicResistDecreaseGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.magicResistDecreaseGain * 1.3f));
-				}else if(propertyGemstoneModel.moveSpeedGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.moveSpeedGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.moveSpeedGain * 1.3f));
-				}else if(propertyGemstoneModel.critGain > 0){
-					propertyRangeString = string.Format("{0}%~{1}%", Mathf.RoundToInt(propertyGemstoneModel.critGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.critGain * 1.3f));
-				}else if(propertyGemstoneModel.dodgeGain > 0){
-					propertyRangeString = string.Format("{0}%~{1}%", Mathf.RoundToInt(propertyGemstoneModel.dodgeGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.dodgeGain * 1.3f));
-				}else if(propertyGemstoneModel.critHurtScalerGain > 0){
-					propertyRangeString = string.Format("{0}%~{1}%", Mathf.RoundToInt(propertyGemstoneModel.critHurtScalerGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.critHurtScalerGain * 1.3f));
-				}else if(propertyGemstoneModel.physicalHurtScalerGain > 0){
-					propertyRangeString = string.Format("{0}%~{1}%", Mathf.RoundToInt(propertyGemstoneModel.physicalHurtScalerGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.physicalHurtScalerGain * 1.3f));
-				}else if(propertyGemstoneModel.magicalHurtScalerGain > 0){
-					propertyRangeString = string.Format("{0}%~{1}%", Mathf.RoundToInt(propertyGemstoneModel.magicalHurtScalerGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.magicalHurtScalerGain * 1.3f));
-				}else if(propertyGemstoneModel.extraGoldGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.extraGoldGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.extraGoldGain * 1.3f));
-				}else if(propertyGemstoneModel.extraExperienceGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.extraExperienceGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.extraExperienceGain * 1.3f));
-				}else if(propertyGemstoneModel.healthRecoveryGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.healthRecoveryGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.healthRecoveryGain * 1.3f));
-				}else if(propertyGemstoneModel.magicRecoveryGain > 0){
-					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.magicRecoveryGain * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.magicRecoveryGain * 1.3f));
+				if(propertyGemstoneModel.maxHealthGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}",Mathf.RoundToInt(propertyGemstoneModel.maxHealthGainBase * 0.7f),Mathf.RoundToInt(propertyGemstoneModel.maxHealthGainBase * 1.3f));
+				}else if(propertyGemstoneModel.maxManaGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.maxManaGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.maxManaGainBase * 1.3f));
+				}else if(propertyGemstoneModel.attackGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.attackGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.attackGainBase * 1.3f));
+				}else if(propertyGemstoneModel.magicAttackGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.magicAttackGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.magicAttackGainBase * 1.3f));
+				}else if(propertyGemstoneModel.armorGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.armorGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.armorGainBase * 1.3f));
+				}else if(propertyGemstoneModel.magicResistGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.magicResistGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.magicResistGainBase * 1.3f));
+				}else if(propertyGemstoneModel.armorDecreaseGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.armorDecreaseGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.armorDecreaseGainBase * 1.3f));
+				}else if(propertyGemstoneModel.magicResistDecreaseGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.magicResistDecreaseGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.magicResistDecreaseGainBase * 1.3f));
+				}else if(propertyGemstoneModel.moveSpeedGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.moveSpeedGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.moveSpeedGainBase * 1.3f));
+				}else if(propertyGemstoneModel.critGainBase > 0){
+					propertyRangeString = string.Format("{0}%~{1}%", Mathf.RoundToInt(propertyGemstoneModel.critGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.critGainBase * 1.3f));
+				}else if(propertyGemstoneModel.dodgeGainBase > 0){
+					propertyRangeString = string.Format("{0}%~{1}%", Mathf.RoundToInt(propertyGemstoneModel.dodgeGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.dodgeGainBase * 1.3f));
+				}else if(propertyGemstoneModel.critHurtScalerGainBase > 0){
+					propertyRangeString = string.Format("{0}%~{1}%", Mathf.RoundToInt(propertyGemstoneModel.critHurtScalerGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.critHurtScalerGainBase * 1.3f));
+				}else if(propertyGemstoneModel.physicalHurtScalerGainBase > 0){
+					propertyRangeString = string.Format("{0}%~{1}%", Mathf.RoundToInt(propertyGemstoneModel.physicalHurtScalerGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.physicalHurtScalerGainBase * 1.3f));
+				}else if(propertyGemstoneModel.magicalHurtScalerGainBase > 0){
+					propertyRangeString = string.Format("{0}%~{1}%", Mathf.RoundToInt(propertyGemstoneModel.magicalHurtScalerGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.magicalHurtScalerGainBase * 1.3f));
+				}else if(propertyGemstoneModel.extraGoldGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.extraGoldGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.extraGoldGainBase * 1.3f));
+				}else if(propertyGemstoneModel.extraExperienceGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.extraExperienceGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.extraExperienceGainBase * 1.3f));
+				}else if(propertyGemstoneModel.healthRecoveryGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.healthRecoveryGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.healthRecoveryGainBase * 1.3f));
+				}else if(propertyGemstoneModel.magicRecoveryGainBase > 0){
+					propertyRangeString = string.Format("{0}~{1}", Mathf.RoundToInt(propertyGemstoneModel.magicRecoveryGainBase * 0.7f), Mathf.RoundToInt(propertyGemstoneModel.magicRecoveryGainBase * 1.3f));
 				}
 
 				propertyGemstoneModel.itemDescription = propertyGemstoneModel.itemDescription.Replace("#", propertyRangeString);            

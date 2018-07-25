@@ -5,31 +5,35 @@ using UnityEngine;
 
 namespace WordJourney
 {
-	using DragonBones;
-	using TMPro;
 	using System.Data;
+	using DragonBones;
 
 	public class MapMonster : MapWalkableEvent {
 
 		public MonsterAlertArea[] alertAreas;
 
-		public SpriteRenderer alertToFightIcon;
+		public UnityArmatureComponent alertTint;
 
 		public LayerMask collisionLayer;
 
 		private float alertIconOffsetX;
 		private float alertIconOffsetY;
 
-		private float wordOffsetX;
-		private float wordOffsetY;
+		//private float wordOffsetX;
+		//private float wordOffsetY;
 
 		public bool isReadyToFight;
 
 		// 触发机关的位置【如果没有触发的机关，则设置为（-1，-1，-1）】
 		public Vector3 pairEventPos;
 
+		public Vector2 oriPos;
+
 		private int mapHeight;
 
+		public int mapIndex;
+
+		public bool hasReward = true;
 
 		public void SetPosTransferSeed(int mapHeight){
 			this.mapHeight = mapHeight;
@@ -41,13 +45,13 @@ namespace WordJourney
 
 			base.Awake();
 
-			alertIconOffsetX = alertToFightIcon.transform.localPosition.x;
-			alertIconOffsetY = alertToFightIcon.transform.localPosition.y;
+			alertIconOffsetX = alertTint.transform.localPosition.x;
+			alertIconOffsetY = alertTint.transform.localPosition.y;
 
-			if(tmPro != null){
-				wordOffsetX = tmPro.transform.localPosition.x + 1000;
-                wordOffsetY = tmPro.transform.localPosition.y;
-			}
+			//if(tmPro != null){
+			//	wordOffsetX = tmPro.transform.localPosition.x + 1000;
+   //             wordOffsetY = tmPro.transform.localPosition.y;
+			//}
 
 		}
 
@@ -55,13 +59,14 @@ namespace WordJourney
 		{
 			StopMoveImmidiately ();
 			StopCoroutine ("DelayedMovement");
+			//StopCoroutine("WordShowAndHide");
 			DisableAllDetect ();
 			isReadyToFight = false;
 			HideAllAlertAreas ();
 			bc2d.enabled = false;
 			gameObject.SetActive (false);
 			pool.AddInstanceToPool (this.gameObject);
-			ExploreManager.Instance.newMapGenerator.allMonstersInMap.Remove (this);
+
 		}
 
 
@@ -69,7 +74,7 @@ namespace WordJourney
 
 			StopAllCoroutines ();
 			HideAllAlertAreas ();
-			alertToFightIcon.enabled = false;
+			alertTint.gameObject.SetActive(false);
 
 		}
 
@@ -143,6 +148,12 @@ namespace WordJourney
 				return;
 			}
 
+			if (bp.fadeStepsLeft > 0)
+            {
+                return;
+            }
+
+
 			if (bp.isInEvent) {
 				return;
 			}
@@ -159,23 +170,21 @@ namespace WordJourney
 				return;
 			}
 
-
-				
 			isReadyToFight = true;
 
-			EnterMapEvent (bp);
+			//EnterMapEvent (bp);
+			DetectPlayer(bp);
 		}
 
 		public override void EnterMapEvent (BattlePlayerController bp)
-		{
-
+		{         
 			if (isInMoving) {
 				RefreshWalkableInfoWhenTriggeredInMoving ();
 			}
 
 			bp.isInEvent = true;
 
-			ExploreManager.Instance.AllWalkableEventsStopMove ();
+			ExploreManager.Instance.MapWalkableEventsStopAction ();
 
 			StopMoveImmidiately ();
 
@@ -187,6 +196,10 @@ namespace WordJourney
 		}
 
 		public void DetectPlayer(BattlePlayerController bp){
+
+			if(bp.fadeStepsLeft > 0){
+				return;
+			}
 
 			if (bp.escapeFromFight) {
 				return;
@@ -200,7 +213,7 @@ namespace WordJourney
 				RefreshWalkableInfoWhenTriggeredInMoving ();
 			}
 
-			ExploreManager.Instance.AllWalkableEventsStopMove ();
+			ExploreManager.Instance.MapWalkableEventsStopAction ();
 
 			StopMoveImmidiately ();
 
@@ -208,13 +221,21 @@ namespace WordJourney
 
 			ExploreManager.Instance.EnterFight (this.transform);
 
+			//AlertTintSpark();
+
 			MapEventTriggered (false, bp);
 
 		}
 
-		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
+		public override void InitializeWithAttachedInfo(int mapIndex,MapAttachedInfoTile attachedInfo)
 		{
-			//BattleMonsterController baCtr = transform.GetComponent<BattleMonsterController> ();
+			this.mapIndex = mapIndex;
+
+			this.oriPos = attachedInfo.position;
+
+			this.moveOrigin = attachedInfo.position;
+
+			this.moveDestination = attachedInfo.position;
 
 			canMove = bool.Parse(KVPair.GetPropertyStringWithKey("canMove",attachedInfo.properties));
 
@@ -231,6 +252,8 @@ namespace WordJourney
 			} else {
 				pairEventPos = -Vector3.one;
 			}
+
+			this.gameObject.SetActive(true);
 
 			for (int i = 0; i < alertAreas.Length; i++) {
 				alertAreas [i].InitializeAlertArea ();
@@ -252,14 +275,19 @@ namespace WordJourney
 
 			baCtr.SetAlive();
 
-			StartMove ();
+			//StartMove ();
 
 			bc2d.enabled = true;
 			isReadyToFight = false;
 
 			isTriggered = false;
 
-			alertToFightIcon.enabled = false;
+			baCtr.isIdle = false;
+			isInMoving = false;
+			isInAutoWalk = false;
+
+
+			alertTint.gameObject.SetActive(false);
 
 			if(tmPro != null){
 				tmPro.text = string.Empty;
@@ -275,14 +303,11 @@ namespace WordJourney
 			switch (towardsIndex) {
 			case 0:
 				baCtr.TowardsRight ();
+					alertTint.transform.localPosition = new Vector3(alertIconOffsetX, alertIconOffsetY, 0);
 				break;
 			case 1:
 				baCtr.TowardsLeft ();
-				alertToFightIcon.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
-					if(tmPro != null){
-						tmPro.transform.localPosition = new Vector3(-alertIconOffsetX - 1000, alertIconOffsetY, 0);
-					}
-
+				alertTint.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
 				break;
 			case 2:
 				baCtr.TowardsUp ();
@@ -299,55 +324,23 @@ namespace WordJourney
 		/// 怪物头上红色感叹号闪烁动画
 		/// </summary>
 		/// <returns>The to fight icon shining.</returns>
-		private IEnumerator AlertToFightIconShining(){
-
-			yield return new WaitUntil (() => isReadyToFight);
-
-			//for (int i = 0; i < 3; i++) {
-
-			//	alertToFightIcon.enabled = true;
-
-			//	yield return new WaitForSeconds (0.1f);
-
-			//	alertToFightIcon.enabled = false;
-
-			//	yield return new WaitForSeconds (0.1f);
-
-			//}
-
-			HLHWord word = null;
+		private void AlertTintSpark(){
          
-			bool hasValidWord = false;
-            for (int i = 0; i < wordsArray.Length; i++)
-            {
-                if (wordsArray[i].spell.Length <= 12)
-                {
-                    hasValidWord = true;
-                    word = wordsArray[i];
-                    break;
-                }
-            }
+			alertTint.gameObject.SetActive(true);
 
-            if (!hasValidWord)
-            {
-                word = GetAValidWord();
+			StartCoroutine("AlertTintLatelyHide");
+		}
 
-            }
+		private IEnumerator AlertTintLatelyHide(){
 
-			alertToFightIcon.enabled = true;
+			yield return new WaitForSeconds(0.1f);
 
-			if (tmPro != null)
-			{
-				tmPro.text = word.spell;
-			}
-			yield return new WaitForSeconds(1.0f);
+			alertTint.animation.Play("default", 1);
 
-			alertToFightIcon.enabled = false;
+			yield return new WaitUntil(() => alertTint.animation.isCompleted);
 
-			if (tmPro != null)
-            {
-				tmPro.text = string.Empty;
-			}
+			alertTint.gameObject.SetActive(false);
+
 		}
 			
 
@@ -357,29 +350,69 @@ namespace WordJourney
 				return;
 			}
 
+			//Debug.Log("monster is not in triggered");
+
 			bp.escapeFromFight = false;
 			bp.isInEscaping = false;
 
-			if (!isReadyToFight) {
-
+			if (!isReadyToFight) {            
 				ExploreManager.Instance.PlayerStartFight ();
 			}
 
-			StartCoroutine ("AlertToFightIconShining");
+			//StartCoroutine ("AlertToFightIconShining");
+
 			StartCoroutine ("ResetPositionAndStartFight", bp);
 
 			isTriggered = true;
 
 		}
+
+		//private IEnumerator WordShowAndHide(){
+
+		//	HLHWord word = null;
+
+  //          bool hasValidWord = false;
+  //          for (int i = 0; i < wordsArray.Length; i++)
+  //          {
+  //              if (wordsArray[i].spell.Length <= 12)
+  //              {
+  //                  hasValidWord = true;
+  //                  word = wordsArray[i];
+  //                  break;
+  //              }
+  //          }
+
+  //          if (!hasValidWord)
+  //          {
+  //              word = GetAValidWord();            
+  //          }
+
+
+  //          if (tmPro != null)
+  //          {
+  //              tmPro.text = word.spell;
+  //          }
+  //          yield return new WaitForSeconds(1f);
+
+  //          if (tmPro != null)
+  //          {
+  //              tmPro.text = string.Empty;
+  //          }
+
+		//}
 			
 
 		private IEnumerator ResetPositionAndStartFight(BattlePlayerController battlePlayerCtr){
 
 			yield return new WaitUntil (() => isReadyToFight);
 
+			AlertTintSpark();
+         
 			baCtr.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
 
-			yield return new WaitForSeconds (0.5f);
+			bool playerNeedResetAttack = battlePlayerCtr.NeedResetAttack();
+
+			yield return new WaitForSeconds (0.4f);
 
 			HideAllAlertAreas ();
 			DisableAllDetect ();
@@ -392,14 +425,12 @@ namespace WordJourney
             int monsterPosX = Mathf.RoundToInt(monsterOriPos.x);
             int monsterPosY = Mathf.RoundToInt(monsterOriPos.y);
 
-			
             int monsterLayerOrder = -monsterPosY;
 
-		
 			int posOffsetX = playerPosX - monsterPosX; 
             int posOffsetY = playerPosY - monsterPosY;
 
-
+			Vector3 monsterRunPos = Vector3.zero;
 			Vector3 monsterFightPos = Vector3.zero;
             Vector3 playerFightPos = new Vector3(playerPosX, playerPosY, 0);
 
@@ -407,24 +438,27 @@ namespace WordJourney
             int maxX = ExploreManager.Instance.newMapGenerator.columns - 1;
 
 			HLHRoleAnimInfo playerCurrentAnimInfo = battlePlayerCtr.GetCurrentRoleAnimInfo ();
-
+         
 			if (posOffsetX > 0) {
 				
-                battlePlayerCtr.TowardsLeft();
-
+				battlePlayerCtr.TowardsLeft(!battlePlayerCtr.isInFight);
+            
                 if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
+					monsterRunPos = new Vector3(playerPosX - 0.5f, playerPosY, 0);
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
                 } else if (playerPosX - 1 >= minX && playerPosX - 1 == monsterPosX && playerPosY == monsterPosY) {
+					monsterRunPos = new Vector3(playerPosX - 1f, playerPosY, 0);
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
                 } else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
-                    monsterFightPos = new Vector3(playerPosX - 1, playerPosY, 0);
+					monsterRunPos = new Vector3(playerPosX - 1f, playerPosY, 0);
+					monsterFightPos = new Vector3(playerPosX - 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
 				} else {
                     if (posOffsetY > 0)
-                    {
-
+                    {     
+						monsterRunPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
                         monsterFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
                         monsterLayerOrder = -playerPosY + 1;
 
@@ -434,8 +468,8 @@ namespace WordJourney
 
                     }
                     else
-                    {
-
+                    {             
+						monsterRunPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
                         monsterFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
                         monsterLayerOrder = -playerPosY - 1;
 
@@ -446,10 +480,12 @@ namespace WordJourney
 				}
 
 			} else if (posOffsetX == 0) {
-                
+
                 if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
 
-					battlePlayerCtr.TowardsRight ();
+					battlePlayerCtr.TowardsRight (!battlePlayerCtr.isInFight);
+
+					monsterRunPos = new Vector3(playerPosX + 0.5f, playerPosY, 0);
 
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
 
@@ -457,14 +493,19 @@ namespace WordJourney
 
                 } else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
                     
-                    battlePlayerCtr.TowardsRight();
+					battlePlayerCtr.TowardsRight(!battlePlayerCtr.isInFight);
+
+					monsterRunPos = new Vector3(playerPosX + 0.5f, playerPosY, 0);
 
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
 
                     monsterLayerOrder = -playerPosY;
+
                 } else if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
 
-					battlePlayerCtr.TowardsLeft ();
+					battlePlayerCtr.TowardsLeft (!battlePlayerCtr.isInFight);
+
+					monsterRunPos = new Vector3(playerPosX - 0.5f, playerPosY, 0);
 
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
 
@@ -472,14 +513,19 @@ namespace WordJourney
 
                 } else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
                     
-					battlePlayerCtr.TowardsLeft ();
+					battlePlayerCtr.TowardsLeft (!battlePlayerCtr.isInFight);
+
+					monsterRunPos = new Vector3(playerPosX - 0.5f, playerPosY, 0);
 
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
 
                     monsterLayerOrder = -playerPosY;
+
 				} else {
 
                     if(posOffsetY > 0){
+
+						monsterRunPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
 
                         monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
 
@@ -489,9 +535,11 @@ namespace WordJourney
 
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        battlePlayerCtr.TowardsRight();
+						battlePlayerCtr.TowardsRight(!battlePlayerCtr.isInFight);
 
                     }else{
+
+						monsterRunPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
 
                         monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
 
@@ -501,68 +549,73 @@ namespace WordJourney
 
                         baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        battlePlayerCtr.TowardsRight();
-
-
+						battlePlayerCtr.TowardsRight(!battlePlayerCtr.isInFight);
+                  
                     }
 					
 				}
 
 			} else if (posOffsetX < 0) {
 
-				battlePlayerCtr.TowardsRight ();
-
+				battlePlayerCtr.TowardsRight (!battlePlayerCtr.isInFight);
+            
                 if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
+					monsterRunPos = new Vector3(playerPosX + 0.5f, playerPosY, 0);
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
                 } else if (playerPosX + 1 <= maxX && playerPosX + 1 == monsterPosX && playerPosY == monsterPosY) {
+					monsterRunPos = new Vector3(playerPosX + 1f, playerPosY, 0);
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
                 } else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+					monsterRunPos = new Vector3(playerPosX + 1f, playerPosY, 0);
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
 				} else {
                     if (posOffsetY > 0)
                     {
 
+						monsterRunPos = new Vector3(playerPosX + 0.25f, playerPosY -0.15f, 0);
                         monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
 
                         monsterLayerOrder = -playerPosY + 1;
 
                         playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
-
+                  
                         baCtr.SetSortingOrder(-playerPosY + 1);
 
                     }
                     else
                     {
-
+						monsterRunPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
                         monsterFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
 
                         monsterLayerOrder = -playerPosY - 1;
 
                         playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
-
+                  
                         baCtr.SetSortingOrder(-playerPosY - 1);
                     }
 				}
 			}
-
-			if (battlePlayerCtr.isInFight) {
-				//Debug.LogFormat("anim name:{0}", playerCurrentAnimInfo.roleAnimName);
-				battlePlayerCtr.PlayRoleAnimByTime (playerCurrentAnimInfo.roleAnimName, playerCurrentAnimInfo.roleAnimTime,
-					playerCurrentAnimInfo.playTimes, playerCurrentAnimInfo.animEndCallback);
+            
+			if(playerNeedResetAttack){
+				battlePlayerCtr.ResetAttack(playerCurrentAnimInfo);
+				ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
 			}
+         
 
-			ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
-
-            battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+            battlePlayerCtr.FixPosTo(playerFightPos, null);
 				
-			RunToPosition (monsterFightPos, delegate {
+			RunToPosition (monsterRunPos, delegate {
+            
+				if(baCtr.isDead){
+					return;
+				}
+
+				baCtr.FixPosTo(monsterFightPos, null);
 
 				if(!battlePlayerCtr.escapeFromFight){
-					
-					this.transform.position = monsterFightPos;
 
 					if(transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x){
 						baCtr.TowardsRight();
@@ -571,10 +624,10 @@ namespace WordJourney
 					}
 
 					if (!battlePlayerCtr.isInEscaping && !battlePlayerCtr.isInFight) {
-						ExploreManager.Instance.PlayerAndMonsterStartFight ();
-						battlePlayerCtr.isInFight = true;
+						ExploreManager.Instance.PlayerAndMonsterStartFight ();  
 					} else {
 						ExploreManager.Instance.MonsterStartFight ();
+
 					}
 				}else{
 					bool monsterDie = baCtr.agent.health <= 0;
@@ -606,14 +659,14 @@ namespace WordJourney
 			if (targetPosY == oriPosY) {
 				if (targetPosX >= oriPosX) {
 					baCtr.TowardsRight ();
-					alertToFightIcon.transform.localPosition = new Vector3 (alertIconOffsetX, alertIconOffsetY, 0);
+					alertTint.transform.localPosition = new Vector3 (alertIconOffsetX, alertIconOffsetY, 0);
 					if (tmPro != null)
 					{
 						tmPro.transform.localPosition = new Vector3(alertIconOffsetX-1000, alertIconOffsetY, 0);
 					}
 				} else {
 					baCtr.TowardsLeft ();
-					alertToFightIcon.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
+					alertTint.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
 					if (tmPro != null)
 					{
 						tmPro.transform.localPosition = new Vector3(-alertIconOffsetX-1000, alertIconOffsetY, 0);
@@ -716,7 +769,7 @@ namespace WordJourney
 
             string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
 
-			string[] condition = new string[] { "wordLength <= 12 ORDER BY RANDOM() LIMIT 1" };
+			string[] condition = { "wordLength <= 12 ORDER BY RANDOM() LIMIT 1" };
 
             IDataReader reader = mySql.ReadSpecificRowsOfTable(currentWordsTableName, null, condition, true);
 
@@ -742,7 +795,9 @@ namespace WordJourney
 
             int ungraspTimes = reader.GetInt16(9);
 
-            HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+			bool isFamiliar = reader.GetInt16(10) == 1;
+
+            HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes, isFamiliar);
 
             
             return word;
@@ -757,8 +812,13 @@ namespace WordJourney
 
 			if(monster.isBoss)
             {
+				if(!hasReward){
+					return null;
+				}
+				
                 int index = 0;
 				if(monster.monsterId % 2 == 0){
+					
                     index = (Player.mainPlayer.currentLevelIndex / 5 + 1) * 1000;
 
                     List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
@@ -770,7 +830,10 @@ namespace WordJourney
 
                     rewardItem = new Equipment(ems[randomSeed], 1);
                 }else{
-					index = (Player.mainPlayer.currentLevelIndex / 5 + 1) * 10;
+					index = (Player.mainPlayer.currentLevelIndex / 5 + 2);
+					if(index == 10){
+						index = 9;
+					}
 
                     List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
                     {
@@ -778,8 +841,10 @@ namespace WordJourney
                     });
 
                     int randomSeed = Random.Range(0, ems.Count);
-
+               
                     rewardItem = new Equipment(ems[randomSeed], 1);
+
+					(rewardItem as Equipment).SetToGoldQuality();
                 }
 
             }
@@ -792,26 +857,27 @@ namespace WordJourney
 
 				switch(Player.mainPlayer.luckInMonsterTreasure){
 					case 0:
-						dropItemSeed = 10;
+						dropItemSeed = 5 + Player.mainPlayer.extraLuckInMonsterTreasure;
 						break;
 					case 1:
-						dropItemSeed = 15;
+						dropItemSeed = 10 + Player.mainPlayer.extraLuckInMonsterTreasure;
 						break;
 				}
 
 				if (randomSeed >= 0 && randomSeed < dropItemSeed)
                 {
-					randomSeed = Random.Range(0, 2);
+					randomSeed = Random.Range(0, 10);
 
-                    if (randomSeed == 0)
+                    // 掉落物品是30%的概率掉落装备
+                    if (randomSeed <= 2)
                     {
 
                         int index = Player.mainPlayer.currentLevelIndex / 5 + 1;
                         
-                    if (index == 10)
-                    {
-                        index = 9;
-                    }
+                        if (index == 10)
+                        {
+                            index = 9;
+                        }
 
                         List<EquipmentModel> ems = GameManager.Instance.gameDataCenter.allEquipmentModels.FindAll(delegate (EquipmentModel obj)
                         {
@@ -822,8 +888,20 @@ namespace WordJourney
                     }
                     else
                     {
-                        randomSeed = Random.Range(300, 316);
-                        rewardItem = Item.NewItemWith(randomSeed, 1);
+						int consumablesGrade = Player.mainPlayer.currentLevelIndex / 10;
+
+						if(consumablesGrade >= 4){
+							consumablesGrade = 3;
+						}
+
+						List<ConsumablesModel> cms = GameManager.Instance.gameDataCenter.allConsumablesModels.FindAll(delegate (ConsumablesModel obj)
+						{
+							return obj.consumablesGrade == consumablesGrade;
+						});
+
+						randomSeed = Random.Range(0, cms.Count);
+
+						rewardItem = new Consumables(cms[randomSeed], 1);
                     }
                 }else{
 				    rewardItem = null;

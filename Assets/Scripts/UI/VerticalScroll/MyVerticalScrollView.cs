@@ -23,7 +23,7 @@ namespace WordJourney
 		private int currentMaxCellIndex;//当前最底部（包括不可见）cell的序号
 
 		private List<object> allDataList;
-		private Equipment compareEquipment;//用来比较的equipment
+		//private Equipment compareEquipment;//用来比较的equipment
 
 		public Transform scrollContentContainer;//cell容器
 

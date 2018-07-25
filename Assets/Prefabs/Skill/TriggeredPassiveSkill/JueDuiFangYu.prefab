@@ -52,14 +52,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillName: "\u7EDD\u5BF9\u9632\u5FA1"
-  sfxName: 
+  sfxName: Skill/se_jueDuiFangYu
   skillId: 9
-  skillDescription: "\u6BCF\u6B21\u53D7\u5230\u653B\u51FB\u65F6\uFF0C\u6709\uFF08\u6280\u80FD\u7B49\u7EA7\xD70.5%+5%\uFF09\u7684\u6982\u7387\u5BF9\u654C\u4EBA\u9020\u621020%\u81EA\u8EAB\u62A4\u7532\u503C\u7684\u4F24\u5BB3"
+  skillDescription: "\u6BCF\u6B21\u53D7\u5230\u653B\u51FB\u65F6\uFF0C\u6709<color=orange>\u6280\u80FD\u7B49\u7EA7\xD72%+20%</color>\u7684\u6982\u7387\u5BF9\u654C\u4EBA\u9020\u621020%\u81EA\u8EAB\u62A4\u7532\u503C\u7684\u771F\u5B9E\u4F24\u5BB3"
   skillIconName: 09_jueDuiFangYu
-  selfEffectAnimName: 09_shield
+  selfEffectAnimName: se_jueDuiFangYu
   enemyEffectAnimName: 
   skillType: 2
   skillLevel: 1
+  price: 220
+  hasTriggered: 0
   beforeFightTrigger: 0
   attackTrigger: 0
   hitTrigger: 0
@@ -67,6 +69,6 @@ MonoBehaviour:
   beHitTrigger: 1
   fightEndTrigger: 0
   statusName: 
-  fixTriggerProbability: 0.05
-  triggeredProbabilityBase: 0.005
+  fixTriggerProbability: 0.2
+  triggeredProbabilityBase: 0.02
   refrectScaler: 0.2

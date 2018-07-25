@@ -15,22 +15,22 @@ namespace WordJourney
 		public Text itemCount;
 		public Button consumablesButton;
 
-		private Consumables cons;
+		private Item item;
 
 		private CallBack refreshCallBack;
 
-		public void SetUpConsumablesCell(Consumables consumables,CallBack refreshCallBack){
+		public void SetUpConsumablesCell(Item item,CallBack refreshCallBack){
 
 			consumablesButton.interactable = true;
 
-			Sprite itemSprite = GameManager.Instance.gameDataCenter.GetGameItemSprite (consumables);
+			Sprite itemSprite = GameManager.Instance.gameDataCenter.GetGameItemSprite (item);
 			itemIcon.sprite = itemSprite;
 
 			itemIcon.enabled = itemSprite != null;
 
-			itemCount.text = consumables.itemCount.ToString ();
+			itemCount.text = item.itemCount.ToString ();
 
-			this.cons = consumables;
+			this.item = item;
 
 			this.refreshCallBack = refreshCallBack;
 
@@ -44,54 +44,35 @@ namespace WordJourney
 		}
 
 		public void OnConsumablesClick(){
-
+            
 			BattlePlayerController battlePlayerController = ExploreManager.Instance.battlePlayerCtr;
+			if(item.itemType == ItemType.Consumables){
 
-			//switch (cons.type) {
-    			//case ConsumablesType.ShuXingTiSheng:
+				Consumables cons = item as Consumables;
 
-					if (cons.healthGain > 0)
-                    {
+				cons.UseConsumables(battlePlayerController);
 
-						int healthGain = cons.healthGain + Player.mainPlayer.healthRecovery;
+                bool isLevelUp = Player.mainPlayer.LevelUpIfExperienceEnough();
+                if (isLevelUp)
+                {
+                    ExploreManager.Instance.battlePlayerCtr.SetEffectAnim(CommonData.levelUpEffectName);
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.levelUpAudioName);               
+                    ExploreManager.Instance.expUICtr.ShowLevelUpPlane();
+                }
 
-						battlePlayerController.AddHealthGainAndShow(healthGain);
+				GameManager.Instance.soundManager.PlayAudioClip(cons.audioName);
+			}else if(item.itemType == ItemType.SpecialItem){
+				SpecialItem specialItem = item as SpecialItem;
 
-						battlePlayerController.SetEffectAnim(CommonData.healthHealEffecttName);
-					}
-                    
-					//if(cons.manaGain != 0){
-					//	int manaGain = cons.manaGain + Player.mainPlayer.magicRecovery;
-					//}
+				specialItem.UseSpecialItem(specialItem, null);
 
-					if (cons.manaGain > 0)
-                    {            
-						battlePlayerController.AddManaGainAndShow(cons.manaGain + Player.mainPlayer.magicRecovery);
+				//GameManager.Instance.soundManager.PlayAudioClip(specialItem.audioName);
+			}
 
-						battlePlayerController.SetEffectAnim(CommonData.magicHealAudioName);
+			Player.mainPlayer.RemoveItem (item, 1);
+                     
+			ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
 
-					}else if (cons.manaGain < 0){
-
-						Player.mainPlayer.mana += cons.manaGain;
-
-					}                
-    				
-    				Player.mainPlayer.experience += cons.experienceGain;
-    				Player.mainPlayer.RemoveItem (cons, 1);
-					GameManager.Instance.soundManager.PlayAudioClip(cons.audioName);
-					ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
-    				//break;  
-    			//case ConsumablesType.ChongZhuShi:
-    			//case ConsumablesType.DianJinShi:
-    			//case ConsumablesType.XiaoMoJuanZhou:
-    				//break;
-			//    case ConsumablesType.YinShenJuanZhou:
-			//	    ExploreManager.Instance.PlayerFade ();
-   //                 Player.mainPlayer.RemoveItem(cons, 1);
-			//		GameManager.Instance.soundManager.PlayAudioClip(cons.audioName);
-			//	break;
-
-			//}
 			if (refreshCallBack != null) {
 				refreshCallBack ();
 			}

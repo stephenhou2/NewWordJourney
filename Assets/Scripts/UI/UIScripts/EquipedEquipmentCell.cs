@@ -8,31 +8,31 @@ namespace WordJourney
 	using UnityEngine.UI;
 	
 	public class EquipedEquipmentCell : MonoBehaviour {
-
-		public Transform itemContainer;
+    
 		public Image itemIcon;
-
-		public Transform emptyIcon;
-		public Transform lockIcon;
+		public Image equipmentTintIcon;      
+		public Image lockIcon;
+		public Image selectedIcon;
 
 		public void SetUpEquipedEquipmentCell(Equipment equipment,bool equipmentSlotUnlocked){
 
+			selectedIcon.enabled = false;
+
 			if (!equipmentSlotUnlocked) {
-				lockIcon.gameObject.SetActive (true);
-				emptyIcon.gameObject.SetActive (true);
-				itemContainer.gameObject.SetActive (false);
+				lockIcon.enabled = true;
+				equipmentTintIcon.enabled = true;
+                itemIcon.enabled = false;
 				return;
 			}
 
-			lockIcon.gameObject.SetActive (false);
+			lockIcon.enabled = false;
 
 			if (equipment.itemId < 0) {
-//				emptyIcon.gameObject.SetActive (true);
-				itemContainer.gameObject.SetActive (false);
+				equipmentTintIcon.enabled = true;
+				itemIcon.enabled = false;
 
 			} else {
-//				emptyIcon.gameObject.SetActive (false);
-				itemContainer.gameObject.SetActive (true);
+				equipmentTintIcon.enabled = false;
 				Sprite itemSprite = GameManager.Instance.gameDataCenter.GetGameItemSprite (equipment);
 				itemIcon.sprite = itemSprite;
 				itemIcon.enabled = itemSprite != null;

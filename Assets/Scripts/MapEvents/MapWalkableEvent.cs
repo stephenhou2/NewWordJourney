@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
+
 	public abstract class MapWalkableEvent : MapEvent {
 
 
@@ -22,6 +23,8 @@ namespace WordJourney
 
 		public Vector3 moveOrigin;
 		public Vector3 moveDestination;
+        
+		public int movableDistance = 10;
 
 		protected BattleMonsterController mBaCtr;
 		protected BattleMonsterController baCtr{
@@ -36,7 +39,24 @@ namespace WordJourney
 
 
 		public void StartMove(){
-			if (!canMove) {
+			
+			Transform bpTrans = ExploreManager.Instance.battlePlayerCtr.transform;
+            
+			float distance = (bpTrans.position - this.transform.position).magnitude;
+
+			if(distance > movableDistance){
+				baCtr.KillRoleAnim();            
+				isInMoving = false;
+				isInAutoWalk = false;
+				return;
+			}
+
+			if (!canMove && !baCtr.isIdle && !baCtr.IsInAnimPlaying()) {
+				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+				return;
+			}
+
+			if(!canMove){
 				return;
 			}
 
@@ -47,11 +67,11 @@ namespace WordJourney
 			if (isTriggered) {
 				return;
 			}
+
 				
 			StartCoroutine ("AutoWalk");
 			isInAutoWalk = true;
 		}
-
 
 
 
@@ -68,12 +88,28 @@ namespace WordJourney
 		}
 
 		public void StopMoveAtEndOfCurrentMove(){
+			
 			StopCoroutine("AutoWalk");
 			isInAutoWalk = false;
+
+			Transform bpTrans = ExploreManager.Instance.battlePlayerCtr.transform;
+
+            float distance = (bpTrans.position - this.transform.position).magnitude;
+
+            if (distance > movableDistance)
+            {
+                baCtr.KillRoleAnim();
+				isInMoving = false;
+				isInAutoWalk = false;
+            }
 		}
 
 
 		private IEnumerator AutoWalk(){
+
+			if(!baCtr.isIdle){
+				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+			}
 
 			while (true) {
 
@@ -88,6 +124,18 @@ namespace WordJourney
 					timer += Time.deltaTime;
 
 				}
+
+				Transform bpTrans = ExploreManager.Instance.battlePlayerCtr.transform;
+
+                float distance = (bpTrans.position - this.transform.position).magnitude;
+
+                if (distance > movableDistance)
+                {
+                    baCtr.KillRoleAnim();
+					isInAutoWalk = false;
+					isInMoving = false;
+					break;
+                }
 
 				if (CheckCanWalk ()) {
 					Walk ();
@@ -275,7 +323,7 @@ namespace WordJourney
 			int walkableEventOriPosY = Mathf.RoundToInt(moveOrigin.y);
 
 			int walkableEventDestPosX = Mathf.RoundToInt (moveDestination.x);
-			int walkableEventDestPosY = Mathf.RoundToInt (moveDestination.y);
+			int walkableEventDestPosY = Mathf.RoundToInt (moveDestination.y);         
 
 			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventOriPosX, walkableEventOriPosY] = 1;
 			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 5;
@@ -309,15 +357,14 @@ namespace WordJourney
 		/// 当和地图上的可行走事件（怪物／npc）交互（战斗，交谈等）结束后，重置行走信息和可行走事件位置信息
 		/// </summary>
 		public void RefreshWalkableInfoWhenQuit(bool walkableEventDie){
-
-
+         
 			int walkableEventOriPosX = Mathf.RoundToInt (moveOrigin.x);
 			int walkableEventOriPosY = Mathf.RoundToInt (moveOrigin.y);
 
 			int walkableEventDestPosX = Mathf.RoundToInt (moveDestination.x);
 			int walkableEventDestPosY = Mathf.RoundToInt (moveDestination.y);
 
-            if(walkableEventOriPosX != walkableEventDestPosX && walkableEventOriPosY != walkableEventDestPosY){
+			if(walkableEventDie || (walkableEventOriPosX != walkableEventDestPosX && walkableEventOriPosY != walkableEventDestPosY)){
                 ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[walkableEventOriPosX, walkableEventOriPosY] = 1;
                 ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray[walkableEventOriPosX, walkableEventOriPosY] = 0;
                 //Debug.LogFormat("事件结束时 更新行走信息[{0},{1}]:1,更新行走事件信息[{2},{3}]:0", walkableEventOriPosX, walkableEventOriPosY,
@@ -326,6 +373,10 @@ namespace WordJourney
 			
 
 			if (walkableEventDie) {
+
+				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[walkableEventOriPosX, walkableEventOriPosY] = 1;
+                ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray[walkableEventOriPosX, walkableEventOriPosY] = 0;
+
 				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 1;
 				ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray [walkableEventDestPosX, walkableEventDestPosY] = 0;
 

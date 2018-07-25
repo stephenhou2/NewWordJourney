@@ -23,7 +23,9 @@ namespace WordJourney
 	
 
 		public void SetUpMonsterStatusPlane(Monster monster){
-			
+
+			monsterStatusPlane.gameObject.SetActive(true);
+
 			monsterNameText.text = monster.agentName;
 
 			healthBar.InitHLHFillBar (monster.maxHealth, monster.health);
@@ -33,7 +35,7 @@ namespace WordJourney
 			armorText.text = monster.armor.ToString ();
 			magicResistText.text = monster.magicResist.ToString ();
 
-			monsterStatusPlane.gameObject.SetActive (true);
+
 		}
 
 
@@ -44,7 +46,7 @@ namespace WordJourney
 
 			UpdateHealthBarAnim (monster);
 
-			UpdateSkillStatusPlane (monster);
+			//UpdateSkillStatusPlane (monster);
 
 			attackText.text = monster.attack.ToString ();
 			magicAttackText.text = monster.magicAttack.ToString ();
@@ -54,23 +56,12 @@ namespace WordJourney
 		}
 
 
-
+        
 		public override void QuitFightPlane ()
 		{
+			
 
-			statusTintPool.AddChildInstancesToPool (statusTintContainer);
-			monsterStatusPlane.gameObject.SetActive (false);
 		}
-//		public void PlayMonsterDieAnim(BattleAgentController baCtr,CallBack<Transform> cb,Transform[] transArray){
-//
-//			baCtr.GetComponent<SpriteRenderer> ().DOFade (0, 0.5f).OnComplete(()=>{
-//				baCtr.gameObject.SetActive(false);
-//
-//				if(cb != null){
-//					cb(transArray);
-//				}
-//			});
-//		}
 
 
 		void OnDestroy(){

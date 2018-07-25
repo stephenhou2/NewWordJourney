@@ -21,11 +21,12 @@ namespace WordJourney
 		Crit,
 		Dodge,
 		CritHurtScaler,
+        PhysicalHurtScaler,
+        MagicalHurtScaler,
 		ExtraGold,
 		ExtraExperience,
 		HealthRecovery,
-		MagicRecovery,
-		Health
+		MagicRecovery
 	}
 		
 
@@ -33,7 +34,8 @@ namespace WordJourney
 		Slow,
 		Medium,
 		Fast,
-		VeryFast
+		VeryFast,
+        NoInterval
 	}
 
 	public abstract class Agent : MonoBehaviour {
@@ -246,10 +248,10 @@ namespace WordJourney
 			
 
 		public int shenLuTuTengScaler = 0;
-		public int extraPoisonHurt = 0;
+		//public int extraPoisonHurt = 0;
 
-		public int hurtToEnemy;
-
+		public int physicalHurtToEnemy;
+		public int magicalHurtToEnemy;
 //		public float dodgeFixScaler;//闪避修正系数
 //		public float critFixScaler;//暴击修正系数
 

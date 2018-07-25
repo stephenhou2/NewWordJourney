@@ -26,6 +26,33 @@ namespace WordJourney
 
 		}
 
+		public void SaveMapEventsRecord(){
+			DataHandler.SaveInstanceListToFile<MapEventsRecord>(GameManager.Instance.gameDataCenter.mapEventsRecords, CommonData.mapEventsRecordFilePath);
+		}
+
+		/// <summary>
+        /// 重置地图事件触发记录文件
+        /// </summary>
+        public void ResetMapEventsRecord(){
+
+            bool hasRecord = DataHandler.FileExist(CommonData.mapEventsRecordFilePath);
+
+            if(hasRecord){
+
+                DataHandler.DeleteFile(CommonData.mapEventsRecordFilePath);
+            }
+
+            List<MapEventsRecord> mapEventsRecords = new List<MapEventsRecord>();
+
+            for (int i = 0; i <= CommonData.maxLevel;i++){
+				mapEventsRecords.Add(new MapEventsRecord(i, new List<Vector2>(),false,false));
+            }
+
+            DataHandler.SaveInstanceListToFile<MapEventsRecord>(mapEventsRecords, CommonData.mapEventsRecordFilePath);
+
+        }       
+        
+
 
 		/// <summary>
 		/// Saves the game settings.
@@ -55,12 +82,24 @@ namespace WordJourney
 			string playerDataPath = Path.Combine (CommonData.persistDataPath, "PlayerData.json");
 
 			PlayerData playerData = new PlayerData (Player.mainPlayer);
-
-//			playerData.isNewPlayer = false;
-
+         
 			DataHandler.SaveInstanceDataToFile<PlayerData> (playerData, playerDataPath);
 		}
 
+
+		public void RefreshSpellItem(){
+			List<SpellItemModel> spellItemModels = GameManager.Instance.gameDataCenter.allSpellItemModels;
+			DataHandler.SaveInstanceListToFile<SpellItemModel>(spellItemModels, CommonData.spellItemDataFilePath);
+		}
+
+		public void ResetSpellItemModels(){
+			List<SpellItemModel> spellItemModels = GameManager.Instance.gameDataCenter.allSpellItemModels;
+            for (int i = 0; i < spellItemModels.Count; i++)
+            {
+                spellItemModels[i].hasUsed = false;
+            }
+            DataHandler.SaveInstanceListToFile<SpellItemModel>(spellItemModels, CommonData.spellItemDataFilePath);
+		}
 
 		/// <summary>
 		/// 从本地加载玩家游戏数据
@@ -105,16 +144,32 @@ namespace WordJourney
 			string targetPlayerDataPath = CommonData.persistDataPath + "/PlayerData.json";
 
 			PlayerData resetPd = DataHandler.LoadDataToSingleModelWithPath<PlayerData> (sourcePlayerDataPath);
-
+                     
 			PlayerData oriPd = DataHandler.LoadDataToSingleModelWithPath<PlayerData> (targetPlayerDataPath);
 
 			resetPd.isNewPlayer = oriPd.isNewPlayer;
 
+			resetPd.totalLearnedWordCount = Player.mainPlayer.totalLearnedWordCount;
+			resetPd.totalUngraspWordCount = Player.mainPlayer.totalUngraspWordCount;
+			resetPd.wordContinuousRightRecord = Player.mainPlayer.wordContinuousRightRecord;
+			resetPd.maxWordContinuousRightRecord = Player.mainPlayer.maxWordContinuousRightRecord;
+			resetPd.titleQualifications = Player.mainPlayer.titleQualifications;
+
 			Player.mainPlayer.SetUpPlayerWithPlayerData (resetPd);
 
-			//Player.mainPlayer.isDead = false;
+			Player.mainPlayer.InitializeMapIndex();
 
 			SaveCompletePlayerData ();
+
+			ResetChatRecords();
+
+			ResetMapEventsRecord();
+
+			ResetMapEventsRecord();
+
+			ResetSpellItemModels();
+
+			GameManager.Instance.gameDataCenter.ResetGameData();
 
 		}
 
@@ -128,6 +183,10 @@ namespace WordJourney
 
 			DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(chatRecords, CommonData.chatRecordsFilePath);
 
+		}
+
+		public void ResetChatRecords(){         
+			DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(new List<HLHNPCChatRecord>(), CommonData.chatRecordsFilePath);
 		}
 
 	}

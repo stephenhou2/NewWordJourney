@@ -73,6 +73,22 @@ namespace WordJourney
 //
 //		}
 
+        /// <summary>
+        /// 退出程序时执行的逻辑【主要用于数据保存工作】
+        /// </summary>
+		void OnApplicationQuit()
+        {
+			Debug.Log("quit app");
+			if(ExploreManager.Instance != null){
+				ExploreManager.Instance.UpdateWordDataBase();
+			}
+			persistDataManager.SaveBuyRecord();
+			persistDataManager.SaveGameSettings();
+			persistDataManager.SaveMapEventsRecord();
+			persistDataManager.SaveCompletePlayerData();
+
+			MySQLiteHelper.Instance.CloseAllConnections();
+        }
 
 	}
 }

@@ -55,12 +55,15 @@ namespace WordJourney
 
 		public TextMeshPro tmPro;
 
-		protected CallBack animEndCallBack;
+		//protected CallBack animEndCallBack;
 
 		protected BoxCollider2D bc2d;
 
 		// 单词数组，第0项为显示的目标单词
 		public HLHWord[] wordsArray;
+
+        // 地图事件在小地图上对应的元素对象
+		public Transform miniMapInstance;
 
 		protected bool isWordTriggered{
 			get{
@@ -98,11 +101,8 @@ namespace WordJourney
 			mapItemRenderer.sortingOrder = order;
 		}
 
-		void OnDestroy(){
-			animEndCallBack = null;
-		}
 
-		public abstract void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo);
+		public abstract void InitializeWithAttachedInfo (int mapIndex, MapAttachedInfoTile attachedInfo);
 
 
 		/// <summary>

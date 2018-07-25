@@ -20,6 +20,7 @@ namespace WordJourney
 		{
 			public string mapTileSetsImageName;
 			public int[] walkableInfoArray;
+			public int[] miniMapInfoArray;
 		}
 
 		/// <summary>
@@ -78,7 +79,7 @@ namespace WordJourney
 
                 //Debug.LogFormat("地图数据名称" + fi.Name);
 				//读取原始地图数据
-                MapData mapData = ReadMap (fi.FullName,fi);
+                HLHMapData mapData = ReadMap (fi.FullName,fi);
 
 				//保存新的地图数据
 				SaveNewMapData (mapData, fi.Name);
@@ -92,7 +93,7 @@ namespace WordJourney
 		/// </summary>
 		/// <returns>The map.</returns>
 		/// <param name="mapDataPath">Map data path.</param>
-        private static MapData ReadMap(string mapDataPath,FileInfo fi){
+        private static HLHMapData ReadMap(string mapDataPath,FileInfo fi){
 
 			// 读取原始json数据
 			string oriMapDataString = DataHandler.LoadDataString (mapDataPath);
@@ -102,6 +103,8 @@ namespace WordJourney
 			// 获取地图宽高
 			int mapHeight = int.Parse (oriMapDataDic ["height"].ToString ());
 			int mapWidth = int.Parse (oriMapDataDic ["width"].ToString ());
+
+			Debug.LogFormat("name:{0},height:{1},width:{2}", fi.Name, mapHeight, mapWidth);
 
 			// 获取标准地图块宽高
 			int mapTileHeight = int.Parse (oriMapDataDic ["tileheight"].ToString ());
@@ -123,6 +126,14 @@ namespace WordJourney
 			MapTilesInfo tileInfo = null;
 
             Dictionary<string, object> tileSetInfo = null;
+
+			int[,] mapWalkableInfoArray = new int[mapWidth, mapHeight];
+
+			for (int m = 0; m < mapWidth;m++){
+				for (int n = 0; n < mapHeight;n++){
+					mapWalkableInfoArray[m, n] = 1;
+				}
+			}
 
 			for (int j = 0; j < layersDataArray.Count; j++) {
 
@@ -148,8 +159,7 @@ namespace WordJourney
                         tileSetsImageName = tileSetsNameDic["TilesetImageName"].ToString();
                         tileInfo = GetMapTilesInfoWithName(tileSetsImageName);
                     }
-
-
+                    
 
                     if (tileSetInfo == null) { 
                         for (int k = 0; k < tileSetsArray.Count; k++)
@@ -175,12 +185,22 @@ namespace WordJourney
 						int col = k % mapWidth;
 
 						int tileIndex = int.Parse (tileDataArray [k].ToString ()) - firstGid;
+                        
+
 						if (tileIndex >= 0) {
 							bool canWalk = false;
                             //Debug.LogFormat("mapName:{0},layerName:{1},tileIndex:{2},firstGid:{3}",fi.Name, layerName, tileIndex,firstGid);
 							canWalk = tileInfo.walkableInfoArray [tileIndex] == 1;
-							MapTile tile = new MapTile (new Vector2 (col, row), tileIndex,canWalk);
+
+							int miniMapInfo = tileInfo.miniMapInfoArray[tileIndex];
+
+							MapTile tile = new MapTile (new Vector2 (col, row), tileIndex,canWalk,miniMapInfo);
 							tileDatas.Add (tile);
+
+							if(layerName == "DecorationLayer"){
+								mapWalkableInfoArray[col, row] = 0;
+							}
+
 						}
 
 					}
@@ -215,8 +235,13 @@ namespace WordJourney
 
 						int col = Mathf.RoundToInt (posX / mapTileWidth);
 						int row = mapHeight - Mathf.RoundToInt (posY / mapTileHeight);
-
+                  
 						Vector2 pos = new Vector2 (col, row);
+
+						if (mapWalkableInfoArray[col, row] == 0 && type != "doorGear" && type != "keyDoorGear")
+                        {
+							Debug.LogFormat("地图：{0}，事件位置和某种装饰位置重合:[{1}/{2},事件类型：{3}]（如果装饰不是墙体，则不是错误）", fi.Name, col, mapHeight - row - 1,type);
+                        }
 
 						Dictionary<string,object> properties = null;
 						MapAttachedInfoTile attachedInfoTile = null;
@@ -248,11 +273,7 @@ namespace WordJourney
 						attachedInfoTiles.Add (attachedInfoTile);
 
 					}
-
-					//if(monsterCount != 0 && monsterCount != 16){
-					//	Debug.LogFormat("monster count:{0},map name:{1}",monsterCount,fi.Name);
-					//}
-
+                                   
 					MapAttachedInfoLayer attachedInfoLayer = new MapAttachedInfoLayer (layerName, attachedInfoTiles);
 
 					attachedInfoLayers.Add (attachedInfoLayer);
@@ -261,7 +282,7 @@ namespace WordJourney
 
 			}
 
-			MapData mapData = new MapData (mapHeight, mapWidth, tileSetsImageName, mapLayers,attachedInfoLayers);
+			HLHMapData mapData = new HLHMapData (mapHeight, mapWidth, tileSetsImageName, mapLayers,attachedInfoLayers);
 
 			return mapData;
 		}
@@ -271,7 +292,7 @@ namespace WordJourney
 		/// </summary>
 		/// <param name="mapData">Map data.</param>
 		/// <param name="fileName">File name.</param>
-		private static void SaveNewMapData(MapData mapData, string fileName){
+		private static void SaveNewMapData(HLHMapData mapData, string fileName){
 
 			string directory = CommonData.originDataPath + "/MapData";
 

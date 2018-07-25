@@ -14,23 +14,21 @@ namespace WordJourney
 
 		public float fixedAttackSpeedDecreaseScaler;
 
+		private bool effectAnimTriggered = false;
+
 		protected override void HitTriggerCallBack(BattleAgentController self, BattleAgentController enemy)
 		{
 
             if(isEffective(triggeredProbability)){
 
 				enemy.SetRoleAnimTimeScale(1 - fixedAttackSpeedDecreaseScaler * Player.mainPlayer.agentLevel - fixedAttackSpeedDecrease);
+                            
+				enemy.AddTintTextToQueue("攻速降低");
 
-				if (selfEffectAnimName != string.Empty)
-                {
-                    self.SetEffectAnim(selfEffectAnimName);
-                }
-
-                if (enemyEffectAnimName != string.Empty)
-                {
-                    enemy.SetEffectAnim(enemyEffectAnimName);
-                }
-
+				if(!effectAnimTriggered){
+					enemy.SetEffectAnim(enemyEffectAnimName, null, 0, 0);
+					effectAnimTriggered = true;
+				}            
             }
 
 		}

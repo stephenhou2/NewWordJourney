@@ -20,26 +20,32 @@ namespace WordJourney
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
 
-			int actualPhysicalHurt = Mathf.RoundToInt(physicalHurt / ((enemy.agent.armor - self.agent.armorDecrease) / 100f + 1));
-			int actualMagicalHurt = Mathf.RoundToInt(magicalHurt / ((enemy.agent.magicResist - self.agent.magicResistDecrease) / 100f + 1));
+			int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+
+			if (armorCal < -50)
+            {
+                armorCal = -50;
+            }
+			int actualPhysicalHurt = Mathf.RoundToInt(physicalHurt / (armorCal/ 100f + 1));
+
+			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
+
+			if (magicResistCal < -50)
+            {
+                magicResistCal = -50;
+            }
+
+			int actualMagicalHurt = Mathf.RoundToInt(magicalHurt / (magicResistCal / 100f + 1));
 
 			enemy.AddHurtAndShow(actualPhysicalHurt, HurtType.Physical, self.towards);
 
 			enemy.AddHurtAndShow(actualMagicalHurt, HurtType.Magical, self.towards);
 
-			enemy.UpdateStatusPlane();
+			//enemy.UpdateStatusPlane();
 
 			enemy.PlayShakeAnim();
 
-			if (selfEffectAnimName != string.Empty)
-            {
-                self.SetEffectAnim(selfEffectAnimName);
-            }
-
-            if (enemyEffectAnimName != string.Empty)
-            {
-                enemy.SetEffectAnim(enemyEffectAnimName);
-            }
+			enemy.SetEffectAnim(enemyEffectAnimName,null,0,durativeHurtDuration);
 
 			if(durativeHurtCoroutine != null){
 				StopCoroutine(durativeHurtCoroutine);
@@ -60,6 +66,8 @@ namespace WordJourney
 			while(count < durativeHurtDuration){
 
 				enemy.AddHurtAndShow(durativeHurtBase, HurtType.Physical, self.towards);
+
+				enemy.CheckFightEnd();
 
 				count++;
 

@@ -91,7 +91,7 @@ namespace WordJourney
 
 		}
 
-		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
+		public override void InitializeWithAttachedInfo(int mapIndex,MapAttachedInfoTile attachedInfo)
 		{
 			transform.position = attachedInfo.position;
 		}

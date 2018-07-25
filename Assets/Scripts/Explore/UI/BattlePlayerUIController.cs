@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using DG.Tweening;
+
 
 namespace WordJourney
 {
+
+	using UnityEngine.UI;
+    using DG.Tweening;
+	using Transform = UnityEngine.Transform;
+
 	public class BattlePlayerUIController : BattleAgentUIController {
 
 		private Player player;
@@ -15,6 +19,7 @@ namespace WordJourney
 		public HLHFillBar manaBar;
 		public HLHFillBar experienceBar;
 		public Text playerLevelText;
+		public Text playerGoldText;
 
 		public ConsumablesDisplay consDisplay;
 
@@ -39,10 +44,11 @@ namespace WordJourney
 			}
 		}
 
+		//public Transform directionArrowTowardsNextLevelExit;
 
-//		public Transform miniMap;
+		//public Transform directionArrowTowardsLastLevelExit;
 
-		public Transform directionArrow;
+
 
 		public Transform levelUpPlane;
 
@@ -63,18 +69,20 @@ namespace WordJourney
 			healthBar.InitHLHFillBar (player.maxHealth, player.health);
 			manaBar.InitHLHFillBar (player.maxMana, player.mana);
 			experienceBar.InitHLHFillBar (player.upgradeExprience, player.experience);
+			playerGoldText.text = player.totalGold.ToString();
 			playerLevelText.text = player.agentLevel.ToString();
 
             consDisplay.InitConsumablesDisplay (delegate{
                 UpdateAgentStatusPlane();
-                if(bpCtr.isInFight){
-                    UpdateSkillStatusPlane(bpCtr.agent);
-                }
             });
 
 			SetUpConsumablesButtons ();
 
-//			miniMap.gameObject.SetActive (player.hasCompass);
+
+		}
+
+		public void RefreshGold(){
+			playerGoldText.text = player.totalGold.ToString();
 		}
 
 
@@ -98,22 +106,19 @@ namespace WordJourney
 			UpdateManaBarAnim (player);
 			UpdateExperienceBarAnim (player);
 			playerLevelText.text = player.agentLevel.ToString();
-			UpdateSkillStatusPlane (player);
+			playerGoldText.text = player.totalGold.ToString();
 
 		}
 
-
-		public void RefreshMiniMap(){
-			
-			Vector3 directionVector = ExploreManager.Instance.newMapGenerator.GetDirectionVectorTowardsExit ();
-
-			directionArrow.localRotation = Quaternion.FromToRotation (new Vector3 (0, 1, 0), directionVector);
-
-		}
+        
 
 		public void SetUpFightPlane(){
 			escapeBar.gameObject.SetActive (false);
-			SetUpActiveSkillButtons ();
+			for (int i = 0; i < player.attachedActiveSkills.Count;i++){
+				player.attachedActiveSkills[i].skillStatus = ActiveSkillStatus.None;
+			}
+			InitAllActiveSkillButtons();
+			SetUpActiveSkillButtons ();         
 		}
 
 		public void EscapeDisplay(float escapeTime,CallBack escapeCallBack){
@@ -133,8 +138,50 @@ namespace WordJourney
 		/// 退出战斗时重用物体进缓存池
 		/// </summary>
 		public override void QuitFightPlane(){
+
+			for (int i = 0; i < player.attachedActiveSkills.Count; i++)
+            {
+                player.attachedActiveSkills[i].coolenPercentage = 0;
+            }
+
+			for (int i = 0; i < activeSkillButtonContainer.childCount;i++){
+				activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>().Reset();
+			}
 			activeSkillButtonPool.AddChildInstancesToPool (activeSkillButtonContainer);
-			statusTintPool.AddChildInstancesToPool (statusTintContainer);
+
+		}
+
+        /// <summary>
+        /// 战斗过程中如果遗忘技能，需要将该主动技能的按钮移除
+        /// </summary>
+		public void RemoveActiveSkillButton(Skill skill){
+			
+			for (int i = 0; i < activeSkillButtonContainer.childCount; i++)
+            {
+                ActiveSkillButton activeSkillButton = activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>();
+				if(activeSkillButton.skill.skillId == skill.skillId){
+					activeSkillButton.Reset();
+					activeSkillButtonPool.AddInstanceToPool(activeSkillButton.gameObject);
+				}
+            }
+
+		}
+
+		public void InitAllActiveSkillButtons(){
+			
+			for (int i = 0; i < player.attachedActiveSkills.Count; i++)
+            {
+                player.attachedActiveSkills[i].skillStatus = ActiveSkillStatus.None;
+            }
+
+			for (int i = 0; i < activeSkillButtonContainer.childCount; i++)
+			{
+				ActiveSkillButton activeSkillButton = activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>();
+
+				activeSkillButton.validTint.gameObject.SetActive(false);
+              
+			}
+
 		}
 
 		/// <summary>
@@ -142,13 +189,33 @@ namespace WordJourney
 		/// </summary>
 		public void SetUpActiveSkillButtons()
 		{
+			
+			for (int i = 0; i < activeSkillButtonContainer.childCount; i++)
+            {
+                ActiveSkillButton activeSkillButton = activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>();
+
+				float coolenPercentage = activeSkillButton.mask.fillAmount;
+				player.attachedActiveSkills[i].coolenPercentage = (int)(coolenPercentage * 100);
+
+
+            }
+
+			for (int i = 0; i < activeSkillButtonContainer.childCount; i++)
+            {
+                activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>().Reset();
+            }         
 			activeSkillButtonPool.AddChildInstancesToPool(activeSkillButtonContainer);
+
+
+
 			if (bpCtr.towards == MyTowards.Left || bpCtr.towards == MyTowards.Right) { 
+				
     			for (int i = 0; i < player.attachedActiveSkills.Count; i++)
     			{
     				ActiveSkill skill = player.attachedActiveSkills[i];
     				ActiveSkillButton activeSkillButton = activeSkillButtonPool.GetInstance<ActiveSkillButton>(activeSkillButtonModel.gameObject, activeSkillButtonContainer);
     				int index = i;
+					//Debug.LogFormat("skill:{0},coolenPercentage:{1}", player.attachedActiveSkills[i].skillName, player.attachedActiveSkills[i].coolenPercentage);
     				activeSkillButton.SetUpActiveSkillButton(skill, index, activeSkillButtonContainer);
     				activeSkillButton.AddListener(OnActiveSkillButtonClick);
     			}
@@ -161,9 +228,89 @@ namespace WordJourney
 		/// <param name="index">Index.</param>
 		private void OnActiveSkillButtonClick(int index){
 
+			if(bpCtr.isDead){
+				return;
+			}
+
 			ActiveSkill skill = player.attachedActiveSkills [index];
 
-			bpCtr.UseSkill (skill);
+			bpCtr.UseSkill (skill);         
+		}
+
+        /// <summary>
+        /// 玩家角色的攻击动作结束时更新技能的可点击状态
+        /// </summary>
+		public void UpdateActiveSkillButtonsWhenAttackAnimFinish(){
+
+            for (int i = 0; i < activeSkillButtonContainer.childCount; i++)
+            {
+                ActiveSkillButton activeSkillButton = activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>();
+
+				ActiveSkill activeSkill = player.attachedActiveSkills[i];
+                float coolenPercentage = activeSkillButton.mask.fillAmount;
+
+				switch(activeSkill.skillStatus){
+					case ActiveSkillStatus.None:
+						bool isManaEnough = player.mana >= activeSkill.manaConsume;
+						activeSkillButton.button.interactable = isManaEnough;
+						activeSkillButton.mask.enabled = isManaEnough;
+						if(isManaEnough){
+
+							activeSkillButton.mask.fillAmount = 0;
+
+							if (!activeSkillButton.validTint.gameObject.activeInHierarchy)
+                            {
+								activeSkillButton.validTint.gameObject.SetActive(true);
+                            }
+							if (!activeSkillButton.validTint.animation.isPlaying)
+							{
+								activeSkillButton.validTint.animation.Play("default", 0);
+							}
+
+						}else{
+							activeSkillButton.validTint.gameObject.SetActive(false);
+							activeSkillButton.mask.fillAmount = 1f;
+						}
+						break;
+					case ActiveSkillStatus.Waiting:
+						isManaEnough = player.mana >= activeSkill.manaConsume;
+						activeSkill.skillStatus = ActiveSkillStatus.None;
+						activeSkillButton.button.interactable = isManaEnough;
+						activeSkillButton.mask.enabled = isManaEnough;
+                        activeSkill.coolenPercentage = 0;
+
+						if (isManaEnough)
+                        {
+
+							activeSkillButton.mask.fillAmount = 0;
+
+                            if (!activeSkillButton.validTint.gameObject.activeInHierarchy)
+                            {
+                                activeSkillButton.validTint.gameObject.SetActive(true);
+                            }
+
+							if(!activeSkillButton.validTint.animation.isPlaying){
+								activeSkillButton.validTint.animation.Play("default", 0);
+							}
+
+
+                        }
+                        else
+                        {
+							activeSkillButton.mask.fillAmount = 1f;
+                            activeSkillButton.validTint.gameObject.SetActive(false);
+                        }
+						break;
+					case ActiveSkillStatus.Cooling:
+						activeSkillButton.button.interactable = false;
+						activeSkillButton.mask.enabled = true;
+						activeSkillButton.validTint.gameObject.SetActive(false);
+						break;
+
+                               
+				}
+                
+            }
 
 		}
 
@@ -202,7 +349,7 @@ namespace WordJourney
 		/// </summary>
 		public void ShowLevelUpPlane(){
 			levelUpPlane.gameObject.SetActive (true);
-			ExploreManager.Instance.AllWalkableEventsStopMove ();
+			ExploreManager.Instance.MapWalkableEventsStopAction ();
 		}
 
 		/// <summary>
@@ -217,32 +364,37 @@ namespace WordJourney
 				player.originalMaxHealth += 20;
 				player.maxHealth += 20;
 				player.health = (int)((float)player.maxHealth / maxHealthRecord * player.health);
+					bpCtr.SetEffectAnim(CommonData.healthAddUpEffectName);
 				break;
 			case 1:
 				player.originalAttack += 2;
 				player.attack += 2;
+					bpCtr.SetEffectAnim(CommonData.attackUpEffectName);
 				break;
 			case 2:
 				player.originalMagicAttack += 2;
                 player.magicAttack += 2;
+					bpCtr.SetEffectAnim(CommonData.magicAttackUpEffectName);
 				break;
 			case 3:
 				player.originalArmor += 2;
 				player.armor += 2;
+					bpCtr.SetEffectAnim(CommonData.armorUpEffectName);
 				break;
 			case 4:
 				player.originalMagicResist += 2;
 				player.magicResist += 2;
+					bpCtr.SetEffectAnim(CommonData.magicResistUpEffectName);
 				break;
 			}
 
 			UpdateAgentStatusPlane ();
 			levelUpPlane.gameObject.SetActive (false);
-			ExploreManager.Instance.AllWalkableEventsStartMove ();
+			ExploreManager.Instance.MapWalkableEventsStartAction ();
             ExploreManager.Instance.EnableExploreInteractivity ();
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.propertyPromotionAudioName);
 
-			bpCtr.SetEffectAnim(CommonData.propertyIncreaseEffectName);
-			GameManager.Instance.soundManager.PlayAudioClip(CommonData.propertyIncreaseAudioName);
+			//bpCtr.SetEffectAnim(CommonData.propertyIncreaseEffectName);
 		}
 			
 

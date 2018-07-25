@@ -23,9 +23,9 @@ namespace WordJourney
 
 		public ExploreTextManager exploreTextManager;
 
-		public Transform statusTintContainer;
-		public Transform statusTintModel;
-		public InstancePool statusTintPool;
+		//public Transform statusTintContainer;
+		//public Transform statusTintModel;
+		//public InstancePool statusTintPool;
 
 
 		public void InitExploreAgentView(){
@@ -40,23 +40,23 @@ namespace WordJourney
 			healthBar.value = agent.health;
 		}
 			
-		protected void UpdateSkillStatusPlane(Agent agent){
+		//protected void UpdateSkillStatusPlane(Agent agent){
 
-			statusTintPool.AddChildInstancesToPool (statusTintContainer);
+		//	statusTintPool.AddChildInstancesToPool (statusTintContainer);
 
-			for (int i = 0; i < agent.allStatus.Count; i++) {
-				string status = agent.allStatus [i];
-				Image statusTint = statusTintPool.GetInstance<Image> (statusTintModel.gameObject, statusTintContainer);
+		//	for (int i = 0; i < agent.allStatus.Count; i++) {
+		//		string status = agent.allStatus [i];
+		//		Image statusTint = statusTintPool.GetInstance<Image> (statusTintModel.gameObject, statusTintContainer);
 
-				Sprite sprite = GameManager.Instance.gameDataCenter.allSkillSprites.Find (delegate(Sprite obj) {
-					return obj.name == status;
-				});
+		//		Sprite sprite = GameManager.Instance.gameDataCenter.allSkillSprites.Find (delegate(Sprite obj) {
+		//			return obj.name == status;
+		//		});
 
-				statusTint.sprite = sprite;
-				statusTint.enabled = sprite != null;
-			}
+		//		statusTint.sprite = sprite;
+		//		statusTint.enabled = sprite != null;
+		//	}
 
-		}
+		//}
 
 		public virtual void PrepareForRefreshment(){
 

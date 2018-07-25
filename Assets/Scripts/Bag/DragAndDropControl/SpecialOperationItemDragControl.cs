@@ -112,6 +112,7 @@ namespace WordJourney
 			item = null;
             itemImage.sprite = null;
 			itemImage.enabled = false;
+			//backgroundImage.sprite = g
 		}
 
 		public override void OnDropFailed ()

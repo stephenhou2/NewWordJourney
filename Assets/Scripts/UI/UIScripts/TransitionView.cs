@@ -6,31 +6,40 @@ using UnityEngine;
 namespace WordJourney
 {
 	using UnityEngine.UI;
+	using System;
 
 	public enum TransitionType{
+		None,
 		Introduce,
-        Quit,
 		Death,
         End
 	}
 
-	public class TransitionView : MonoBehaviour {
+	public class TransitionView : MonoBehaviour
+	{
 
-		private string[] introduceStrings = new string[]{
+		private string[] introduceStrings = {
 			"阳光透过窗户洒进古老的殿堂",
 			"黑暗中一件宝藏散发着淡淡微光",
 			"隐约听到来自远古的呼唤",
 			"世间的勇者们啊\n请接受我的馈赠\n来黑暗的深处拿取我的宝藏",
 			"你的故事将从这里开始…"
 		};
-		private string[] deadStrings = new string[]{
+		private string[] deadStrings = {
 			"渐渐得人们忘记了你的名字",
 			"只是流传着曾经有一个勇者来过这里"
 		};
 
-		public Text transitionTextModel;
+		private string[] endStrings = {
+			"岁月在地板和墙上雕刻出痕迹",
+			"在这里学到的东西也会慢慢模糊消融",
+			"但这座城堡将会永远伫立在这里",
+            "对于所有想要回来的人们",
+            "城堡的大门将永远敞开"
+		};
 
-//		public Text[] introductions;
+
+		public Text transitionTextModel;
 
 		public Transform transitionTextContainer;
 
@@ -38,11 +47,9 @@ namespace WordJourney
 
 		public float fadeInTime = 1.5f;
 
-		public float sentenceInterval = 1.0f;
+		public float sentenceInterval = 0.5f;
 
 		private TransitionType transitionType;
-
-//		public CallBack finishIntroductionCallBack;
 
 		public Image transitionPlaneMask;
 
@@ -50,15 +57,17 @@ namespace WordJourney
 
 		private int heightBase = 145;
 
+		public void SetUpTransitionView(TransitionType transitionType){
 
-//		public void InitIntroductionView(CallBack finishIntroductionCallBack){
-//			hasUserClick = false;
-//			this.finishIntroductionCallBack = finishIntroductionCallBack;
-//		}
+			this.transitionType = transitionType;
+		}
+              
 
 		public void PlayTransition(TransitionType transitionType,CallBack finishTransitionCallBack){
 
 			hasUserClick = false;
+
+			transitionPlaneMask.enabled = true;
 
 			this.transitionType = transitionType;
 
@@ -71,9 +80,12 @@ namespace WordJourney
 				transitionStrings = introduceStrings;
 				break;
 			case TransitionType.Death:
-				transitionStrings = deadStrings;
+				transitionStrings = deadStrings;               
 				break;
-			}
+			case TransitionType.End:
+				transitionStrings = endStrings;
+                break;
+    		}
 
 			IEnumerator transitionCoroutine = PlayTransition (transitionStrings,finishTransitionCallBack);
 
@@ -87,7 +99,17 @@ namespace WordJourney
 
 		private IEnumerator PlayTransition(string[] transitionStrings,CallBack finishTransitionCallBack){
 
-			yield return new WaitForSeconds (1.0f);
+			if(transitionType != TransitionType.None){
+				transitionPlaneMask.enabled = true;
+				yield return new WaitForSeconds(1.0f);
+				transitionPlaneMask.enabled = false;
+			}
+
+			Transform loadingCanvas = TransformManager.FindTransform("LoadingCanvas");
+
+			while(loadingCanvas != null){
+				yield return null;
+			}
 
 			if(transitionStrings != null){
 
@@ -118,13 +140,16 @@ namespace WordJourney
 
                         t.color = new Color(1, 1, 1, alpha);
 
-                        alpha += alphaChangeSpeed * Time.deltaTime;
+						//alpha += alphaChangeSpeed * Time.unscaledDeltaTime;
+						alpha += alphaChangeSpeed * Time.deltaTime;
 
                         yield return null;
 
                     }
 
-                    yield return new WaitForSeconds(sentenceInterval);
+					//yield return new WaitForSecondsRealtime(sentenceInterval);
+
+					yield return new WaitForSeconds(sentenceInterval);
                 }
 
 				switch (transitionType)
@@ -133,6 +158,7 @@ namespace WordJourney
                         transitionPlaneMask.enabled = true;
                         transitionPlaneMask.color = new Color(0, 0, 0, 0);
                         transitionPlaneMask.raycastTarget = true;
+						clickTintText.text = "点击屏幕继续";
                         clickTintText.enabled = true;
                         alpha = 0.5f;
 
@@ -144,7 +170,9 @@ namespace WordJourney
 
                                 clickTintText.color = new Color(1, 1, 1, alpha);
 
-                                alpha += alphaChangeSpeed * Time.deltaTime / 2;
+								//alpha += alphaChangeSpeed * Time.unscaledDeltaTime / 2;
+
+								alpha += alphaChangeSpeed * Time.deltaTime / 2;
 
                                 if (hasUserClick)
                                 {
@@ -160,7 +188,9 @@ namespace WordJourney
 
                                 clickTintText.color = new Color(1, 1, 1, alpha);
 
-                                alpha -= alphaChangeSpeed * Time.deltaTime / 2;
+								//alpha -= alphaChangeSpeed * Time.unscaledDeltaTime / 2;
+
+								alpha -= alphaChangeSpeed * Time.deltaTime / 2;
 
                                 if (hasUserClick)
                                 {
@@ -172,11 +202,57 @@ namespace WordJourney
                             }
                         }
                         break;
-                    case TransitionType.Quit:
+					case TransitionType.None:
                         break;
                     case TransitionType.Death:
                         break;
                     case TransitionType.End:
+						transitionPlaneMask.enabled = true;
+                        transitionPlaneMask.color = new Color(0, 0, 0, 0);
+                        transitionPlaneMask.raycastTarget = true;
+                        clickTintText.text = "点击屏幕重置游戏进度";
+                        clickTintText.enabled = true;
+                        alpha = 0.5f;
+
+                        while (!hasUserClick)
+                        {
+
+                            while (alpha < 1f)
+                            {
+
+                                clickTintText.color = new Color(1, 1, 1, alpha);
+
+                                //alpha += alphaChangeSpeed * Time.unscaledDeltaTime / 2;
+
+								alpha += alphaChangeSpeed * Time.deltaTime / 2;
+
+                                if (hasUserClick)
+                                {
+                                    break;
+                                }
+
+                                yield return null;
+
+                            }
+
+                            while (alpha > 0.5f)
+                            {
+
+                                clickTintText.color = new Color(1, 1, 1, alpha);
+
+                                //alpha -= alphaChangeSpeed * Time.unscaledDeltaTime / 2;
+
+								alpha -= alphaChangeSpeed * Time.deltaTime / 2;
+
+                                if (hasUserClick)
+                                {
+                                    break;
+                                }
+
+                                yield return null;
+
+                            }
+                        }
                         break;
                 }
 
@@ -184,10 +260,10 @@ namespace WordJourney
 
                 while (alpha < 1)
                 {
-
                     transitionPlaneMask.color = new Color(0, 0, 0, alpha);
 
-                    alpha += alphaChangeSpeed * Time.deltaTime;
+					//alpha += alphaChangeSpeed * Time.unscaledDeltaTime;
+					alpha += alphaChangeSpeed * Time.deltaTime;
 
                     yield return null;
                 }
@@ -198,18 +274,25 @@ namespace WordJourney
             {
                 case TransitionType.Introduce:
                     GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.exploreBgmName);
+					Player.mainPlayer.isNewPlayer = false;
+                    GameManager.Instance.persistDataManager.SaveCompletePlayerData();
                     break;
-                case TransitionType.Quit:
+				case TransitionType.None:
                 case TransitionType.Death:
                 case TransitionType.End:
-                    GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
+                    //GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
                     break;
             }
 		
+			if (finishTransitionCallBack != null)
+            {
+				finishTransitionCallBack();
+            }
 
-			finishTransitionCallBack ();
 
 			this.gameObject.SetActive (false);
+
+
 
 			for (int i = 0; i < transitionTextContainer.childCount; i++) {
 				Destroy (transitionTextContainer.GetChild (i).gameObject,0.3f);

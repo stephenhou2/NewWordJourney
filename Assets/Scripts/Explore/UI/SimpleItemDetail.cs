@@ -14,9 +14,13 @@ namespace WordJourney
 		public Text itemDescription;
 		public Text attachedDescription;
 		public Image itemIcon;
-		public Image attachedSkillIcon;
-		public Text attachedSkillName;
+		public Image itemIconBackground;
 		public Text priceText;
+
+		public Sprite grayFrame;
+		public Sprite blueFrame;
+		public Sprite goldFrame;
+		public Sprite purpleFrame;
 
 		public float flyDuration;
 		public float stayDuration;
@@ -31,32 +35,43 @@ namespace WordJourney
 
 			itemName.text = item.itemName;
 
+			itemIconBackground.sprite = grayFrame;
+
 			switch(item.itemType){
 			case ItemType.Equipment:
 				itemDescription.text = item.itemDescription;
 				Equipment eqp = item as Equipment;
 				attachedDescription.text = eqp.attachedPropertyDescription;
-				//if (eqp.attachedSkillId > 0) {
-
-				//	Skill attachedSkill = GameManager.Instance.gameDataCenter.allSkills.Find (delegate(Skill obj) {
-				//		return obj.skillId == eqp.attachedSkillId;
-				//	});
-
-				//	Sprite skillSprite = GameManager.Instance.gameDataCenter.allSkillSprites.Find (delegate (Sprite obj) {
-				//		return obj.name == attachedSkill.skillIconName;
-				//	});
-
-				//	attachedSkillIcon.sprite = skillSprite;
-				//	attachedSkillIcon.enabled = skillSprite != null;
-
-				//	attachedSkillName.text = attachedSkill.skillName;
-
-				//}
+					switch(eqp.quality){
+						case EquipmentQuality.Gray:
+							itemIconBackground.sprite = grayFrame;
+							break;
+						case EquipmentQuality.Blue:
+							itemIconBackground.sprite = blueFrame;
+							break;
+						case EquipmentQuality.Gold:
+							itemIconBackground.sprite = goldFrame;
+							break;
+						case EquipmentQuality.Purple:
+							itemIconBackground.sprite = purpleFrame;
+							break;
+					}
 				break;
 			case ItemType.Consumables:
 				attachedDescription.text = item.itemDescription;
 				break;
 			case ItemType.PropertyGemstone:
+				attachedDescription.text = item.itemDescription;
+					break;
+			case ItemType.SkillScroll:
+				//SkillScroll skillScroll = item as SkillScroll;
+				//Skill skill = GameManager.Instance.gameDataCenter.allSkills.Find(delegate (Skill obj)
+				//{
+				//	return obj.skillId == skillScroll.skillId;
+				//});
+				attachedDescription.text = item.itemDescription;
+				break;
+			case ItemType.SpecialItem:
 				attachedDescription.text = item.itemDescription;
 				break;
 			}
@@ -96,9 +111,6 @@ namespace WordJourney
 			attachedDescription.text = string.Empty;
 			itemIcon.sprite = null;
 			itemIcon.enabled = false;
-			attachedSkillIcon.sprite = null;
-			attachedSkillIcon.enabled = false;
-			attachedSkillName.text = string.Empty;
 			priceText.text = string.Empty;
 		}
 

@@ -8,7 +8,7 @@ namespace WordJourney
     public class JiangDiGongJi : TriggeredPassiveSkill
     {
 
-        private bool hasTriggered;
+        //private bool hasTriggered;
         public float triggeredProbability;
 		public int fixedAttackDecrease;
 		public float attackDecreaseScaler;
@@ -20,16 +20,11 @@ namespace WordJourney
 				int attackChange = -(int)((attackDecreaseScaler * Player.mainPlayer.agentLevel) + fixedAttackDecrease);
                 enemy.agent.attackChangeFromSkill += attackChange;
                 enemy.agent.attack += attackChange;
-                enemy.UpdateStatusPlane();
-				if (selfEffectAnimName != string.Empty)
-                {
-                    self.SetEffectAnim(selfEffectAnimName);
-                }
+                //enemy.UpdateStatusPlane();
 
-                if (enemyEffectAnimName != string.Empty)
-                {
-                    enemy.SetEffectAnim(enemyEffectAnimName);
-                }
+				enemy.AddTintTextToQueue("攻击降低");
+
+				SetEffectAnims(self, enemy);
 
             }
 		}

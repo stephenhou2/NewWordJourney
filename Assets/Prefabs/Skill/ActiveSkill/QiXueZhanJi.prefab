@@ -52,17 +52,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillName: "\u6CE3\u8840\u65A9\u51FB"
-  sfxName: player_skill1
+  sfxName: Skill/se_qiXueZhanJi
   skillId: 20
-  skillDescription: "\u672C\u6B21\u653B\u51FB\u9020\u6210\u989D\u5916\uFF08\u6280\u80FD\u7B49\u7EA7\xD712+25\uFF09\u70B9\u7269\u7406\u4F24\u5BB3,\u5E76\u5C0650%\u7684\u4F24\u5BB3\u503C\u8F6C\u5316\u4E3A\u81EA\u8EAB\u751F\u547D"
+  skillDescription: "\u9020\u6210<color=orange>\u7269\u7406\u653B\u51FB+\u6280\u80FD\u7B49\u7EA7\xD725+15</color>\u70B9\u7269\u7406\u4F24\u5BB3,\u5E76\u5C06\u6240\u9020\u6210\u4F24\u5BB3\u768440%\u8F6C\u5316\u4E3A\u81EA\u8EAB\u751F\u547D"
   skillIconName: 20_qiXueZhanJi
-  selfEffectAnimName: 01_health_heal
-  enemyEffectAnimName: 
+  selfEffectAnimName: state_health_heal
+  enemyEffectAnimName: se_qiXueZhanJi
   skillType: 0
   skillLevel: 1
+  price: 180
+  hasTriggered: 0
   selfRoleAnimName: physical_skill
   skillCoolenTime: 4
+  coolenPercentage: 0
+  skillStatus: 0
   manaConsume: 15
-  fixHurt: 25
-  hurtBase: 12
-  absorbScaler: 0.5
+  fixHurt: 15
+  hurtBase: 25
+  absorbScaler: 0.4

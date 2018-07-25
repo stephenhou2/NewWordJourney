@@ -26,7 +26,7 @@ namespace WordJourney
 
 		public List<AudioSource> audioSourceList = new List<AudioSource> ();
 
-		private Dictionary<string,int> audioClipInfoDic = new Dictionary<string, int> (); 
+		//private Dictionary<string,int> audioClipInfoDic = new Dictionary<string, int> (); 
 
 		public void UpdateVolume(){
 			float newVolume = GameManager.Instance.gameDataCenter.gameSettings.systemVolume;

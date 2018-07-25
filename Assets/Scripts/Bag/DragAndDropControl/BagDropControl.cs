@@ -121,14 +121,16 @@ namespace WordJourney
 
 			// 如果是从特殊操作面板拖拽过来的物品
 			if (dragControl is SpecialOperationItemDragControl) {
+                
+				SpecialOperationCell specialOperationCell = dragControl.GetComponent<SpecialOperationCell>();
 
-				SpecialOperationItemDragControl specialOperationItemDrag = dragControl as SpecialOperationItemDragControl;
-
-				specialOperationItemDrag.Reset ();
+				specialOperationCell.ResetSpecialOperationCell ();
 				SetDropResult (eventData, true);
 
-				bagView.GetComponent<BagViewController>().itemForSpecialOperation = null;
+				//bagView.GetComponent<BagViewController>().itemForSpecialOperation = null;
 			}
+
+            
 
 			tintImage.enabled = false;
 		}

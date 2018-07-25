@@ -46,6 +46,7 @@ namespace WordJourney{
 					if (kv.Value.State != ConnectionState.Open) {
 						kv.Value.Open ();
 					}
+					Debug.Log("连接到已有数据库");
 					return kv.Value;
 				}
 			}
@@ -80,6 +81,8 @@ namespace WordJourney{
 						}
 						// 数据库连接写入字典数据中
 						connectionDic.Add(dbName,m_connection);
+
+						Debug.Log("连接到新数据库");
 
 						return m_connection;
 
@@ -226,11 +229,14 @@ namespace WordJourney{
 		// 关闭指定名称的数据库连接
 		public void CloseConnection(string dbName){
 
+			Debug.Log("关闭数据库");
+
 			CloseConnection (dbName, true);
 
 		}
 		// 关闭指定名称的数据库连接
 		private void CloseConnection(string dbName,bool removeConnection){
+
 			IDbConnection connection = null;
 
 			if (connectionDic [dbName] != null) {
@@ -251,6 +257,12 @@ namespace WordJourney{
 					m_command.Dispose();
 					m_command = null;
 				}
+
+				if(m_transaction != null){
+					m_transaction.Dispose();
+					m_transaction.Commit();
+					m_transaction = null;
+				}
 					
 				connection.Dispose ();
 				connection.Close ();
@@ -266,7 +278,9 @@ namespace WordJourney{
 
 		// 关闭所有数据库连接
 		public void CloseAllConnections(){
-			
+
+			Debug.Log("关闭所有数据库");
+
 			foreach (KeyValuePair<string,IDbConnection> kv in connectionDic) {
 
 				CloseConnection (kv.Key,false);

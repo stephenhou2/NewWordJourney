@@ -21,6 +21,7 @@ namespace WordJourney
 		public MyTowards towards;
 		public Vector3 basePosition;
 		public int indexInList;
+
 		public ExploreText(string text,MyTowards towards,Vector3 basePosition){
 			this.text = text;
 			this.towards = towards;
@@ -41,7 +42,9 @@ namespace WordJourney
 
 //		private MyTowards direction;
 
-		private float exploreTextInterval = 0.1f;
+		private float hurtTextInterval = 0.1f;
+
+		private float tintTextInterval = 0.3f;
 
 //		private IEnumerator hurtTextCoroutine;
 //
@@ -94,7 +97,7 @@ namespace WordJourney
 			}
 
 			// exploreText现在在显示队列的队首，则等待显示间隔事件后显示
-			yield return new WaitForSeconds (exploreTextInterval);
+			yield return new WaitForSeconds (hurtTextInterval);
 
 			PlayHurtTextAnim (exploreText);
 
@@ -116,7 +119,7 @@ namespace WordJourney
 			}
 
 			// exploreText现在在显示队列的队首，则等待显示间隔事件后显示
-			yield return new WaitForSeconds (exploreTextInterval);
+			yield return new WaitForSeconds (tintTextInterval);
 
 			PlayTintTextAnim (exploreText);
 
@@ -163,8 +166,10 @@ namespace WordJourney
 			}
 
 			hurtText.transform.localPosition = originHurtPos;
-
+         
 			hurtText.text = et.text;
+
+			hurtText.GetComponentInChildren<Image>().enabled = false;
 
 			hurtText.gameObject.SetActive (true);
 
@@ -186,41 +191,6 @@ namespace WordJourney
 
 		}
 
-		/// <summary>
-		/// 吸血文本动画
-		/// </summary>
-		/// <param name="gainStr">Gain string.</param>
-		/// <param name="agentPos">Agent position.</param>
-//		public void PlayGainTextAnim(ExploreText exploreText){
-//
-//			Vector3 pos = Vector3.zero;
-//
-//			switch (direction) {
-//			case MyTowards.Left:
-//				pos = basePosition + new Vector3 (-50f, 150f, 0);
-//				break;
-//			case MyTowards.Right:
-//				pos = basePosition + new Vector3 (50f, 150f, 0);
-//				break;
-//			}
-//
-//			Text gainText = exploreTextPool.GetInstance<Text> (exploreTextModel.gameObject, exploreTextContainer);
-//
-//			gainText.transform.localPosition = pos;
-//
-//			gainText.text = exploreText.text;
-//
-//			gainText.gameObject.SetActive (true);
-//
-//			float endY = pos.y + 100f;
-//
-//			gainText.transform.DOLocalMoveY (endY, 1f).OnComplete(()=>{
-//				gainText.text = "";
-//				gainText.gameObject.SetActive(false);
-//				exploreTextPool.AddInstanceToPool(gainText.gameObject);
-//			});
-//
-//		}
 
 		/// <summary>
 		/// 纵向提示文本动画（用于显示血量提升，特殊攻击结果（暴击，闪避），其他屏幕提示）
@@ -231,13 +201,13 @@ namespace WordJourney
 
 			Text tintText = exploreTextPool.GetInstance<Text> (exploreTextModel.gameObject, exploreTextContainer);
 
-			tintText.transform.localPosition = et.basePosition + new Vector3 (0, 250, 0);
+			tintText.transform.localPosition = et.basePosition + new Vector3 (0, 260, 0);
 
-			tintText.text = et.text;
+			tintText.text = string.Format("<size=35>{0}</size>",et.text);
 
-			tintText.gameObject.SetActive (true);
-
-			tintText.transform.DOScale(new Vector3(1.2f,1.2f,1f),0.5f).OnComplete (() => {
+			tintText.gameObject.SetActive(true);
+         
+			tintText.transform.DOScale(new Vector3(1.2f,1.2f,1f),0.3f).OnComplete (() => {
 
 				tintText.text = "";
 

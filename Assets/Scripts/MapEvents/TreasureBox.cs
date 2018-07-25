@@ -12,7 +12,9 @@ namespace WordJourney
 		public Sprite normalTbSprite;
 		public Sprite specialTbSprite;
 
+		private int mapIndex;
 
+		//private int fixedDropItemId;
 
 		/// <summary>
 		/// 地图物品被破坏或开启
@@ -20,45 +22,21 @@ namespace WordJourney
 		/// <param name="cb">Cb.</param>
 		public override void PlayAnimAndAudio(CallBack cb){
 
-			animEndCallBack = cb;
+			//animEndCallBack = cb;
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.treasureBoxAudioName);
-
-			mapItemRenderer.enabled = false;
-
-			mapItemAnimator.gameObject.SetActive (true);
-
-			// 播放对应动画
-			if (!isGoldTreasureBox) {
-				mapItemAnimator.SetTrigger ("PlayNormal");
-			} else {
-				mapItemAnimator.SetTrigger ("PlaySpecial");
+         
+			if(cb != null){
+				cb();
 			}
-
-			StartCoroutine ("ResetMapItemOnAnimFinished");
-
-		}
-
-		protected override void AnimEnd()
-		{
-			if (!isGoldTreasureBox)
-            {
-				mapItemAnimator.ResetTrigger("PlayNormal");
-            }
-            else
-            {
-				mapItemAnimator.ResetTrigger("PlaySpecial");
-            }
-
-			if (animEndCallBack != null)
-            {
-                animEndCallBack();
-            }
 		}
 
 
-		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
+
+		public override void InitializeWithAttachedInfo (int mapIndex,MapAttachedInfoTile attachedInfo)
 		{
+			this.mapIndex = mapIndex;
+
 			transform.position = attachedInfo.position;
 
 			isGoldTreasureBox = false;
@@ -67,17 +45,34 @@ namespace WordJourney
 				string type = KVPair.GetPropertyStringWithKey ("type", attachedInfo.properties);
 				isGoldTreasureBox = type == "1";
 			}
-				
-			if (!isGoldTreasureBox) {
-				mapItemRenderer.sprite = normalTbSprite;
-			} else {
-				mapItemRenderer.sprite = specialTbSprite;
+
+			int rewardItemId = 0;
+
+			if (!isGoldTreasureBox)
+            {
+                mapItemRenderer.sprite = normalTbSprite;
+                treasureType = TreasureType.NormalTreasureBox;
+            }
+            else
+            {
+                mapItemRenderer.sprite = specialTbSprite;
+                treasureType = TreasureType.GoldTreasureBox;
+            }
+
+
+			if(KVPair.ContainsKey("dropID",attachedInfo.properties)){
+				rewardItemId = int.Parse(KVPair.GetPropertyStringWithKey("dropID", attachedInfo.properties));
+			}else{
+				rewardItemId = GetRandomItemIdFromGameLevelData();  
 			}
 
+			if(isGoldTreasureBox && MapEventsRecord.IsMapEventTriggered(mapIndex,attachedInfo.position)){
+				AddToPool(ExploreManager.Instance.newMapGenerator.mapEventsPool);
+			}
 				
-			int rewardItemId = GetRandomItemIdFromGameLevelData();
 
-			rewardItem = Item.NewItemWith (rewardItemId, 1);
+			rewardItem = Item.NewItemWith(rewardItemId, 1);	
+
 
 			if (rewardItem.itemType == ItemType.Equipment) {
 
@@ -90,12 +85,12 @@ namespace WordJourney
 
 				switch(Player.mainPlayer.luckInOpenTreasure){
 					case 0:
-						graySeed = 65;
-						blueSeed = 95;
+						graySeed = 65 - Player.mainPlayer.extraLuckInOpenTreasure;
+						blueSeed = 95 - Player.mainPlayer.extraLuckInOpenTreasure;
 						break;
 					case 1:
-						graySeed = 60;
-						blueSeed = 90;
+						graySeed = 60 - Player.mainPlayer.extraLuckInOpenTreasure;
+						blueSeed = 90 - Player.mainPlayer.extraLuckInOpenTreasure;
 						break;
 				}
 
@@ -121,13 +116,27 @@ namespace WordJourney
 			CheckIsWordTriggeredAndShow ();
 
 			bc2d.enabled = true;
-			mapItemAnimator.gameObject.SetActive (false);
+			//mapItemAnimator.gameObject.SetActive (false);
 			mapItemRenderer.enabled = true;
 			int sortingOrder = -(int)transform.position.y;
 			SetSortingOrder (sortingOrder);
-			SetAnimationSortingOrder (sortingOrder);
+			//SetAnimationSortingOrder (sortingOrder);
 
 		}
 
+
+		public override void MapEventTriggered(bool isSuccess, BattlePlayerController bp)
+		{
+
+			int posX = Mathf.RoundToInt(this.transform.position.x);
+            int posY = Mathf.RoundToInt(this.transform.position.y);
+         
+			base.MapEventTriggered(isSuccess, bp);
+         
+			if(isGoldTreasureBox){
+				MapEventsRecord.AddEventTriggeredRecord(mapIndex, new Vector2(posX,posY));
+			}
+
+		}
 	}
 }

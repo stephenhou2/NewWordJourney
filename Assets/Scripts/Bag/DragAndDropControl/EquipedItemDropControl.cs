@@ -172,11 +172,11 @@ namespace WordJourney
 
 				SetDropResult (eventData, true);
 
-				if (!Player.mainPlayer.CheckBagFull (equipmentPrepareToUnload)) {
+				//if (!Player.mainPlayer.CheckBagFull (equipmentPrepareToUnload)) {
 
-					bagView.GetComponent<BagViewController> ().AddItemInWait ();
+				//	bagView.GetComponent<BagViewController> ().AddItemInWait ();
 
-				}
+				//}
 
 				bagView.SetUpItemDetail (equipmentPrepareToLoad);
 

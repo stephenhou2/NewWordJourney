@@ -7,10 +7,6 @@ namespace WordJourney
 {
 	public class PressSwitch : TriggeredGear {
 
-//		public Sprite switchOffSprite;
-//
-//		public Sprite switchOnSprite;
-
 
 		public Vector2 pairEventPos;
 
@@ -20,19 +16,20 @@ namespace WordJourney
 		// 是否已经触发过
 		private bool hasTriggered;
 
-		//是否是弹性开关
-		private bool isElastic;
-
 		public Sprite pressSwitchOn;
 		public Sprite pressSwitchOff;
 
-		public Sprite elasticSwitchOn;
-		public Sprite elasticSwitchOff;
+		private int mapIndex;
+
+		public override void ChangeStatus()
+		{
+			
+		}
 
 
 		public override bool IsPlayerNeedToStopWhenEntered ()
 		{
-			if (isWordTriggered && !hasTriggered) {
+			if (isWordTriggered) {
 				return true;
 			}
 
@@ -46,55 +43,42 @@ namespace WordJourney
 			bc2d.enabled = false;
 			pool.AddInstanceToPool (this.gameObject);
 		}
+        
 
-		public void ResetPressSwitch(Door door){
-			if (!isElastic) {
-				mapItemRenderer.sprite = pressSwitchOff;
-			} else {
-				mapItemRenderer.sprite = elasticSwitchOff;
-			}
-
-		}
-
-		void OnTriggerEnter2D(Collider2D other){
-
-			if (other.GetComponent<BattleAgentController> () == null && other.GetComponent<MovableBox>() == null) {
-				return;
-			}
-
-			PressOnSwitch ();
-
-		}
-
-		private void PressOnSwitch(){
-//			mapItemRenderer.sprite = switchOffSprite;
-
-		}
-
-		private void PressOffSwitch(){
-//			mapItemRenderer.sprite = switchOnSprite;
-
-		}
-
-		void OnTriggerExit2D(Collider2D other){
-
-			if (other.GetComponent<BattleAgentController> () == null && other.GetComponent<MovableBox>() == null) {
-				return;
-			}
-
-			PressOffSwitch();
-
-		}
 
 		public void SetPosTransferSeed(int mapHeight){
 			this.mapHeight = mapHeight;
 		}
 			
 
-		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
+		public override void InitializeWithAttachedInfo(int mapIndex,MapAttachedInfoTile attachedInfo)
 		{
+			this.mapIndex = mapIndex;
+         
 			transform.position = attachedInfo.position;
 
+			hasTriggered = MapEventsRecord.IsMapEventTriggered(mapIndex, attachedInfo.position);
+
+			if(hasTriggered){
+
+				mapItemRenderer.sprite = pressSwitchOff;
+
+				SetSortingOrder(-Mathf.RoundToInt(attachedInfo.position.y) - 1);
+
+                hasTriggered = true;
+
+				bc2d.enabled = true;
+
+                tmPro.enabled = false;
+
+                ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y)] = 0;
+
+				return;
+
+			}else{
+				mapItemRenderer.sprite = pressSwitchOn;
+			}
+                     
 			hasTriggered = false;
 
 			string pairDoorPosString = KVPair.GetPropertyStringWithKey ("pairEventPos", attachedInfo.properties);
@@ -105,14 +89,7 @@ namespace WordJourney
 			int posY = mapHeight - int.Parse (posXY [1]) - 1;
 
 			pairEventPos = new Vector2 (posX, posY);
-
-			isElastic = attachedInfo.type.Equals ("elasticSwitch");
-
-			if (!isElastic) {
-				mapItemRenderer.sprite = pressSwitchOn;
-			} else {
-				mapItemRenderer.sprite = elasticSwitchOn;
-			}
+         
 
 			bc2d.enabled = true;
 			SetSortingOrder (-Mathf.RoundToInt(attachedInfo.position.y));
@@ -122,8 +99,9 @@ namespace WordJourney
 
 
 		public override void EnterMapEvent(BattlePlayerController bp)
-		{
-			if (isElastic) {
+		{        
+			if(hasTriggered){
+				bp.isInEvent = false;
 				return;
 			}
 
@@ -143,29 +121,30 @@ namespace WordJourney
 			}
 
 			if (isSuccess) {
+
+				mapItemRenderer.sprite = pressSwitchOff;
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.switchAudioName);
 				
 				ExploreManager.Instance.newMapGenerator.ChangeMapEventStatusAtPosition (pairEventPos);
-
-				mapItemRenderer.sprite = isElastic ? elasticSwitchOff : pressSwitchOff;
 
 				SetSortingOrder (mapItemRenderer.sortingOrder - 1);
 
 				hasTriggered = true;
 
-				bc2d.enabled = false;
+				bc2d.enabled = true;
 
-				tmPro.enabled = false;
+				tmPro.enabled = false;            
 
-				if (!isElastic) {
-					ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.y)] = 1;
-				}
+				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.y)] = 1;
+
+				int posX = Mathf.RoundToInt(this.transform.position.x);
+                int posY = Mathf.RoundToInt(this.transform.position.y);
+
+                MapEventsRecord.AddEventTriggeredRecord(mapIndex, new Vector2(posX, posY));
+
 			}
 		}
 
-		public override void ChangeStatus ()
-		{
-			
-		}
 
 	}
 }

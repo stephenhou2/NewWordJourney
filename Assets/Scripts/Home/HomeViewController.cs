@@ -18,85 +18,59 @@ namespace WordJourney
 			Time.timeScale = 1f;
 
 
-			if (!GameManager.Instance.soundManager.bgmAS.isPlaying 
-				|| GameManager.Instance.soundManager.bgmAS.clip.name != CommonData.homeBgmName) {
-				GameManager.Instance.soundManager.PlayBgmAudioClip (CommonData.homeBgmName, true);
-			}
+			//if (!GameManager.Instance.soundManager.bgmAS.isPlaying 
+			//	|| GameManager.Instance.soundManager.bgmAS.clip.name != CommonData.homeBgmName) {
+			//	GameManager.Instance.soundManager.PlayBgmAudioClip (CommonData.homeBgmName, true);
+			//}
 
 		}
 			
 
 		public void OnExploreButtonClick(){
-
-
-			
-			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
-
-			Player.mainPlayer.SetUpPlayerWithPlayerData (playerData);
-
-
+         
 			if (Player.mainPlayer.isNewPlayer) {
 
 				GameManager.Instance.soundManager.PlayAudioClip (CommonData.paperAudioName);
 
-				homeView.SetUpDifficultyChoosePlane ();
+				homeView.SetUpDifficultyChoosePlane (OnDifficultyChoose);
 			} else {
 
 				homeView.ShowMaskImage ();
 
-				StartCoroutine ("LoadExploreData");
+				GameManager.Instance.soundManager.StopBgm();
+
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName,"LoadingCanvas",delegate{
+					TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.EnterExplore, LoadExplore, ShowExplore);	
+				});
 
 			}
 
 		}
 
-		public void QuitDifficultyChoosePlane(){
-			homeView.QuitDifficultyChoosePlane ();
-		}
 
-		public void SelectChapter(int chapterIndex){
-
-//			e.PlayAudioClip ("UI/sfx_UI_Click");
-			
-//			Player.mainPlayer.currentLevelIndex = 5 * chapterIndex;
-
-			homeView.ShowMaskImage ();
-
-			StartCoroutine ("LoadExploreData");
-
-			#warning 下面这个代码是使用场景管理器方式加载探索界面
-//			SceneManager.LoadSceneAsync ("ExploreScene", LoadSceneMode.Single);
-
-		}
 
 		/// <summary>
 		/// 玩家选择游戏难度【0:简单 1:中等 2:困难】
 		/// </summary>
 		/// <param name="difficulty">Difficulty.</param>
-		public void OnDifficultyChoose(int difficulty){
-
-			GameManager.Instance.soundManager.PlayAudioClip (CommonData.buttonClickAudioName);
-
-			switch (difficulty) {
-			case 0:
-				GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.Simple;
-				break;
-			case 1:
-				GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.Medium;
-				break;
-			case 2:
-				GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.Master;
-				break;
-			}
-
-			GameManager.Instance.persistDataManager.SaveGameSettings ();
+		public void OnDifficultyChoose(){
 
 			homeView.ShowMaskImage ();
 
 			GameManager.Instance.soundManager.StopBgm();
 
-			StartCoroutine ("LoadExploreData");
+			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate {
+				TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.EnterExplore, LoadExplore,ShowExplore);
+            });
 
+		}
+
+		private void ShowExplore(){
+			TransformManager.FindTransform("ExploreCanvas").GetComponent<ExploreUICotroller>().ShowExploreSceneSlowly();
+		}
+
+		private void LoadExplore(){
+			StartCoroutine("LoadExploreData");
 		}
 
 
@@ -107,7 +81,7 @@ namespace WordJourney
 			QuitHomeView();
 
 			GameManager.Instance.UIManager.RemoveMultiCanvasCache (new string[] {
-				"UnlockedItemsCanvas",
+				"HomeCanvas",
 				"RecordCanvas",
 				"SettingCanvas",
 				"SpellCanvas",
@@ -115,10 +89,11 @@ namespace WordJourney
 			});
 
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.exploreSceneBundleName, "ExploreCanvas", () => {
-
-				ExploreManager.Instance.SetUpExploreView();
-
-			},false,false);
+				if(Player.mainPlayer.isNewPlayer){
+					Player.mainPlayer.InitializeMapIndex();
+				}            
+				ExploreManager.Instance.SetUpExploreView(true);            
+			},false,true);
 
 		}
 
@@ -130,16 +105,7 @@ namespace WordJourney
 			},false,true);
 		}
 
-		public void OnLearnButtonClick(){
-			GameManager.Instance.soundManager.PlayAudioClip (CommonData.buttonClickAudioName);
-			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.learnCanvasBundleName, "LearnCanvas", () => {
-				TransformManager.FindTransform("LearnCanvas").GetComponent<LearnViewController>().SetUpLearnView();
-				homeView.OnQuitHomeView();
-			},false,true);
-
-		}
-			
-
+      
 		public void OnBagButtonClick(){
 			GameManager.Instance.soundManager.PlayAudioClip (CommonData.buttonClickAudioName);
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.bagCanvasBundleName, "BagCanvas", () => {
@@ -156,21 +122,51 @@ namespace WordJourney
 			},false,true);
 		}
 
-		public void OnSpellButtonClick(){
-			GameManager.Instance.soundManager.PlayAudioClip (CommonData.buttonClickAudioName);
-			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.spellCanvasBundleName, "SpellCanvas", () => {
-				TransformManager.FindTransform("SpellCanvas").GetComponent<SpellViewController>().SetUpSpellViewForCreate(null,null);
+		//public void OnSpellButtonClick(){
+		//	GameManager.Instance.soundManager.PlayAudioClip (CommonData.buttonClickAudioName);
+		//	GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.spellCanvasBundleName, "SpellCanvas", () => {
+		//		TransformManager.FindTransform("SpellCanvas").GetComponent<SpellViewController>().SetUpSpellViewForCreate(null,null);
+		//		homeView.OnQuitHomeView();
+		//	},false,true);
+		//}
+
+		public void OnCommentButtonClick()
+		{
+#if UNITY_IPHONE || UNITY_EDITOR
+			const string APP_ID = "1340788161";
+			var url = string.Format("itms-apps://itunes.apple.com/cn/app/id{0}?mt=8&action=write-review", APP_ID);
+			Application.OpenURL(url);         
+#elif UNITY_ANDROID
+			homeView.tintHUD.SetUpSingleTextTintHUD("评论功能暂未开放，敬请期待!");
+#endif
+		}
+
+		public void OnWeChatShareButtonClick(){
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
+			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
+			{
+				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, ShareSucceedCallBack, ShareFailedCallBack,null);
 				homeView.OnQuitHomeView();
 			},false,true);
 		}
 
-		public void OnCommentButtonClick(){
-			#if UNITY_IPHONE || UNITY_EDITOR
-			#warning 这里是应用的apple id
-			const string APP_ID = "564457517"; 
-			var url = string.Format("itms-apps://itunes.apple.com/cn/app/id{0}?mt=8&action=write-review",APP_ID);
-			Application.OpenURL(url);
-			#endif
+		public void OnWeiBoShareButtonClick(){
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
+            GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
+            {
+				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.Weibo, ShareSucceedCallBack, ShareFailedCallBack,null);
+                homeView.OnQuitHomeView();
+            }, false, true);
+		}
+
+		private void ShareSucceedCallBack(){
+			string tintStr = "分享成功，获得金币x30";
+			homeView.tintHUD.SetUpSingleTextTintHUD(tintStr);
+		}
+
+		private void ShareFailedCallBack(){
+			string tintStr = "打开客户端失败";
+			homeView.tintHUD.SetUpSingleTextTintHUD(tintStr);
 		}
 
 

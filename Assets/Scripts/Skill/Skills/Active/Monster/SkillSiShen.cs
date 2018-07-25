@@ -9,40 +9,49 @@ namespace WordJourney
     {
 
 		public int hurt;
-		public int armorAndMagicReistDecrease;
-
-		//private bool hasTriggered = false;
-
+		public int attackDecrease;
+		public int armorDecrease;
 
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
-			int actualHurt = Mathf.RoundToInt(hurt / ((enemy.agent.magicResist - self.agent.magicResistDecrease) / 100f + 1));
 
-			enemy.AddHurtAndShow(hurt, HurtType.Magical, self.towards);
+			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
+
+			if (magicResistCal < -50)
+            {
+                magicResistCal = -50;
+            }
+                  
+			int actualHurt = Mathf.RoundToInt(hurt / (magicResistCal / 100f + 1));
+
+			enemy.AddHurtAndShow(actualHurt, HurtType.Magical, self.towards);
 
 			enemy.PlayShakeAnim();
 
-			int armorAndMagicResistChange = -armorAndMagicReistDecrease;
-	
-			enemy.agent.armor += armorAndMagicResistChange;
-			enemy.agent.armorChangeFromSkill += armorAndMagicResistChange;
-
-
-			enemy.agent.magicResist += armorAndMagicResistChange;
-			enemy.agent.magicResistChangeFromSkill += armorAndMagicResistChange;
-            
-         
-			if (selfEffectAnimName != string.Empty)
+			if (!hasTriggered)
             {
-                self.SetEffectAnim(selfEffectAnimName);
+				hasTriggered = true;
+
+				int armorChange = -armorDecrease;
+				int attackChange = -armorDecrease;
+
+				if(armorDecrease > 0){
+					enemy.agent.armor += armorChange;
+                    enemy.agent.armorChangeFromSkill += armorChange;               
+					enemy.AddTintTextToQueue("护甲降低");
+				}
+
+				if(attackDecrease > 0){
+					enemy.agent.attack += attackChange;
+                    enemy.agent.attackChangeFromSkill += attackChange;
+					enemy.AddTintTextToQueue("攻击降低");
+
+				}
+                            
+
             }
 
-            if (enemyEffectAnimName != string.Empty)
-            {
-                enemy.SetEffectAnim(enemyEffectAnimName);
-            }
-
-			enemy.UpdateStatusPlane();
+			enemy.SetEffectAnim(enemyEffectAnimName);
 
 		}
 

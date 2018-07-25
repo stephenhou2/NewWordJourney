@@ -25,10 +25,17 @@ namespace WordJourney
 		}
 
 		public PropertyChange UseSkillScroll(){
+                     
+			PropertyChange propertyChange = Player.mainPlayer.LearnSkill(skillId);
 
-			Skill skill = SkillGenerator.GenerateSkill(skillId);
+			if (ExploreManager.Instance.battlePlayerCtr.isInFight)
+            {
+                ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
+            }
 
-			return Player.mainPlayer.LearnSkill(skill);
+			return propertyChange;
+
+
 		}
       
 	}

@@ -13,12 +13,18 @@ namespace WordJourney
         public int hurt;
         public int attackDecrease;
 
-		private bool hasTriggered = false;
-
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
 
-			int actualHurt = Mathf.RoundToInt(hurt / ((enemy.agent.armor - self.agent.armorDecrease) / 100f + 1));
+			int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+
+			if (armorCal < -50)
+            {
+                armorCal = -50;
+            }
+
+
+			int actualHurt = Mathf.RoundToInt(hurt / (armorCal / 100f + 1));
 
 			enemy.AddHurtAndShow(actualHurt, HurtType.Physical, self.towards);
 
@@ -29,22 +35,12 @@ namespace WordJourney
 				enemy.agent.attackChangeFromSkill += -attackDecrease;
 
 				hasTriggered = true;
+            
+                enemy.SetEffectAnim(enemyEffectAnimName);
 
-
+				enemy.AddTintTextToQueue("攻击降低");
 
 			}
-           
-			if (selfEffectAnimName != string.Empty)
-            {
-                self.SetEffectAnim(selfEffectAnimName);
-            }
-
-            if (enemyEffectAnimName != string.Empty)
-            {
-                enemy.SetEffectAnim(enemyEffectAnimName);
-            }
-
-            enemy.UpdateStatusPlane();
 
             enemy.PlayShakeAnim();
 

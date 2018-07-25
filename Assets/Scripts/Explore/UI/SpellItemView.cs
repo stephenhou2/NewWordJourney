@@ -19,17 +19,23 @@ namespace WordJourney
 
 		private SpellItem spellItem;
 
-		//public Button generateButton;
-
 		private StringBuilder playerSpell;
 
 		public TintHUD tintHUD;
 
 		public ItemDisplayView itemDisplay;
+        
+		private CallBack createSuccessCallBack;
 
-		public void SetUpSpellView(SpellItem spellItem){
+		public void SetUpSpellView(SpellItem spellItem,CallBack createSuccessCallBack){
+
+			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = true;
+			ExploreManager.Instance.MapWalkableEventsStopAction();
 
 			this.spellItem = spellItem;
+
+			this.createSuccessCallBack = createSuccessCallBack;
 
 			this.gameObject.SetActive(true);
 
@@ -45,21 +51,61 @@ namespace WordJourney
 
 		}
 
+
+		public void Backspace(){
+
+			if(playerSpell.Length == 0){
+				return;
+			}
+
+			char lastCharacter = playerSpell[playerSpell.Length - 1];
+
+			playerSpell = playerSpell.Remove(playerSpell.Length - 1,1);
+
+			spellText.text = playerSpell.ToString();
+
+
+			Button characterButton = characterPool.GetInstance<Button>(characterModel.gameObject, characterContainer);
+
+			characterButton.GetComponentInChildren<Text>().text = lastCharacter.ToString();
+
+            characterButton.onClick.RemoveAllListeners();
+
+            characterButton.onClick.AddListener(delegate
+            {
+
+                characterPool.AddInstanceToPool(characterButton.gameObject);
+
+				playerSpell.Append(lastCharacter.ToString());
+
+                spellText.text = playerSpell.ToString();
+
+            });
+
+
+		}
+
+
 		public void RefreshSpell(){
 
 			spellText.text = string.Empty;
 
-			string spell = spellItem.spell;
+			//string spell = spellItem.spell;
 
 			playerSpell = new StringBuilder();
 
 			characterPool.AddChildInstancesToPool(characterContainer);
 
 			for (int i = 0; i < Player.mainPlayer.allCollectedCharacters.Count;i++){
+				
 				char character = Player.mainPlayer.allCollectedCharacters[i];
+
 				Button characterButton = characterPool.GetInstance<Button>(characterModel.gameObject, characterContainer);
+
 				characterButton.GetComponentInChildren<Text>().text = character.ToString();
+
 				characterButton.onClick.RemoveAllListeners();
+
 				characterButton.onClick.AddListener(delegate
 				{
 
@@ -83,13 +129,34 @@ namespace WordJourney
 			}
 
 			Item generatedItem = spellItem.GenerateItem();
-
-
+         
 			Player.mainPlayer.AddItem(generatedItem);
 
-			itemDisplay.SetUpItemDisplayView(spellItem);
+			ExploreManager.Instance.expUICtr.UpdateBottomBar();
 
-			this.gameObject.SetActive(false);
+			itemDisplay.SetUpItemDisplayView(generatedItem);
+
+			ExploreManager.Instance.expUICtr.ClearCharacterFragments();
+
+			int mapIndex = Player.mainPlayer.mapIndexRecord[Player.mainPlayer.currentLevelIndex];
+
+			MapEventsRecord.SpellFinishAtMapIndex(mapIndex);
+
+			if(createSuccessCallBack != null){
+				createSuccessCallBack();
+			}
+
+			QuitSpellItemView();
+			//this.gameObject.SetActive(false);
+
+		}
+
+        /// <summary>
+        /// 点击了发音按钮
+        /// </summary>
+		public void OnPronunceButtonClick(){
+
+			GameManager.Instance.pronounceManager.PronunceWordFromURL(spellItem.pronounciationURL);
 
 		}
 
@@ -121,19 +188,27 @@ namespace WordJourney
 			return spellRight;
 
 		}
-        
-		public void QuitSpellItemView(){
 
-			if(zoomCoroutine != null){
+		public void QuitSpellItemView()
+		{
+
+            if (inZoomingOut)
+            {
+                return;
+            }
+
+			if (zoomCoroutine != null)
+			{
 				StopCoroutine(zoomCoroutine);
 			}
-
+         
 			zoomCoroutine = HUDZoomOut();
 
-			StartCoroutine(zoomCoroutine);         
+			StartCoroutine(zoomCoroutine);
 
+			//ExploreManager.Instance.MapWalkableEventsStartAction();
+			//ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 		}
-        
     }
 
 }

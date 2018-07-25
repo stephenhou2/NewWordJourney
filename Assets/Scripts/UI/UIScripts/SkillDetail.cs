@@ -11,11 +11,13 @@ namespace WordJourney{
 	public class SkillDetail : MonoBehaviour
     {
 
-		public Image skillIcon;
+		public Transform skillDetailContainer;
 
+		public Image skillIcon;
+        
 		public Text skillNameText;
 
-		public Text skillTypeText;
+		public Text passiveSkillTint;
 
 		public Text skillDescriptionText;
 
@@ -23,11 +25,12 @@ namespace WordJourney{
 
 		public Text coolenTimeText;
 
+		public Text skillLevelText;
+		public Text upgradeSkillNumText;
+
 		public Transform upgradeButton;
 
 		public Transform forgetButton;
-
-		public Text upgradeNumText;
        
 		public void SetupSkillDetail(Skill skill){
 
@@ -40,37 +43,44 @@ namespace WordJourney{
 
 			skillNameText.text = skill.skillName;
 
-			skillTypeText.text = skill.skillType == SkillType.Active ? "技能类型：主动" : "技能类型：被动";
+			if(skillLevelText != null){
+				skillLevelText.text = string.Format("Lv.{0}", skill.skillLevel);
+			}
 
-			skillDescriptionText.text = skill.skillDescription;
+			if(upgradeSkillNumText != null){
+				upgradeSkillNumText.text = string.Format("升级需要技能点: {0}", skill.upgradeNum);
+			}
+
+			passiveSkillTint.enabled = skill.skillType != SkillType.Active;
+
+			skillDescriptionText.text = skill.GetDisplayDescription();
             
 			if(skill.skillType == SkillType.Active){
 				ActiveSkill activeSkill = skill as ActiveSkill;
 				manaConsumeText.text = string.Format("魔法消耗：{0}", activeSkill.manaConsume);
 				coolenTimeText.text = string.Format("冷却时间：{0}", activeSkill.skillCoolenTime);
 			}else{
-				manaConsumeText.text = "魔法消耗：-";
-				coolenTimeText.text = "冷却时间：-";
+				manaConsumeText.text = string.Empty;
+				coolenTimeText.text = string.Empty;
 			}
 
 			upgradeButton.gameObject.SetActive(true);
 			forgetButton.gameObject.SetActive(true);
 
-			//Debug.Log(skill.upgradeNum);
-			upgradeNumText.text = skill.upgradeNum.ToString();
+			skillDetailContainer.gameObject.SetActive(true);
 
 		}
 
 		public void ClearSkillDetail(){
 			skillNameText.text = string.Empty;
 			skillIcon.sprite = null;
-			skillIcon.enabled = false;
-			skillTypeText.text = string.Empty;
+			skillIcon.enabled = false;         
 			skillDescriptionText.text = string.Empty;
 			manaConsumeText.text = string.Empty;
 			coolenTimeText.text = string.Empty;
 			upgradeButton.gameObject.SetActive(false);
 			forgetButton.gameObject.SetActive(false);
+			skillDetailContainer.gameObject.SetActive(false);
 		}      
 
     }

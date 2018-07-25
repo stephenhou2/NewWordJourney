@@ -49,6 +49,10 @@ namespace WordJourney
 
 			this.spell = spellItemModel.spell;
 
+			this.phoneticSymbol = spellItemModel.phoneticSymbol;
+
+			this.pronounciationURL = spellItemModel.pronounciationURL;
+
 			this.itemCount = itemCount;
                    
 		}

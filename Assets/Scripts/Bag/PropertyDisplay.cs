@@ -9,14 +9,7 @@ namespace WordJourney
 	using DG.Tweening;
 
 	public class PropertyDisplay : MonoBehaviour {
-
-		public HLHFillBar healthBar;
-		public HLHFillBar manaBar;
-		public HLHFillBar experienceBar;
-
-		public Text goldText;
-		public Text levelText;
-
+          
 		public Text attackText;
 		public Text magicAttackText;
 		public Text armorText;
@@ -43,23 +36,28 @@ namespace WordJourney
 		public Image healthRecoveryChangeTint;
 		public Image magicRecoveryChangeTint;
 
+		public Sprite promoteArrowSprite;
+		public Sprite decreaseArrowSprite;
+
 		private Sequence[] changeTintFromEqSequences = new Sequence[12];
 
-		public void UpdateStatusBars(){
-			Player player = Player.mainPlayer;
-            healthBar.maxValue = player.maxHealth;
-            healthBar.value = player.health;
-            manaBar.maxValue = player.maxMana;
-            manaBar.value = player.mana;
-            experienceBar.maxValue = player.upgradeExprience;
-            experienceBar.value = player.experience;
-            goldText.text = player.totalGold.ToString();
-            levelText.text = string.Format("等级 Lv.{0}", player.agentLevel);         
-		}
+		//public void UpdateStatusBars(){
+		//	Player player = Player.mainPlayer;
+  //          healthBar.maxValue = player.maxHealth;
+  //          healthBar.value = player.health;
+  //          manaBar.maxValue = player.maxMana;
+  //          manaBar.value = player.mana;
+  //          experienceBar.maxValue = player.upgradeExprience;
+  //          experienceBar.value = player.experience;
+  //          goldText.text = player.totalGold.ToString();
+  //          levelText.text = string.Format("等级 Lv.{0}", player.agentLevel);         
+		//}
+
+
 
 		public void UpdatePropertyDisplay(PropertyChange pc){
 			Player player = Player.mainPlayer;
-			UpdateStatusBars();
+			ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
 			attackText.text = player.attack.ToString ();
 			magicAttackText.text = player.magicAttack.ToString ();
 			armorText.text = player.armor.ToString ();
@@ -108,9 +106,7 @@ namespace WordJourney
 
 			changeTint.enabled = true;
 
-			int rotationZ = changeResult > 0 ? 0 : 180;
-
-			changeTint.transform.localRotation = Quaternion.Euler(new Vector3 (0, 0, rotationZ));
+			changeTint.sprite = changeResult > 0 ? promoteArrowSprite : decreaseArrowSprite;
 
 			changeTint.color = changeResult > 0 ? Color.green : Color.red;
 

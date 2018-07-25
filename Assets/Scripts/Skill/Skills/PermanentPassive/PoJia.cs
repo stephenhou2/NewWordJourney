@@ -5,13 +5,22 @@ using UnityEngine;
 
 namespace WordJourney
 {
+
+	// 永久提升<color=orange>技能等级×3</color>的护甲穿透
 	public class PoJia : PermanentPassiveSkill {
+
+
+		public override string GetDisplayDescription()
+		{
+			int armorDecreaseGain = Mathf.RoundToInt(skillLevel * skillSourceValue);
+			return string.Format("永久提升<color=white>(技能等级×3)</color><color=red>{0}</color>的护甲穿透", armorDecreaseGain);
+		}
 
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
-			int attackGain = Mathf.RoundToInt(skillSourceValue * skillLevel);
+			int armorDecreaseGain = Mathf.RoundToInt(skillSourceValue * skillLevel);
 
-			self.agent.attack += attackGain;
+			self.agent.armorDecrease += armorDecreaseGain;
 
 		}
 	}

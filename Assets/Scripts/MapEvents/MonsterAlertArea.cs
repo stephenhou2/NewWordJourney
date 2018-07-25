@@ -45,7 +45,7 @@ namespace WordJourney
 
 		public void OnTriggerEnter2D (Collider2D col)
 		{
-
+                 
 			BattleAgentController ba = col.GetComponent<BattleAgentController> ();
 
 
@@ -53,16 +53,21 @@ namespace WordJourney
 				return;
 			}
 
+			//Debug.Log("detect player");
+
 			BattlePlayerController bp = ba as BattlePlayerController;
 
 			if (bp.isInEvent) {
 				return;
 			}
 
+			//Debug.Log("player is not in event");
+
 			if (bp.isInFight) {
 				return;
 			}
 				
+			//Debug.Log("player is not in figth");
 
 			MapMonster mm = mapMonster as MapMonster;
 			mm.isReadyToFight = true;

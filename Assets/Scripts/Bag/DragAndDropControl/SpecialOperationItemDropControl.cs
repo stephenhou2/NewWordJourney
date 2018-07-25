@@ -20,16 +20,16 @@ namespace WordJourney
 		public SpecialOperationItemDragControl soDragControl;
 
 	
-		private BagView mBagView;
-        private BagView bagView
+		private Transform mBagCanvas;
+		private Transform bagCanvas
         {
             get
             {
-                if (mBagView == null)
+				if (mBagCanvas == null)
                 {
-                    mBagView = TransformManager.FindInParents<BagView>(this.gameObject);
+					mBagCanvas = TransformManager.FindTransform("BagCanvas");
                 }
-                return mBagView;
+				return mBagCanvas;
             }
         }
 
@@ -77,7 +77,8 @@ namespace WordJourney
     				if (draggedItem.itemType != ItemType.Equipment) {
     					isValid = false;
     				} else {
-						isValid = (draggedItem as Equipment).attachedPropertyGemstone == null;
+						Equipment equipment = draggedItem as Equipment;
+						isValid = equipment.attachedPropertyGemstone.itemId == -1;
     				}
     				break;
     			case ValidDropType.PropertyGemstone:
@@ -131,7 +132,7 @@ namespace WordJourney
 				return;
 			}
 
-			bagView.GetComponent<BagViewController>().itemForSpecialOperation = draggedItem;
+			//bagCanvas.GetComponent<BagViewController>().itemForSpecialOperation = draggedItem;
 
 			// 装备面板内的装备
 			if (draggedObject.GetComponent<EquipedItemDragControl> () != null) {
@@ -164,9 +165,9 @@ namespace WordJourney
 			}
 
             
-
-			if(dropCallBack != null){
-				dropCallBack(draggedItem);
+            
+			if(dropSucceedCallBack != null){
+				dropSucceedCallBack(draggedItem);
 			}
 
 			tintImage.enabled = false;

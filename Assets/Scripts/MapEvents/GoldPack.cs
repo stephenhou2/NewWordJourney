@@ -5,51 +5,52 @@ using UnityEngine;
 
 namespace WordJourney
 {
-	using DG.Tweening;
+	//using DG.Tweening;
 
-	public class GoldPack : MapEvent {
+	public class GoldPack : MapEvent
+	{
 
 		public int goldAmount;
 
-		public Animator mapItemAnimator;
+		//public Animator mapItemAnimator;
 
 
-		public override void AddToPool (InstancePool pool)
+		public override void AddToPool(InstancePool pool)
 		{
 			bc2d.enabled = false;
-			pool.AddInstanceToPool (this.gameObject);
+			pool.AddInstanceToPool(this.gameObject);
 		}
 
-		public override void InitializeWithAttachedInfo (MapAttachedInfoTile attachedInfo)
+		public override void InitializeWithAttachedInfo(int mapIndex, MapAttachedInfoTile attachedInfo)
 		{
 			transform.position = attachedInfo.position;
 
-			Count goldAmountRange = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex].goldAmountRange;
-				
-			goldAmount = goldAmountRange.GetAValueWithinRange ();
-				
+			Count goldAmountRange = GameManager.Instance.gameDataCenter.gameLevelDatas[Player.mainPlayer.currentLevelIndex].goldAmountRange;
+
+			goldAmount = goldAmountRange.GetAValueWithinRange();
+
 			bc2d.enabled = true;
-			mapItemAnimator.gameObject.SetActive (false);
+			//mapItemAnimator.gameObject.SetActive (false);
 			mapItemRenderer.enabled = true;
 
-			SetSortingOrder (-(int)transform.position.y);
+			SetSortingOrder(-(int)transform.position.y);
 
-			SetAnimationSortingOrder (-(int)transform.position.y);
+			//SetAnimationSortingOrder(-(int)transform.position.y);
 
-			CheckIsWordTriggeredAndShow ();
+			CheckIsWordTriggeredAndShow();
 		}
-			
 
-		private void SetAnimationSortingOrder(int order){
-			mapItemAnimator.GetComponent<SpriteRenderer> ().sortingOrder = order;
-		}
+
+		//private void SetAnimationSortingOrder(int order){
+		//	mapItemAnimator.GetComponent<SpriteRenderer> ().sortingOrder = order;
+		//}
 
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
-			ExploreManager.Instance.ShowWordsChoosePlane (wordsArray);
+			ExploreManager.Instance.ShowWordsChoosePlane(wordsArray);
 		}
 
-		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
+		public override void MapEventTriggered(bool isSuccess, BattlePlayerController bp)
 		{
 			bp.isInEvent = false;
 
@@ -57,46 +58,32 @@ namespace WordJourney
 
 			mapItemRenderer.enabled = false;
 
-			mapItemAnimator.gameObject.SetActive (true);
+			//mapItemAnimator.gameObject.SetActive (true);
 			// 播放对应动画
-			mapItemAnimator.SetTrigger ("Play");
+			//mapItemAnimator.SetTrigger ("Play");
 
-			IEnumerator openGoldPackCoroutine = LatelyOpenGoldPack (isSuccess, bp);
+			//IEnumerator openGoldPackCoroutine = LatelyOpenGoldPack (isSuccess, bp);
 
-			StartCoroutine (openGoldPackCoroutine);
+			//StartCoroutine (openGoldPackCoroutine);
 
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-		}
 
-		private IEnumerator LatelyOpenGoldPack(bool isSuccess,BattlePlayerController bp){
+			int posX = Mathf.RoundToInt(transform.position.x);
+			int posY = Mathf.RoundToInt(transform.position.y);
+			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[posX, posY] = 1;
 
-			yield return null;
-
-			float animTime = mapItemAnimator.GetCurrentAnimatorStateInfo (0).normalizedTime;
-
-			while (animTime < 1) {
-
-				yield return null;
-
-				animTime = mapItemAnimator.GetCurrentAnimatorStateInfo (0).normalizedTime;
-
-			}
-
-			if (isSuccess) {
+			if (isSuccess)
+			{
 				int goldGain = goldAmount + bp.agent.extraGold;
 				(bp.agent as Player).totalGold += goldGain;
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.goldAudioName);
-				ExploreManager.Instance.UpdatePlayerStatusPlane ();
+				ExploreManager.Instance.UpdatePlayerStatusPlane();
 				ExploreManager.Instance.expUICtr.SetUpGoldGainTintHUD(goldGain);
 			}
-			int posX = Mathf.RoundToInt (transform.position.x);
-			int posY = Mathf.RoundToInt (transform.position.y);
-			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [posX, posY] = 1;
 
-			AddToPool (ExploreManager.Instance.newMapGenerator.mapEventsPool);
+
+			AddToPool(ExploreManager.Instance.newMapGenerator.mapEventsPool);
 		}
-
-
-
 	}
+
 }

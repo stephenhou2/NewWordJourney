@@ -249,13 +249,19 @@ namespace WordJourney
             {
 
                 List<int> npcSkillIds = npc.npcSkillIds;
+                            
 
                 if (npcSkillIds == null || npcSkillIds.Count == 0)
                 {
                     npcSkillIds.Add(0);
                     npcSkillIds.Add(0);
                     npcSkillIds.Add(0);
+					npcSkillIds.Add(0);
                 }
+
+				if(npcSkillIds.Count == 3){
+					npcSkillIds.Add(0);
+				}
 
                 EditorGUILayout.LabelField("编辑可以在当前npc处购买学习的技能id数组", longLayouts);
 
@@ -264,6 +270,9 @@ namespace WordJourney
                 npcSkillIds[1] = EditorGUILayout.IntField("技能2：", npcSkillIds[1], shortLayouts);
 
                 npcSkillIds[2] = EditorGUILayout.IntField("技能3：", npcSkillIds[2], shortLayouts);
+            
+				npcSkillIds[3] = EditorGUILayout.IntField("技能4：", npcSkillIds[3], shortLayouts);
+
 
                 EditorGUILayout.LabelField("================================================================", seperatorLayouts);
 
@@ -280,6 +289,7 @@ namespace WordJourney
                 EditorGUILayout.LabelField("================================================================", seperatorLayouts);
 
                 EditorGUILayout.LabelField("编辑可以在当前npc处提升的属性列表 注：闪避，暴击，暴击倍率使用x1000以后的数值", longLayouts);
+				EditorGUILayout.LabelField("0:最大生命 1：最大魔法 2:物攻 3:魔攻 4:移速 5:护甲 6:抗性 7:护甲穿透 8:魔法穿透 9:暴击 10:闪避 11:暴击倍率 12:物伤倍率 13:法伤倍率 14:额外金钱 15:额外经验 16:生命回复 17:魔法回复", longLayouts);
 
                 EditorGUILayout.BeginHorizontal();
 

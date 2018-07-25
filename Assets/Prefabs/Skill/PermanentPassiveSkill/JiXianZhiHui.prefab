@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1460879990558646}
+  m_IsPrefabParent: 1
+--- !u!1 &1460879990558646
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4290137603394786}
+  - component: {fileID: 114501297341031534}
+  m_Layer: 0
+  m_Name: JiXianZhiHui
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4290137603394786
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1460879990558646}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 321.53125, y: 909.24097, z: -6}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114501297341031534
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1460879990558646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbae71b4cd4ab4ac0819018c6178c700, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillName: "\u6781\u9650\u667A\u6167"
+  sfxName: 
+  skillId: 41
+  skillDescription: "\u6C38\u4E45\u63D0\u9AD8<color=orange>\u6280\u80FD\u7B49\u7EA7\xD73+5</color>\u7684\u9B54\u6CD5\u56DE\u590D"
+  skillIconName: 41_jiXianZhiHui
+  selfEffectAnimName: 
+  enemyEffectAnimName: 
+  skillType: 1
+  skillLevel: 1
+  price: 150
+  hasTriggered: 0
+  skillSourceValue: 0
+  fixMagicRecoveryIncrease: 5
+  magicRecoveryIncreaseBase: 3

@@ -22,16 +22,12 @@ namespace WordJourney
 				int magicResistDecrease = -(int)(magicResistDecreaseScaler * Player.mainPlayer.agentLevel + fixedMagicResistDecrease);
                 enemy.agent.magicResistChangeFromSkill += magicResistDecrease;
                 enemy.agent.magicResist += magicResistDecrease;
-                enemy.UpdateStatusPlane();
+                //enemy.UpdateStatusPlane();
 
 
-				if(selfEffectAnimName != string.Empty){
-					self.SetEffectAnim(selfEffectAnimName);
-				}
+				enemy.AddTintTextToQueue("抗性降低");
 
-				if(enemyEffectAnimName != string.Empty){
-					enemy.SetEffectAnim(enemyEffectAnimName);
-				}
+				SetEffectAnims(self, enemy);
 
             }
         }

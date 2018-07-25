@@ -49,6 +49,8 @@ namespace WordJourney
 		public int healthRecoveryGain;
 		public int magicRecoveryGain;
 
+		public int consumablesGrade;
+
 		public bool isShowInBagOnly;
 
 		public string audioName;
@@ -87,6 +89,8 @@ namespace WordJourney
 			this.extraExperienceGain = consumablesModel.extraExperienceGain;
 			this.healthRecoveryGain = consumablesModel.healthRecoveryGain;
 			this.magicRecoveryGain = consumablesModel.magicRecoveryGain;
+
+			this.consumablesGrade = consumablesModel.consumablesGrade;
             
 			this.isShowInBagOnly = consumablesModel.isShowInBagOnly;
           
@@ -95,7 +99,7 @@ namespace WordJourney
 		}
       
 
-		public PropertyChange UseConsumables(){
+		public PropertyChange UseConsumables(BattleAgentController battleAgentController){
 
 			Player player = Player.mainPlayer;
 
@@ -104,7 +108,7 @@ namespace WordJourney
             if (maxHealthGain > 0)
             {
                 int maxHealthRecord = player.maxHealth;
-                player.maxHealth += maxHealthGain;
+				player.maxHealth += maxHealthGain;
                 player.originalMaxHealth += maxHealthGain;
                 player.health = Mathf.RoundToInt((player.health * (float)player.maxHealth / maxHealthRecord));
                 propertyChange.maxHealthChange = maxHealthGain;
@@ -117,17 +121,38 @@ namespace WordJourney
                 player.originalMaxMana += maxManaGain;
                 player.mana = Mathf.RoundToInt(player.mana * (float)player.maxMana / maxManaRecord);
                 propertyChange.maxManaChange = maxManaGain;
+            
             }
 
+           
+
             if (healthGain > 0)
-            {
-                player.health += healthGain;
+            {            
+				if (battleAgentController != null)
+                {
+					battleAgentController.AddHealthGainAndShow(healthGain + player.healthRecovery);
+					battleAgentController.SetEffectAnim(CommonData.healthHealEffecttName);
+				}else{
+					player.health += healthGain;
+				}
             }
 
             if (manaGain > 0)
-            {
-                player.mana += manaGain;
-            }
+            {            
+				if (battleAgentController != null)
+                {
+					battleAgentController.AddManaGainAndShow(manaGain + player.magicRecovery);
+					battleAgentController.SetEffectAnim(CommonData.magicHealEffectName);
+				}else{
+					player.mana += manaGain;
+				}
+			}else if(manaGain < 0){
+				player.mana += manaGain;
+			}
+
+			if(experienceGain > 0){
+				player.experience += experienceGain;            
+			}
 
             if (attackGain > 0)
             {
@@ -241,7 +266,6 @@ namespace WordJourney
                 player.originalMagicRecovery += magicRecoveryGain;
                 propertyChange.magicRecoveryChange = magicRecoveryGain;
             }
-
 
 
 

@@ -14,28 +14,32 @@ namespace WordJourney
 
         public int healthLoseDuration;
 
+		public string continuousEffectAnimName;
+
         private IEnumerator healthDurativeLoseCoroutine;
 
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
 
-			int actualHurt = Mathf.RoundToInt(hurt / ((enemy.agent.armor - self.agent.armorDecrease) / 100f + 1));
+			int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+
+			if (armorCal < -50)
+            {
+                armorCal = -50;
+            }
+
+			int actualHurt = Mathf.RoundToInt(hurt / (armorCal / 100f + 1));
 
 			enemy.AddHurtAndShow(actualHurt, HurtType.Physical, self.towards);
 
             enemy.PlayShakeAnim();
 
-            enemy.UpdateStatusPlane();
-
-			if (selfEffectAnimName != string.Empty)
-            {
-                self.SetEffectAnim(selfEffectAnimName);
-            }
-
-            if (enemyEffectAnimName != string.Empty)
-            {
-                enemy.SetEffectAnim(enemyEffectAnimName);
-            }
+			if(enemyEffectAnimName!=string.Empty){
+				enemy.SetEffectAnim(enemyEffectAnimName);
+			}
+         
+			enemy.SetEffectAnim(continuousEffectAnimName, null, 0, healthLoseDuration);
+            
             if(healthDurativeLoseCoroutine != null){
                 StopCoroutine(healthDurativeLoseCoroutine);
             }
@@ -54,6 +58,8 @@ namespace WordJourney
             while(count < healthLoseDuration){
 
 				enemy.AddHurtAndShow(healthLoseBase, HurtType.Physical, self.towards);
+
+				enemy.CheckFightEnd();
 
                 enemy.UpdateStatusPlane();
 

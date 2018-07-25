@@ -11,24 +11,43 @@ namespace WordJourney
 
 		public Text spellText;
 		public Text explainationText;
-		public Button pronounceButton;
+		public Text phoneticSymbolText;
+        
+		private HLHWord word;
+		private CallBackWithWord changeStatusButtonClickCallBack;
+		private CallBack showWordDetailCallBack;
+		//private InstancePool wordPool;
+        
+		public void InitWordItemView(CallBackWithWord changeStatusButtonClickCallBack, CallBack showWordDetailCallBack, InstancePool wordPool){
+			this.changeStatusButtonClickCallBack = changeStatusButtonClickCallBack;
+			this.showWordDetailCallBack = showWordDetailCallBack;
+			//this.wordPool = wordPool;
+		}
 
 		public override void SetUpCellDetailView (object data)
 		{
-			HLHWord word = data as HLHWord;
+			this.word = data as HLHWord;
 
 			spellText.text = word.spell;
 
 			explainationText.text = word.explaination;
 
-			pronounceButton.onClick.RemoveAllListeners ();
-
-			pronounceButton.onClick.AddListener (delegate {
-				GameManager.Instance.pronounceManager.CancelPronounce();
-				GameManager.Instance.pronounceManager.PronounceWord (word);
-			});
+			phoneticSymbolText.text = word.phoneticSymbol;
 
 		}
+
+
+
+		public void OnWordDetailButtonClick(){
+			if(showWordDetailCallBack != null){
+				showWordDetailCallBack();
+			}
+		}
+
+		public void OnChangeStatusButtonClick(){         
+			changeStatusButtonClickCallBack(word);
+		}
+
 
 	}
 }

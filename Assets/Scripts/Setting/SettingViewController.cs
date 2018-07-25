@@ -10,7 +10,7 @@ namespace WordJourney
 
         public SettingView settingView;
 
-        private bool isPointerUp;
+        //private bool isPointerUp;
 
         private bool settingChanged;
 
@@ -18,35 +18,18 @@ namespace WordJourney
 
 
         public void SetUpSettingView()
-        {
-            //			e.PlayAudioClip ("UI/sfx_UI_Click");
-            //			StartCoroutine ("SetUpViewAfterDataReady");
-            //
-            //		}
-            //
-            //		private IEnumerator SetUpViewAfterDataReady(){
-            //			
-            //			bool dataReady = false;
-            //
-            //			while (!dataReady) {
-            //				dataReady = GameManager.Instance.gameDataCenter.CheckDatasReady (new GameDataCenter.GameDataType[] {
-            //					GameDataCenter.GameDataType.UISprites,
-            //					GameDataCenter.GameDataType.GameSettings
-            //				});
-            //				yield return null;
-            //			}
-
+        {         
             GameSettings settings = GameManager.Instance.gameDataCenter.gameSettings;
 
-            settingView.SetUpSettingView(settings);
+			settingView.SetUpSettingView(settings,ChangeVolume);
 
         }
 
 
-        public void ChangeVolume()
+		public void ChangeVolume(float volume)
         {
 
-            GameManager.Instance.gameDataCenter.gameSettings.systemVolume = (float)settingView.volumeControl.value / 100;
+			GameManager.Instance.gameDataCenter.gameSettings.systemVolume = volume;
 
             GameManager.Instance.soundManager.UpdateVolume();
 
@@ -75,18 +58,13 @@ namespace WordJourney
             {
                 currentSelectWordTypeIndex = index;
                 settingView.ShowAlertHUD();
+				settingView.UpdateDifficultySelectedIcons();
 
             }
         }
 
         public void OnConfirmButtonClick()
-        {
-
-            //			int wordTypeIndex = settingView.GetCurrentWordType (index);
-            //
-            //			if (wordTypeIndex == -1) {
-            //				return;
-            //			}
+		{
 
             settingView.QuitAlertHUD();
 
@@ -109,17 +87,22 @@ namespace WordJourney
 
             if (ExploreManager.Instance != null)
             {
-                ExploreManager.Instance.QuitExploreScene(false);
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
+                {
+                    TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, ExploreManager.Instance.QuitExploreScene, null);
+                });
+
             }
 
+			settingView.UpdateDifficultySelectedIcons();
+
             settingChanged = true;
-            //			OnQuitSettingViewButtonClick ();
 
         }
 
         public void OnCancelButtonClick()
         {
-            settingView.SetUpSettingView(GameManager.Instance.gameDataCenter.gameSettings);
+            //settingView.SetUpSettingView(GameManager.Instance.gameDataCenter.gameSettings);
             settingView.QuitAlertHUD();
         }
 
@@ -172,9 +155,6 @@ namespace WordJourney
         public void QuitAPP()
         {
 
-
-#warning 其他一些要保存的数据操作
-
 #if UNITY_ANDROID
             Application.Quit();
 #endif
@@ -182,9 +162,6 @@ namespace WordJourney
 		}
 
 
-		public void Comment(){
-
-		}
 
 		public void DestroyInstances(){
 
@@ -194,9 +171,6 @@ namespace WordJourney
 
 		}
 
-		void OnDestroy(){
-//			settingView = null;
-		}
-
+      
 	}
 }

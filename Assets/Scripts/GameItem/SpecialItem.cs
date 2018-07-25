@@ -47,39 +47,60 @@ namespace WordJourney
 
 			this.itemType = ItemType.SpecialItem;
 
-			this.itemCount = itemCount;
+			this.itemCount = itemCount;         
+
+			this.specialItemType = specialItemModel.specialItemType;
 
 			this.isShowInBagOnly = specialItemModel.isShowInBagOnly;
             
 		}
 
-		public void UseSpecialItem(Item itemForSpecialOperation,CallBackWithItem refreshItemDetailCallBack){
-                     
+		public PropertyChange UseSpecialItem(Item itemForSpecialOperation,CallBackWithItem refreshItemDetailCallBack){
+
+			PropertyChange propertyChange = new PropertyChange();
+
 			switch(specialItemType){
 				case SpecialItemType.TuiMoJuanZhou:
 					if(itemForSpecialOperation is Equipment){
 						Equipment equipment = itemForSpecialOperation as Equipment;
 						PropertyGemstone propertyGemstone = equipment.RemovePropertyGemstone();
 						Player.mainPlayer.AddItem(propertyGemstone);
-						refreshItemDetailCallBack(equipment);
+						if(refreshItemDetailCallBack != null){
+							refreshItemDetailCallBack(equipment);
+						}  
+						propertyChange = Player.mainPlayer.ResetBattleAgentProperties(false);
+						GameManager.Instance.soundManager.PlayAudioClip(CommonData.xiaoMoAudioName);
 					}
 					break;
 				case SpecialItemType.ChongZhuShi:
 					if(itemForSpecialOperation is Equipment){
 						Equipment equipment = itemForSpecialOperation as Equipment;
 						equipment.RebuildEquipment();
-						refreshItemDetailCallBack(equipment);
+						if(refreshItemDetailCallBack != null){
+                            refreshItemDetailCallBack(equipment);
+                        }  
+						propertyChange = Player.mainPlayer.ResetBattleAgentProperties(false);
+						GameManager.Instance.soundManager.PlayAudioClip(CommonData.chongzhuAudioName);
 					}
 					break;
 				case SpecialItemType.YinShenYuPai:
-					ExploreManager.Instance.battlePlayerCtr.fadeStepsLeft = 20;
+					int oriFadeStepLeft = ExploreManager.Instance.battlePlayerCtr.fadeStepsLeft;
+					ExploreManager.Instance.battlePlayerCtr.fadeStepsLeft = Mathf.Max(oriFadeStepLeft, 20);
                     GameManager.Instance.soundManager.PlayAudioClip(CommonData.yinShenAudioName);
+					if (oriFadeStepLeft == 0)
+					{
+						ExploreManager.Instance.battlePlayerCtr.SetEffectAnim(CommonData.yinShenEffectName, null, 0, 0);
+					}
 					break;
 				case SpecialItemType.DianJinFuShi:
 					if(itemForSpecialOperation is Equipment){
 						Equipment equipment = itemForSpecialOperation as Equipment;
 						equipment.SetToGoldQuality();
-						refreshItemDetailCallBack(equipment);
+						if(refreshItemDetailCallBack != null){
+                            refreshItemDetailCallBack(equipment);
+                        }  
+						propertyChange = Player.mainPlayer.ResetBattleAgentProperties(false);
+						GameManager.Instance.soundManager.PlayAudioClip(CommonData.dianjinAudioName);
 					}
 					break;
 				case SpecialItemType.TieYaoShi:
@@ -97,11 +118,16 @@ namespace WordJourney
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.drinkAudioName);
 					break;
 				case SpecialItemType.ShenMiMianJu:
-					ExploreManager.Instance.battlePlayerCtr.fadeStepsLeft = 30;
+					oriFadeStepLeft = ExploreManager.Instance.battlePlayerCtr.fadeStepsLeft;
+                    ExploreManager.Instance.battlePlayerCtr.fadeStepsLeft = Mathf.Max(oriFadeStepLeft, 30);
+					if(oriFadeStepLeft == 0){
+						ExploreManager.Instance.battlePlayerCtr.SetEffectAnim(CommonData.yinShenEffectName, null, 0, 0);
+					}               
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.yinShenAudioName);
 					break;
 				case SpecialItemType.JingYanZhiShu:
 					Player.mainPlayer.agentLevel++;
+					ExploreManager.Instance.expUICtr.ShowLevelUpPlane();
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.levelUpAudioName);
 					break;
 				case SpecialItemType.BaoXiang:
@@ -121,7 +147,7 @@ namespace WordJourney
 					break;
 				case SpecialItemType.CaoYao:
 					Player.mainPlayer.health += Mathf.RoundToInt(Player.mainPlayer.maxHealth * 0.4f);
-					GameManager.Instance.soundManager.PlayAudioClip(CommonData.healthHealAudiotName);
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.eatAudoiName);
                     break;
 				case SpecialItemType.QuSanChangDi:
 				case SpecialItemType.QuSanLingDang:
@@ -129,9 +155,7 @@ namespace WordJourney
                     break;
 				case SpecialItemType.HuoBa:
 				case SpecialItemType.YouDeng:
-					Player.mainPlayer.exploreMaskStatus = 1;
-					ExploreManager.Instance.newMapGenerator.SetUpExploreMask();
-					GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+					ExploreManager.Instance.newMapGenerator.SetUpExploreMask(1);
                     break;
 				case SpecialItemType.KaiGuan:
 					ExploreManager.Instance.newMapGenerator.AllTrapsOff();
@@ -139,15 +163,17 @@ namespace WordJourney
 				case SpecialItemType.SiYeCao:
 					Player.mainPlayer.luckInOpenTreasure = 1;
 					GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-					GameManager.Instance.soundManager.PlayAudioClip(CommonData.propertyIncreaseAudioName);
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.siYeCaoAudioName);
                     break;
 				case SpecialItemType.XingYunYuMao:
 					Player.mainPlayer.luckInMonsterTreasure = 1;
                     GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-					GameManager.Instance.soundManager.PlayAudioClip(CommonData.propertyIncreaseAudioName);
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.xingYunYuMaoAudioName);
                     break;
-									
+
+
 			}
+			return propertyChange;
 
 		}
 

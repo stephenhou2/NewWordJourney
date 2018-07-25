@@ -15,16 +15,23 @@ namespace WordJourney
 
 		public Image maskImage;
 
-		public Transform difficultyChoosePlane;
-		public Transform difficultyChooseContainer;
+		public Transform logoBandage;
 
+		public DifficultySelectHUD difficultySelectHUD;
 
-		public float zoomInDuration = 0.2f;
+		public TintHUD tintHUD;
 
+		public float logoFloatSpeed;
+
+		public float singleDuration;
+
+		private IEnumerator logoFloatCoroutine;
 
 		public void SetUpHomeView(){
 
 			GetComponent<Canvas> ().enabled = true;
+
+			LogoBandageStartFloat();
 
 		}
 			
@@ -39,49 +46,63 @@ namespace WordJourney
 			maskImage.gameObject.SetActive (false);
 		}
 			
-
-
-
-
+        
 		/// <summary>
 		/// 初始化难度选择面板
 		/// </summary>
-		public void SetUpDifficultyChoosePlane(){
-
-			difficultyChoosePlane.gameObject.SetActive (true);
-
-			difficultyChooseContainer.localScale = new Vector3 (0.1f, 0.1f, 1);
-
-			StartCoroutine ("DifficultyChooseHUDZoomIn");
+		public void SetUpDifficultyChoosePlane(CallBack selectDifficultyCallBack){
+                 
+			difficultySelectHUD.SetUpDifficultySelectHUD(selectDifficultyCallBack);
 
 		}
 
-		private IEnumerator DifficultyChooseHUDZoomIn(){
+        
+		private void LogoBandageStartFloat(){
+			if(logoFloatCoroutine == null){
+				logoFloatCoroutine = LogoBandageFloat();
+				StartCoroutine(logoFloatCoroutine);
+			}
+		}
+        
 
+		private IEnumerator LogoBandageFloat(){
 
-			float difficultyChooseHUDScale = difficultyChooseContainer.localScale.x;
+			logoBandage.localPosition = Vector3.zero;
 
-			float difficultyChooseHUDZoomSpeed = (1 - difficultyChooseHUDScale) / zoomInDuration;
+			float timer = 0;
 
-			while (difficultyChooseHUDScale < 1) {
-				float zoomInDelta = difficultyChooseHUDZoomSpeed * Time.deltaTime;
-				difficultyChooseContainer.localScale += new Vector3 (zoomInDelta, zoomInDelta, 0);
-				difficultyChooseHUDScale += zoomInDelta;
-				yield return null;
+			while(true){
+
+				while(timer<singleDuration){
+
+					Vector3 moveVector = new Vector3(0, -logoFloatSpeed * Time.deltaTime, 0);
+
+					logoBandage.localPosition += moveVector;
+
+					yield return null;
+
+					timer += Time.deltaTime;
+
+				}
+
+				timer = 0;
+
+				while(timer<singleDuration){
+
+					Vector3 moveVector = new Vector3(0, logoFloatSpeed * Time.deltaTime, 0);
+
+                    logoBandage.localPosition += moveVector;
+
+                    yield return null;
+
+                    timer += Time.deltaTime;               
+				}
+
+				timer = 0;
+
 			}
 
-			difficultyChooseContainer.localScale = Vector3.one;
-
 		}
-
-		public void QuitDifficultyChoosePlane(){
-
-			StopCoroutine ("DifficultyChooseHUDZoomIn");
-
-			difficultyChoosePlane.gameObject.SetActive (false);
-
-		}
-
 
 //		public void SetUpChapterSelectPlane(){
 //
@@ -146,9 +167,7 @@ namespace WordJourney
 
 		public void OnQuitHomeView(){
 
-//			chapterSelectPlane.gameObject.SetActive (false);
-
-			difficultyChoosePlane.gameObject.SetActive (false);
+			difficultySelectHUD.gameObject.SetActive(false);
 
 			HideMaskImage ();
 		}

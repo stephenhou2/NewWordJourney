@@ -13,9 +13,12 @@ namespace WordJourney{
         protected float zoomDuration = 0.2f;
         protected IEnumerator zoomCoroutine;
 
+		protected bool inZoomingOut;
 
         protected IEnumerator HUDZoomIn(CallBack callBack = null)
         {
+
+			inZoomingOut = false;
 
             contentContainer.localScale = new Vector3(0.2f, 0.2f, 1);
 
@@ -48,8 +51,9 @@ namespace WordJourney{
 
         }
 
-        protected IEnumerator HUDZoomOut()
+		protected IEnumerator HUDZoomOut(CallBack callBack = null)
         {
+			inZoomingOut = true;
 
             float scale = 1f;
 
@@ -72,8 +76,13 @@ namespace WordJourney{
 
             contentContainer.localScale = new Vector3(0.2f, 0.2f, 1);
 
-            this.gameObject.SetActive(false);
+			if (callBack != null)
+            {
+                callBack();
+            }
 
+            this.gameObject.SetActive(false);
+         
         }
 
 

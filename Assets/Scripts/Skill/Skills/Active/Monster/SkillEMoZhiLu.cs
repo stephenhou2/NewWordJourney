@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace WordJourney
 {
+
+	// 造成1000点魔法伤害，同时降低敌人的魔抗和护甲50点，可以叠加，最高5次
 	public class SkillEMoZhiLu : ActiveSkill
     {
 
@@ -14,35 +16,46 @@ namespace WordJourney
 
 		public int magicResistChange;
 
+		private int triggeredCount = 0;
+
+		public int maxOverlayCount;
+
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
 
-			int actualHurt = Mathf.RoundToInt(hurt / ((enemy.agent.armor - self.agent.armorDecrease) / 100f + 1));
+			int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+
+			if (armorCal < -50)
+            {
+                armorCal = -50;
+            }
+
+			int actualHurt = Mathf.RoundToInt(hurt / (armorCal / 100f + 1));
 
 			enemy.AddHurtAndShow(actualHurt, HurtType.Physical, self.towards);
 
 			enemy.PlayShakeAnim();
 
-			enemy.agent.armor += armorChange;
-			enemy.agent.armorChangeFromSkill += armorChange;
 
-			enemy.agent.magicResist += magicResistChange;
-			enemy.agent.magicResistChangeFromSkill += magicResistChange;
+			if(triggeredCount < maxOverlayCount){
 
-			if (selfEffectAnimName != string.Empty)
-            {
-                self.SetEffectAnim(selfEffectAnimName);
-            }
+				triggeredCount++;
+				
+				enemy.agent.armor += -armorChange;
+                enemy.agent.armorChangeFromSkill += -armorChange;
 
-            if (enemyEffectAnimName != string.Empty)
-            {
+                enemy.agent.magicResist += -magicResistChange;
+                enemy.agent.magicResistChangeFromSkill += -magicResistChange;
+                
                 enemy.SetEffectAnim(enemyEffectAnimName);
-            }
 
-			enemy.UpdateStatusPlane();
+				enemy.AddTintTextToQueue("护甲降低");
+				enemy.AddTintTextToQueue("抗性降低");
 
+			}
 
-                     
+			//enemy.UpdateStatusPlane();
+         
 		}
 
 	}   

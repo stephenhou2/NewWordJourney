@@ -1,32 +1,159 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
-namespace WordJourney
+﻿namespace WordJourney
 {
-
-	using UnityEngine.UI;
 	using UnityEditor;
-
-	using System.Linq;
-	using System.Text;
-	using CE.iPhone.PList;
 	using System.IO;
-	using System.Data;
-
-	using UnityEngine.EventSystems;
+	using System.Collections.Generic;
+	using System.Collections;
+	using UnityEngine;
 
 	public class EditHelper {
+          
+		[MenuItem("EditHelper/GenerateMapEventsRecords")]
+		public static void GenerateMapEventsRecords()
+		{
+        
+            List<MapEventsRecord> mapEventsRecords = new List<MapEventsRecord>();
 
+            for (int i = 0; i <= CommonData.maxLevel; i++)
+            {
+				mapEventsRecords.Add(new MapEventsRecord(i, new List<Vector2>(),false,false));
+            }
 
-
-		[MenuItem("EditHelper/TempHelper")]
-		public static void TempHelper(){
-
-			Debug.Log (CommonData.persistDataPath);
+			DataHandler.SaveInstanceListToFile<MapEventsRecord>(mapEventsRecords, CommonData.originDataPath + "/MapEventsRecord.json");
 
 		}
+
+      
+		[MenuItem("EditHelper/MapDoorPairPositionCheck")]
+		public static void MapDoorPairPositionCheck(){
+
+			for (int i = 0; i < 50;i++){
+
+				Debug.Log("地图" + i.ToString());
+				
+				HLHMapData mapData = HLHMapData.LoadMapDataOfLevel(i);
+
+				int mapHeight = mapData.rowCount;
+
+				MapAttachedInfoLayer layer = mapData.attachedInfoLayers.Find(delegate (MapAttachedInfoLayer obj)
+				{
+					return obj.layerName == "GearEventLayer";
+
+				});
+                
+				Dictionary<string, string> doorInfoDic = new Dictionary<string, string>();
+
+				for (int j = 0; j < layer.tileDatas.Count;j++){
+                
+					MapAttachedInfoTile tile = layer.tileDatas[j];
+
+					if(!tile.type.Equals("doorGear") && !tile.type.Equals("keyDoorGear")){
+
+						continue;
+					}
+
+					string pairDoorPosString = KVPair.GetPropertyStringWithKey("pairDoorPos", tile.properties);
+
+					string[] posXY = pairDoorPosString.Split(new char[] { '_' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+					int pairDoorPosY = mapHeight - int.Parse(posXY[1]) - 1;
+
+					pairDoorPosString = string.Format("{0}_{1}", posXY[0], pairDoorPosY);
+
+					string doorPosString = string.Format("{0}_{1}", Mathf.RoundToInt(tile.position.x), Mathf.RoundToInt(tile.position.y));
+
+					doorInfoDic.Add(doorPosString, pairDoorPosString);
+               
+				}
+
+				IDictionaryEnumerator dictionaryEnumerator = doorInfoDic.GetEnumerator();
+
+				while(dictionaryEnumerator.MoveNext()){
+					
+					string doorPos = dictionaryEnumerator.Key as string;
+					string pairDoorPos = dictionaryEnumerator.Value as string;
+
+					string pos = string.Empty;
+					bool posRight = doorInfoDic.TryGetValue(pairDoorPos, out pos);
+					if(!posRight){
+						Debug.LogFormat("地图序：{0},门数据有问题的位置：{1},匹配位置：{2}", i, doorPos,pairDoorPos);
+					}
+
+				}
+                
+			}
+
+
+		}
+
+		//[MenuItem("EditHelper/MapEventOnWallCheck")]
+		//public static void MapEventOnWallCheck()
+        //{
+
+        //    for (int i = 0; i < 50; i++)
+        //    {
+
+        //        Debug.Log("地图" + i.ToString());
+
+        //        HLHMapData mapData = HLHMapData.LoadMapDataOfLevel(i);
+
+        //        int mapHeight = mapData.rowCount;
+
+        //        MapAttachedInfoLayer layer = mapData.attachedInfoLayers.Find(delegate (MapAttachedInfoLayer obj)
+        //        {
+        //            return obj.layerName == "GearEventLayer";
+
+        //        });
+
+        //        Dictionary<string, string> doorInfoDic = new Dictionary<string, string>();
+
+        //        for (int j = 0; j < layer.tileDatas.Count; j++)
+        //        {
+
+        //            MapAttachedInfoTile tile = layer.tileDatas[j];
+
+        //            if (!tile.type.Equals("doorGear") && !tile.type.Equals("keyDoorGear"))
+        //            {
+
+        //                continue;
+        //            }
+
+        //            string pairDoorPosString = KVPair.GetPropertyStringWithKey("pairDoorPos", tile.properties);
+
+        //            string[] posXY = pairDoorPosString.Split(new char[] { '_' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+        //            int pairDoorPosY = mapHeight - int.Parse(posXY[1]) - 1;
+
+        //            pairDoorPosString = string.Format("{0}_{1}", posXY[0], pairDoorPosY);
+
+        //            string doorPosString = string.Format("{0}_{1}", Mathf.RoundToInt(tile.position.x), Mathf.RoundToInt(tile.position.y));
+
+        //            doorInfoDic.Add(doorPosString, pairDoorPosString);
+
+        //        }
+
+        //        IDictionaryEnumerator dictionaryEnumerator = doorInfoDic.GetEnumerator();
+
+        //        while (dictionaryEnumerator.MoveNext())
+        //        {
+
+        //            string doorPos = dictionaryEnumerator.Key as string;
+        //            string pairDoorPos = dictionaryEnumerator.Value as string;
+
+        //            string pos = string.Empty;
+        //            bool posRight = doorInfoDic.TryGetValue(pairDoorPos, out pos);
+        //            if (!posRight)
+        //            {
+        //                Debug.LogFormat("地图序：{0},门数据有问题的位置：{1},匹配位置：{2}", i, doorPos, pairDoorPos);
+        //            }
+
+        //        }
+
+        //    }
+
+
+        //}
+
 
 		[MenuItem("EditHelper/GeneratePlayerJson")]
 		public static void GeneratePlayerJsonData(){

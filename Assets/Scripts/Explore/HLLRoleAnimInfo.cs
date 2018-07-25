@@ -19,5 +19,9 @@ namespace WordJourney
 			this.animEndCallback = animEndCallback;
 		}
 
+		public override string ToString()
+		{
+			return string.Format("name:{0},playTimes:{1},time:{2}", roleAnimName, playTimes, roleAnimTime);
+		}
 	}
 }

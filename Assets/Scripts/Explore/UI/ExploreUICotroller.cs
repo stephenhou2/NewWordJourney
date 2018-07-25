@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -13,36 +14,36 @@ namespace WordJourney
 		public TintHUD tintHUD;
 		public PauseHUD pauseHUD;
 		public WordHUD wordHUD;
-        public WordDetailHUD wordDetailHUD;
+		public WordDetailHUD wordDetailHUD;
         public BillboardHUD billboardHUD;
 
         public Text wordRecordText;
 		public Transform exploreMask;// 小遮罩，不遮盖底部消耗品栏和背包按钮
+		public Transform topBarMask;// 探索顶部栏地遮罩，只有进入npc界面时开启
 
 		/**********  battlePlane UI *************/
 		public Transform battlePlane;
 
 		/**********  battlePlane UI *************/
 
-		public NPCUIController npcUIController;
+		//public NPCUIController npcUIController;
 
 		public Text gameLevelLocationText;
 
-		public Image transitionMask;
-
-		public Transform tasksDescriptionContainer;
-
-		public Text taskDescriptionModel;
-
-		public InstancePool taskDescriptionPool;
-
-
-		public Transform billboardPlane;
-		public Transform billboard;
-
+		public Image transitionMask;      
 
 		public BattlePlayerUIController bpUICtr;
 		public BattleMonsterUIController bmUICtr;
+
+		public RawImage miniMap;
+        private int miniMapWidth;
+        private int miniMapHeight;
+
+		private float miniCameraSize;
+
+		public Transform bigMapView;
+		public RawImage bigMap;
+
 
 
 		public TransitionView transitionView;
@@ -50,16 +51,24 @@ namespace WordJourney
 		public SimpleItemDetail simpleItemDetail;
 
 		public BuyLifeQueryView buyLifeQueryHUD;
-		public Transform enterNextLevelQueryHUD;
+		public EnterExitHUD enterExitHUD;
 
-		public CharacterFragmentsHUD characterFragmentsHUD;
+		public CreationView creationView;
 
 		public SpellItemView spellItemView;
 
 		public Transform fullMask;// 覆盖整个屏幕的遮罩，禁止一切点击响应
 
-        // 记录上一个碰到的单词
-        private HLHWord wordRecord;
+		public ToolSelectView toolSelectView;// 工具选择界面
+
+		public AchievementView achievementView;// 成就达成展示界面
+
+		public DiaryView diaryView;// 日记显示界面
+
+		public HelpViewController helpHUD;//帮助界面
+
+		// 记录本关所有背过的单词
+        public List<HLHWord> wordRecords = new List<HLHWord>();
 
 		public void SetUpExploreCanvas(){
 
@@ -69,16 +78,20 @@ namespace WordJourney
 
             wordHUD.InitWordHUD (true, QuitWordHUDCallBack,ChooseAnswerInWordHUDCallBack,ConfirmCharacterFillInWordHUDCallBack);
 
+			creationView.ClearCharacterFragments();
+
 			if (!GameManager.Instance.UIManager.UIDic.ContainsKey ("BagCanvas")) {
 
-				GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.bagCanvasBundleName, "BagCanvas", () => {
-					Transform bagCanvas = TransformManager.FindTransform ("BagCanvas");
-					bagCanvas.GetComponent<BagViewController> ().SetUpBagView (false);
-				}, false,true);
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.bagCanvasBundleName, "BagCanvas",null, false, true,false);
 					
 			}
 
-			gameLevelLocationText.text = string.Format("第 {0} 层",Player.mainPlayer.currentLevelIndex + 1);
+			if (!GameManager.Instance.UIManager.UIDic.ContainsKey("NPCCanvas"))
+            {            
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.npcCanvasBundleName, "NPCCanvas", null, false, true,false);            
+            }
+
+			gameLevelLocationText.text = string.Format("第{0}层",Player.mainPlayer.currentLevelIndex + 1);
             wordRecordText.text = string.Empty;
 
 			bpUICtr.InitExploreAgentView ();
@@ -94,22 +107,162 @@ namespace WordJourney
 				if (!playerDataExist) {
 					GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
 				}
-				ShowExploreSceneSlowly ();
+				transitionMask.gameObject.SetActive(false);
+
 			} else {
-				Player.mainPlayer.isNewPlayer = false;
-				GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
-				ExploreManager.Instance.AllWalkableEventsStopMove ();
-				transitionView.PlayTransition (TransitionType.Introduce,ShowExploreSceneSlowly);
+				
+				ExploreManager.Instance.MapWalkableEventsStopAction();
+
+				transitionMask.gameObject.SetActive(true);
+
+				transitionView.PlayTransition(TransitionType.Introduce, delegate
+				{
+					GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
+					{
+						TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(null);                  
+					});
+					transitionMask.gameObject.SetActive(false);
+
+				});  
+
 			}
 
-			characterFragmentsHUD.InitCharacterFragmentsHUD(SetUpSpellItemView);
+			creationView.InitCharacterFragmentsHUD(SetUpSpellItemView);
+
+			wordRecords.Clear();
+
+			miniCameraSize = TransformManager.FindTransform("MiniMapCamera").GetComponent<Camera>().orthographicSize;
+
+			LoadMiniMapTexture();
+
+			UpdateMiniMapDisplay(ExploreManager.Instance.battlePlayerCtr.transform.position);
 
 		}
 
+
+		public void EnterLevelMaskShowAndHide(CallBack callBack){
+			StopCoroutine("MyEnterLevelMaskShowAndHide");
+			StartCoroutine("MyEnterLevelMaskShowAndHide",callBack);
+		}
+        
+        
+		private IEnumerator MyEnterLevelMaskShowAndHide(CallBack callBack){
+			
+			float tempAlpha = 0;
+            float fadeSpeed = 3f;
+
+
+			transitionMask.color = new Color(0, 0, 0, tempAlpha);
+
+			transitionMask.gameObject.SetActive(true);
+
+
+			while (tempAlpha < 1)
+            {
+                tempAlpha += fadeSpeed * Time.deltaTime;
+                transitionMask.color = new Color(0, 0, 0, tempAlpha);
+                yield return null;
+            }
+
+			tempAlpha = 1;
+
+			if (callBack != null)
+            {
+                callBack();
+            }
+
+            yield return new WaitUntil(() => ExploreManager.Instance.exploreSceneReady);
+
+			//Debug.Break();
+
+			while (tempAlpha > 0)
+            {
+                tempAlpha -= fadeSpeed * Time.deltaTime;
+                transitionMask.color = new Color(0, 0, 0, tempAlpha);
+                yield return null;
+            }
+
+			transitionMask.gameObject.SetActive(false);
+		}
+
+
 		public void DisplayTransitionMaskAnim(CallBack cb){
-			ExploreManager.Instance.AllWalkableEventsStopMove ();
+			ExploreManager.Instance.MapWalkableEventsStopAction ();
 			transitionMask.gameObject.SetActive (true);
 			StartCoroutine ("TransitionMaskShowAndHide", cb);
+		}
+
+		public void SetUpToolSelectView(List<SpecialItem> tools,CallBackWithItem toolSelectCallBack){
+			toolSelectView.SetUpToolSelectView(tools, toolSelectCallBack);
+		}
+
+		public void UpdateMiniMapDisplay(Vector3 playerPos)
+		{
+			int offsetBaseX = Mathf.RoundToInt(playerPos.x);
+			int offsetBaseY = Mathf.RoundToInt(playerPos.y);
+
+			if(offsetBaseX < 5){
+				offsetBaseX = 5;
+			}
+
+			if(offsetBaseX > ExploreManager.Instance.newMapGenerator.columns - 5){
+				offsetBaseX = ExploreManager.Instance.newMapGenerator.columns - 5;
+			}
+
+			if (offsetBaseY < 5)
+            {
+                offsetBaseY = 5;
+            }
+
+			if (offsetBaseY > ExploreManager.Instance.newMapGenerator.rows - 5)
+            {
+				offsetBaseY = ExploreManager.Instance.newMapGenerator.rows - 5;
+            }
+            
+			float offsetX = (miniCameraSize - offsetBaseX) / (miniCameraSize * 2) * miniMapWidth;
+			float offsetY = (miniCameraSize - offsetBaseY) / (miniCameraSize * 2) * miniMapHeight;
+            
+
+            miniMap.transform.localPosition = new Vector3(offsetX, offsetY, 0);
+
+		}
+
+
+		private void LoadMiniMapTexture()
+        {
+            miniMap.texture = Resources.Load("MiniMapTexture") as Texture;
+            miniMapWidth = Mathf.RoundToInt(miniMap.rectTransform.rect.width);
+            miniMapHeight = Mathf.RoundToInt(miniMap.rectTransform.rect.height);
+        }
+        
+
+		public void ShowBigMap(){
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+			bigMapView.gameObject.SetActive(true);
+			bigMap.texture = Resources.Load("MiniMapTexture") as Texture;
+			float bigMapWidth = bigMap.rectTransform.rect.width;
+			float bigMapHeight = bigMap.rectTransform.rect.height;
+			float offsetX = bigMapWidth * (44 - ExploreManager.Instance.newMapGenerator.columns) / 88;
+			float offsetY = bigMapHeight * (44 - ExploreManager.Instance.newMapGenerator.rows) / 88;
+			bigMap.transform.localPosition = new Vector3(offsetX, offsetY, 0);
+		}
+
+		public void QuitBigMap(){
+			bigMapView.gameObject.SetActive(false);
+			ExploreManager.Instance.MapWalkableEventsStartAction();
+		}
+
+
+		public void UpdatePlayerGold(){
+			bpUICtr.RefreshGold();
+		}
+
+		public void ShowTopBarMask(){
+			topBarMask.gameObject.SetActive(true);
+		}
+
+		public void HideTopBarMask(){
+			topBarMask.gameObject.SetActive(false);
 		}
 
 		private IEnumerator TransitionMaskShowAndHide(CallBack cb){
@@ -122,63 +275,47 @@ namespace WordJourney
 				transitionMask.color = new Color (0, 0, 0, tempAlpha);
 				yield return null;
 			}
-
+            
 			tempAlpha = 1;
 
-			if (cb != null) {
-				cb ();
-			}
+			if (cb != null)
+            {
+                cb();
+            }
+
+			transitionMask.gameObject.SetActive(false);
 
 			while (tempAlpha > 0) {
 				tempAlpha -= fadeSpeed * Time.deltaTime;
 				transitionMask.color = new Color (0, 0, 0, tempAlpha);
 				yield return null;
 			}
-			transitionMask.gameObject.SetActive (false);
 
-			ExploreManager.Instance.AllWalkableEventsStartMove ();
-
+			ExploreManager.Instance.MapWalkableEventsStartAction ();
+         
 		}
 
-		//public void UpdateTasksDescription(){
-
-		//	taskDescriptionPool.AddChildInstancesToPool (tasksDescriptionContainer);
-
-		//	Player player = Player.mainPlayer;
-
-		//	for (int i = 0; i < player.inProgressTasks.Count; i++) {
-
-		//		HLHTask task = player.inProgressTasks [i];
-
-		//		Text taskDescription = taskDescriptionPool.GetInstance<Text> (taskDescriptionModel.gameObject, tasksDescriptionContainer);
-
-		//		bool isTaskFinish = player.CheckTaskFinish (task);
-
-		//		if (isTaskFinish) {
-		//			taskDescription.text = string.Format ("<color=green>{0} {1}/{2}</color>", task.taskDescription, task.taskItemCount, task.taskItemCount);
-		//		} else {
-		//			Item taskItem = player.allTaskItemsInBag.Find (delegate(TaskItem obj) {
-		//				return obj.itemId == task.taskItemId;
-		//			});
-
-		//			int taskItemCountInBag = 0;
-
-		//			if (taskItem != null) {
-		//				taskItemCountInBag = taskItem.itemCount;
-		//			}
-
-		//			taskDescription.text = string.Format("<color=white>{0} {1}/{2}</color>", task.taskDescription, taskItemCountInBag, task.taskItemCount);
-		//		}
-		//	}
-		//}
-
-		public void SetUpSpellItemView(){
-
-			spellItemView.SetUpSpellView(ExploreManager.Instance.newMapGenerator.spellItemOfCurrentLevel);
+		public void ClearCharacterFragments(){
+			Player.mainPlayer.allCollectedCharacters.Clear();
+			creationView.ClearCharacterFragments();
 		}
+
+		public void SetUpSpellItemView(){         
+			spellItemView.SetUpSpellView(ExploreManager.Instance.newMapGenerator.spellItemOfCurrentLevel,delegate{
+				SpellItemModel spellItemModel = GameManager.Instance.gameDataCenter.allSpellItemModels.Find(delegate(SpellItemModel obj)
+				{
+					return obj.itemId == ExploreManager.Instance.newMapGenerator.spellItemOfCurrentLevel.itemId;               
+				});
+				spellItemModel.hasUsed = true;
+				GameManager.Instance.persistDataManager.RefreshSpellItem();
+				creationView.HideCreateButton();
+			});
+		}
+
+
 
 		public void UpdateCharacterFragmentsHUD(){
-			characterFragmentsHUD.UpdateCharactersCollected();
+			creationView.UpdateCharactersCollected();
 		}
 
 		public void ShowExploreMask(){
@@ -198,15 +335,29 @@ namespace WordJourney
 			fullMask.gameObject.SetActive (false);
 		}
 
+       
 
-		private void ShowExploreSceneSlowly(){
+		public void ShowExploreSceneSlowly(){
+			if(Player.mainPlayer.isNewPlayer){
+				return;
+			}
 			transitionMask.gameObject.SetActive (true);
 			transitionMask.color = Color.black;
-			transitionMask.DOFade (0, 1f).OnComplete (delegate {
+			Tweener tweener = transitionMask.DOFade (0, 1f).OnComplete (delegate {
 				HideExploreMask();
 				transitionMask.gameObject.SetActive(false);
-				ExploreManager.Instance.AllWalkableEventsStartMove();
+				if(GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished){
+					ExploreManager.Instance.MapWalkableEventsStartAction();
+				}else{
+					GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
+					{
+						TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(ExploreManager.Instance.MapWalkableEventsStartAction);                  
+					});
+				}
+
+                
 			});
+			tweener.SetUpdate(true);
 		}
 
 		public void ShowFightPlane(){
@@ -217,18 +368,25 @@ namespace WordJourney
 
 			battlePlane.gameObject.SetActive (true);
 
+			//Debug.Log("show fight plane");
+
 			bpUICtr.SetUpFightPlane ();
 
 		}
 
 		public void UpdateActiveSkillButtons(){
-			bpUICtr.SetUpActiveSkillButtons ();
+			if(battlePlane.gameObject.activeInHierarchy){
+				bpUICtr.SetUpActiveSkillButtons();
+			}
+
 		}
 
-		public void HideFightPlane(){
-			battlePlane.gameObject.SetActive (false);
+		public void RemoveActiveSkillButton(Skill skill){
+			bpUICtr.RemoveActiveSkillButton(skill);
+		}
 
-			bpUICtr.QuitFightPlane ();
+		public void OnHelpButtonClick(){
+			helpHUD.SetUpHelpView();
 		}
 
 
@@ -265,28 +423,21 @@ namespace WordJourney
 
 
 		public void EnterNPC(HLHNPC npc){
-			npcUIController.SetUpNpcPlane (npc);
+			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.npcCanvasBundleName, "NPCCanvas", delegate
+			{
+				TransformManager.FindTransform("NPCCanvas").GetComponent<NPCViewController>().SetUpNPCView(npc);
+			});
+
 		}
 
-		//public void SetUpNPCWhenWordChooseRight(HLHNPC npc){
-		//	npcUIController.SetUpChooseRightDialog (npc);
-		//}
 
-		//public void SetUpNPCWhenWordChooseWrong(HLHNPC npc){
-		//	npcUIController.SetUpChooseWrongDialog (npc);
-		//}
-
-
-		public void ShowNPCPlane(){
-			npcUIController.ShowNPCPlane ();
-		}
 
 		/// <summary>
 		/// 初始化公告牌
 		/// </summary>
 		public void SetUpBillboard(Billboard bb){
 			
-			ExploreManager.Instance.AllWalkableEventsStopMove ();
+			ExploreManager.Instance.MapWalkableEventsStopAction ();
 
             billboardHUD.SetUpBillboard(bb, QuitBillboard);
 		}
@@ -296,53 +447,29 @@ namespace WordJourney
 		/// </summary>
         private void QuitBillboard(){
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-			ExploreManager.Instance.AllWalkableEventsStartMove ();
+			ExploreManager.Instance.MapWalkableEventsStartAction ();
 		}
 
 
-		/// <summary>
-		/// 显示解锁卷轴详细信息
-		/// </summary>
-		/// <param name="item">Item.</param>
-//		public void SetUpUnlockScrollHUD(Item item){
-//			unlockScrollDetail.SetUpUnlockScrollDetailHUD (item);
-//		}
+        /// <summary>
+        /// 显示日记显示界面
+        /// </summary>
+		public void SetUpDiaryView(DiaryModel diaryModel){
+			
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+         
+			if(diaryModel != null){
+				diaryView.SetUpDiaryView(diaryModel,QuitDiaryViewCallBack);          
+			}
+			  
+		}
 
-//		/// <summary>
-//		/// 解锁卷轴展示界面点击事件原本就会退出展示页面，一般情况下不用主动调用这个方法
-//		/// </summary>
-//		public void QuitUnlockScrollHUD(){
-//			unlockScrollDetail.QuitUnlockScrollDetailHUD ();
-//		}
-
-//		/// <summary>
-//		/// 显示合成界面
-//		/// </summary>
-//		/// <param name="item">Item.</param>
-//		public void SetUpCraftingRecipesHUD(Item item){
-////			craftingRecipesDetail.SetUpCraftingRecipesHUD (item);
-//		}
-
-//		/// <summary>
-//		/// 合成界面点击事件原本就会退出展示页面，一般情况下不用主动调用这个方法
-//		/// </summary>
-//		public void QuitCraftingRecipesHUD(){
-//			craftingRecipesDetail.QuitCraftingRecipesHUD ();
-//		}
+		private void QuitDiaryViewCallBack(){
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+            ExploreManager.Instance.MapWalkableEventsStartAction();
+		}
 
 
-
-
-//		public void SetUpSpellView(){
-//
-//			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.spellCanvasBundleName, "SpellCanvas", () => {
-//				EquipmentModel swordModel = GameManager.Instance.gameDataCenter.allItemModels.Find(delegate(EquipmentModel obj){
-//					return obj.itemId == 0;
-//				});
-//				TransformManager.FindTransform ("SpellCanvas").GetComponent<SpellViewController> ().SetUpSpellViewForCreate (swordModel,null);
-//			}, false, true);
-//
-//		}
 
 		public void OnPauseButtonClick(){
 			ShowPauseHUD ();
@@ -355,17 +482,7 @@ namespace WordJourney
 		public void QuitPauseHUD(){
 			pauseHUD.QuitPauseHUD ();
 		}
-
-//		public void OnDefenceButtonUp(){
-//
-//			exploreManager.DefenceUp ();
-//
-//		}
-//
-//		public void OnDefenctButtonDown(){
-//			exploreManager.DefenceDown ();
-//		}
-
+      
 
 		public void SetUpWordHUD(HLHWord[] words,string extraInfo = null){
 			wordHUD.SetUpWordHUDAndShow (words,extraInfo);
@@ -376,10 +493,12 @@ namespace WordJourney
 		}
 
         public void SetUpWordDetailHUD(){
-            if (wordRecord != null)
+
+			if (wordRecords.Count > 0)
             {
-                ExploreManager.Instance.AllWalkableEventsStopMove();
-                wordDetailHUD.SetUpWordDetailHUD(wordRecord,ExploreManager.Instance.AllWalkableEventsStartMove);
+                ExploreManager.Instance.MapWalkableEventsStopAction();
+				HLHWord word = wordRecords[wordRecords.Count - 1];
+				wordDetailHUD.SetUpWordDetailHUD(wordRecords,ExploreManager.Instance.MapWalkableEventsStartAction);
             }
         }
 
@@ -391,7 +510,7 @@ namespace WordJourney
 
         private void QuitWordHUDCallBack(HLHWord word)
 		{
-            ExploreManager.Instance.AllWalkableEventsStartMove();
+            ExploreManager.Instance.MapWalkableEventsStartAction();
 
             if (word == null)
             {
@@ -400,13 +519,84 @@ namespace WordJourney
 
             wordRecordText.text = word.spell;
 
-            wordRecord = word;
+			wordRecords.Add(word);
 		}
 
 		private void ChooseAnswerInWordHUDCallBack(bool isChooseCorrect){
 
 			ExploreManager.Instance.ChooseAnswerInWordHUD (isChooseCorrect);
 
+			int qualificationIndex = CheckLearnTitleQualification();
+
+			if(qualificationIndex == -1){
+				return;
+			}
+
+			LearnTitleQualification qualification = CommonData.learnTitleQualifications[qualificationIndex];
+
+			achievementView.SetUpAchievementView(qualification);
+
+		}
+
+
+        /// <summary>
+        /// 检查是否达成称号
+		/// 如果没有新的称号达成，返回-1
+		/// 如果有新的称号达成，返回称号序号
+        /// </summary>
+		private int CheckLearnTitleQualification(){
+			
+			int qualificationIndex = -1;
+
+			int totalLearnedWordCount = Player.mainPlayer.totalLearnedWordCount;
+
+			int totalUngraspWordCount = Player.mainPlayer.totalUngraspWordCount;
+
+			int continuousCorrectWordCount = Player.mainPlayer.maxWordContinuousRightRecord;
+
+			float correctPercentage = totalLearnedWordCount == 0 ? 0 : (float)(totalLearnedWordCount - totalUngraspWordCount) / totalLearnedWordCount;
+         
+			for (int i = 0; i < CommonData.learnTitleQualifications.Length;i++){
+
+				bool titleQualified = Player.mainPlayer.titleQualifications[i];
+
+				if(titleQualified){
+					continue;
+				}
+
+				LearnTitleQualification qualification = CommonData.learnTitleQualifications[i];
+
+				titleQualified = totalLearnedWordCount >= qualification.totalWordsCount 
+				                 && correctPercentage >= qualification.totalCorrectPercentage - float.Epsilon 
+				                 && continuousCorrectWordCount >= qualification.continuousCorrectWordCount;
+
+				bool dataCorrect = false;
+
+				if(titleQualified){
+
+					ExploreManager.Instance.UpdateWordDataBase();
+
+					int learnWordCountFromDB = LearningInfo.Instance.learnedWordCount;
+					int ungraspWordCountFromDB = LearningInfo.Instance.ungraspedWordCount;
+					dataCorrect = learnWordCountFromDB == totalLearnedWordCount && ungraspWordCountFromDB == totalUngraspWordCount;
+
+					if (dataCorrect)
+                    {
+                        Player.mainPlayer.titleQualifications[i] = true;
+                        qualificationIndex = i;
+                        break;
+                    }
+                    else
+                    {
+						Player.mainPlayer.totalLearnedWordCount = learnWordCountFromDB;
+						Player.mainPlayer.totalUngraspWordCount = ungraspWordCountFromDB;
+						GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+						return CheckLearnTitleQualification();
+   
+                     }
+				}          
+			}         
+			return qualificationIndex;
 		}
 
 
@@ -415,25 +605,11 @@ namespace WordJourney
 			simpleItemDetail.SetupSimpleItemDetail (item);
 		}
 
-		public void ShowEnterNextLevelQueryHUD(){
-			enterNextLevelQueryHUD.gameObject.SetActive (true);
+		public void ShowEnterExitQueryHUD(ExitType exitType){
+			
+			enterExitHUD.SetUpEnterExitHUD(exitType);
 		}
-
-		public void HideEnterNextLevelQueryHUD(){
-			enterNextLevelQueryHUD.gameObject.SetActive (false);
-		}
-
-		public void ConfirmEnterNextLevel(){
-			HideEnterNextLevelQueryHUD ();
-			ExploreManager.Instance.EnterNextLevel ();
-			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-		}
-
-		public void CancelEnterNextLevel(){
-			HideEnterNextLevelQueryHUD ();
-			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-		}
-
+      
 
 		public void ShowBuyLifeQueryHUD(){
 			buyLifeQueryHUD.SetUpBuyLifeQueryView (ConfirmBuyLife, CancelBuyLife);
@@ -446,7 +622,7 @@ namespace WordJourney
 			ExploreManager.Instance.battlePlayerCtr.RecomeToLife ();
 			HideFullMask ();
 			bpUICtr.UpdateAgentStatusPlane ();
-			ExploreManager.Instance.AllWalkableEventsStartMove ();
+			ExploreManager.Instance.MapWalkableEventsStartAction ();
 		}
 
 		private void CancelBuyLife(){
@@ -454,104 +630,28 @@ namespace WordJourney
 				transitionMask.gameObject.SetActive(true);
 				transitionMask.color = Color.black;
 				GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal ();
-				ExploreManager.Instance.QuitExploreScene (true);
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
+				{
+					TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, ExploreManager.Instance.QuitExploreScene, null);
+				});
+
 			});
 		}
 
 		private void ConfirmQuitToHomeView(){
-			transitionView.PlayTransition(TransitionType.Quit, delegate
+			
+			transitionView.PlayTransition(TransitionType.None, delegate
 			{
 				transitionMask.gameObject.SetActive(true);
 				transitionMask.color = Color.black;
-				//GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
-				ExploreManager.Instance.QuitExploreScene(true);
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
+                {
+                    TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, ExploreManager.Instance.QuitExploreScene, null);
+                });
+
 			});
 		}
-			
-//		public void OnRefreshButtonClick(){
-//			queryType = QueryType.Refresh;
-//			ShowQueryHUD ();
-//		}
 
-//		public void OnHomeButtonClick(){
-//			queryType = QueryType.Quit;
-//			ShowQueryHUD ();
-//		}
-
-//		public void OnSettingsButtonClick(){
-//			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.settingCanvasBundleName, "SettingCanvas", () => {
-//				TransformManager.FindTransform("SettingCanvas").GetComponent<SettingViewController>().SetUpSettingView();
-//			},false,true);
-//			QuitPauseHUD ();
-//		}
-
-//		public void ShowQueryHUD(){
-//			pauseHUD.SetUpPauseHUD ();
-//		}
-//		public void QuitQueryHUD(){
-//			pauseHUD.QuitPauseHUD ();
-//		}
-
-
-
-//		private void UnlockItemCallBack(){
-//			UnlockScroll currentSelectedUnlockScroll= unlockScrollDetail.unlockScroll;
-//			currentSelectedUnlockScroll.unlocked = true;
-//			Player.mainPlayer.RemoveItem (currentSelectedUnlockScroll,1);
-//			string tint = string.Format ("解锁拼写 <color=orange>{0}</color>", currentSelectedUnlockScroll.itemName);
-//			SetUpTintHUD (tint,null);
-//		}
-//
-//		private void ResolveScrollCallBack(){
-//			
-//			UnlockScroll currentSelectUnlockScroll = unlockScrollDetail.unlockScroll;
-//
-////			List<char> charactersReturn = Player.mainPlayer.ResolveItemAndGetCharacters (currentSelectUnlockScroll,1);
-//
-////			StringBuilder tint = new StringBuilder ();
-////
-////			tint.Append ("获得字母碎片");
-////
-////			for (int i = 0; i < charactersReturn.Count; i++) {
-////				tint.Append (charactersReturn [i]);
-////			}
-////
-////			tintHUD.SetUpTintHUD (tint.ToString(),null);
-//		}
-
-//		private void CraftItemCallBack(){
-//
-//			CraftingRecipe craftingRecipe = craftingRecipesDetail.craftingRecipe;
-//
-//			EquipmentModel craftItemModel = GameManager.Instance.gameDataCenter.allItemModels.Find (delegate(EquipmentModel obj) {
-//				return obj.itemId == craftingRecipe.craftItemId;
-//			});
-//
-//			for (int i = 0; i < craftItemModel.itemInfosForProduce.Length; i++) {
-//				EquipmentModel.ItemInfoForProduce itemInfo = craftItemModel.itemInfosForProduce [i];
-//				for (int j = 0; j < itemInfo.itemCount; j++) {
-//					Item item = Player.mainPlayer.allItemsInBag.Find (delegate (Item obj) {
-//						return obj.itemId == itemInfo.itemId;
-//					});
-//					if (item == null) {
-//						item = Player.mainPlayer.GetEquipedEquipment (itemInfo.itemId);
-//					}
-//					Player.mainPlayer.RemoveItem (item,1);
-//				}
-//			}
-//
-//			Item craftedItem = Item.NewItemWith (craftItemModel,1);
-//			Player.mainPlayer.AddItem (craftedItem);
-//
-//			string tint = string.Format ("获得 <color=orange>{0}</color> x1", craftedItem.itemName);
-//
-//			Sprite itemSprite = GameManager.Instance.gameDataCenter.allItemSprites.Find (delegate(Sprite obj) {
-//				return obj.name == craftedItem.spriteName;
-//			});
-//
-//			SetUpTintHUD (tint,itemSprite);
-//
-//		}
 
 
 
@@ -559,42 +659,23 @@ namespace WordJourney
 		public void QuitFight(){
 			bpUICtr.QuitFightPlane ();
 			bmUICtr.QuitFightPlane ();
-			HideFightPlane ();
+			battlePlane.gameObject.SetActive(false);
+			//HideFightPlane ();
 		}
 
 
 		public void QuitExplore(){
-			
-			GameManager.Instance.UIManager.RemoveCanvasCache ("ExploreCanvas");
+			//GameManager.Instance.UIManager.RemoveCanvasCache ("ExploreCanvas");
+			GameManager.Instance.UIManager.RemoveMultiCanvasCache(new string[]{"ExploreCanvas","BagCanvas","NPCCanvas"});
 
 		}
 
 
 
 		public void DestroyInstances(){
-			
-//			GameManager.Instance.UIManager.RemoveCanvasCache ("ExploreCanvas");
-
-//			StartCoroutine ("LatelyDestroyView");
-//		}
-//
-//		private IEnumerator LatelyDestroyView(){
-//
-//			yield return new WaitForSeconds (0.3f);
 			transitionMask.gameObject.SetActive(true);
 			Destroy (this.gameObject,0.3f);
 		}
-			
 
-		void OnDestroy(){
-//			tintHUD = null;
-//			unlockScrollDetail = null;
-//			craftingRecipesDetail = null;
-//			pauseHUD = null;
-//			crystalQueryHUD = null;
-//			npcUIController = null;
-//			bpUICtr = null;
-//			bmUICtr = null;
-		}
 	}
 }

@@ -113,6 +113,8 @@ namespace WordJourney
                 consumablesModel.healthRecoveryGain = FromStringToInt16(consumablesDataArray[27]);
 
                 consumablesModel.magicRecoveryGain = FromStringToInt16(consumablesDataArray[28]);
+
+				consumablesModel.consumablesGrade = FromStringToInt16(consumablesDataArray[29]);
                             
 
             }

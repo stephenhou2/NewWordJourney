@@ -50,6 +50,8 @@ namespace WordJourney
 				return GameManager.Instance.gameDataCenter.gameSettings.wordType;
 			}
 		}
+        
+
 
 
 
@@ -83,14 +85,14 @@ namespace WordJourney
 
 			// 检查存放指定单词类型的表是否存在（目前只做了测试用的CET4这一个表，添加表使用参考editor文件夹下的DataBaseManager）
 			if (!sql.CheckTableExist (tableName)) {
-//				Debug.Log ("查询的表不存在");
+				sql.CloseConnection(CommonData.dataBaseName);
 				return 0;
 			}
 				
 			// 查询当前学习的单词类型中的所有单词数量
 			int count = sql.GetItemCountOfTable (tableName,null,true);
 
-			sql.CloseAllConnections ();
+			sql.CloseConnection(CommonData.dataBaseName);
 
 			return count;
 
@@ -107,15 +109,15 @@ namespace WordJourney
 
 			// 检查存放指定单词类型的表是否存在（目前只做了测试用的CET4这一个表，添加表使用参考editor文件夹下的DataBaseManager）
 			if (!sql.CheckTableExist (tableName)) {
-//				Debug.Log ("查询的表不存在");
+				sql.CloseConnection(CommonData.dataBaseName);
 				return 0;
 			}
 
 			// 查询当前学习的单词类型中的所有单词数量
-			string[] learnedCondition = new string[]{"learnedTimes>0"};
+			string[] learnedCondition = {"learnedTimes>0"};
 			int count = sql.GetItemCountOfTable (tableName, learnedCondition, true);
 
-			sql.CloseAllConnections ();
+			sql.CloseConnection(CommonData.dataBaseName);
 
 			return count;
 
@@ -132,17 +134,15 @@ namespace WordJourney
 
 			// 检查存放指定单词类型的表是否存在（目前只做了测试用的CET4这一个表，添加表使用参考editor文件夹下的DataBaseManager）
 			if (!sql.CheckTableExist (tableName)) {
-//				Debug.Log ("查询的表不存在");
+				sql.CloseConnection(CommonData.dataBaseName);
 				return 0;
 			}
-
-
-
+                     
 			// 查询当前学习的单词类型中所有背错过的单词数量
-			string[] ungraspedCondition = new string[]{"ungraspTimes>0"};
+			string[] ungraspedCondition = {"ungraspTimes>=1"};
 			int count = sql.GetItemCountOfTable (tableName, ungraspedCondition,true);
 
-			sql.CloseAllConnections ();
+			sql.CloseConnection(CommonData.dataBaseName);
 
 			return count;
 
@@ -161,7 +161,7 @@ namespace WordJourney
 			// 连接数据库
 			sql.GetConnectionWith (CommonData.dataBaseName);
 
-			string[] ungraspedCondition = new string[]{"learnedTimes>0"};
+			string[] ungraspedCondition = {"learnedTimes>0"};
 
 			// 读取器
 			IDataReader reader = sql.ReadSpecificRowsOfTable(tableName,null,ungraspedCondition,true);
@@ -170,6 +170,7 @@ namespace WordJourney
 			while (reader.Read ()) {
 
 				if (reader == null) {
+					sql.CloseAllConnections();
 					return null;
 				}
 
@@ -193,7 +194,9 @@ namespace WordJourney
 
 				int ungraspTimes = reader.GetInt16 (9);
 
-				HLHWord word = new HLHWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+				bool isFamiliar = reader.GetInt16(10) == 1;
+
+                HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes, isFamiliar);
 
 
 				learnedWords.Add (word);
@@ -208,19 +211,205 @@ namespace WordJourney
 
 		}
 
+		public List<HLHWord> GetAllGraspedWord(){
+
+			List<HLHWord> graspedWords = new List<HLHWord>();
+
+			string tableName = GetCurrentLearningWordsTabelName();
+
+			MySQLiteHelper sql = MySQLiteHelper.Instance;
+
+			sql.GetConnectionWith(CommonData.dataBaseName);
+
+			string[] graspedCondition = { "learnedTimes>ungraspTimes" };
+
+			IDataReader reader = sql.ReadSpecificRowsOfTable(tableName, null, graspedCondition, true);
+
+			while(reader.Read()){
+
+				if (reader == null)
+                {
+					sql.CloseConnection(CommonData.dataBaseName);
+                    return null;
+                }
+
+                int wordId = reader.GetInt32(0);
+
+                string spell = reader.GetString(1);
+
+                string phoneticSymble = reader.GetString(2);
+
+                string explaination = reader.GetString(3);
+
+                string sentenceEN = reader.GetString(4);
+
+                string sentenceCH = reader.GetString(5);
+
+                string pronounciationURL = reader.GetString(6);
+
+                int wordLength = reader.GetInt16(7);
+
+                int learnedTimes = reader.GetInt16(8);
+
+                int ungraspTimes = reader.GetInt16(9);
+
+				bool isFamiliar = reader.GetInt16(10) == 1;
+
+                HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes, isFamiliar);
+
+
+				graspedWords.Add(word);
+
+			}
+
+
+			sql.CloseConnection(CommonData.dataBaseName);
+
+			return graspedWords;
+
+		}
+
+        /// <summary>
+        /// 获取所有熟悉的单词
+        /// </summary>
+        /// <returns>The all familiar word.</returns>
+		public List<HLHWord> GetAllFamiliarWord()
+        {
+
+            List<HLHWord> familiarWords = new List<HLHWord>();
+
+            string tableName = GetCurrentLearningWordsTabelName();
+
+            MySQLiteHelper sql = MySQLiteHelper.Instance;
+
+            sql.GetConnectionWith(CommonData.dataBaseName);
+
+            string[] graspedCondition = { "learnedTimes>0","isFamiliar=1" };
+
+            IDataReader reader = sql.ReadSpecificRowsOfTable(tableName, null, graspedCondition, true);
+
+            while (reader.Read())
+            {
+
+                if (reader == null)
+                {
+					sql.CloseConnection(CommonData.dataBaseName);
+                    return null;
+                }
+
+                int wordId = reader.GetInt32(0);
+
+                string spell = reader.GetString(1);
+
+                string phoneticSymble = reader.GetString(2);
+
+                string explaination = reader.GetString(3);
+
+                string sentenceEN = reader.GetString(4);
+
+                string sentenceCH = reader.GetString(5);
+
+                string pronounciationURL = reader.GetString(6);
+
+                int wordLength = reader.GetInt16(7);
+
+                int learnedTimes = reader.GetInt16(8);
+
+                int ungraspTimes = reader.GetInt16(9);
+
+				bool isFamiliar = reader.GetInt16(10) == 1;
+
+                HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes, isFamiliar);
+
+
+				familiarWords.Add(word);
+
+            }
+
+
+			sql.CloseConnection(CommonData.dataBaseName);
+
+			return familiarWords;
+
+        }
+
+        /// <summary>
+        /// 获取所有不熟悉的单词
+        /// </summary>
+        /// <returns>The all unfamiliar word.</returns>
+		public List<HLHWord> GetAllUnfamiliarWord()
+        {
+
+            List<HLHWord> unfamiliarWords = new List<HLHWord>();
+
+            string tableName = GetCurrentLearningWordsTabelName();
+
+            MySQLiteHelper sql = MySQLiteHelper.Instance;
+
+            sql.GetConnectionWith(CommonData.dataBaseName);
+
+            string[] graspedCondition = { "learnedTimes>0", "isFamiliar=0" };
+
+            IDataReader reader = sql.ReadSpecificRowsOfTable(tableName, null, graspedCondition, true);
+
+            while (reader.Read())
+            {
+
+                if (reader == null)
+                {
+					sql.CloseConnection(CommonData.dataBaseName);
+                    return null;
+                }
+
+                int wordId = reader.GetInt32(0);
+
+                string spell = reader.GetString(1);
+
+                string phoneticSymble = reader.GetString(2);
+
+                string explaination = reader.GetString(3);
+
+                string sentenceEN = reader.GetString(4);
+
+                string sentenceCH = reader.GetString(5);
+
+                string pronounciationURL = reader.GetString(6);
+
+                int wordLength = reader.GetInt16(7);
+
+                int learnedTimes = reader.GetInt16(8);
+
+                int ungraspTimes = reader.GetInt16(9);
+
+				bool isFamiliar = reader.GetInt16(10) == 1;
+
+                HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes, isFamiliar);
+
+
+				unfamiliarWords.Add(word);
+
+            }
+
+
+            sql.CloseAllConnections();
+
+			return unfamiliarWords;
+
+        }
+
 
 		public List<HLHWord> GetAllUngraspedWords(){
 
 			List<HLHWord> ungraspWords = new List<HLHWord>();
 
 			string tableName = GetCurrentLearningWordsTabelName ();
-
+            
 			MySQLiteHelper sql = MySQLiteHelper.Instance;
 
 			// 连接数据库
 			sql.GetConnectionWith (CommonData.dataBaseName);
 
-			string[] ungraspedCondition = new string[]{"ungraspTimes>0"};
+			string[] ungraspedCondition = {"ungraspTimes>=1"};
 
 			// 读取器
 			IDataReader reader = sql.ReadSpecificRowsOfTable(tableName,null,ungraspedCondition,true);
@@ -229,6 +418,7 @@ namespace WordJourney
 			while (reader.Read ()) {
 
 				if (reader == null) {
+					sql.CloseConnection(CommonData.dataBaseName);
 					return null;
 				}
 
@@ -252,7 +442,9 @@ namespace WordJourney
 
 				int ungraspTimes = reader.GetInt16 (9);
 
-				HLHWord word = new HLHWord (wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes);
+				bool isFamiliar = reader.GetInt16(10) == 1;
+
+                HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes, isFamiliar);
 
 
 				ungraspWords.Add (word);
@@ -264,6 +456,8 @@ namespace WordJourney
 			return ungraspWords;
 
 		}
+
+
 
 	}
 

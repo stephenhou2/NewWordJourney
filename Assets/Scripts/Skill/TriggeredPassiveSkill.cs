@@ -18,6 +18,8 @@ namespace WordJourney
 		public bool fightEndTrigger;
 
 		public string statusName;//状态名称
+
+		//public bool hasTriggered;
       
 
 		void Awake(){

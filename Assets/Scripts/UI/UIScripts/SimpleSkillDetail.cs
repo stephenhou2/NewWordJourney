@@ -15,13 +15,17 @@ namespace WordJourney{
 		public Text skillNameText;
 		public Image skillIcon;
 		public Text skillLevelText;
-		public Text upgradeNumText;
+		public Image selectedIcon;
 
 		private Skill skill;
 		private CallBackWithSkill callBackWithSkill;
 
 
 		public void SetUpSimpleSkillDetail(Skill skill, CallBackWithSkill callBackWithSkill){
+
+			if(skill == null){
+				ClearSimpleSkillDetail();
+			}
 
 			this.skill = skill;
 
@@ -34,13 +38,17 @@ namespace WordJourney{
 				return obj.name == skill.skillIconName;
 			});
 
-			skillLevelText.text = string.Format("技能等级:{0}",skill.skillLevel);
+			skillIcon.enabled = true;
 
-			upgradeNumText.text = string.Format("升级所需技能点：{0}",skill.upgradeNum);
+			skillLevelText.text = string.Format("技能等级: {0}",skill.skillLevel);
                      
 		}
 
 		public void OnSkillClick(){
+
+			if(skill == null){
+				return;
+			}
 
 			if(callBackWithSkill != null){
 
@@ -48,6 +56,20 @@ namespace WordJourney{
 
 			}
 
+			selectedIcon.enabled = true;
+
+		}
+
+		public void SetUpSelectedIcon(bool enable){
+			selectedIcon.enabled = enable;
+		}
+
+		public void ClearSimpleSkillDetail(){
+			skillNameText.text = string.Empty;
+			skillLevelText.text = string.Empty;
+			skillIcon.sprite = null;
+			skillIcon.enabled = false;
+			skill = null;
 		}
 
     }   

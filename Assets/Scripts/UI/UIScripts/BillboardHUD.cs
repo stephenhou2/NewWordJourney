@@ -56,12 +56,19 @@ namespace WordJourney{
 
         public void QuitBillboard(){
 
+			if (inZoomingOut)
+            {
+                return;
+            }
+
+
             if (zoomCoroutine != null)
             {
                 StopCoroutine(zoomCoroutine);
             }
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
+         
             zoomCoroutine = HUDZoomOut();
 
             StartCoroutine(zoomCoroutine);

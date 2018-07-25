@@ -4,8 +4,21 @@ using UnityEngine;
 
 
 namespace WordJourney
-{
-	using UnityEngine.UI;
+{   
+	//public struct CanvasInfo{
+	//	public int defaultSortingOrder;
+	//	public bool fixSortingOrder;
+	//	public CallBack loadCallBack;
+	//	public bool keepCanvas;
+	//	public string bundleName;
+	//	public string canvasName;
+	//}
+
+	//public struct CanvasDiplayInfo{
+	//	public Transform canvas;
+ //       public int defaultSortingOrder;
+ //       public bool fixSortingOrder;
+	//}
 
 	public class UIManager:MonoBehaviour{
 
@@ -13,8 +26,8 @@ namespace WordJourney
 
 		public Dictionary<string,Transform> UIDic = new Dictionary<string, Transform> ();
 
-
-		public void SetUpCanvasWith(string bundleName,string canvasName,CallBack cb,bool isSync = false,bool keepBackCanvas = true){
+        
+		public void SetUpCanvasWith(string bundleName,string canvasName,CallBack cb, bool isSync = false,bool keepBackCanvas = true,bool setVisible = true){
 
 			if (!UIDic.ContainsKey (canvasName)) {
 				
@@ -38,9 +51,8 @@ namespace WordJourney
 						obj.name = asset.name;
 						if (obj.name == canvasName) {
 							c = obj.GetComponent<Canvas> ();
-							if (cb == null) {
+							if(setVisible){
 								c.enabled = true;
-
 							}
 						}
 					}
@@ -50,15 +62,13 @@ namespace WordJourney
 					}
 
 					c.transform.SetParent (canvasContainer);
-					c.transform.SetAsLastSibling ();
-
-					ResetCanvasesSortingOrder ();
+					c.transform.SetAsLastSibling ();               
 
 					UIDic.Add (canvasName, c.transform);
 
 				} else {
 
-					IEnumerator canvasCoroutine = SetUpCanvasAsync (bundleName, canvasName, cb, keepBackCanvas);
+					IEnumerator canvasCoroutine = SetUpCanvasAsync (bundleName, canvasName, cb, keepBackCanvas, setVisible);
 
 					StartCoroutine (canvasCoroutine);
 
@@ -88,27 +98,9 @@ namespace WordJourney
 
 			}
 
-			ResetCanvasesSortingOrder ();
-
-//			Resources.UnloadUnusedAssets ();
-//			System.GC.Collect ();
 		}
-
-
-//		private void ResetCanvasToSafeArea(Transform canvas){
-//			if (!MyTool.isIphoneX) {
-//				return;
-//			}
-//			SetCanvasBounds safeAreaHandler = Camera.main.GetComponent<SetCanvasBounds> ();
-//			safeAreaHandler.canvas = canvas as RectTransform;
-//			safeAreaHandler.panel = canvas.transform.Find ("Panel") as RectTransform;
-//		}
-
-//		private void MyAdaptToIphoneX(Canvas canvas){
-//			canvas.GetComponent<CanvasScaler> ().referenceResolution = CommonData.iphoneXResolution;
-//		}
-
-		private IEnumerator SetUpCanvasAsync(string bundleName,string canvasName,CallBack cb, bool keepBackCanvas = true){
+      
+		private IEnumerator SetUpCanvasAsync(string bundleName,string canvasName,CallBack cb, bool keepBackCanvas = true,bool setVisible = true){
 
 			AssetBundleRequest requeset = MyResourceManager.Instance.LoadAssetAsync<GameObject> (bundleName);
 
@@ -132,9 +124,12 @@ namespace WordJourney
 				obj.name = asset.name;
 				if (obj.name == canvasName) {
 					c = obj.GetComponent<Canvas> ();
-					if (cb == null) {
+					if(setVisible){
 						c.enabled = true;
 					}
+					//if (cb == null) {
+					//	c.enabled = true;
+					//}
 				}
 			}
 
@@ -145,7 +140,7 @@ namespace WordJourney
 			c.transform.SetParent(canvasContainer);
 			c.transform.SetAsLastSibling ();
 
-			ResetCanvasesSortingOrder ();
+			//ResetCanvasesSortingOrder ();
 
 			UIDic.Add (canvasName, c.transform);
 
@@ -153,12 +148,12 @@ namespace WordJourney
 
 
 			
-		private void ResetCanvasesSortingOrder(){
-			for (int i = 0; i < canvasContainer.childCount; i++) {
-				Canvas canvas = canvasContainer.GetChild (i).GetComponent<Canvas>();
-				canvas.sortingOrder = i;
-			}
-		}
+		//private void ResetCanvasesSortingOrder(){
+		//	for (int i = 0; i < canvasContainer.childCount; i++) {
+		//		Canvas canvas = canvasContainer.GetChild (i).GetComponent<Canvas>();
+		//		canvas.sortingOrder = i;
+		//	}
+		//}
 
 		public void HideCanvas(string canvasName){
 
@@ -184,27 +179,37 @@ namespace WordJourney
 			}
 	
 			switch (canvasName) {
-			case "HomeCanvas":
-				UIDic [canvasName].GetComponent<HomeViewController> ().DestroyInstances ();
-				break;
-			case "BagCanvas":
-				UIDic [canvasName].GetComponent<BagViewController> ().DestroyInstances ();
-				break;
-			case "RecordCanvas":
-				UIDic [canvasName].GetComponent<RecordViewController> ().DestroyInstances ();
-				break;
-			case "SettingCanvas":
-				UIDic [canvasName].GetComponent<SettingViewController> ().DestroyInstances ();
-				break;
-			case "SpellCanvas":
-				UIDic [canvasName].GetComponent<SpellViewController> ().DestroyInstances ();
-				break;
-			case "LearnCanvas":
-				UIDic [canvasName].GetComponent<LearnViewController> ().DestroyInstances ();
-				break;
-			case "ExploreCanvas":
-				UIDic [canvasName].GetComponent<ExploreUICotroller> ().DestroyInstances ();
-				break;
+    			case "HomeCanvas":
+    				UIDic [canvasName].GetComponent<HomeViewController> ().DestroyInstances ();
+    				break;
+    			case "BagCanvas":
+    				UIDic [canvasName].GetComponent<BagViewController> ().DestroyInstances ();
+    				break;
+    			case "RecordCanvas":
+    				UIDic [canvasName].GetComponent<RecordViewController> ().DestroyInstances ();
+    				break;
+    			case "SettingCanvas":
+    				UIDic [canvasName].GetComponent<SettingViewController> ().DestroyInstances ();
+    				break;
+    			case "ExploreCanvas":
+    				UIDic [canvasName].GetComponent<ExploreUICotroller> ().DestroyInstances ();
+    				break;
+    			case "GuideCanvas":
+    				UIDic[canvasName].GetComponent<GuideViewController>().DestroyInstances();
+    				break;
+    			case "LoadingCanvas":
+    				UIDic[canvasName].GetComponent<LoadingViewController>().DestroyInstances();
+    				break;
+    			case "NPCCanvas":
+    				UIDic[canvasName].GetComponent<NPCViewController>().DestroyInstances();
+    				break;
+				case "ShareCanvas":
+					UIDic[canvasName].GetComponent<ShareViewController>().DestroyInstances();
+					break;
+				case "FinalChapterCanvas":
+					UIDic[canvasName].GetComponent<FinalChapterViewControlller>().DestroyInstances();
+					break;
+
 			}
 
 			UIDic.Remove (canvasName);

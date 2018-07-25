@@ -9,44 +9,29 @@ namespace WordJourney
     public class SettingView : MonoBehaviour
     {
 
-        public Slider volumeControl;
-
-        public ToggleGroup tg;
+		public HLHSlider volumeControl;
 
         public Transform settingPlane;
 
         public Transform quitAPPButton;
 
-        public Toggle simpleWords;
-        public Toggle mediumWords;
-        public Toggle masterWords;
+		public Image[] difficultySelectedIcons;
 
         public Transform queryChangeWordHUD;
 
         public Image pronounceOnImage;
         public Image pronounceOffImage;
 
-        public void SetUpSettingView(GameSettings settings)
+		public void SetUpSettingView(GameSettings settings,CallBackWithFloat volumeChangeCallBack)
         {
 
             volumeControl.value = (int)(settings.systemVolume * 100);
 
             UpdatePronounceControl(settings.isAutoPronounce);
 
-            tg.SetAllTogglesOff();
+			UpdateDifficultySelectedIcons();
 
-            switch (settings.wordType)
-            {
-                case WordType.Simple:
-                    simpleWords.isOn = true;
-                    break;
-                case WordType.Medium:
-                    mediumWords.isOn = true;
-                    break;
-                case WordType.Master:
-                    masterWords.isOn = true;
-                    break;
-            }
+			volumeControl.InitHLHSlider(volumeChangeCallBack);
 
 #if UNITY_ANDROID
             quitAPPButton.gameObject.SetActive(true);
@@ -70,6 +55,19 @@ namespace WordJourney
 
 		}
 
+		public void UpdateDifficultySelectedIcons(){
+			
+			int diffucultyInt = (int)GameManager.Instance.gameDataCenter.gameSettings.wordType;
+
+            for (int i = 0; i < difficultySelectedIcons.Length; i++)
+            {
+
+                difficultySelectedIcons[i].enabled = i == diffucultyInt;
+
+            }
+
+		}
+
 
 
 		public void ShowAlertHUD(){
@@ -86,10 +84,7 @@ namespace WordJourney
 			GetComponent<Canvas> ().enabled = false;
 
 		}
-
-		void OnDestroy(){
-//			queryChangeWordHUD = null;
-		}
+        
 
 	}
 }

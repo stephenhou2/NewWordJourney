@@ -20,18 +20,11 @@ namespace WordJourney
 				int armorDecrease = -(int)(armorDecreaseScaler * Player.mainPlayer.agentLevel + fixedArmorDecrease);
 				enemy.agent.armorChangeFromSkill += armorDecrease;
 				enemy.agent.armor += armorDecrease;
-                enemy.UpdateStatusPlane();
+                //enemy.UpdateStatusPlane();
 
+				enemy.AddTintTextToQueue("护甲降低");
 
-                if (selfEffectAnimName != string.Empty)
-                {
-                    self.SetEffectAnim(selfEffectAnimName);
-                }
-
-                if (enemyEffectAnimName != string.Empty)
-                {
-                    enemy.SetEffectAnim(enemyEffectAnimName);
-                }
+				SetEffectAnims(self, enemy);
 
             }
         }

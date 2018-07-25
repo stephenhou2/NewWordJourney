@@ -49,6 +49,7 @@ namespace WordJourney
 				sql.DeleteTable (wordsTableName);;
 			}
 
+            // isFamiliar 是否熟悉,熟悉为1,不熟悉为0
 
 			sql.CreateTable (wordsTableName,
 				new string[] {
@@ -61,7 +62,8 @@ namespace WordJourney
 					"pronouncationURL",
 					"wordLength",
 					"learnedTimes",
-					"ungraspTimes"
+					"ungraspTimes",
+                    "isFamiliar"
 				},
 				new string[] {
 					"PRIMARY KEY NOT NULL",
@@ -73,7 +75,8 @@ namespace WordJourney
 					"NOT NULL",
 					"NOT NULL",
 					"NOT NULL",
-					"NOT NULL"
+					"NOT NULL",
+                    "NOT NULL"
 				},
 				new string[] {
 					"INTEGER",
@@ -85,7 +88,8 @@ namespace WordJourney
 					"TEXT",
 					"INTEGER DEFAULT 0",
 					"INTEGER DEFAULT 0",
-					"INTEGER DEFAULT 0"
+					"INTEGER DEFAULT 0",
+                    "INTEGER DEFAULT 0"
 				});
 
 
@@ -101,8 +105,7 @@ namespace WordJourney
 			for (int i = 1; i < simpleWordsDataArray.Length; i++) {
 
 				string singleWordData = simpleWordsDataArray [i];
-
-//				Debug.Log (singleWordData);
+                
 
 				string[] datas = singleWordData.Split (new char[]{ ',' }, System.StringSplitOptions.RemoveEmptyEntries);
 
@@ -116,7 +119,7 @@ namespace WordJourney
 
 				string wordLength = (spell.Length-2).ToString();
 
-				string[] wordInput = new string[] {wordId, spell, phoneticSymbol, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, "0", "0"};
+				string[] wordInput = new string[] {wordId, spell, phoneticSymbol, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, "0", "0","0"};
 
 				sql.InsertValues (wordsTableName, wordInput);
 

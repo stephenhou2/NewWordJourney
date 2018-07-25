@@ -18,6 +18,7 @@ namespace WordJourney
 
 	public class ItemDetail : MonoBehaviour {
 
+		public Transform generalItemDetailContainer;
 		public Text itemName;
 		public Text itemDescription;
 		public Text attachedDescription;
@@ -30,9 +31,16 @@ namespace WordJourney
 		public Transform unloadButton;
 		public Transform useButton;
 
+		public Transform specialOperationContainer;
 		public SpecialOperationCell soCell;
 
-		public AttachedGemstoneDisplay attachedSkillDisplay;
+		public AttachedGemstoneDisplay attachedGemstoneDisplay;
+		//public AttachedSkillDisplay attachedSkillDisplay;
+
+		public Sprite grayEquipmentFrame;
+		public Sprite blueEquipmentFrame;
+		public Sprite goldEquipmentFrame;
+		public Sprite purpleEquipmentFrame;
       
 		public void SetUpItemDetail(Item item){
 
@@ -48,6 +56,9 @@ namespace WordJourney
 
 			itemName.text = item.itemName;
 
+			itemIconBackground.sprite = grayEquipmentFrame;
+			itemName.color = CommonData.grayEquipmentColor;
+
 			goldIcon.enabled = true;
 
 			priceText.text = (item.price / 8).ToString ();
@@ -58,53 +69,66 @@ namespace WordJourney
     				itemDescription.text = item.itemDescription;
     				attachedDescription.text = eqp.attachedPropertyDescription;
     				switch (eqp.quality) {
-    				case EquipmentQuality.Gray:
-    					itemName.text = string.Format("<color=gray>{0}</color>",item.itemName);
-    					break;
-    				case EquipmentQuality.Blue:
-    					itemName.text = string.Format("<color=blue>{0}</color>",item.itemName);
-    					break;
-    				case EquipmentQuality.Gold:
-    					itemName.text = string.Format("<color=yellow>{0}</color>",item.itemName);
-    					break;
+        				case EquipmentQuality.Gray:
+    						itemName.color = CommonData.grayEquipmentColor;
+							itemIconBackground.sprite = grayEquipmentFrame;
+        					break;
+        				case EquipmentQuality.Blue:
+    						itemName.color = CommonData.blueEquipmentColor;
+							itemIconBackground.sprite = blueEquipmentFrame;
+        					break;
+        				case EquipmentQuality.Gold:
+    						itemName.color = CommonData.goldEquipmentColor;
+							itemIconBackground.sprite = goldEquipmentFrame;
+        				    break;
+    					case EquipmentQuality.Purple:
+    						itemName.color = CommonData.purpleEquipmentColor;
+							itemIconBackground.sprite = purpleEquipmentFrame;
+    						break;
     				}
     				SetUpOperationButtons (!eqp.equiped, eqp.equiped, false);
-    				soCell.gameObject.SetActive (false);
 
-    				//if (eqp.attachedSkillId > 0) {
-    				//	attachedSkillDisplay.gameObject.SetActive (true);
-    				//	Skill skill = GameManager.Instance.gameDataCenter.allSkills.Find (delegate (Skill obj) {
-    				//		return obj.skillId == eqp.attachedSkillId;
-    				//	});
-    				//	attachedSkillDisplay.SetUpAttachedSkillDisplay (skill);
-    				//} else {
-    				//	attachedSkillDisplay.gameObject.SetActive (false);
-    				//}
+					specialOperationContainer.gameObject.SetActive (false);
+
+					//attachedSkillDisplay.gameObject.SetActive(false);
+
+					if(eqp.attachedPropertyGemstone.itemId != -1){
+						attachedGemstoneDisplay.SetUpAttachedSkillDisplay(eqp.attachedPropertyGemstone);
+					}else{
+						attachedGemstoneDisplay.gameObject.SetActive(false);
+					}
     				break;
     			case ItemType.Consumables:
-    				Consumables cons = item as Consumables;
+    				//Consumables cons = item as Consumables;
     				attachedDescription.text = item.itemDescription;
     				SetUpOperationButtons (false, false, true);
-    				attachedSkillDisplay.gameObject.SetActive (false);
+					specialOperationContainer.gameObject.SetActive(false);
+    				//attachedSkillDisplay.gameObject.SetActive (false);
+					attachedGemstoneDisplay.gameObject.SetActive(false);
     				break;
 				case ItemType.SkillScroll:
-					SkillScroll skillScroll = item as SkillScroll;
-    				attachedDescription.text = item.itemDescription;
-    				attachedSkillDisplay.gameObject.SetActive (true);
-    				Skill attachedSkill = GameManager.Instance.gameDataCenter.allSkills.Find (delegate(Skill obj) {
-						return obj.skillId == skillScroll.skillId;
-    				});
-    				attachedSkillDisplay.SetUpAttachedSkillDisplay (attachedSkill);
-    				SetUpOperationButtons (false, false, false);
-    				soCell.gameObject.SetActive (false);
+					//SkillScroll skillScroll = item as SkillScroll;
+					attachedDescription.text = item.itemDescription;
+					itemDescription.text = string.Empty;
+    				//attachedSkillDisplay.gameObject.SetActive (true);
+    		//		Skill attachedSkill = GameManager.Instance.gameDataCenter.allSkills.Find (delegate(Skill obj) {
+						//return obj.skillId == skillScroll.skillId;
+    				//});
+					SetUpOperationButtons (false, false, true);
+					specialOperationContainer.gameObject.SetActive (false);
+					//attachedSkillDisplay.SetUpAttachedSkillDisplay(attachedSkill);
+					attachedGemstoneDisplay.gameObject.SetActive(false);
     				break;
 				case ItemType.PropertyGemstone:
+					attachedDescription.text = item.itemDescription;
+					itemDescription.text = string.Empty;
 					SetUpOperationButtons(false, false, false);
+					specialOperationContainer.gameObject.SetActive(false);
+					//attachedSkillDisplay.gameObject.SetActive(false);
+					attachedGemstoneDisplay.gameObject.SetActive(false);
 					break;
 				case ItemType.SpecialItem:
     				attachedDescription.text = item.itemDescription;
-    				soCell.gameObject.SetActive (false);
-    				attachedSkillDisplay.gameObject.SetActive (false);
 					SpecialItem specialItem = item as SpecialItem;
 					switch(specialItem.specialItemType){
 						case SpecialItemType.TieYaoShi:
@@ -113,16 +137,29 @@ namespace WordJourney
 						case SpecialItemType.WanNengYaoShi:
 						case SpecialItemType.QiaoZhen:
 							SetUpOperationButtons(false, false, false);
+							specialOperationContainer.gameObject.SetActive(false);
+							break;
+						case SpecialItemType.DianJinFuShi:
+						case SpecialItemType.ChongZhuShi:
+						case SpecialItemType.TuiMoJuanZhou:
+							SetUpOperationButtons(false, false, true);
+							specialOperationContainer.gameObject.SetActive(true);
+							soCell.SetUpSpeicalOperationCell(null);
+							soCell.InitSpecialOperaiton(null);
 							break;
 						default:
 							SetUpOperationButtons(false, false, true);
+							specialOperationContainer.gameObject.SetActive(false);
 							break;
 
 					}
-    				
+					//attachedSkillDisplay.gameObject.SetActive(false);
+                    attachedGemstoneDisplay.gameObject.SetActive(false);
     				break;
 
 			}
+
+			generalItemDetailContainer.gameObject.SetActive(true);
 
 		}
 
@@ -146,57 +183,16 @@ namespace WordJourney
 
 			SetUpOperationButtons (false, false, false);
 
+			specialOperationContainer.gameObject.SetActive(false);
 			soCell.ResetSpecialOperationCell ();
-			soCell.gameObject.SetActive(false);
+			//soCell.gameObject.SetActive(false);
 
-			attachedSkillDisplay.gameObject.SetActive(false);
+			generalItemDetailContainer.gameObject.SetActive(false);
+			attachedGemstoneDisplay.gameObject.SetActive(false);
+			//attachedSkillDisplay.gameObject.SetActive(false);
 
 		}
-
-//		public Equipment SpecialOperationOnEquipment(SpecialOperation so,int attachedInfo,out int oriAttachedSkillId){
-         
-//			Equipment equipment = soCell.soDragControl.item as Equipment;
-
-//			oriAttachedSkillId = equipment.attachedSkillId + 400;
-
-//			if (equipment == null) {
-//				return null;
-//			}
-
-//			switch (so) {
-//			case SpecialOperation.ChongZhu:
-//				equipment.RebuildEquipment ();
-
-//				break;
-//			case SpecialOperation.DianJin:
-//				equipment.SetToGoldQuality ();
-
-//				break;
-//			case SpecialOperation.XiaoMo:
-//				//equipment.RemoveAttachedSkill();               
-//				break;
-//			case SpecialOperation.XiangQianJiNeng:
-//				//equipment.AddSkill (attachedInfo);
-
-//				break;
-//			}
-
-          
-            
-//			if(equipment.equiped){
-//				PropertyChange propertyChange = Player.mainPlayer.ResetBattleAgentProperties(false);
-//				refreshCallBack(propertyChange);
-//			}
-
-////			Player.mainPlayer.AddItem (equipment);
-
-		//	soCell.ResetSpecialOperationCell ();
-
-		//	return equipment;
-
-		//}
-
-
-
+      
+      
 	}
 }

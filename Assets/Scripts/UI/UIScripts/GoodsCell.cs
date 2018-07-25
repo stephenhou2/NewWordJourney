@@ -11,16 +11,56 @@ namespace WordJourney
 
 		public Image goodsIcon;
 		public Image selectedIcon;
+		public Image goodsBackground;
+		public Text goodsName;
 		public Text goodsPrice;
 
+		public Sprite grayFrame;
+		public Sprite blueFrame;
+		public Sprite goldFrame;
+		public Sprite purpleFrame;
 
-		public void SetUpGoodsCell(Item goods){
 
-			goodsPrice.text = goods.price.ToString ();
+		public void SetUpGoodsCell(HLHNPCGoods goods){
 
-//			Item itemAsGoods = goods.GetGoodsItem ();
+			Item itemAsGoods = goods.GetGoodsItem();
 
-			Sprite itemSprite = GameManager.Instance.gameDataCenter.GetGameItemSprite (goods);
+			goodsName.text = itemAsGoods.itemName;
+
+			goodsName.color = CommonData.grayEquipmentColor;
+			goodsBackground.sprite = grayFrame;
+
+			if(itemAsGoods is Equipment){
+				
+				Equipment equipment = itemAsGoods as Equipment;
+
+				switch(equipment.quality){
+					case EquipmentQuality.Gray:
+						goodsName.color = CommonData.grayEquipmentColor;
+                        goodsBackground.sprite = grayFrame;
+						break;
+					case EquipmentQuality.Blue:
+						goodsName.color = CommonData.blueEquipmentColor;
+						goodsBackground.sprite = blueFrame;
+						break;
+					case EquipmentQuality.Gold:
+						goodsName.color = CommonData.goldEquipmentColor;
+						goodsBackground.sprite = goldFrame;
+						break;
+					case EquipmentQuality.Purple:
+						goodsName.color = CommonData.purpleEquipmentColor;
+						goodsBackground.sprite = purpleFrame;
+						break;
+				}
+					
+			}
+            
+
+			int price = goods.GetGoodsPrice();
+
+			goodsPrice.text = price.ToString ();
+         
+			Sprite itemSprite = GameManager.Instance.gameDataCenter.GetGameItemSprite (itemAsGoods);
 
 			goodsIcon.sprite = itemSprite;
 

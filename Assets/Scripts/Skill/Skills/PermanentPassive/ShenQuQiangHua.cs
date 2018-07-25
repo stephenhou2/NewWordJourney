@@ -7,6 +7,12 @@ namespace WordJourney
 {
 	public class ShenQuQiangHua : PermanentPassiveSkill {
 
+		public override string GetDisplayDescription()
+		{
+			int maxHealthGain = Mathf.RoundToInt(skillLevel * skillSourceValue);
+			return string.Format("永久提升<color=white>(技能等级×50)</color><color=red>{0}</color>的生命上限", maxHealthGain);
+		}
+
 		protected override void ExcutePermanentPassiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
 		{
 			int maxHealthGain = Mathf.RoundToInt(skillSourceValue * skillLevel);

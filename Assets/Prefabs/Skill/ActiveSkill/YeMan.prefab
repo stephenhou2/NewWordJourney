@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1746812848195700}
+  m_IsPrefabParent: 1
+--- !u!1 &1746812848195700
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4524278063170026}
+  - component: {fileID: 114072151023303572}
+  m_Layer: 0
+  m_Name: YeMan
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4524278063170026
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1746812848195700}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 13.778694, y: 14.75755, z: 4.1914062}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114072151023303572
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1746812848195700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb7161c61689442509edcf527818f8e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillName: "\u91CE\u86EE"
+  sfxName: Skill/se_heal
+  skillId: 25
+  skillDescription: "\u6D88\u8017<color=orange>\u6280\u80FD\u7B49\u7EA7x10</color>\u7684\u751F\u547D\uFF0C\u56DE\u590D<color=orange>\u6280\u80FD\u7B49\u7EA7x\u7269\u7406\u653B\u51FBx3%+5</color>\u7684\u9B54\u6CD5"
+  skillIconName: 25_yeMan
+  selfEffectAnimName: state_magic_heal
+  enemyEffectAnimName: 
+  skillType: 0
+  skillLevel: 1
+  price: 180
+  hasTriggered: 0
+  selfRoleAnimName: magical_skill
+  skillCoolenTime: 10
+  coolenPercentage: 0
+  skillStatus: 0
+  manaConsume: 0
+  healthDecreaseBase: 10
+  manaIncreaseScaler: 0.03
+  fixManaIncrease: 5

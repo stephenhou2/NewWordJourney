@@ -38,9 +38,7 @@ namespace WordJourney
         // 玩家UI控制器
         private BattlePlayerUIController bpUICtr;
 
-        // 当前碰到的怪物控制器
-        //		private BattleMonsterController bmCtr;
-
+        // 当前碰到的怪物控制器  
         private NavigationHelper navHelper;
 
 
@@ -48,12 +46,17 @@ namespace WordJourney
 
         public bool needPosFix;
 
-        public bool escapeFromFight;//是否从战斗中逃脱
+        public bool escapeFromFight; //是否从战斗中逃脱
 
-        public bool isInEscaping;//是否正在脱离战斗中
+        public bool isInEscaping; //是否正在脱离战斗中
 
         public bool isInPosFixAfterFight;
 
+		public bool isInSkillAttackAnimBeforeHit;// 是否处在 [非普通攻击] 的技能击中前的攻击动作中
+
+		//private bool isInAttackAnimBeforeHit;// 是否处在技能生效前的动作中 [包括普通攻击]
+        
+		private IEnumerator attackDelayWhenChangeWeapon;// 更换武器时的等待携程
 
         public TextMeshPro stepCount;
         private int mFadeStepsLeft;
@@ -67,6 +70,14 @@ namespace WordJourney
                 {
                     boxCollider.enabled = true;
                     stepCount.enabled = false;
+					for (int i = 0; i < effectAnimContainer.childCount;i++){
+						EffectAnim effectAnim = effectAnimContainer.GetChild(i).GetComponent<EffectAnim>();
+						if(effectAnim.effectName.Equals(CommonData.yinShenEffectName)){
+							exploreManager.newMapGenerator.AddEffectAnimToPool(effectAnim);
+							break;
+						}
+					}
+
                 }
                 else
                 {
@@ -81,6 +92,7 @@ namespace WordJourney
                     {
                         stepCount.color = Color.red;
                     }
+
                 }
             }
         }
@@ -182,6 +194,7 @@ namespace WordJourney
                     }
                     inSingleMoving = false;
                     PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+					SetSortingOrder(-Mathf.RoundToInt(transform.position.y));
                 });
 
                 Debug.Log("无有效路径");
@@ -205,23 +218,37 @@ namespace WordJourney
             // 如果移动动画不为空，则等待当前移动结束
             if (moveTweener != null)
             {
-
+                        
                 // 如果开始新的移动时，原来的移动还没有结束，则将当步的动画结束回调改为只标记已走完，而不删除路径点（因为新的路径就是根据当步的结束点计算的，改点不在新路径内）
                 moveTweener.OnComplete(() =>
                 {
+					Vector3 targetPos = transform.position;
+
+					exploreManager.newMapGenerator.miniMapPlayer.localPosition = targetPos;
+
+                    exploreManager.newMapGenerator.ClearMiniMapMaskAround(targetPos);
+
+					exploreManager.newMapGenerator.MiniMapCameraLatelySleep();
+
+                    exploreManager.expUICtr.UpdateMiniMapDisplay(targetPos);
+
+					SetSortingOrder(-Mathf.RoundToInt(transform.position.y));
+
                     if (fadeStepsLeft > 0)
                     {
                         fadeStepsLeft--;
                     }
                     inSingleMoving = false;
+
+					if(!isInEvent && !isInFight){
+                        exploreManager.MapWalkableEventsStartAction();
+                    }   
                 });
 
             }
 
             yield return new WaitUntil(() => !inSingleMoving);
-
-
-
+         
             // 移动到新路径上的下一个节点
             MoveToNextPosition();
 
@@ -233,23 +260,24 @@ namespace WordJourney
         /// </summary>
         /// <param name="targetPos">Target position.</param>
         private void MoveToPosition(Vector3 targetPos)
-        {
-
-#if UNITY_EDITOR || UNITY_IOS
-            exploreManager.newMapGenerator.UpdateFogOfWar();
-#endif
-
+        {         
             float distance = (targetPos - transform.position).magnitude;
 
             moveTweener = transform.DOMove(targetPos, moveDuration * distance).OnComplete(() =>
             {
 
+				exploreManager.newMapGenerator.miniMapPlayer.localPosition = targetPos;
+
+                exploreManager.newMapGenerator.ClearMiniMapMaskAround(targetPos);
+
+				exploreManager.newMapGenerator.MiniMapCameraLatelySleep();
+
+                exploreManager.expUICtr.UpdateMiniMapDisplay(targetPos);   
+
                 if (needPosFix)
                 {
                     needPosFix = false;
                 }
-
-                bpUICtr.RefreshMiniMap();
 
                 if (fadeStepsLeft > 0)
                 {
@@ -259,7 +287,7 @@ namespace WordJourney
                 // 动画结束时已经移动到指定节点位置，标记单步行动结束
                 inSingleMoving = false;
 
-                SetSortingOrder(-(int)transform.position.y);
+				SetSortingOrder(-Mathf.RoundToInt(transform.position.y));
 
                 if (pathPosList.Count > 0)
                 {
@@ -267,10 +295,18 @@ namespace WordJourney
                     // 将当前节点从路径点中删除
                     pathPosList.RemoveAt(0);
 
+					if(!isInEvent && !isInFight){
+                        exploreManager.MapWalkableEventsStartAction();
+                    }            
+
                     // 移动到下一个节点位置
                     MoveToNextPosition();
 
                 }
+
+				if(!isInEvent && !isInFight){
+					exploreManager.MapWalkableEventsStartAction();
+				}            
 
             });
 
@@ -596,7 +632,7 @@ namespace WordJourney
                     // 动画结束时已经移动到指定节点位置，标记单步行动结束
                     inSingleMoving = false;
 
-                    SetSortingOrder(-(int)transform.position.y);
+					SetSortingOrder(-Mathf.RoundToInt(transform.position.y));
 
                     if (pathPosList.Count > 0)
                     {
@@ -694,80 +730,7 @@ namespace WordJourney
                 isInEscaping = false;
             });
         }
-
-        public void FixPosTo(Vector3 pos,float duration,CallBack callBack = null) {
-
-            transform.DOMove(pos, duration).OnComplete(() =>
-            {
-                if(callBack != null){
-                    callBack();
-                }
-
-            });
-                
-        }
-
-		/// <summary>
-		/// 战斗结束之后玩家移动到怪物原来的位置
-		/// </summary>
-//		public void PlayerMoveToEnemyPosAfterFight(Vector3 oriMonsterPos){
-//
-//			PlayRoleAnim ("wait", 0, null);
-//
-//			Vector3 targetPos = oriMonsterPos;
-//
-//			// 玩家角色位置和原来的怪物位置之间间距大于0.5（玩家是横向进入战斗的），则播放跑的动画到指定位置
-//			if (Mathf.Abs (targetPos.x - transform.position.x) > 0.5) {
-//				MoveToNextPosition ();
-//			} else {// 玩家角色位置和原来的怪物位置之间间距小于0.5（玩家是纵向进入战斗的），则角色直接移动到指定位置，不播动画
-//
-//				transform.position = targetPos;
-//
-//				singleMoveEndPos = targetPos;
-//
-//				pathPosList.Clear ();
-//
-//				exploreManager.ItemsAroundAutoIntoLifeWithBasePoint (targetPos);
-//
-//			}
-//
-//		}
-
-
-
-//		public override void InitFightTextDirectionTowards (BattleAgentController enemy)
-//		{
-//			MyTowards towards = MyTowards.Left;
-//			if (transform.position.y == enemy.transform.position.y) {
-//				towards = transform.position.x < enemy.transform.position.x ? MyTowards.Left : MyTowards.Right;
-//			} else {
-//				towards = enemy.towards == MyTowards.Left ? MyTowards.Left : MyTowards.Right;
-//			}
-//			bpUICtr.fightTextManager.SetUpFightTextManager (transform.position,towards);
-//		}
-//
-//
-//
-//		public override void InitFightTextDirectionTowards (Vector3 position)
-//		{
-//			MyTowards fightTextTowards = MyTowards.Left;
-//
-//			fightTextTowards = position.x < transform.position.x ? MyTowards.Right : MyTowards.Left;
-//
-//			bpUICtr.fightTextManager.SetUpFightTextManager (transform.position, fightTextTowards);
-//
-//		}
-//
-//
-//		public override void AddTintTextToQueue (string text, SpecialAttackResult specialAttackType)
-//		{
-//			if (bpUICtr != null) {
-//				ExploreTintText ft = new ExploreTintText (text, specialAttackType);
-//				bpUICtr.fightTextManager.AddFightText (ft);
-//			}
-//		}
-//
-
+              
 		public void SetEnemy(BattleMonsterController bmCtr){
 			this.enemy = bmCtr;
 		}
@@ -778,6 +741,10 @@ namespace WordJourney
 		/// </summary>
 		/// <param name="bmCtr">怪物控制器</param>
 		public void StartFight(BattleMonsterController bmCtr){
+
+			if(isInFight){
+				return;
+			}
 
 			isInFight = true;
 
@@ -801,7 +768,11 @@ namespace WordJourney
 		/// <param name="skill">Skill.</param>
 		public override void UseSkill (ActiveSkill skill)
 		{
-//			isAttackActionFinish = false;
+			if(isDead){
+				return;
+			}
+
+			Player.mainPlayer.mana -= skill.manaConsume;
 
 			if (attackCoroutine != null) {
 				StopCoroutine (attackCoroutine);
@@ -809,11 +780,28 @@ namespace WordJourney
 
 			currentUsingActiveSkill = skill;
 
+			//isInAttackAnimBeforeHit = true;
+
+			if (currentUsingActiveSkill.skillId != 0)
+            {
+				isInSkillAttackAnimBeforeHit = true;
+            }
+
 			// 播放技能对应的角色动画，角色动画结束后播放攻击间隔动画
 			this.PlayRoleAnim (skill.selfRoleAnimName, 1, () => {
 
+				if(!isInEscaping){
+					exploreManager.expUICtr.bpUICtr.UpdateActiveSkillButtonsWhenAttackAnimFinish();
+				}
+
 				// 播放等待动画
-				this.PlayRoleAnim(CommonData.roleAttackIntervalAnimName,0,null);
+				if (armatureCom.animation.lastAnimationName != CommonData.roleAttackIntervalAnimName)
+				{
+					if(isDead){
+						return;
+					}
+					this.PlayRoleAnim(CommonData.roleAttackIntervalAnimName, 0, null);
+				}
                
 			});
 
@@ -824,7 +812,10 @@ namespace WordJourney
 
 		protected override void AgentExcuteHitEffect ()
 		{
-            if (isDead || (enemy != null && enemy.isDead))
+
+			//Debug.Log("hit");
+
+            if (isDead)
             {
                 return;
             }
@@ -836,10 +827,10 @@ namespace WordJourney
 			if (enemy == null) {
 				return;
 			}
-
+                     
 			if(currentUsingActiveSkill.sfxName != string.Empty){
 				// 播放技能对应的音效
-                GameManager.Instance.soundManager.PlayAudioClip("Skill/" + currentUsingActiveSkill.sfxName);
+                GameManager.Instance.soundManager.PlayAudioClip(currentUsingActiveSkill.sfxName);
 			}
 
 
@@ -848,6 +839,14 @@ namespace WordJourney
 			if (mm != null) {
 				mm.isReadyToFight = true;
 			}
+
+			//isInAttackAnimBeforeHit = false;
+
+            if (currentUsingActiveSkill.skillId != 0)
+            {
+                isInSkillAttackAnimBeforeHit = false;
+            }
+
 			// 技能效果影响玩家和怪物
 			currentUsingActiveSkill.AffectAgents(this,enemy);
 		
@@ -888,7 +887,61 @@ namespace WordJourney
 
 		}
 			
+		public void ResetAttackAfterInterval(HLHRoleAnimInfo animInfo,float interval){
 
+			string intervalAnimName = RoleAnimNameAdapt(CommonData.playerIntervalBareHandName);
+
+			PlayRoleAnim(intervalAnimName, 0, null);
+
+			if(attackDelayWhenChangeWeapon != null){
+				StopCoroutine(attackDelayWhenChangeWeapon);
+			}
+
+			attackDelayWhenChangeWeapon = MyResetAttackAfterInterval(animInfo, interval);
+
+			StartCoroutine(attackDelayWhenChangeWeapon);
+
+		}
+
+
+		private IEnumerator MyResetAttackAfterInterval(HLHRoleAnimInfo animInfo,float interval){
+
+			yield return new WaitForSeconds(interval);
+
+			ResetAttack(animInfo);
+            
+		}
+
+
+		public void ResetAttack(HLHRoleAnimInfo animInfo){
+			StopWaitRoleAnimEndCoroutine();
+			if(attackDelayWhenChangeWeapon != null){
+				StopCoroutine(attackDelayWhenChangeWeapon);
+			}
+			string animName = string.Empty;
+			if(IsInAttackAnim(animInfo.roleAnimName)){
+				animName = animInfo.roleAnimName;
+			}else{
+				animName = RoleAnimNameAdapt(CommonData.playerAttackBareHandName);
+			}
+			PlayRoleAnim(animName, 1, delegate {
+			
+				if (!isInEscaping)
+                {
+                    exploreManager.expUICtr.bpUICtr.UpdateActiveSkillButtonsWhenAttackAnimFinish();
+                }
+
+                // 播放等待动画
+                if (armatureCom.animation.lastAnimationName != CommonData.roleAttackIntervalAnimName)
+                {
+                    if (isDead)
+                    {
+                        return;
+                    }
+                    this.PlayRoleAnim(CommonData.roleAttackIntervalAnimName, 0, null);
+                }
+			});
+		}
 
 
 
@@ -898,7 +951,6 @@ namespace WordJourney
 			playerSide.transform.localPosition = Vector3.zero;
 			playerForward.transform.localPosition = Vector3.zero;
 			playerBackWard.transform.localPosition = Vector3.zero;
-//			isAttackActionFinish = true;
 			Invoke ("RecheckPlayerPos",0.05f);
 		}
 
@@ -930,6 +982,33 @@ namespace WordJourney
 			return new HLHRoleAnimInfo (currentAnimName, playTimes, animTime, animEndCallBack);
 		}
 
+		public void StopWaitRoleAnimEndCoroutine(){
+			// 如果还有等待上个角色动作结束的协程存在，则结束该协程
+            if (waitRoleAnimEndCoroutine != null)
+            {
+                StopCoroutine(waitRoleAnimEndCoroutine);
+            }
+
+			string currentAnimName = armatureCom.animation.lastAnimationName;
+
+			if(attackCoroutine != null){
+				StopCoroutine(attackCoroutine);
+			}
+
+			if(!IsInIntervalAnim(currentAnimName)){
+				PlayRoleAnim(CommonData.roleAttackIntervalAnimName, 0, null);
+			}
+
+		}
+
+        /// <summary>
+        /// 在战斗中是否需要重置攻击动作[正面和背面进入战斗时需要在转身时重播,侧面不需要]
+        /// </summary>
+        /// <returns><c>true</c>, if reset attack was needed, <c>false</c> otherwise.</returns>
+		public bool NeedResetAttack(){
+			return modelActive != playerSide && isInFight;
+		}
+
 		public override void PlayRoleAnim (string animName, int playTimes, CallBack cb)
 		{
 			animName = RoleAnimNameAdapt (animName);
@@ -937,8 +1016,20 @@ namespace WordJourney
 		}
 
 		public void PlayRoleAnimByTime(string animName,float animBeginTime,int playTimes,CallBack cb){
-			
+            
+			//Debug.Log(animName);
+
 			isIdle = animName == CommonData.roleIdleAnimName;
+
+			//Debug.LogFormat("anima name:{0},  begin time:{1}", animName,animBeginTime);
+
+
+			//Debug.Break();
+
+			//if(IsInAttackAnim(animName) && isInAttackAnimBeforeHit){
+				
+			//	StopCoroutine(attackCoroutine);
+			//}
 
 			// 如果还有等待上个角色动作结束的协程存在，则结束该协程
 			if (waitRoleAnimEndCoroutine != null) {
@@ -1111,8 +1202,6 @@ namespace WordJourney
 
 		public void QuitExplore(){
 
-//			CollectSkillEffectsToPool ();
-
 			ClearReference ();
 
 			gameObject.SetActive (false);
@@ -1122,9 +1211,13 @@ namespace WordJourney
 
 		public override void QuitFight(){
 
+			for (int i = 0; i < Player.mainPlayer.allLearnedSkills.Count; i++)
+            {
+                Player.mainPlayer.allLearnedSkills[i].hasTriggered = false;
+            }
+
 			StopCoroutinesWhenFightEnd ();
 
-			enemy = null;
 			isInFight = false;
 			isInEvent = false;
 			escapeFromFight = false;
@@ -1136,6 +1229,8 @@ namespace WordJourney
 			SetRoleAnimTimeScale (1.0f);
 
 			agent.ResetBattleAgentProperties (false);
+
+
 
 		}
 
@@ -1156,24 +1251,26 @@ namespace WordJourney
          
 			enemy.boxCollider.enabled = true;
 
+			bool fromFight = isInFight;
+
 			enemy.QuitFight();
             QuitFight();
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.playerDieAudioName);
 
+			enemy.AllEffectAnimsIntoPool();
+
 			PlayRoleAnim (CommonData.roleDieAnimName, 1, ()=>{
-				StartCoroutine("QueryBuyLife");
-				AllEffectAnimsIntoPool();
-				//exploreManager.BattlePlayerLose();
+				StartCoroutine("QueryBuyLife",fromFight);
+				AllEffectAnimsIntoPool();            
+				enemy = null;
 			});
 
 		}
 			
-		private IEnumerator QueryBuyLife(){
+		private IEnumerator QueryBuyLife(bool fromFight){
 
 			yield return new WaitForSeconds (0.5f);
-
-			bool fromFight = isInFight;
 
 			if(fromFight){
 				exploreManager.BattlePlayerLose ();
@@ -1196,60 +1293,13 @@ namespace WordJourney
 			singleMoveEndPos = transform.position;
 			pathPosList.Clear ();
 			boxCollider.enabled = false;
-			fadeStepsLeft = 5;
+			if(fadeStepsLeft == 0){
+				SetEffectAnim(CommonData.yinShenEffectName, null, 0, 0);
+			}
+			fadeStepsLeft = Mathf.Max(fadeStepsLeft, 5);
 		}
 
 		void OnDestroy(){
-//			StopAllCoroutines ();
-//			bpUICtr = null;
-//			bmCtr = null;
-//			navHelper = null;
-//			agent = null;
-//			propertyCalculator = null;
-//			mExploreManager = null;
-//			expUICtr = null;
-//			enemy = null;
-//			for (int i = 0; i < beforeFightTriggerExcutors.Count; i++) {
-//				beforeFightTriggerExcutors [i].OnClear ();
-//			}
-//			for (int i = 0; i < attackTriggerExcutors.Count; i++) {
-//				attackTriggerExcutors [i].OnClear ();
-//			}
-//			for (int i = 0; i < beAttackedTriggerExcutors.Count; i++) {
-//				beAttackedTriggerExcutors [i].OnClear ();
-//			}
-//			for (int i = 0; i < hitTriggerExcutors.Count; i++) {
-//				hitTriggerExcutors [i].OnClear ();
-//			}
-//			for (int i = 0; i < beHitTriggerExcutors.Count; i++) {
-//				beHitTriggerExcutors [i].OnClear ();
-//			}
-//			for (int i = 0; i < fightEndTriggerExcutors.Count; i++) {
-//				fightEndTriggerExcutors [i].OnClear ();
-//			}
-//			currentSkill = null;
-//			for (int i = 0; i < activeSkills.Count; i++) {
-//				Destroy (activeSkills [i].gameObject);
-//			}
-//
-//			enterBillboard = null;
-//			enterCrystal = null;
-//			enterDoor = null;
-//			enterHole = null;
-//			enterMonster = null;
-//			enterMovableBox = null;
-//			enterNpc = null;
-//			enterObstacle = null;
-//			enterPlant = null;
-//			enterTransport = null;
-//			enterTrapSwitch = null;
-//			enterTreasureBox = null;
-//
-//			moveTweener = null;
-//
-//			backgroundMoveTweener = null;
-//
-//			pathPosList = null;
 
 		}
 

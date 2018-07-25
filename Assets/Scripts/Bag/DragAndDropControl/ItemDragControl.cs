@@ -33,12 +33,10 @@ namespace WordJourney
 		public abstract void OnDropFailed ();
 
 		protected CallBackWithItem shortClickCallBack;
-		//protected CallBackWithItem longPressCallBack; 
-
+      
 		public void InitItemDragControl(Item item,CallBackWithItem shortClickCallBack){
 			this.item = item;
 			this.shortClickCallBack = shortClickCallBack;
-			//this.longPressCallBack = longPressCallBack;
 		}
 
 

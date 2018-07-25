@@ -2,8 +2,6 @@
 using System;
 using System.IO;
 using System.Collections;
-using System.Collections.Generic;
-//using UnityEngine.Networking;
 
 
 namespace WordJourney
@@ -14,32 +12,37 @@ namespace WordJourney
 		public bool alwaysPersistData;
 
 		void Awake(){
+			Application.targetFrameRate = 30;
+#if UNITY_EDITOR
+            Debug.unityLogger.logEnabled = true;
+#else
+            Debug.unityLogger.logEnabled = false;
+#endif
 			Debug.Log (CommonData.persistDataPath);
-//			#if UNITY_EDITOR
-//			Debug.unityLogger.logEnabled = true;
-//			#else
-//			Debug.unityLogger.logEnabled = false;
-//			#endif
+            
+            
+
 		}
 
 		void Start(){
-//			if (MyTool.isIphoneX) {
-//				GetComponent<SetCanvasBounds> ().enabled = true;
-//			}
 			PersistData();
 		}
 
 		private IEnumerator InitData(){
 
 			yield return new WaitUntil(()=> MyResourceManager.Instance.isManifestReady);
-
+                     
 			LoadDatas ();
 
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.homeCanvasBundleName, "HomeCanvas", () => {
 
 				TransformManager.FindTransform("HomeCanvas").GetComponent<HomeViewController> ().SetUpHomeView ();
 
+				GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
+
 			});
+
+			//CheckItemSprites();
 				
 		}
 
@@ -48,33 +51,36 @@ namespace WordJourney
 		/// 初始化游戏基础数据
 		/// </summary>
 		private void LoadDatas(){
-			
+         
 			GameManager.Instance.gameDataCenter.InitPersistentGameData ();
 
 			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
 
 			Player.mainPlayer.SetUpPlayerWithPlayerData (playerData);
 
-//			for (int i = 0; i < Player.mainPlayer.allEquipedEquipments.Length; i++) {
-//				Debug.Log (Player.mainPlayer.allEquipedEquipments [i]);
-//			}
 
 		}
-
-
-
-
+              
 
 		private void PersistData(){
 
-//			Debug.Log (CommonData.persistDataPath);
-
+         
 			DirectoryInfo persistDi = new DirectoryInfo (CommonData.persistDataPath);
 
 #if UNITY_EDITOR || UNITY_IOS
                      
 			if (!persistDi.Exists) {
+				
 				DataHandler.CopyDirectory (CommonData.originDataPath, CommonData.persistDataPath, true);
+            
+                GameSettings gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
+
+                string dateString = DateTime.Now.ToShortDateString();
+
+                gameSettings.installDateString = dateString;
+
+                GameManager.Instance.persistDataManager.SaveGameSettings();
+
 
 				StartCoroutine ("InitData");
 				return;
@@ -82,6 +88,14 @@ namespace WordJourney
 
 			if (alwaysPersistData) {
 				DataHandler.CopyDirectory (CommonData.originDataPath, CommonData.persistDataPath, true);
+
+				GameSettings gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
+
+                string dateString = DateTime.Now.ToShortDateString();
+
+                gameSettings.installDateString = dateString;
+
+                GameManager.Instance.persistDataManager.SaveGameSettings();
 			}
 
 			StartCoroutine ("InitData");
@@ -91,7 +105,7 @@ namespace WordJourney
 				StartCoroutine("CopyDataForPersist");
 				return;
 			}
-
+   
 			if (alwaysPersistData)
 			{
     			if(DataHandler.DirectoryExist(CommonData.persistDataPath + "/Data")){
@@ -129,7 +143,7 @@ namespace WordJourney
 
 				if (fileName.Equals ("Level")) {
 					//执行level的循环操作
-					for (int j = 0; j < 50; j++) {
+					for (int j = 0; j < 51; j++) {
 						filePath = "/Data/MapData/Level_" + j + ".json";
 
 						Debug.Log (Application.streamingAssetsPath + filePath);
@@ -221,6 +235,14 @@ namespace WordJourney
 
 			}
 
+			GameSettings gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
+
+            string dateString = DateTime.Now.ToShortDateString();
+
+            gameSettings.installDateString = dateString;
+
+            GameManager.Instance.persistDataManager.SaveGameSettings();
+
 			//DataHandler.DeleteFile(CommonData.persistDataPath + "/PlayerData.json");
 
 			//初始化数据
@@ -228,6 +250,99 @@ namespace WordJourney
 		}
 
 
+        
+		//private void CheckItemSprites(){
+
+
+		//	Debug.Log("CHECK ITEM SPRITE NAME");         
+		//	Sprite sprite = null;
+		//	for (int i = 0; i < GameManager.Instance.gameDataCenter.allEquipmentModels.Count;i++){
+
+		//		EquipmentModel equipmentModel = GameManager.Instance.gameDataCenter.allEquipmentModels[i];
+
+		//		sprite = GameManager.Instance.gameDataCenter.allEquipmentSprites.Find(delegate (Sprite obj)
+		//		{
+		//			return obj.name == equipmentModel.spriteName;
+		//		});
+
+		//		if (sprite == null){
+		//			Debug.Log(equipmentModel.spriteName);
+		//		}
+
+		//	}
+
+		//	for (int i = 0; i < GameManager.Instance.gameDataCenter.allConsumablesModels.Count; i++)
+  //          {
+
+		//		ConsumablesModel consumablesModel = GameManager.Instance.gameDataCenter.allConsumablesModels[i];
+
+		//		sprite = GameManager.Instance.gameDataCenter.allConsumablesSprites.Find(delegate (Sprite obj)
+  //              {
+		//			return obj.name == consumablesModel.spriteName;
+  //              });
+
+  //              if (sprite == null)
+  //              {
+		//			Debug.Log(consumablesModel.spriteName);
+  //              }
+
+  //          }
+
+		//	for (int i = 0; i < GameManager.Instance.gameDataCenter.allSpecialItemModels.Count; i++)
+  //          {
+
+		//		SpecialItemModel specialItemModel = GameManager.Instance.gameDataCenter.allSpecialItemModels[i];
+
+		//		sprite = GameManager.Instance.gameDataCenter.allSpecialItemSprites.Find(delegate (Sprite obj)
+  //              {
+		//			return obj.name == specialItemModel.spriteName;
+  //              });
+
+  //              if (sprite == null)
+  //              {
+		//			Debug.Log(specialItemModel.spriteName);
+  //              }
+
+  //          }
+
+		//	for (int i = 0; i < GameManager.Instance.gameDataCenter.allPropertyGemstoneModels.Count; i++)
+  //          {
+
+		//		PropertyGemstoneModel propertyGemstoneModel = GameManager.Instance.gameDataCenter.allPropertyGemstoneModels[i];
+
+		//		sprite = GameManager.Instance.gameDataCenter.allPropertyGemstoneSprites.Find(delegate (Sprite obj)
+  //              {
+		//			return obj.name == propertyGemstoneModel.spriteName;
+  //              });
+
+  //              if (sprite == null)
+  //              {
+		//			Debug.Log(propertyGemstoneModel.spriteName);
+  //              }
+
+			
+		//	}
+
+		//	for (int i = 0; i < GameManager.Instance.gameDataCenter.allSkillScrollModels.Count; i++)
+  //          {
+
+		//		SkillScrollModel skillScrollModel = GameManager.Instance.gameDataCenter.allSkillScrollModels[i];
+
+		//		sprite = GameManager.Instance.gameDataCenter.allSkillScrollSprites.Find(delegate (Sprite obj)
+  //              {
+		//			return obj.name == skillScrollModel.spriteName;
+  //              });
+
+  //              if (sprite == null)
+  //              {
+		//			Debug.Log(skillScrollModel.spriteName);
+  //              }
+
+  //          }
+            
+
+
+		//}
 
 	}
 }

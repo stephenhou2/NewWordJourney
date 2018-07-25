@@ -41,8 +41,6 @@ namespace WordJourney
 
         public Text phoneticSymbolForCharacterFill;
 
-//		public Transform characterToFillCellModel;
-
 		public Transform fillAndCodeModel;
 
 		public InstancePool characterToFillCellPool;
@@ -88,6 +86,8 @@ namespace WordJourney
 
 		private List<FillAndCodeCell> fillAndCodeCells = new List<FillAndCodeCell> ();
 
+		private bool hasMakeChoice;
+
 
 
 
@@ -103,6 +103,8 @@ namespace WordJourney
 			this.explainationChooseCallBack = explainationChooseCallBack;
 			this.characterFillConfirmCallBack = characterFillConfirmCallBack;
 		}
+
+
 
 		public void SetUpWordHUDAndShow(HLHWord word){
 
@@ -135,14 +137,17 @@ namespace WordJourney
 
 				FillAndCodeCell cell = characterToFillCellPool.GetInstance<FillAndCodeCell> (fillAndCodeModel.gameObject, characterToFillCellContainer);
 
+				cell.gameObject.SetActive(true);
+
 				answerCharacters [i] = cell.SetUpFillAndCodeCell (i,charInQuestion,realChar,CharacterChange,CharacterClick);
 					
 				fillAndCodeCells.Add (cell);
 
 			}
 
-			OnPronunceButtonClick();
-
+			if(GameManager.Instance.gameDataCenter.gameSettings.isAutoPronounce){
+				OnPronunceButtonClick();
+			}         
 		}
 
 
@@ -214,6 +219,7 @@ namespace WordJourney
 				DisableClick ();
 				canQuitWhenClickBackground = false;
 				lockStatusIcon.sprite = unlockSprite;
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.lockOffAudioName);
 				StartCoroutine ("DelayWhenCharactersAllFillCorrect");
 			}
 
@@ -253,6 +259,7 @@ namespace WordJourney
 		/// <param name="wordsArray">Words array.</param>
 		public void SetUpWordHUDAndShow(HLHWord[] wordsArray,string extraInfo = null){
 
+			hasMakeChoice = false;
 			gameObject.SetActive (true);
 
 			explainationSelectPlane.gameObject.SetActive (true);
@@ -276,7 +283,7 @@ namespace WordJourney
 			answerIndex = GetARandomValidIndex ();
 
 			choiceTexts [answerIndex].text = questionWord.explaination;
-			choiceTexts [answerIndex].color = Color.white;
+			choiceTexts[answerIndex].color = CommonData.regularTextColor;
 
 			for(int i = 1; i < 3; i++){
 
@@ -289,7 +296,7 @@ namespace WordJourney
 //				int index = recordList [randomSeed];
 					
 				choiceTexts [randomIndex].text = word.explaination;
-				choiceTexts [randomIndex].color = Color.white;
+				choiceTexts [randomIndex].color = CommonData.regularTextColor;
 
 			}
 
@@ -302,8 +309,9 @@ namespace WordJourney
 				extraInfoText.enabled = false;
 			}
 
-			OnPronunceButtonClick();
-
+			if(GameManager.Instance.gameDataCenter.gameSettings.isAutoPronounce){
+				OnPronunceButtonClick();
+			}         
 			canQuitWhenClickBackground = false;
 				
 		}
@@ -337,6 +345,11 @@ namespace WordJourney
         /// <param name="index">Index.</param>
         public void OnMakeExplainationChoice(int index)
         {
+			if(hasMakeChoice){
+				return;            
+			}
+
+			hasMakeChoice = true;
 
             canQuitWhenClickBackground = false;
 
@@ -344,48 +357,71 @@ namespace WordJourney
 
             if (chooseCorrect)
             {
+
+				if (questionWord.ungraspTimes == 0 && questionWord.learnedTimes == 0)
+                {
+					questionWord.isFamiliar = true;
+                    Player.mainPlayer.totalLearnedWordCount++;
+                }
+
+                Player.mainPlayer.wordContinuousRightRecord++;
+
+
+				questionWord.learnedTimes++;
+
                 choiceTexts[index].color = Color.green;
                 StartCoroutine("ShowChooseResultForAWhile", true);
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.correctTintAudioName);
+            
+                // 如果当前单词不是从错误列表中抽出来重新背的，那么背诵正确时更新玩家学习单词的总数
+
+				Debug.Log(Player.mainPlayer.totalLearnedWordCount);
+
+				ExploreManager.Instance.RecordWord(questionWord, true);            
             }
             else
             {
+				// 如果当前单词不是从错误列表中抽出来重新背的，那么背诵正确时更新玩家学习单词的总数和背错单词的总数
+                if (questionWord.ungraspTimes == 0 && questionWord.learnedTimes == 0)
+                {
+					questionWord.isFamiliar = false;
+                    Player.mainPlayer.totalLearnedWordCount++;
+                    Player.mainPlayer.totalUngraspWordCount++;
+                }         
+
+				if (Player.mainPlayer.wordContinuousRightRecord > Player.mainPlayer.maxWordContinuousRightRecord)
+                {
+                    Player.mainPlayer.maxWordContinuousRightRecord = Player.mainPlayer.wordContinuousRightRecord;
+                }
+
+                Player.mainPlayer.wordContinuousRightRecord = 0;
+
+
+				questionWord.learnedTimes++;
+				questionWord.ungraspTimes++;
+
                 choiceTexts[index].color = Color.red;
                 choiceTexts[answerIndex].color = Color.green;
                 StartCoroutine("ShowChooseResultForAWhile", false);
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.wrongTintAudioName);
+				ExploreManager.Instance.RecordWord(questionWord, false);
+            
+				Debug.Log(Player.mainPlayer.totalLearnedWordCount);
             }
 
-            MySQLiteHelper sql = MySQLiteHelper.Instance;
 
-            sql.GetConnectionWith(CommonData.dataBaseName);
-
-            string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
-
-            questionWord.learnedTimes++;
-            if (!chooseCorrect)
-            {
-                questionWord.ungraspTimes++;
-            }
-
-            string[] colFields = new string[] { "learnedTimes","ungraspTimes" };
-            string[] conditions = new string[] {"wordId=" + questionWord.wordId};
-            string[] values = new string[] { questionWord.learnedTimes.ToString(), questionWord.ungraspTimes.ToString() }; 
-
-            sql.UpdateValues(currentWordsTableName, colFields, values, conditions, true);
-
-            sql.CloseConnection(CommonData.dataBaseName);
+			//Debug.LogFormat("total player record:{0},total data base record:{1}", Player.mainPlayer.totalLearnedWordCount, LearningInfo.Instance.learnedWordCount);
 
 			DisableClick ();
 
 		}
 
 
+
+
 		private IEnumerator ShowChooseResultForAWhile(bool isChooseCorrect){
 
 			yield return new WaitForSeconds (1.0f);
-
-//			ExploreManager.Instance.DisableExploreInteractivity ();
 
 			QuitWordHUD ();
 
@@ -410,8 +446,8 @@ namespace WordJourney
 			mask.enabled = false;
 		}
 
+
 		public void OnBackgroundClicked(){
-			
 			if (quitWhenClickBackground && canQuitWhenClickBackground) {
 				ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
                 questionWord = null;

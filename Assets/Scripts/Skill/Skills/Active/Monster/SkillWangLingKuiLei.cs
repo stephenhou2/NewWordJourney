@@ -12,11 +12,19 @@ namespace WordJourney
               
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
-			int acutalHurt = Mathf.RoundToInt(hurt / ((enemy.agent.magicResist - self.agent.magicResistDecrease) / 100f + 1));
+
+			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
+
+			if (magicResistCal < -50)
+            {
+                magicResistCal = -50;
+            }
+
+			int acutalHurt = Mathf.RoundToInt(hurt / (magicResistCal / 100f + 1));
 
 			enemy.AddHurtAndShow(acutalHurt, HurtType.Magical, self.towards);
 
-			enemy.UpdateStatusPlane();
+			//enemy.UpdateStatusPlane();
 
 			if (selfEffectAnimName != string.Empty)
             {

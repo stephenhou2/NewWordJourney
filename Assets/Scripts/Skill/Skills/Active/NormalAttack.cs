@@ -13,6 +13,45 @@ namespace WordJourney
 
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy){
 
+            // 如果是玩家角色，则在每次攻击时重设攻速
+			if(self is BattlePlayerController){
+				int attackSpeedInt = 0;
+
+                for (int i = 0; i < self.agent.allEquipedEquipments.Length; i++)
+                {
+                    Equipment equipment = self.agent.allEquipedEquipments[i];
+                    if (equipment.itemId == -1)
+                    {
+                        continue;
+                    }
+
+                    if (equipment.equipmentType == EquipmentType.Weapon)
+                    {
+                        attackSpeedInt = (int)equipment.attackSpeed;
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < self.agent.attachedPermanentPassiveSkills.Count; i++)
+                {
+                    PermanentPassiveSkill permanentPassiveSkill = self.agent.attachedPermanentPassiveSkills[i];
+                    if (permanentPassiveSkill is JiSu)
+                    {
+                        attackSpeedInt++;
+                        break;
+                    }
+                }
+
+                if (attackSpeedInt > 3)
+                {
+                    attackSpeedInt = 3;
+                }
+
+				(self.agent as Player).attackSpeed = (AttackSpeed)attackSpeedInt;
+			}
+
+
+
 			// 执行攻击触发事件回调
 			for(int i = 0;i < self.attackTriggerExcutors.Count; i++) {
 				TriggeredSkillExcutor excutor = self.attackTriggerExcutors[i];
@@ -49,7 +88,14 @@ namespace WordJourney
 					oriPhysicalHurt = (int)(oriPhysicalHurt * self.agent.critHurtScaler);
 				}
 
-				actualPhysicalHurt = (int)(oriPhysicalHurt / ((enemy.agent.armor - self.agent.armorDecrease) / 100f + 1));
+				int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+
+				if (armorCal < -50)
+                {
+                    armorCal = -50;
+                }
+
+				actualPhysicalHurt = (int)(oriPhysicalHurt / (armorCal / 100f + 1));
 
 
 				//actualPhysicalHurt = oriPhysicalHurt - enemy.agent.armor / 4;
@@ -63,10 +109,15 @@ namespace WordJourney
 			}
 
 			if (self.agent.magicAttack > 0) {
-				
-				//actualMagicalHurt = self.agent.magicAttack + self.agent.magicResistDecrease / 4 - enemy.agent.magicResist / 4;
 
-				actualMagicalHurt = (int)(self.agent.magicAttack / ((enemy.agent.magicResist - self.agent.magicResistDecrease) / 100f + 1));
+				int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
+
+				if (magicResistCal < -50)
+                {
+                    magicResistCal = -50;
+                }
+
+				actualMagicalHurt = (int)(self.agent.magicAttack / (magicResistCal / 100f + 1));
 
 				if (actualMagicalHurt < 0) {
 					actualMagicalHurt = 0;
@@ -79,8 +130,9 @@ namespace WordJourney
 			enemy.PlayShakeAnim ();
 			SetEffectAnims (self, enemy);
 
-			self.agent.hurtToEnemy = actualPhysicalHurt + actualMagicalHurt;
 
+			self.agent.physicalHurtToEnemy = actualPhysicalHurt;
+			self.agent.magicalHurtToEnemy = actualMagicalHurt;
 
 			// 执行己方攻击命中的回调
 			for(int i = 0;i<self.hitTriggerExcutors.Count;i++) {

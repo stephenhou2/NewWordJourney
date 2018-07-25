@@ -16,6 +16,8 @@ namespace WordJourney
 
 		public int equipmentIndexInPanel;
 
+		public Image selectedIcon;
+
 		private BagView mBagView;
 		private BagView bagView{
 			get{
@@ -29,10 +31,13 @@ namespace WordJourney
 
 		protected override void OnUserShortClick (PointerEventData eventData)
 		{
-//			if ((item as Equipment).itemId < 0) {
-//				return;
-//			}
+			//if(item == null){
+			//	return;
+			//}         
+
 			bagView.GetComponent<BagViewController> ().OnItemInEquipmentPlaneClick(item,equipmentIndexInPanel);
+
+			selectedIcon.enabled = item != null && (item as Equipment).itemId >= 0;
 		}
 
 		protected override void OnUserLongPress (PointerEventData eventData)
@@ -118,22 +123,9 @@ namespace WordJourney
 			item = null;
 			itemImage.enabled = item != null;
 			backgroundImage.enabled = true;
+			selectedIcon.enabled = false;
 		}
 
-		void OnDestroy(){
-			
-//			if (checkOperationTypeCoroutine != null) {
-//				StopCoroutine (checkOperationTypeCoroutine);
-//				checkOperationTypeCoroutine = null;
-//			}
-//
-//			mBagView = null;
-//			itemImage = null;
-//			backgroundImage = null;
-//			itemNameBackground = null;
-//			itemName = null;
-//			item = null;
-		}
-
+      
 	}
 }

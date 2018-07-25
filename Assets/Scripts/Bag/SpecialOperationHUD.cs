@@ -10,25 +10,42 @@ namespace WordJourney
 		public SpecialOperationCell equipmentCell;
 		public SpecialOperationCell functionalItemCell;
 
+		public TintHUD tintHUD;
 
-		private CallBackWithItem addSkillCallBack;
+		private CallBackWithItem addGemstoneCallBack;
 
-		public void SetUpHUDWhenAddItem(Item item,CallBackWithItem itemShortClickCallBack,CallBackWithItem addSkillCallBack){
+		public void InitSpecialOperationHUD(CallBackWithItem itemShortClickCallBack, CallBackWithItem addGemstoneCallBack){
 			
-			//if(item == null){
-			//	return;
-			//}
+			equipmentCell.InitSpecialOperaiton(itemShortClickCallBack);
 
-			//switch(item.itemType){
-				//case ItemType.Equipment:
-					equipmentCell.InitCell(item, itemShortClickCallBack);
-					//break;
-				//case ItemType.Gemstone:
-					functionalItemCell.InitCell(item, itemShortClickCallBack);
-					//break;
-			//}
-         
-			this.addSkillCallBack = addSkillCallBack;
+			functionalItemCell.InitSpecialOperaiton(itemShortClickCallBack);
+
+            this.addGemstoneCallBack = addGemstoneCallBack;
+		}
+        
+		public bool SetUpHUDWhenAddItem(Item item){
+
+			bool addSucceed = false;
+
+			switch(item.itemType){
+				case ItemType.Equipment:
+					Equipment equipment = item as Equipment;
+
+					if(equipment.attachedPropertyGemstone.itemId != -1){
+						tintHUD.SetUpSingleTextTintHUD("一件装备最多只能镶嵌一个宝石");
+					}else{
+						equipmentCell.SetUpSpeicalOperationCell(item);
+						addSucceed = true;
+					}               
+					break;
+				case ItemType.PropertyGemstone:
+					functionalItemCell.SetUpSpeicalOperationCell(item);
+					addSucceed = true;
+					break;
+			}
+
+			return addSucceed;
+
 		}
 
 		public void SetUpHUDWhenRemoveItem(Item item){
@@ -49,9 +66,9 @@ namespace WordJourney
 
 		}
 
-		public void OnAddSkillButtonClick(){
+		public void OnAddGemstoneButtonClick(){
 
-			if (Player.mainPlayer.totalGold < 120) {
+			if (Player.mainPlayer.totalGold < 50) {
 				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("金币不足");
 				return;
 			}
@@ -62,36 +79,34 @@ namespace WordJourney
 				return;
 			}
 
-			if (equipment.attachedPropertyGemstone != null) {
+			if (equipment.attachedPropertyGemstone.itemId != -1) {
 				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("该装备已经镶嵌过宝石");
 				return;
 			}
 
 			PropertyGemstone gemstone = functionalItemCell.soDragControl.item as PropertyGemstone;
 
-			if (equipment == null || gemstone == null) {
+			if (equipment == null || gemstone == null || gemstone.itemId == -1) {
 				return;
 			}
 
-			//equipment.AddSkill (gemstone.skillId);
-           
-			//if(equipment.equiped){
-			//	Player.mainPlayer.AddSkill(equipment.attachedSkill);
-			//	Player.mainPlayer.ResetBattleAgentProperties(false);
-			//}
+			equipment.AddPropertyGemstone(gemstone);
 
+			Player.mainPlayer.ResetBattleAgentProperties(false);
+         
 			Player.mainPlayer.RemoveItem (gemstone, 1);
 
-			Player.mainPlayer.totalGold -= 120;
+			Player.mainPlayer.totalGold -= 50;
+			ExploreManager.Instance.expUICtr.UpdatePlayerGold();
 
-			//GameManager.Instance.soundManager.PlayAudioClip(CommonData.xiangQianJiNengAudioName);
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.gemstoneAudioName);
 
 			equipmentCell.ResetSpecialOperationCell ();
            
 			functionalItemCell.ResetSpecialOperationCell ();
 
-			if(addSkillCallBack != null){
-				addSkillCallBack(equipment);
+			if(addGemstoneCallBack != null){
+				addGemstoneCallBack(equipment);
 			}
 
 

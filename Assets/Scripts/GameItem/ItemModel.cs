@@ -53,7 +53,7 @@ namespace WordJourney
 		public int magicAttackGain;//魔法攻击增益
 
 		public int armorGain;//护甲增益
-		public int magicResistGain;//魔抗增益
+		public int magicResistGain;//抗性增益
 
 		public int armorDecreaseGain;//护甲穿刺增益
 		public int magicResistDecreaseGain;//抗性穿刺增益
@@ -124,6 +124,8 @@ namespace WordJourney
         public int healthRecoveryGain;
         public int magicRecoveryGain;
 
+		public int consumablesGrade;
+
 		public bool isShowInBagOnly;
 
 		public string audioName;
@@ -132,6 +134,26 @@ namespace WordJourney
 
 	[System.Serializable]
 	public class PropertyGemstoneModel:ItemModel{
+
+
+		public int maxHealthGainBase;
+        public int maxManaGainBase;
+        public int attackGainBase;
+        public int magicAttackGainBase;
+        public int armorGainBase;
+        public int magicResistGainBase;
+        public int armorDecreaseGainBase;
+        public int magicResistDecreaseGainBase;
+        public int moveSpeedGainBase;
+		public int critGainBase;
+		public int dodgeGainBase;
+		public int critHurtScalerGainBase;
+		public int physicalHurtScalerGainBase;
+		public int magicalHurtScalerGainBase;
+        public int extraGoldGainBase;
+        public int extraExperienceGainBase;
+        public int healthRecoveryGainBase;
+        public int magicRecoveryGainBase;
 
 		public int healthGain;
         public int manaGain;
@@ -146,11 +168,11 @@ namespace WordJourney
         public int armorDecreaseGain;
         public int magicResistDecreaseGain;
         public int moveSpeedGain;
-        public float critGain;
-        public float dodgeGain;
-        public float critHurtScalerGain;
-        public float physicalHurtScalerGain;
-        public float magicalHurtScalerGain;
+		public int critGain;
+		public int dodgeGain;
+		public int critHurtScalerGain;
+		public int physicalHurtScalerGain;
+		public int magicalHurtScalerGain;
         public int extraGoldGain;
         public int extraExperienceGain;
         public int healthRecoveryGain;
@@ -196,6 +218,9 @@ namespace WordJourney
 
         // 仅在拼写物品生成装备时，代表武器类型【0:剑 1:匕首 2:法杖 3:斧子】
         public int attachInfo_2;
+
+        // 是否已经使用过
+		public bool hasUsed;
 
 
 	}

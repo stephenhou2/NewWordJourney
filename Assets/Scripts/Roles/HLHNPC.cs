@@ -236,6 +236,8 @@ namespace WordJourney
 			this.promotion = promotion;
 			this.promotionPrice = promotionPrice;
 		}
+
+
       
 		public string GetPropertyPromotionTint(){
 			string propertyPromotionTint = string.Empty;
@@ -265,13 +267,13 @@ namespace WordJourney
 					propertyPromotionTint = string.Format("抗性穿透+{0}", promotion);
 					break;
 				case PropertyType.Crit:
-					propertyPromotionTint = string.Format("暴击+{0}%", ((float)promotion/1000).ToString("F1"));
+					propertyPromotionTint = string.Format("暴击+{0}%", ((float)promotion / 10).ToString("F1"));
 					break;
 				case PropertyType.Dodge:
-					propertyPromotionTint = string.Format("闪避+{0}", ((float)promotion / 1000).ToString("F1"));
+					propertyPromotionTint = string.Format("闪避+{0}%", ((float)promotion / 10).ToString("F1"));
 					break;
 				case PropertyType.CritHurtScaler:
-					propertyPromotionTint = string.Format("暴击倍率+{0}", ((float)promotion / 1000).ToString("F1"));
+					propertyPromotionTint = string.Format("暴击倍率+{0}%", ((float)promotion / 10).ToString("F1"));
 					break;
 				case PropertyType.ExtraGold:
 					propertyPromotionTint = string.Format("额外金钱+{0}", promotion);
@@ -342,14 +344,50 @@ namespace WordJourney
 
 		//******************************************************************************* start *****************************************************************************//
 
-		public Item itemAsGoods;
+		private Item itemAsGoods;// 商品
+		private int goodsPrice;// 商品价格
 
 		public Item GetGoodsItem(){
-			if (itemAsGoods == null) {
-				itemAsGoods = Item.NewItemWith (goodsId, 1);
+
+			if(itemAsGoods != null){
+				return itemAsGoods;
 			}
+         
+			itemAsGoods = Item.NewItemWith (goodsId, 1);
+
+
+			if(itemAsGoods.itemType == ItemType.Equipment){
+
+				Equipment equipment = itemAsGoods as Equipment;
+
+				switch (equipmentQuality)
+                {
+                    case 0:
+						equipment.ResetPropertiesByQuality(EquipmentQuality.Gray);
+                        break;
+                    case 1:
+						equipment.ResetPropertiesByQuality(EquipmentQuality.Blue);
+                        break;
+                    case 2:
+						equipment.ResetPropertiesByQuality(EquipmentQuality.Gold);
+                        break;
+                }
+
+			}
+
+			if(priceFloat <= float.Epsilon){
+				goodsPrice = itemAsGoods.price;
+			}else{
+				goodsPrice = Mathf.RoundToInt(itemAsGoods.price * priceFloat);
+			}
+           
 			return itemAsGoods;
 		}
+
+		public int GetGoodsPrice(){
+			return goodsPrice;
+		}
+        
 
 		//********************************************************************************* end ***************************************************************************//
 

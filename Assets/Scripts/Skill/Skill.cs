@@ -31,9 +31,15 @@ namespace WordJourney
 		public string selfEffectAnimName;
 		public string enemyEffectAnimName;
 
+
 		public SkillType skillType;
 
 		public int skillLevel = 1;
+
+        // 在npc处学习技能的价格
+		public int price;
+
+		[HideInInspector] public bool hasTriggered;
 
 		public int upgradeNum{
 			get{
@@ -66,12 +72,31 @@ namespace WordJourney
 			return randomNum < chance - float.Epsilon;
 		}
 
+        /// <summary>
+        /// 公式转实际数值的技能描述
+        /// </summary>
+        /// <returns>The display description.</returns>
+		public virtual string GetDisplayDescription()
+		{
+			return string.Empty;
+		}
 
 		public override string ToString ()
 		{
 			return string.Format ("[Skill]" + "\n[SkillName]:" + skillName);
 		}
 
+	}
+
+
+	[System.Serializable]
+	public class SkillModel{
+		public int skillId;
+	    public int skillLevel;
+		public SkillModel(int skillId,int skillLevel){
+			this.skillId = skillId;
+			this.skillLevel = skillLevel;
+		}
 	}
 		
 

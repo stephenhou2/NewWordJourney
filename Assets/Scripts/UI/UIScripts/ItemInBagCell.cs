@@ -27,7 +27,7 @@ namespace WordJourney
 			newItemTintIcon.enabled = false;
 
 
-			if (item.itemType == ItemType.Consumables || item.itemType == ItemType.PropertyGemstone) {
+			if (item.itemType == ItemType.Consumables || item.itemType == ItemType.PropertyGemstone || item.itemType == ItemType.SpecialItem) {
 				itemCount.text = item.itemCount.ToString ();
 				itemCount.enabled = true;
 			} else {
@@ -66,6 +66,10 @@ namespace WordJourney
 
 			selectedTint.enabled = false;
 
+		}
+
+		public void SetSelectionIcon(bool active){
+			selectedTint.enabled = active;
 		}
 
 	}

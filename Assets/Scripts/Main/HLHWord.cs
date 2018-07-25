@@ -60,9 +60,11 @@ namespace WordJourney
         public int learnedTimes;
         // 单词背错的次数
         public int ungraspTimes;
+        // 是否熟悉
+		public bool isFamiliar;
 
 
-        public HLHWord(int wordId, string spell, string phoneticSymbol, string explaination, string sentenceEN, string sentenceCH, string pronounciationURL, int wordLength, int learnedTimes, int ungraspTimes)
+        public HLHWord(int wordId, string spell, string phoneticSymbol, string explaination, string sentenceEN, string sentenceCH, string pronounciationURL, int wordLength, int learnedTimes, int ungraspTimes,bool isFamiliar)
         {
             this.wordId = wordId;
             this.spell = spell;
@@ -74,6 +76,7 @@ namespace WordJourney
             this.wordLength = wordLength;
             this.learnedTimes = learnedTimes;
             this.ungraspTimes = ungraspTimes;
+			this.isFamiliar = isFamiliar;
         }
 
 

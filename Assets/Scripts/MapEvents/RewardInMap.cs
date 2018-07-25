@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
-	public class RewardInMap : MonoBehaviour {
+	public class RewardInMap : MapEvent {
 
 		private Transform mBattlePlayerTrans;
 		private Transform battlePlayerTrans{
@@ -20,53 +20,178 @@ namespace WordJourney
 			
 		public SpriteRenderer sr;
 
+
 		private Item reward;
 
 		public float rewardFlyDuration = 0.5f;
 
-		public void SetUpRewardInMap(Item reward, Vector3 rewardPosition){
+		private InstancePool rewardPool;
+
+		public override void InitializeWithAttachedInfo(int mapIndex, MapAttachedInfoTile attachedInfo)
+		{
+			
+		}
+
+		public void SetUpRewardInMap(Item reward, Vector3 rewardPosition,InstancePool rewardPool){
 
 			this.reward = reward;
 
+			this.rewardPool = rewardPool;
+
 			sr.sprite = GameManager.Instance.gameDataCenter.GetGameItemSprite (reward);
+            
+			transform.position = new Vector3 (rewardPosition.x, rewardPosition.y, rewardPosition.z);
+			sr.transform.position = new Vector3(rewardPosition.x, rewardPosition.y + 0.5f, rewardPosition.z);
 
-			transform.position = new Vector3 (rewardPosition.x, rewardPosition.y + 1f, rewardPosition.z);
-
-//			sr.sortingOrder = -(int)rewardPosition.y;
+			sr.sortingOrder = -Mathf.RoundToInt(rewardPosition.y);
 
 			gameObject.SetActive (true);
 
+			bool bagFull = Player.mainPlayer.CheckBagFull(reward);
+
+			bool npcCanvasOnTop = false;
+
+			Canvas npcCanvas = TransformManager.FindTransform("NPCCanvas").GetComponent<Canvas>();
+
+            npcCanvasOnTop = npcCanvas.enabled;
+         
+			if(bagFull){
+				
+				if(npcCanvasOnTop){
+					npcCanvas.GetComponent<NPCViewController>().tintHUD.SetUpSingleTextTintHUD("背包已满");
+				}else{
+					ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("背包已满");
+				}
+
+				bc2d.enabled = true;
+				StartCoroutine("RewardFloat");
+				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[Mathf.RoundToInt(rewardPosition.x), Mathf.RoundToInt(rewardPosition.y)] = 2;
+			}else{
+                
+				if(!npcCanvasOnTop){
+					ExploreManager.Instance.ObtainReward(reward);               
+				}
+
+				bc2d.enabled = false;
+
+				RewardFlyToPlayer(delegate
+				{
+					AddToPool(rewardPool);
+					ExploreManager.Instance.expUICtr.UpdateBottomBar();
+				},true);
+			}
+
 		}
 
-		public void RewardFlyToPlayer(CallBack cb){
-			StartCoroutine ("FlyToPlayer",cb);
+
+		public override void AddToPool(InstancePool pool)
+		{
+			bc2d.enabled = false;
+			pool.AddInstanceToPool(this.gameObject);
 		}
 
-		private IEnumerator FlyToPlayer(CallBack cb){
+		public override void EnterMapEvent(BattlePlayerController bp)
+		{
+			bool bagFull = Player.mainPlayer.CheckBagFull(reward);
 
-			yield return new WaitUntil (()=>Time.timeScale == 1);
-
-			float rewardUpAndDownSpeed = 0.5f;
-
-			float timer = 0;
-			while (timer < 0.5f) {
-				Vector3 moveVector = new Vector3 (0, rewardUpAndDownSpeed * Time.deltaTime, 0);
-				transform.position += moveVector;
-				timer += Time.deltaTime;
-				yield return null;
+            if (bagFull)
+            {
+				
+                ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("背包已满");
+                bc2d.enabled = true;
+                //StartCoroutine("RewardFloat");
+				//ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y - 1)] = 10;
 			}
-			while (timer < 1f) {
-				Vector3 moveVector = new Vector3 (0, -rewardUpAndDownSpeed * Time.deltaTime, 0);
-				transform.position += moveVector;
-				timer += Time.deltaTime;
-				yield return null;
+			else
+            {
+
+                ExploreManager.Instance.ObtainReward(reward);
+
+				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y)] = 1;
+
+                bc2d.enabled = false;
+
+                RewardFlyToPlayer(delegate
+                {
+                    AddToPool(rewardPool);
+                    ExploreManager.Instance.expUICtr.UpdateBottomBar();
+				},false);
+            }
+
+			bp.isInEvent = false;
+		}
+
+		public override void MapEventTriggered(bool isSuccess, BattlePlayerController bp)
+		{
+			
+		}
+
+
+		public void RewardFlyToPlayer(CallBack cb,bool needFloat){
+			IEnumerator rewardFlyCoroutine = FlyToPlayer(cb, needFloat);
+			StartCoroutine(rewardFlyCoroutine);
+		}
+
+		private IEnumerator RewardFloat(){
+
+			yield return new WaitUntil(() => Time.timeScale >= 1 - float.Epsilon);
+
+			while(true){
+				
+				float rewardUpAndDownSpeed = 0.3f;
+
+                float timer = 0;
+                while (timer < 1f)
+                {
+                    Vector3 moveVector = new Vector3(0, rewardUpAndDownSpeed * Time.deltaTime, 0);
+					sr.transform.position += moveVector;
+                    timer += Time.deltaTime;
+                    yield return null;
+                }
+                while (timer < 2f)
+                {
+                    Vector3 moveVector = new Vector3(0, -rewardUpAndDownSpeed * Time.deltaTime, 0);
+					sr.transform.position += moveVector;
+                    timer += Time.deltaTime;
+                    yield return null;
+                }
+
 			}
+            
+
+		}
+
+		private IEnumerator FlyToPlayer(CallBack cb,bool needFloat){
+
+			StopCoroutine("RewardFloat");
+
+			if(needFloat){
+				
+				yield return new WaitUntil(() => Time.timeScale == 1);
+
+                float rewardUpAndDownSpeed = 0.5f;
+
+                float timer = 0;
+                while (timer < 0.5f)
+                {
+                    Vector3 moveVector = new Vector3(0, rewardUpAndDownSpeed * Time.deltaTime, 0);
+                    transform.position += moveVector;
+                    timer += Time.deltaTime;
+                    yield return null;
+                }
+                while (timer < 1f)
+                {
+                    Vector3 moveVector = new Vector3(0, -rewardUpAndDownSpeed * Time.deltaTime, 0);
+                    transform.position += moveVector;
+                    timer += Time.deltaTime;
+                    yield return null;
+                }
+			}
+
 
 			float passedTime = 0;
 
 			float leftTime = rewardFlyDuration - passedTime;
-
-//			BattlePlayerController bpCtr = battlePlayerTrans.GetComponent<BattlePlayerController> ();
 
 			float distance = Mathf.Sqrt (Mathf.Pow ((battlePlayerTrans.position.x - transform.position.x), 2.0f) 
 				+ Mathf.Pow ((battlePlayerTrans.position.y - transform.position.y), 2.0f));
@@ -97,14 +222,7 @@ namespace WordJourney
 			}
 
 
-			if (Player.mainPlayer.CheckBagFull (reward)) {
-				GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.bagCanvasBundleName, "BagCanvas", () => {
-					TransformManager.FindTransform ("BagCanvas").GetComponent<BagViewController> ().AddBagItemWhenBagFull (reward);
-				}, false, true);
-			} else {
 
-				ExploreManager.Instance.ObtainReward (reward);
-			}
 
 			if (cb != null) {
 				cb ();

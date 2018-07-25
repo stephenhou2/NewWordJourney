@@ -5,24 +5,27 @@ using UnityEngine;
 
 namespace WordJourney
 {
+
+	// 提高自身<color=orange>技能等级×1%</color>的命中率
 	public class WanQuanJIanShi : TriggeredPassiveSkill {
 
 		public float dodgeDecreaseBase;
-		public float triggerProbability;
 
-		protected override void HitTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
+		public override string GetDisplayDescription()
 		{
-			if(!isEffective(triggerProbability)){
-				return;
-			}
+			int hitIncrease = Mathf.RoundToInt(skillLevel * dodgeDecreaseBase * 100);
+			return string.Format("提高自身<color=white>(技能等级×1%)</color><color=red>{0}%</color>的命中率", hitIncrease);
+		}
 
-			float dodgeChange = skillLevel * dodgeDecreaseBase;
+		protected override void BeforeFightTriggerCallBack (BattleAgentController self, BattleAgentController enemy)
+		{         
+			float dodgeDecrease = skillLevel * dodgeDecreaseBase;
 
-            enemy.agent.dodgeChangeFromSkill -= dodgeChange;
+			enemy.agent.dodge -= dodgeDecrease;
 
-            enemy.agent.dodge -= dodgeChange;
-         
-			enemy.SetEffectAnim(enemyEffectAnimName);
+			enemy.agent.dodgeChangeFromSkill -= dodgeDecrease;
+
+
 		}
 
 	}

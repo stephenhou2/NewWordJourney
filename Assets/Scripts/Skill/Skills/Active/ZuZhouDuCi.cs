@@ -5,67 +5,118 @@ using UnityEngine;
 
 namespace WordJourney
 {
+
+	// 造成<color=orange>物理攻击+技能等级×30+30</color>点物理伤害，并提升自身<color=orange>技能等级×3</color>的魔法攻击，可叠加
 	public class ZuZhouDuCi : ActiveSkill {
 
 		public int fixHurt;
 
 		public int hurtBase;
 
-        // 中毒后每秒损失的生命值
-		public int poisonBase;
+		public int magicAttackGainBase;
 
-        // 中毒持续时间
-		public int poisonDuration;
+		//      // 中毒后每秒损失的生命值
+		//private int poisonBase;
 
-		private IEnumerator poisonCoroutine;
+		//public int fixPoisonHurt;
 
-		public string poisonEffectName;
+		//      // 中毒伤害系数
+		//public float poisonScaler;
+
+		//      // 中毒持续时间
+		//public int poisonDuration;
+
+		//private IEnumerator poisonCoroutine;
+
+		//public string poisonEffectName;
+
+		public override string GetDisplayDescription()
+		{
+			int hurt = Player.mainPlayer.attack + skillLevel * hurtBase + fixHurt;
+			int magicalAttackGain = skillLevel * magicAttackGainBase;
+			return string.Format("造成<color=white>(物理攻击+技能等级x30+30)</color><color=red>{0}</color>点物理伤害，并提升自身<color=white>(技能等级x3)</color><color=red>{1}</color>的魔法攻击，可叠加", hurt, magicalAttackGain);
+		}
+
+		//本次攻击造成额外<color=orange> 技能等级×20+30</color>点魔法伤害,
+		//并使敌人中毒,每秒损失<color=orange> 技能等级×1%×物理攻击</color> 的生命, 持续4s
 
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self,BattleAgentController enemy){
 
-            // 原始伤害值
-			int hurt = self.agent.attack + fixHurt + hurtBase * skillLevel;
+   //         // 原始伤害值
+			//int physicalHurt = self.agent.attack;
+         
+			//int armorCal = enemy.agent.armor - self.agent.armorDecrease;
 
-            // 计算护甲和护甲穿透后的伤害值
-			hurt = Mathf.RoundToInt(hurt /((enemy.agent.armor - self.agent.armorDecrease)/100f + 1));
+			//if (armorCal == -100)
+   //         {
+   //             armorCal = -99;
+   //         }
 
-			enemy.AddHurtAndShow (hurt, HurtType.Physical,self.towards);
+   //         // 计算护甲和护甲穿透后的伤害值
+			//physicalHurt = Mathf.RoundToInt(physicalHurt /(armorCal/100f + 1));
 
-			enemy.PlayShakeAnim();
+			//enemy.AddHurtAndShow (physicalHurt, HurtType.Physical,self.towards);
 
-            // 中毒后的持续伤害
-			if (poisonCoroutine != null) {
-				StopCoroutine (poisonCoroutine);
-			}
+			int magicalHurt = fixHurt + hurtBase * skillLevel + self.agent.attack;
 
-			poisonCoroutine = Poison (self, enemy);
+			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
 
-			StartCoroutine (poisonCoroutine);
+			if (magicResistCal < -50)
+            {
+                magicResistCal = -50;
+            }
 
-		}
+			magicalHurt = Mathf.RoundToInt(magicalHurt / (magicResistCal / 100f + 1));
 
-		private IEnumerator Poison(BattleAgentController self,BattleAgentController enemy){
+			enemy.AddHurtAndShow(magicalHurt, HurtType.Magical, self.towards);
+         
+			enemy.PlayShakeAnim();         
 
-			int count = 0;
+			enemy.SetEffectAnim(enemyEffectAnimName);
 
-			int hurt = poisonBase * skillLevel + self.agent.extraPoisonHurt;
+			int magicAttackGain = magicAttackGainBase * skillLevel;
 
-			while (count < poisonDuration) {
+			self.agent.magicAttack += magicAttackGain;
 
-				SetEffectAnims(self, enemy);
+			self.agent.magicAttackChangeFromSkill += magicAttackGain;
+
+			self.AddTintTextToQueue("魔法攻击\n提升");
+
+			//enemy.SetEffectAnim(enemyEffectAnimName, null, 0, poisonDuration);
             
-				enemy.AddHurtAndShow (hurt, HurtType.Physical,self.towards);
+			//poisonBase = (int)(self.agent.attack * poisonScaler * skillLevel) + fixPoisonHurt;
 
-				enemy.SetEffectAnim(poisonEffectName);
+   //         // 中毒后的持续伤害
+			//if (poisonCoroutine != null) {
+			//	StopCoroutine (poisonCoroutine);
+			//}
 
-				enemy.UpdateStatusPlane ();
+			//poisonCoroutine = Poison (self, enemy);
 
-				yield return new WaitForSeconds (1.0f);
-
-				count++;
-			}
+			//StartCoroutine (poisonCoroutine);
 
 		}
+
+		//private IEnumerator Poison(BattleAgentController self,BattleAgentController enemy){
+
+		//	int count = 0;
+
+		//	//int hurt = poisonBase * skillLevel + self.agent.extraPoisonHurt;
+
+		//	while (count < poisonDuration) {
+            
+		//		enemy.AddHurtAndShow (poisonBase, HurtType.Physical,self.towards);
+                
+		//		enemy.CheckFightEnd();
+            
+		//		enemy.UpdateStatusPlane ();
+
+		//		yield return new WaitForSeconds (1.0f);
+
+		//		count++;
+		//	}
+
+		//}
 
 	}
 }

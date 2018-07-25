@@ -13,7 +13,7 @@ namespace WordJourney
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
 
-            int healthGain = (int)(self.agent.health * healthRecoverScaler);
+			int healthGain = (int)(self.agent.maxHealth * healthRecoverScaler);
 
             //self.agent.health += healthGain;
 
@@ -29,7 +29,7 @@ namespace WordJourney
                 enemy.SetEffectAnim(enemyEffectAnimName);
             }
 
-            self.UpdateStatusPlane();
+            //self.UpdateStatusPlane();
 		}
 
 

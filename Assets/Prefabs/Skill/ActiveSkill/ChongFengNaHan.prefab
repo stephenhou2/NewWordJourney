@@ -52,15 +52,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillName: "\u51B2\u950B\u5450\u558A"
-  sfxName: player_skill1
+  sfxName: Skill/se_chongFengNaHan
   skillId: 33
-  skillDescription: "\u964D\u4F4E\u654C\u4EBA\uFF08\u6280\u80FD\u7B49\u7EA7\xD72\uFF09\u7684\u7269\u7406\u653B\u51FB,\u540C\u65F6\u63D0\u5347\u81EA\u5DF1\uFF08\u6280\u80FD\u7B49\u7EA7\xD72\uFF09\u7684\u7269\u7406\u653B\u51FB\u81F3\u6218\u6597\u7ED3\u675F,\u4E0D\u53EF\u53E0\u52A0"
+  skillDescription: "\u964D\u4F4E\u654C\u4EBA<color=orange>\u6280\u80FD\u7B49\u7EA7\xD72</color>\u7684\u7269\u7406\u653B\u51FB,\u540C\u65F6\u63D0\u5347\u81EA\u5DF1<color=orange>\u6280\u80FD\u7B49\u7EA7\xD73</color>\u7684\u7269\u7406\u653B\u51FB\u81F3\u6218\u6597\u7ED3\u675F,\u53EF\u53E0\u52A0"
   skillIconName: 33_chongFengNaHan
-  selfEffectAnimName: 
-  enemyEffectAnimName: 
+  selfEffectAnimName: state_attack_up
+  enemyEffectAnimName: state_attack_down
   skillType: 0
   skillLevel: 1
+  price: 200
+  hasTriggered: 0
   selfRoleAnimName: physical_skill
-  skillCoolenTime: 3
-  manaConsume: 5
-  attackChangeBase: 2
+  skillCoolenTime: 8
+  coolenPercentage: 0
+  manaConsume: 10
+  enemyAttackDecreaseBase: 2
+  selfAttackIncreaseBase: 3

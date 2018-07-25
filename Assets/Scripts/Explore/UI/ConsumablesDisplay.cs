@@ -61,6 +61,37 @@ namespace WordJourney
 
 			}
 
+			for (int i = 0; i < Player.mainPlayer.allSpecialItemsInBag.Count; i++)
+            {
+
+				SpecialItem specialItem = Player.mainPlayer.allSpecialItemsInBag[i];
+
+				if (specialItem.isShowInBagOnly)
+                {
+                    continue;
+                }
+
+                if (validCount < minIndex)
+                {
+                    validCount++;
+                    continue;
+                }
+
+				consCells[indexInPanel].SetUpConsumablesCell(specialItem, delegate {
+                    SetUpConsumablesButtons();
+                    refreshPlayerStatusPlane();
+
+                });
+
+                indexInPanel++;
+
+                if (indexInPanel >= consumablesDisplayCount)
+                {
+                    return;
+                }
+
+            }
+
 		}
 
 

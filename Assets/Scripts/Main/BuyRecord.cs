@@ -19,7 +19,11 @@ namespace WordJourney
 			}
 		}
 
-		public bool extraBagUnlocked;
+		public bool bag_2_unlocked;
+
+		public bool bag_3_unlocked;
+
+		public bool bag_4_unlocked;
 
 		public bool extraEquipmentSlotUnlocked;
 
@@ -27,8 +31,12 @@ namespace WordJourney
 
 			if (productId == PurchaseManager.extra_equipmentSlot_id) {
 				BuyRecord.Instance.extraEquipmentSlotUnlocked = true;
-			} else if (productId == PurchaseManager.extra_bag_id) {
-				BuyRecord.Instance.extraBagUnlocked = true;
+			}else if (productId == PurchaseManager.extra_bag_2_id){
+                BuyRecord.Instance.bag_2_unlocked = true;
+            }else if (productId == PurchaseManager.extra_bag_3_id) {
+				BuyRecord.Instance.bag_3_unlocked = true;
+			}else if(productId == PurchaseManager.extra_bag_4_id){
+				BuyRecord.Instance.bag_4_unlocked = true;
 			}
 
 			GameManager.Instance.persistDataManager.SaveBuyRecord ();

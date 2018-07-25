@@ -17,7 +17,7 @@ namespace WordJourney
 
 		public Transform queryContainer;
 
-		private QueryType queryType;
+		//private QueryType queryType;
 
 		public Text query;
 
@@ -50,35 +50,15 @@ namespace WordJourney
 			}
 		}
 
-
-//		public void OnRefreshButtonClick(){
-
-//			queryType = QueryType.Refresh;
-
-//			if (refreshCallBack != null) {
-//				refreshCallBack ();
-//			}
-
-//			query.text = "是否确认重新开始本关？";
-
-//			queryContainer.gameObject.SetActive (true);
-
-////			QuitPauseHUD ();
-
-		//}
+        
 
 
 		public void OnBackHomeButtonClick(){
-
-			queryType = QueryType.BackHome;
-
-
-			query.text = "本次探险进度将会丢失\n是否确认返回主界面？";
+         
+			query.text = "是否确认返回主界面？";
 
 			queryContainer.gameObject.SetActive (true);
-
-//			QuitPauseHUD ();
-
+         
 		}
 
 		public void OnSettingsButtonClick(){
