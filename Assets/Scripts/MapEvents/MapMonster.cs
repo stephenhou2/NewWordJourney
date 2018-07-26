@@ -15,7 +15,7 @@ namespace WordJourney
 		public UnityArmatureComponent alertTint;
 
 		public LayerMask collisionLayer;
-
+        
 		private float alertIconOffsetX;
 		private float alertIconOffsetY;
 
@@ -285,37 +285,46 @@ namespace WordJourney
 			baCtr.isIdle = false;
 			isInMoving = false;
 			isInAutoWalk = false;
-
-
+         
 			alertTint.gameObject.SetActive(false);
-
-			if(tmPro != null){
-				tmPro.text = string.Empty;
-			}
-
-
+         
 		}
 
 		private void RandomTowards(){
 
 			int towardsIndex = Random.Range (0, 4);
 
+			MyTowards boneTowards = MyTowards.Right;
+
 			switch (towardsIndex) {
 			case 0:
 				baCtr.TowardsRight ();
-					alertTint.transform.localPosition = new Vector3(alertIconOffsetX, alertIconOffsetY, 0);
+				boneTowards = MyTowards.Right;
+
 				break;
 			case 1:
 				baCtr.TowardsLeft ();
-				alertTint.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
+				boneTowards = MyTowards.Left;
 				break;
 			case 2:
 				baCtr.TowardsUp ();
+				boneTowards = (baCtr as BattleMonsterController).GetMonsterBoneTowards();               
 				break;
 			case 3:
 				baCtr.TowardsDown ();
+				boneTowards = (baCtr as BattleMonsterController).GetMonsterBoneTowards();         
 				break;
 			}
+
+			switch(boneTowards){
+				case MyTowards.Right:
+					alertTint.transform.localPosition = new Vector3(alertIconOffsetX, alertIconOffsetY, 0);
+					break;
+				case MyTowards.Left:
+					alertTint.transform.localPosition = new Vector3(-alertIconOffsetX, alertIconOffsetY, 0);
+					break;
+			}
+
 
 		}
 
@@ -660,17 +669,17 @@ namespace WordJourney
 				if (targetPosX >= oriPosX) {
 					baCtr.TowardsRight ();
 					alertTint.transform.localPosition = new Vector3 (alertIconOffsetX, alertIconOffsetY, 0);
-					if (tmPro != null)
-					{
-						tmPro.transform.localPosition = new Vector3(alertIconOffsetX-1000, alertIconOffsetY, 0);
-					}
+					//if (tmPro != null)
+					//{
+					//	tmPro.transform.localPosition = new Vector3(alertIconOffsetX-1000, alertIconOffsetY, 0);
+					//}
 				} else {
 					baCtr.TowardsLeft ();
 					alertTint.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
-					if (tmPro != null)
-					{
-						tmPro.transform.localPosition = new Vector3(-alertIconOffsetX-1000, alertIconOffsetY, 0);
-					}
+					//if (tmPro != null)
+					//{
+					//	tmPro.transform.localPosition = new Vector3(-alertIconOffsetX-1000, alertIconOffsetY, 0);
+					//}
 				}
 			} 
 			else if(targetPosX == oriPosX){

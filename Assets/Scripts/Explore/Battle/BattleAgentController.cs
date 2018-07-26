@@ -542,7 +542,7 @@ namespace WordJourney
 		/// 设置角色特效动画，trigger 型触发器
 		/// </summary>
 		/// <param name="animName">触发器名称</param>
-		public void SetEffectAnim(string effectName,CallBack cb = null,int playTimes = 1,float duration = 0){
+		public void SetEffectAnim(string effectName,CallBack cb = null,int playTimes = 1,float duration = 0,bool isProtectedBeforeEnd = false){
 
 			if (effectName == string.Empty || exploreManager == null) {
 				return;
@@ -550,6 +550,8 @@ namespace WordJourney
             
 				
 			EffectAnim skillEffect = exploreManager.newMapGenerator.GetEffectAnim (effectName,effectAnimContainer);
+
+			skillEffect.isProtectedBeforeEnd = isProtectedBeforeEnd;
 
 			if (skillEffect != null)
             {
@@ -594,10 +596,13 @@ namespace WordJourney
 
 				EffectAnim effectAnim = effectAnimContainer.GetChild (i).GetComponent<EffectAnim>();
 
-				exploreManager.newMapGenerator.AddEffectAnimToPool (effectAnim);
+				if(effectAnim.isProtectedBeforeEnd){
+					continue;
+				}
 
-				i--;
+				exploreManager.newMapGenerator.AddEffectAnimToPool(effectAnim);
 
+                i--;
 			}
 
 			effectAnimContainer.DetachChildren ();

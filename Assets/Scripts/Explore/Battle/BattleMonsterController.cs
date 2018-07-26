@@ -297,7 +297,7 @@ namespace WordJourney
 
             QuitFight();
 
-			enemy.AllEffectAnimsIntoPool();
+			//enemy.AllEffectAnimsIntoPool();
 
 			exploreManager.BattlePlayerWin(new Transform[] { transform });
 
@@ -324,6 +324,7 @@ namespace WordJourney
 				}
             
 				AllEffectAnimsIntoPool();
+				enemy.AllEffectAnimsIntoPool();
 
 				if ((enemy as BattlePlayerController).fadeStepsLeft > 0)
                 {
@@ -352,6 +353,18 @@ namespace WordJourney
 
 		public override void TowardsDown(bool andWait = true){
 			towards = MyTowards.Down;
+		}
+
+        /// <summary>
+        /// 获取怪物的龙骨朝向[怪物探测方向分上下左右,但是怪物实际朝向只有左右]
+        /// </summary>
+        /// <returns>The monster bone towards.</returns>
+		public MyTowards GetMonsterBoneTowards(){
+			MyTowards myTowards = MyTowards.Right;
+			if(armatureCom.armature.flipX){
+				myTowards = MyTowards.Left;
+			}
+			return myTowards;
 		}
 
 		void OnDestroy(){

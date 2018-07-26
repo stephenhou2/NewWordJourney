@@ -141,7 +141,9 @@ namespace WordJourney
 
 			for (int i = 0; i < player.attachedActiveSkills.Count; i++)
             {
-                player.attachedActiveSkills[i].coolenPercentage = 0;
+				ActiveSkill activeSkill = player.attachedActiveSkills[i];
+				activeSkill.coolenPercentage = 0;
+				activeSkill.skillStatus = ActiveSkillStatus.None;
             }
 
 			for (int i = 0; i < activeSkillButtonContainer.childCount;i++){
@@ -203,11 +205,11 @@ namespace WordJourney
 			for (int i = 0; i < activeSkillButtonContainer.childCount; i++)
             {
                 activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>().Reset();
-            }         
+            }     
+            
 			activeSkillButtonPool.AddChildInstancesToPool(activeSkillButtonContainer);
 
-
-
+         
 			if (bpCtr.towards == MyTowards.Left || bpCtr.towards == MyTowards.Right) { 
 				
     			for (int i = 0; i < player.attachedActiveSkills.Count; i++)
@@ -364,27 +366,27 @@ namespace WordJourney
 				player.originalMaxHealth += 20;
 				player.maxHealth += 20;
 				player.health = (int)((float)player.maxHealth / maxHealthRecord * player.health);
-					bpCtr.SetEffectAnim(CommonData.healthAddUpEffectName);
+					bpCtr.SetEffectAnim(CommonData.healthAddUpEffectName, null, 1, 0, true);
 				break;
 			case 1:
 				player.originalAttack += 2;
 				player.attack += 2;
-					bpCtr.SetEffectAnim(CommonData.attackUpEffectName);
+					bpCtr.SetEffectAnim(CommonData.attackUpEffectName, null, 1, 0, true);
 				break;
 			case 2:
 				player.originalMagicAttack += 2;
                 player.magicAttack += 2;
-					bpCtr.SetEffectAnim(CommonData.magicAttackUpEffectName);
+					bpCtr.SetEffectAnim(CommonData.magicAttackUpEffectName, null, 1, 0, true);
 				break;
 			case 3:
 				player.originalArmor += 2;
 				player.armor += 2;
-					bpCtr.SetEffectAnim(CommonData.armorUpEffectName);
+					bpCtr.SetEffectAnim(CommonData.armorUpEffectName, null, 1, 0, true);
 				break;
 			case 4:
 				player.originalMagicResist += 2;
 				player.magicResist += 2;
-					bpCtr.SetEffectAnim(CommonData.magicResistUpEffectName);
+					bpCtr.SetEffectAnim(CommonData.magicResistUpEffectName, null, 1, 0, true);
 				break;
 			}
 

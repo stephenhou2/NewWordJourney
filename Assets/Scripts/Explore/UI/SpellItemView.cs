@@ -146,8 +146,7 @@ namespace WordJourney
 				createSuccessCallBack();
 			}
 
-			QuitSpellItemView();
-			//this.gameObject.SetActive(false);
+			QuitSpellItemView(false);
 
 		}
 
@@ -189,7 +188,7 @@ namespace WordJourney
 
 		}
 
-		public void QuitSpellItemView()
+		public void QuitSpellItemView(bool outEvent)
 		{
 
             if (inZoomingOut)
@@ -206,8 +205,10 @@ namespace WordJourney
 
 			StartCoroutine(zoomCoroutine);
 
-			//ExploreManager.Instance.MapWalkableEventsStartAction();
-			//ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+			if(outEvent){
+				ExploreManager.Instance.MapWalkableEventsStartAction();
+				ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+            }
 		}
     }
 

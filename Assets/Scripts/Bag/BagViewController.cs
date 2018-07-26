@@ -12,18 +12,18 @@ namespace WordJourney
 		public Item currentSelectItem;
 
 		//public Item itemForSpecialOperation;
-
+        
 		//private Item itemToAddWhenBagFull;
-
+        
 		void Awake(){
 
 			//for (int i = 501; i < 545;i++){
 			//	Player.mainPlayer.AddItem(Item.NewItemWith(i, 1));
 			//}
             
-			//Player.mainPlayer.AddItem(Item.NewItemWith(540, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(1, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(2, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(509, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(300, 10));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(301, 10));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(3, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(604, 9));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(605, 9));

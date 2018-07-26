@@ -50,7 +50,7 @@ namespace WordJourney
 				(self.agent as Player).attackSpeed = (AttackSpeed)attackSpeedInt;
 			}
 
-
+			SetEffectAnims(self, enemy);
 
 			// 执行攻击触发事件回调
 			for(int i = 0;i < self.attackTriggerExcutors.Count; i++) {
@@ -128,7 +128,7 @@ namespace WordJourney
 			}
 
 			enemy.PlayShakeAnim ();
-			SetEffectAnims (self, enemy);
+
 
 
 			self.agent.physicalHurtToEnemy = actualPhysicalHurt;

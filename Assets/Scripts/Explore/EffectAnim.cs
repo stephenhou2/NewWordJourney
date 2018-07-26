@@ -15,6 +15,8 @@ namespace WordJourney
 
 		public int playTime;
 
+		public bool isProtectedBeforeEnd;
+
 		public UnityArmatureComponent effectCom;
         
 		private IEnumerator effectCoroutine;
@@ -47,8 +49,6 @@ namespace WordJourney
 			if(effectCoroutine != null){
 				StartCoroutine(effectCoroutine);
 			}
-
-
 		}
 
 		private IEnumerator WaitEffectAnimEndAndCallback(CallBack cb){

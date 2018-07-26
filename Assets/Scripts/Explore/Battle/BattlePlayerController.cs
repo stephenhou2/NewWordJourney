@@ -1262,7 +1262,8 @@ namespace WordJourney
 
 			PlayRoleAnim (CommonData.roleDieAnimName, 1, ()=>{
 				StartCoroutine("QueryBuyLife",fromFight);
-				AllEffectAnimsIntoPool();            
+				AllEffectAnimsIntoPool();
+				enemy.AllEffectAnimsIntoPool();
 				enemy = null;
 			});
 

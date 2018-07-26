@@ -237,6 +237,9 @@ namespace WordJourney
         
 
 		public void ShowBigMap(){
+			if(ExploreManager.Instance.battlePlayerCtr.isInEvent){
+				return;
+			}
 			ExploreManager.Instance.MapWalkableEventsStopAction();
 			bigMapView.gameObject.SetActive(true);
 			bigMap.texture = Resources.Load("MiniMapTexture") as Texture;

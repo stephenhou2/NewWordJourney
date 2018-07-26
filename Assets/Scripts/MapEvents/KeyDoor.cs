@@ -217,7 +217,10 @@ namespace WordJourney
 					bp.moveDestination = continueMovePos;
 
 					bp.SetSortingOrder(-Mathf.RoundToInt(continueMovePos.y));
-
+					ExploreManager.Instance.newMapGenerator.miniMapPlayer.localPosition = (continueMovePos);
+                    ExploreManager.Instance.newMapGenerator.ClearMiniMapMaskAround(continueMovePos);
+                    ExploreManager.Instance.newMapGenerator.MiniMapCameraLatelySleep();
+                    ExploreManager.Instance.expUICtr.UpdateMiniMapDisplay(continueMovePos);
 					bp.isInEvent = false;
 				});
 

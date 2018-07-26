@@ -231,7 +231,7 @@ namespace WordJourney
                 maskTweener.Kill();
             }
 
-			skill.skillStatus = ActiveSkillStatus.None;
+			//skill.skillStatus = ActiveSkillStatus.None;
 
 			if(validTint.animation != null){
 				validTint.animation.Stop();
