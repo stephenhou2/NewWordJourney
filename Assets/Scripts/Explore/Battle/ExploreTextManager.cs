@@ -37,22 +37,24 @@ namespace WordJourney
 		private Transform exploreTextModel;
 
 		private Transform exploreTextContainer;
-
-//		private Vector3 basePosition;
-
-//		private MyTowards direction;
+        
 
 		private float hurtTextInterval = 0.1f;
 
 		private float tintTextInterval = 0.3f;
 
-//		private IEnumerator hurtTextCoroutine;
-//
-//		private IEnumerator tintTextCoroutine;
+		private float viewPortTransformScaler;
+
+
 
 		private List<ExploreText> hurtTextList = new List<ExploreText> ();
 
 		private List<ExploreText> tintTextList = new List<ExploreText> ();
+
+		private void Start()
+		{
+			//viewPortTransformScaler = CommonData.scalerToPresetResulotion
+		}
 
 
 		public void InitExploreTextManager(InstancePool exploreTextPool,Transform exploreTextModel,Transform exploreTextContainer){
@@ -158,7 +160,7 @@ namespace WordJourney
 				break;
 			case MyTowards.Right:
 			case MyTowards.Down:
-				originHurtPos = et.basePosition + new Vector3 (50f, 50f, 0);
+					originHurtPos = et.basePosition + new Vector3 (50f, 50f, 0);
 				firstHurtPos = originHurtPos + new Vector3 (Random.Range(80,100), Random.Range(0,10), 0);
 				secondHurtPos = firstHurtPos + new Vector3 (Random.Range(20,30), Random.Range(0,2), 0);
 				originTintPos = originHurtPos + new Vector3 (100f, 100f, 0);

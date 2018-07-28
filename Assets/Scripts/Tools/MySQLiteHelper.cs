@@ -258,11 +258,11 @@ namespace WordJourney{
 					m_command = null;
 				}
 
-				if(m_transaction != null){
-					m_transaction.Dispose();
-					m_transaction.Commit();
-					m_transaction = null;
-				}
+				//if(m_transaction != null){
+				//	//m_transaction.Dispose();
+				//	m_transaction.Commit();
+				//	m_transaction = null;
+				//}
 					
 				connection.Dispose ();
 				connection.Close ();

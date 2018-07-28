@@ -362,11 +362,11 @@ namespace WordJourney
 #warning 暂时关卡不随机，后面去掉
 			//randomMapIndex = Player.mainPlayer.currentLevelIndex;
             
-			//randomMapIndex = 50;
+			//randomMapIndex = 29;
 
-			//Player.mainPlayer.currentLevelIndex = 50;
+			//Player.mainPlayer.currentLevelIndex = 29;
 
-			//Player.mainPlayer.maxUnlockLevelIndex = 50;
+			//Player.mainPlayer.maxUnlockLevelIndex = 29;
          
 			mapData = GameManager.Instance.gameDataCenter.LoadMapDataOfLevel (randomMapIndex);
 

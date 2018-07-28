@@ -156,7 +156,9 @@ namespace WordJourney
 		/// <param name="text">Text.</param>
 		public void AddHurtTextToQueue(string text,MyTowards towards){
 
-			Vector3 basePosition = MyTool.ToPointInCanvas (transform.position);
+			Vector3 basePosition = MyTool.ToPointInCanvas(transform.position);
+
+			basePosition = new Vector3(basePosition.x * CommonData.ScalerToPresetHW, basePosition.y, 0);
 
 			ExploreText ft = new ExploreText (text,towards,basePosition);
 
@@ -174,6 +176,8 @@ namespace WordJourney
 		public void AddTintTextToQueue (string text)
 		{
 			Vector3 basePosition = MyTool.ToPointInCanvas (transform.position);
+
+			basePosition = new Vector3(basePosition.x * CommonData.ScalerToPresetHW, basePosition.y, 0);
 
 			ExploreText ft = new ExploreText (text,MyTowards.Left,basePosition);
 
