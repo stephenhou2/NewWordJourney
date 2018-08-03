@@ -134,7 +134,7 @@ namespace WordJourney
 
 		private IEnumerator RewardFloat(){
 
-			yield return new WaitUntil(() => Time.timeScale >= 1 - float.Epsilon);
+			yield return new WaitUntil(() => Time.timeScale == 1f);
 
 			while(true){
 				
@@ -167,7 +167,7 @@ namespace WordJourney
 
 			if(needFloat){
 				
-				yield return new WaitUntil(() => Time.timeScale == 1);
+				yield return new WaitUntil(() => Time.timeScale == 1f);
 
                 float rewardUpAndDownSpeed = 0.5f;
 

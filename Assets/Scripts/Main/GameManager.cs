@@ -10,24 +10,28 @@ namespace WordJourney
 //	using UnityEngine.SceneManagement;
 	using System.IO;
 
-	public class GameManager : MonoBehaviour {
+	public class GameManager : MonoBehaviour
+	{
 
-		private static volatile GameManager instance;  
-		public static  GameManager Instance {  
-			get {  
-				if (instance == null) {  
+		private static volatile GameManager instance;
+		public static GameManager Instance
+		{
+			get
+			{
+				if (instance == null)
+				{
 
-					instance = TransformManager.FindTransform ("GameManager").GetComponent<GameManager>();
+					instance = TransformManager.FindTransform("GameManager").GetComponent<GameManager>();
 
-					instance.gameDataCenter = new GameDataCenter ();
+					instance.gameDataCenter = new GameDataCenter();
 
-//					instance.UIManager = new UIManager ();
+					//					instance.UIManager = new UIManager ();
 
-					instance.persistDataManager = new PersistDataManager ();
+					instance.persistDataManager = new PersistDataManager();
 
-					DontDestroyOnLoad (instance);
-				}  
-				return instance;  
+					DontDestroyOnLoad(instance);
+				}
+				return instance;
 			}
 		}
 
@@ -42,53 +46,93 @@ namespace WordJourney
 		public PronounceManager pronounceManager;
 
 		public PurchaseManager purchaseManager;
-			
-		#warning 如果决定使用scene来进行场景转换打开下面的代码
-//		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-//		static public void CallbackInitialization()
-//		{
-//			//register the callback to be called everytime the scene is loaded
-//			SceneManager.sceneLoaded += OnSceneLoaded;
-//		}
-//
-//		static private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
-//		{
-//			switch (arg0.name) {
-//			case "GameScene":
-//				TransformManager.FindTransform ("GameLoader").GetComponent<GameLoader> ().SetUpHomeView ();
-//				break;
-//			case "ExploreScene":
-//				int currentExploreLevel = GameManager.Instance.unlockedMaxChapterIndex;
-//
-//				ResourceLoader exploreSceneLoader = ResourceLoader.CreateNewResourceLoader ();
-//
-//				ResourceManager.Instance.LoadAssetsWithBundlePath (exploreSceneLoader, "explore/scene", () => {
-//
-//					ExploreManager.Instance.GetComponent<ExploreManager> ().SetupExploreView (currentExploreLevel);
-//
-//				}, true);
-//				break;
-//
-//			}
-//
-//		}
 
-        /// <summary>
-        /// 退出程序时执行的逻辑【主要用于数据保存工作】
-        /// </summary>
+		private bool hasSavedDataOnQuit;
+
+		private void Awake()
+		{
+			hasSavedDataOnQuit = false;
+		}
+
+#warning 如果决定使用scene来进行场景转换打开下面的代码
+		//		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+		//		static public void CallbackInitialization()
+		//		{
+		//			//register the callback to be called everytime the scene is loaded
+		//			SceneManager.sceneLoaded += OnSceneLoaded;
+		//		}
+		//
+		//		static private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+		//		{
+		//			switch (arg0.name) {
+		//			case "GameScene":
+		//				TransformManager.FindTransform ("GameLoader").GetComponent<GameLoader> ().SetUpHomeView ();
+		//				break;
+		//			case "ExploreScene":
+		//				int currentExploreLevel = GameManager.Instance.unlockedMaxChapterIndex;
+		//
+		//				ResourceLoader exploreSceneLoader = ResourceLoader.CreateNewResourceLoader ();
+		//
+		//				ResourceManager.Instance.LoadAssetsWithBundlePath (exploreSceneLoader, "explore/scene", () => {
+		//
+		//					ExploreManager.Instance.GetComponent<ExploreManager> ().SetupExploreView (currentExploreLevel);
+		//
+		//				}, true);
+		//				break;
+		//
+		//			}
+		//
+		//		}
+
+		/// <summary>
+		/// 退出程序时执行的逻辑【主要用于数据保存工作】
+		/// </summary>
 		void OnApplicationQuit()
+		{
+			SaveDataOnApplicationQuit();
+		}
+        
+        /// <summary>
+        /// 退出时保存数据的逻辑
+		/// 该方法用于和ios交互
+		/// xcode中UnityAppController.mm  修改如下
+		/*
+		- (void)applicationDidEnterBackground:(UIApplication*)application
         {
-			Debug.Log("quit app");
-			if(ExploreManager.Instance != null){
-				ExploreManager.Instance.UpdateWordDataBase();
-			}
-			persistDataManager.SaveBuyRecord();
-			persistDataManager.SaveGameSettings();
-			persistDataManager.SaveMapEventsRecord();
-			persistDataManager.SaveCompletePlayerData();
-
-			MySQLiteHelper.Instance.CloseAllConnections();
+            UnitySendMessage("GameManager","SaveDataOnApplicationQuit",""); // 退回主界面时都进行保存操作
+            ::printf("-> applicationDidEnterBackground()\n");
         }
+        */
+        /// </summary>
+		public void SaveDataOnApplicationQuit(){
+			if (hasSavedDataOnQuit)
+            {
+                return;
+            }
+
+            Debug.Log("quit app");
+            if (ExploreManager.Instance != null)
+            {
+                ExploreManager.Instance.UpdateWordDataBase();
+            }
+            persistDataManager.SaveBuyRecord();
+            persistDataManager.SaveGameSettings();
+            persistDataManager.SaveMapEventsRecord();
+            persistDataManager.SaveCompletePlayerData();
+
+            MySQLiteHelper.Instance.CloseAllConnections();
+
+            hasSavedDataOnQuit = true;
+		}
+
+		void OnLowMemory()
+		{
+			Resources.UnloadUnusedAssets();
+			System.GC.Collect();
+		}
+        
+        
+
 
 	}
 }

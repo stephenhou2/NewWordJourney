@@ -234,7 +234,7 @@ Transform:
   m_GameObject: {fileID: 1724400239934142}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_Children:
   - {fileID: 4987374655802748}
   - {fileID: 4368261074712976}
@@ -291,7 +291,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 874173163
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
 --- !u!23 &23367858156406560
 MeshRenderer:
@@ -325,7 +325,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 874173163
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
 --- !u!23 &23487114590611710
 MeshRenderer:
@@ -359,7 +359,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 874173163
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
 --- !u!23 &23555862840371976
 MeshRenderer:
@@ -393,7 +393,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 874173163
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
 --- !u!23 &23772173061187768
 MeshRenderer:
@@ -427,7 +427,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 874173163
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
 --- !u!23 &23930134032090554
 MeshRenderer:
@@ -461,7 +461,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 874173163
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
 --- !u!23 &23969740484480716
 MeshRenderer:
@@ -495,7 +495,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 874173163
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
 --- !u!33 &33135229502146162
 MeshFilter:
@@ -584,6 +584,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: se_lingHunChongJi
   localPos: {x: 0, y: 0.5, z: 0}
+  playTime: 0
+  isProtectedBeforeEnd: 0
   effectCom: {fileID: 114381448289252706}
 --- !u!114 &114781692508393592
 MonoBehaviour:

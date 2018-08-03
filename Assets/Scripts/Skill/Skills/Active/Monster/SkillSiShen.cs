@@ -15,7 +15,7 @@ namespace WordJourney
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
 
-			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
+			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease/2;
 
 			if (magicResistCal < -50)
             {

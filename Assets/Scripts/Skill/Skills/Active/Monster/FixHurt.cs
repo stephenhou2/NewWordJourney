@@ -19,7 +19,7 @@ namespace WordJourney
 
 			switch(hurtType){
 				case HurtType.Physical:
-					int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+					int armorCal = enemy.agent.armor - self.agent.armorDecrease/2;
 
                     if (armorCal < -50)
                     {
@@ -31,7 +31,7 @@ namespace WordJourney
 					break;
 				case HurtType.Magical:
 
-					int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
+					int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease/2;
 
                     if (magicResistCal < -50)
                     {

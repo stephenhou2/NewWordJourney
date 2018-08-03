@@ -21,7 +21,7 @@ namespace WordJourney
 
 			this.cancelBuyCallBack = cancelBuyCallBack;
 
-			countDownText.text = "取消(<color=orange>5</color>)";
+			countDownText.text = "取消(<color=orange>30</color>)";
 
 			gameObject.SetActive (true);
 
@@ -30,25 +30,23 @@ namespace WordJourney
 		}
 
 		public void ConfirmBuyLife(){
-			StopCoroutine ("QueryCountDown");
 			confirmBuyCallBack ();
-			QuitBuyLifeView ();
 		}
 
 		public void CancelBuyLife(){
-			StopCoroutine ("QueryCountDown");
 			cancelBuyCallBack ();
 			QuitBuyLifeView ();
 		}
 
-		private void QuitBuyLifeView(){
+		public void QuitBuyLifeView(){
+			StopCoroutine("QueryCountDown");
 			gameObject.SetActive (false);
 		}
 
 
 		private IEnumerator QueryCountDown(){
 
-			int timer = 5;
+			int timer = 30;
 
 			while (timer > 0) {
 

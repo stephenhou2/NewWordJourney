@@ -69,7 +69,7 @@ namespace WordJourney
 		public void OnAddGemstoneButtonClick(){
 
 			if (Player.mainPlayer.totalGold < 50) {
-				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("金币不足");
+				tintHUD.SetUpSingleTextTintHUD ("金币不足");
 				return;
 			}
 
@@ -80,7 +80,7 @@ namespace WordJourney
 			}
 
 			if (equipment.attachedPropertyGemstone.itemId != -1) {
-				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD ("该装备已经镶嵌过宝石");
+				tintHUD.SetUpSingleTextTintHUD ("该装备已经镶嵌过宝石");
 				return;
 			}
 

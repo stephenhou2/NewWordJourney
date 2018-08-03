@@ -52,7 +52,7 @@ namespace WordJourney
 		/// </summary>
 		private void LoadDatas(){
          
-			GameManager.Instance.gameDataCenter.InitPersistentGameData ();
+			//GameManager.Instance.gameDataCenter.InitPersistentGameData ();
 
 			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData ();
 

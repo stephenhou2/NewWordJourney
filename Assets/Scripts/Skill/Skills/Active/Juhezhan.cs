@@ -38,7 +38,7 @@ namespace WordJourney
             // 加上技能产生的额外伤害
 			hurt += hurtBase * skillLevel + fixHurt;
          
-			int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+			int armorCal = enemy.agent.armor - self.agent.armorDecrease/2;
 
             if (armorCal < -50)
             {

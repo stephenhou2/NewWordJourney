@@ -129,10 +129,17 @@ namespace WordJourney
 			}
 
 			Item generatedItem = spellItem.GenerateItem();
-         
-			Player.mainPlayer.AddItem(generatedItem);
 
-			ExploreManager.Instance.expUICtr.UpdateBottomBar();
+			//bool bagFull = Player.mainPlayer.CheckBagFull(generatedItem);
+
+			//if(bagFull){
+			//	ExploreManager.Instance.newMapGenerator.SetUpRewardInMap(generatedItem, ExploreManager.Instance.battlePlayerCtr.transform.position);
+			//	return;
+			//}
+         
+			//Player.mainPlayer.AddItem(generatedItem);
+
+			//ExploreManager.Instance.expUICtr.UpdateBottomBar();
 
 			itemDisplay.SetUpItemDisplayView(generatedItem);
 

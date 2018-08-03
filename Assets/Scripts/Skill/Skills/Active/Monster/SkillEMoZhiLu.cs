@@ -23,7 +23,7 @@ namespace WordJourney
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
 
-			int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+			int armorCal = enemy.agent.armor - self.agent.armorDecrease/2;
 
 			if (armorCal < -50)
             {

@@ -260,24 +260,31 @@ namespace WordJourney
 			for(int i = 0;i<allEquipedEquipments.Length;i++){
 				allEquipedEquipments [i] = new Equipment ();
 			}
-				
 
-			for (int i = 0; i < allEquipmentsInBag.Count; i++) {
-				
-				Equipment e = allEquipmentsInBag [i];
 
-				if (!e.equiped) {
-					continue;
+			//for (int i = 0; i < allEquipmentsInBag.Count; i++) {
+
+			//	Equipment e = allEquipmentsInBag [i];
+
+			//	if (!e.equiped) {
+			//		continue;
+			//	}
+			//	int equipmentTypeIndex = (int)e.equipmentType;
+
+			//	if (e.equipmentType == EquipmentType.Ring && allEquipedEquipments [5].itemId >= 0) {
+			//		allEquipedEquipments [6] = e;
+			//	}else{
+			//		allEquipedEquipments[equipmentTypeIndex] = e;
+			//	}
+
+
+			//}
+
+			for (int i = 0; i < playerData.allEquipedEquipments.Length;i++){
+				Equipment e = playerData.allEquipedEquipments[i];
+				if(e.itemId >=0){
+					allEquipedEquipments[i] = e;
 				}
-				int equipmentTypeIndex = (int)e.equipmentType;
-
-				if (equipmentTypeIndex == 0 && allEquipedEquipments [0].itemId >= 0) {
-					allEquipedEquipments [6] = e;
-				}
-
-				allEquipedEquipments [equipmentTypeIndex] = e;
-
-
 			}
             
 			this.currentLevelIndex = playerData.currentLevelIndex;

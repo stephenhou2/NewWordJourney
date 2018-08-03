@@ -80,7 +80,9 @@ namespace WordJourney
 				controller.InitiatePurchase (productId);
 			}catch(Exception e){
 				Debug.Log (e);
-				purchaseFailCallback ();
+				if(purchaseFailCallback != null){
+					purchaseFailCallback ();
+                }
 			}
 
 		}
@@ -109,7 +111,9 @@ namespace WordJourney
 
 			BuyRecord.Instance.PurchaseSuccess (e.purchasedProduct.definition.id);
 
-			purchaseSucceedCallback ();
+			if(purchaseSucceedCallback != null){
+				purchaseSucceedCallback ();
+            }
 
 			return PurchaseProcessingResult.Complete;
 		}
@@ -120,7 +124,9 @@ namespace WordJourney
 		public void OnPurchaseFailed (Product i, PurchaseFailureReason p)
 		{
 			Debug.Log ("purchase failed!!");
-			purchaseFailCallback ();
+			if(purchaseFailCallback != null){
+				purchaseFailCallback ();
+            }
 		}
 
 

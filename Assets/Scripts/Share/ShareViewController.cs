@@ -16,6 +16,12 @@ namespace WordJourney
 		WeChat
 	}
 
+	public enum ShareResult
+	{
+		Succeed,
+		Faild,
+		Canceled
+	}
 
 	public class ShareViewController : ZoomHUD
 	{
@@ -46,13 +52,14 @@ namespace WordJourney
 
 		private CallBack quitShareCallBack;
 
+		private ShareResult shareResult;
+
 		// Use this for initialization
 		void Start()
 		{
 			ssdk = Camera.main.GetComponent<ShareSDK>();
 			//处理回调函数
 			ssdk.shareHandler = ShareResultHandler;
-
 		}
         
 		/// <summary>
@@ -66,6 +73,8 @@ namespace WordJourney
          
 			this.shareType = shareType;
 
+			shareResult = ShareResult.Canceled;
+
 			this.shareSucceedCallBack = shareSucceedCallBack;
 
 			this.shareFailedCallBack = shareFailedCallBack;
@@ -77,9 +86,6 @@ namespace WordJourney
 			DateTime installDate = Convert.ToDateTime(GameManager.Instance.gameDataCenter.gameSettings.installDateString);
 
 			TimeSpan timeSpan = now.Subtract(installDate);
-
-			//Debug.LogFormat("安装日期：{0}", installDate);
-			//Debug.LogFormat("当前日期：{0}", now);
 
 			learnedDaysText.text = string.Format("<size=60>{0}</size>  天", timeSpan.Days + 1);
 
@@ -137,47 +143,43 @@ namespace WordJourney
 			shareButton.enabled = true;
 
 			if (state == ResponseState.Success)
-			{
-				
-				if (shareSucceedCallBack != null)
-				{
-					shareSucceedCallBack();
-				}
-
-				DataHandler.DeleteFile(Application.persistentDataPath + "/tempPics/shareImage.png");
+			{            
+				shareResult = ShareResult.Succeed;
 			}
 			else if (state == ResponseState.Fail)
-			{       
-				
-
-				if (shareFailedCallBack != null)
-				{
-					shareFailedCallBack();
-				}
-
-				DataHandler.DeleteFile(Application.persistentDataPath + "/tempPics/shareImage.png");
+			{            
+				shareResult = ShareResult.Faild;
 			}
 			else if (state == ResponseState.Cancel)
-			{            
-				DataHandler.DeleteFile(Application.persistentDataPath + "/tempPics/shareImage.png");
+			{
+				shareResult = ShareResult.Canceled;
 			}
+
+			DataHandler.DeleteFile(Application.persistentDataPath + "/tempPics/shareImage.jpg");
+
+			QuitShareView();
 		}
 
 
 		private IEnumerator TrimScreenShotAndShare()
 		{
-
+                 
 			yield return new WaitForEndOfFrame();
-
+           
 			Texture2D texture = ScreenCapture.CaptureScreenshotAsTexture();
 
 			Debug.LogFormat("截屏图片大小[{0},{1}]", texture.width, texture.height);
 
-			int shareHUDWidth = (int)((shareShotcutRect.transform as RectTransform).rect.width / CommonData.scalerToPresetResulotion);
-			int shareHUDHeight = (int)((shareShotcutRect.transform as RectTransform).rect.height / CommonData.scalerToPresetResulotion);
+			float transferScaler = 1f;
 
-			int offsetYFix = (int)shareShotcutRect.localPosition.y;
+			if(Camera.main.pixelWidth < 1080f){
+				transferScaler = CommonData.scalerToPresetW;
+			}
 
+			int shareHUDWidth = (int)((shareShotcutRect.transform as RectTransform).rect.width * transferScaler);
+			int shareHUDHeight = (int)((shareShotcutRect.transform as RectTransform).rect.height * transferScaler);
+
+			int offsetYFix = (int)(shareShotcutRect.localPosition.y * transferScaler);         
 			int offsetX = (texture.width - shareHUDWidth) / 2;
 			int offsetYMin = (texture.height - shareHUDHeight) / 2 + offsetYFix;
 			int offsetYMax = (texture.height + shareHUDHeight) / 2 + offsetYFix;
@@ -195,53 +197,65 @@ namespace WordJourney
 
 				}
 			}
+         
+
 
 			newT2d.Apply();
 
-			Texture2D resizedT2d = ScaleTexture(newT2d, shareHUDWidth, shareHUDHeight);
 
-			byte[] trimImgData = resizedT2d.EncodeToPNG();
+			byte[] trimImgData = newT2d.EncodeToJPG();
+
 
 			if (!DataHandler.DirectoryExist(Application.persistentDataPath + "/tempPics"))
 			{
 				DataHandler.CreateDirectory(Application.persistentDataPath + "/tempPics");
 			}
 
-			string trimImgPath = Application.persistentDataPath + "/tempPics/shareImage.png";
+			string trimImgPath = Application.persistentDataPath + "/tempPics/shareImage.jpg";
 
 			File.WriteAllBytes(trimImgPath, trimImgData);
-            
+
+			Destroy(texture);
+			Destroy(newT2d);
+
+			texture = null;
+			newT2d = null;
+			trimImgData = null;
+
+			Resources.UnloadUnusedAssets();
+			GC.Collect();
             
 #if UNITY_EDITOR
-            
+			//DataHandler.DeleteFile(Application.persistentDataPath + "/tempPics/shareImage.jpg");
+			QuitShareView();
 #elif UNITY_IOS || UNITY_ANDROID
 			Share();
 #endif
 
 		}
 
-		private Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
-		{
-			Texture2D result = new Texture2D(targetWidth, targetHeight, source.format, false);
+		//private Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
+		//{
+		//	Texture2D result = new Texture2D(targetWidth, targetHeight, source.format, false);
 
-			for (int i = 0; i < result.height; ++i)
-			{
-				for (int j = 0; j < result.width; ++j)
-				{
-					Color newColor = source.GetPixelBilinear((float)j / (float)result.width, (float)i / (float)result.height);
-					result.SetPixel(j, i, newColor);
-				}
-			}
+		//	for (int i = 0; i < result.height; ++i)
+		//	{
+		//		for (int j = 0; j < result.width; ++j)
+		//		{
+		//			Color newColor = source.GetPixelBilinear((float)j / (float)result.width, (float)i / (float)result.height);
+		//			result.SetPixel(j, i, newColor);
+		//		}
+		//	}
 
-			result.Apply();
-			return result;
-		}
+		//	result.Apply();
+		//	return result;
+		//}
 
 
 		private void Share()
 		{
 
-			string shareImgPath = Application.persistentDataPath + "/tempPics/shareImage.png";
+			string shareImgPath = Application.persistentDataPath + "/tempPics/shareImage.jpg";
 
 			ShareContent content = new ShareContent();
 
@@ -249,14 +263,14 @@ namespace WordJourney
 			{
 
 				case ShareType.WeChat:
-                               
+
 					content.SetImagePath(shareImgPath);
 
-					//设置分享的类型
+					// 设置分享的类型
 					content.SetShareType(ContentType.Image);
 
-                    //直接分享
-                    ssdk.ShareContent(PlatformType.WeChatMoments, content);
+					// 直接分享
+					ssdk.ShareContent(PlatformType.WeChatMoments, content);
 
                     break;
                 case ShareType.Weibo:
@@ -288,7 +302,24 @@ namespace WordJourney
 			}
 
 			zoomCoroutine = HUDZoomOut(delegate {
-				GameManager.Instance.UIManager.RemoveCanvasCache("ShareCanvas");            
+				GameManager.Instance.UIManager.RemoveCanvasCache("ShareCanvas"); 
+				switch(shareResult){
+					case ShareResult.Succeed:
+						if(shareSucceedCallBack != null){
+							shareSucceedCallBack();
+						}                  
+						break;
+					case ShareResult.Faild:
+						if(shareFailedCallBack != null){
+							shareFailedCallBack();
+						}
+						break;
+					case ShareResult.Canceled:
+						//if(shareFailedCallBack != null){
+						//	shareFailedCallBack();
+						//}
+						break;
+				}
 			});
 
 			StartCoroutine(zoomCoroutine);

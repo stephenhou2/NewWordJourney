@@ -88,7 +88,7 @@ namespace WordJourney
 					oriPhysicalHurt = (int)(oriPhysicalHurt * self.agent.critHurtScaler);
 				}
 
-				int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+				int armorCal = enemy.agent.armor - self.agent.armorDecrease/2;
 
 				if (armorCal < -50)
                 {
@@ -110,7 +110,7 @@ namespace WordJourney
 
 			if (self.agent.magicAttack > 0) {
 
-				int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
+				int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease/2;
 
 				if (magicResistCal < -50)
                 {

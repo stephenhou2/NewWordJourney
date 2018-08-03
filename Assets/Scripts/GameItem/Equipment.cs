@@ -542,9 +542,9 @@ namespace WordJourney
 			}
 
 			if (oriMagicResistDecreaseGain > 0) {
-				sb.AppendFormat ("魔法穿透 +{0}\n", magicResistDecreaseGain);
+				sb.AppendFormat ("抗性穿透 +{0}\n", magicResistDecreaseGain);
 			} else if (oriMagicResistDecreaseGain == 0 && magicResistDecreaseGain > 0) {
-				attachedSb.AppendFormat ("魔法穿透 +{0}\n", magicResistDecreaseGain);
+				attachedSb.AppendFormat ("抗性穿透 +{0}\n", magicResistDecreaseGain);
 			}
 				
 			if (oriMoveSpeedGain > 0) {

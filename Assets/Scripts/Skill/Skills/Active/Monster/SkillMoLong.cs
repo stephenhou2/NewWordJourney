@@ -20,7 +20,7 @@ namespace WordJourney
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self, BattleAgentController enemy)
 		{
 
-			int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+			int armorCal = enemy.agent.armor - self.agent.armorDecrease/2;
 
 			if (armorCal < -50)
             {
@@ -28,7 +28,7 @@ namespace WordJourney
             }
 			int actualPhysicalHurt = Mathf.RoundToInt(physicalHurt / (armorCal/ 100f + 1));
 
-			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
+			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease/2;
 
 			if (magicResistCal < -50)
             {
@@ -65,13 +65,17 @@ namespace WordJourney
 
 			while(count < durativeHurtDuration){
 
-				enemy.AddHurtAndShow(durativeHurtBase, HurtType.Physical, self.towards);
+				if(enemy != null && !enemy.isDead){
+					
+					enemy.AddHurtAndShow(durativeHurtBase, HurtType.Physical, self.towards);
+					
+					enemy.CheckFightEnd();
 
-				enemy.CheckFightEnd();
+					yield return new WaitForSeconds(1.0f);
+                }
 
 				count++;
 
-				yield return new WaitForSeconds(1.0f);
 			}
 
 

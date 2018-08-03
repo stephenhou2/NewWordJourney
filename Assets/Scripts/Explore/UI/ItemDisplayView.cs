@@ -24,7 +24,11 @@ namespace WordJourney
 		public Sprite goldFrame;
 		public Sprite purpleFrame;
 
+		private Item rewardItem;
+
 		public void SetUpItemDisplayView(Item item){
+
+			this.rewardItem = item;
 
 			this.gameObject.SetActive(true);
 
@@ -104,8 +108,12 @@ namespace WordJourney
          
 			QuitItemDisplayView();
 
-			ExploreManager.Instance.MapWalkableEventsStartAction();
+		}
 
+		private void SetUpRewardInMap(){
+			ExploreManager.Instance.newMapGenerator.SetUpRewardInMap(rewardItem, ExploreManager.Instance.battlePlayerCtr.transform.position);
+			ExploreManager.Instance.MapWalkableEventsStartAction();
+            ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 		}
 
 		private void QuitItemDisplayView(){
@@ -119,13 +127,10 @@ namespace WordJourney
 				StopCoroutine(zoomCoroutine);
 			}
 
-			zoomCoroutine = HUDZoomOut();
+			zoomCoroutine = HUDZoomOut(SetUpRewardInMap);
 
 			StartCoroutine(zoomCoroutine);
-
-			ExploreManager.Instance.MapWalkableEventsStartAction();
-			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-
+         
 		}
 
         

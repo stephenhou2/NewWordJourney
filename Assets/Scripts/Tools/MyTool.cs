@@ -263,7 +263,7 @@ namespace WordJourney
 				propertyName = "护甲穿透";
 				break;
 			case PropertyType.MagicResistDecrease:
-				propertyName = "魔法穿透";
+				propertyName = "抗性穿透";
 				break;
 			case PropertyType.Crit:
 				propertyName = "暴击";

@@ -24,7 +24,7 @@ namespace WordJourney
 			// 计算原始伤害值
 			int hurt = self.agent.attack + fixHurt + hurtBase * skillLevel;
 
-			int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+			int armorCal = enemy.agent.armor - self.agent.armorDecrease/2;
 
 			if (armorCal < -50)
             {

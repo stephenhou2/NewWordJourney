@@ -15,11 +15,16 @@ namespace WordJourney
 			EquipmentModels,
 			ConsumablesModels,
 			SkillGemstoneModels,
+            SpecialItemModels,
+			SkillScrollModels,
+            SpellItemModels,
 			EquipmentSprites,
 			ConsumablesSprites,
 			SkillGemstoneSprites,
-			SpellItemSprites,
+			SpecialItemSprites,
+            SkillScrollSprites,
 			MapSprites,
+            MapTileAtlas,
             CharacterSprites,
 			Skills,
 			SkillSprites,
@@ -28,7 +33,16 @@ namespace WordJourney
 			Effects,
             Proverbs,
             ChatRecord,
-            Diary
+            Diary,
+            ExploreScene,
+            BagCanvas,
+            NPCCanvas,
+            ShareCanvas,
+            SettingCanvas,
+            RecordCanvas,
+            HomeCanvas,
+            LoadingCanvas,
+            GuideCanvas
 		}
 
 		private GameSettings mGameSettings;
@@ -52,9 +66,9 @@ namespace WordJourney
         private List<HLHSentenceAndPoem> mAllProverbs = new List<HLHSentenceAndPoem>();
 		private List<HLHNPCChatRecord> mChatRecords = new List<HLHNPCChatRecord>();
 		private List<MapEventsRecord> mMapEventsRecords = new List<MapEventsRecord>();
-		private List<DiaryModel> mDiaryModels = new List<DiaryModel>();
+		private List<DiaryModel> mAllDiaryModels = new List<DiaryModel>();
 
-		public void InitPersistentGameData(){
+		public void InitExplorePrepareGameData(){
 			LoadEquipmentModels ();
 			LoadAllEquipmentSprites ();
 			LoadAllSkills ();
@@ -310,23 +324,23 @@ namespace WordJourney
 
 		public List<DiaryModel> diaryModels{         
 			get{
-				if(mDiaryModels.Count == 0){
+				if(mAllDiaryModels.Count == 0){
 					LoadDiaryModels();
 				}
-				return mDiaryModels;
+				return mAllDiaryModels;
 			}          
 		}
 
 		private void LoadDiaryModels(){
 
-			if(mDiaryModels.Count > 0){
+			if(mAllDiaryModels.Count > 0){
 				return;
 			}
 
 			DiaryModel[] diaryModelArray = DataHandler.LoadDataToModelsWithPath<DiaryModel>(CommonData.diaryDataFilePath);
 
 			for (int i = 0; i < diaryModelArray.Length;i++){
-				mDiaryModels.Add(diaryModelArray[i]);
+				mAllDiaryModels.Add(diaryModelArray[i]);
 			}         
 		}
 
@@ -851,53 +865,119 @@ namespace WordJourney
 		private void ReleaseDataWithName(GameDataType type){
 
 			switch (type) {
-			case GameDataType.GameSettings:
-				mGameSettings = null;
-				break;
-			case GameDataType.GameLevelDatas:
-				mGameLevelDatas.Clear ();
-				break;
-			case GameDataType.EquipmentModels:
-				mAllEquipmentModels.Clear ();
-				break;
-			case GameDataType.ConsumablesModels:
-				mAllConsumablesModels.Clear ();
-				break;
-			case GameDataType.SkillGemstoneModels:
-				mAllPropertyGemstoneModels.Clear ();
-				break;
-			case GameDataType.EquipmentSprites:
-				mAllEquipmentSprites.Clear ();
-				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allEquipmentSpritesBundleName,true);
-				break;
-			case GameDataType.ConsumablesSprites:
-				mAllConsumablesSprites.Clear ();
-				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allConsumablesSpritesBundleName,true);
-				break;
-			case GameDataType.SkillGemstoneSprites:
-				mAllPropertyGemstoneSprites.Clear ();
-				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allPropertyGemstoneSpritesBundleName,true);
-				break;
-			case GameDataType.MapSprites:
-				mAllMapSprites.Clear ();
-				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allMapSpritesBundleName,true);
-				break;
-			case GameDataType.Skills:
-				mAllSkills.Clear ();
-				TransformManager.DestroyTransfromWithName ("AllSkills");
-				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allSkillsBundleName,true);
-				break;
-			case GameDataType.SkillSprites:
-				mAllSkillSprites.Clear ();
-				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allSkillSpritesBundleName,true);
-				break;
-			case GameDataType.Monsters:
-//				TransformManager.DestroyTransfromWithName ("MonstersContainer", TransformRoot.InstanceContainer);
-				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allMonstersBundleName,true);
-				break;
-//			case GameDataType.NPCs:
-//				mAllNpcs.Clear ();
-//				break;
+    			case GameDataType.GameSettings:
+    				mGameSettings = null;
+    				break;
+    			case GameDataType.GameLevelDatas:
+    				mGameLevelDatas.Clear ();
+    				break;
+    			case GameDataType.EquipmentModels:
+    				mAllEquipmentModels.Clear ();
+    				break;
+    			case GameDataType.ConsumablesModels:
+    				mAllConsumablesModels.Clear ();
+    				break;
+    			case GameDataType.SkillGemstoneModels:
+    				mAllPropertyGemstoneModels.Clear ();
+    				break;
+    			case GameDataType.SpecialItemModels:
+    				mAllSpecialItemModels.Clear();
+    				break;
+    			case GameDataType.SpellItemModels:
+    				mAllSpellItemModels.Clear();
+    				break;
+    			case GameDataType.SkillScrollModels:
+                    mAllSkillScrollModels.Clear();
+                    break;
+    			case GameDataType.EquipmentSprites:
+    				mAllEquipmentSprites.Clear ();
+    				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allEquipmentSpritesBundleName,true);
+    				break;
+    			case GameDataType.ConsumablesSprites:
+    				mAllConsumablesSprites.Clear ();
+    				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allConsumablesSpritesBundleName,true);
+    				break;
+    			case GameDataType.SkillGemstoneSprites:
+    				mAllPropertyGemstoneSprites.Clear ();
+    				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allPropertyGemstoneSpritesBundleName,true);
+    				break;
+    			case GameDataType.SpecialItemSprites:
+    				mAllSpecialItemSprites.Clear();
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.allSpecialItemSpritesBundleName, true);
+    				break;
+    			case GameDataType.SkillScrollSprites:
+    				mAllSkillScrollSprites.Clear();
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.allSkillScrollSpritesBundleName, true);
+    				break;
+    			case GameDataType.MapSprites:
+    				mAllMapSprites.Clear ();
+    				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allMapSpritesBundleName,true);
+    				break;
+    			case GameDataType.MapTileAtlas:
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.mapTileset_1_BundleName, true);
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.mapTileset_2_BundleName, true);
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.mapTileset_3_BundleName, true);
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.mapTileset_4_BundleName, true);
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.mapTileset_5_BundleName, true);
+    				break;
+    			case GameDataType.CharacterSprites:
+    				mAllCharacterSprites.Clear();
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.allCharacterSpritesBundleName, true);
+    				break;
+    			case GameDataType.Skills:
+    				mAllSkills.Clear ();
+    				TransformManager.DestroyTransfromWithName ("AllSkills");
+    				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allSkillsBundleName,true);
+    				break;
+    			case GameDataType.SkillSprites:
+    				mAllSkillSprites.Clear ();
+    				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allSkillSpritesBundleName,true);
+    				break;
+    			case GameDataType.Monsters:
+    				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allMonstersBundleName,true);
+    				break;
+    			case GameDataType.NPCs:
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.allMapNpcBundleName, true);
+    				break;
+    			case GameDataType.Effects:
+    				mAllEffects.Clear();
+    				TransformManager.DestroyTransfromWithName("AllEffects");
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.allEffectsBundleName, true);
+    				break;
+    			case GameDataType.Diary:
+    				mAllDiaryModels.Clear();
+    				break;
+    			case GameDataType.Proverbs:
+    				mAllProverbs.Clear();
+    				break;
+				case GameDataType.ChatRecord:
+					mChatRecords.Clear();
+					break;
+    			case GameDataType.BagCanvas:
+    				GameManager.Instance.UIManager.RemoveCanvasCache("BagCanvas");
+    				break;
+    			case GameDataType.SettingCanvas:
+    				GameManager.Instance.UIManager.RemoveCanvasCache("SettingCanvas");
+    				break;
+    			case GameDataType.NPCCanvas:
+    				GameManager.Instance.UIManager.RemoveCanvasCache("NPCCanvas");
+    				break;
+    			case GameDataType.LoadingCanvas:
+    				GameManager.Instance.UIManager.RemoveCanvasCache("LoadingCanvas");               
+    				break;
+    			case GameDataType.GuideCanvas:
+    				GameManager.Instance.UIManager.RemoveCanvasCache("GuideCanvas");
+    				break;
+    			case GameDataType.RecordCanvas:
+    				GameManager.Instance.UIManager.RemoveCanvasCache("RecordCanvas");
+    				break;
+    			case GameDataType.HomeCanvas:
+    				GameManager.Instance.UIManager.RemoveCanvasCache("HomeCanvas");
+    				break;
+    			case GameDataType.ExploreScene:
+    				GameManager.Instance.UIManager.RemoveCanvasCache("ExploreCanvas");
+    				MyResourceManager.Instance.UnloadAssetBundle(CommonData.exploreSceneBundleName, true);
+    				break;
 			}
 		}
 

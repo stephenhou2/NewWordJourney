@@ -35,6 +35,8 @@ namespace WordJourney
 
 		public bool hasReward = true;
 
+		private MyTowards boneTowards;
+
 		public void SetPosTransferSeed(int mapHeight){
 			this.mapHeight = mapHeight;
 		}
@@ -294,7 +296,7 @@ namespace WordJourney
 
 			int towardsIndex = Random.Range (0, 4);
 
-			MyTowards boneTowards = MyTowards.Right;
+			boneTowards = MyTowards.Right;
 
 			switch (towardsIndex) {
 			case 0:
@@ -316,14 +318,7 @@ namespace WordJourney
 				break;
 			}
 
-			switch(boneTowards){
-				case MyTowards.Right:
-					alertTint.transform.localPosition = new Vector3(alertIconOffsetX, alertIconOffsetY, 0);
-					break;
-				case MyTowards.Left:
-					alertTint.transform.localPosition = new Vector3(-alertIconOffsetX, alertIconOffsetY, 0);
-					break;
-			}
+
 
 
 		}
@@ -334,6 +329,16 @@ namespace WordJourney
 		/// </summary>
 		/// <returns>The to fight icon shining.</returns>
 		private void AlertTintSpark(){
+
+			switch (boneTowards)
+            {
+                case MyTowards.Right:
+                    alertTint.transform.localPosition = new Vector3(alertIconOffsetX, alertIconOffsetY, 0);
+                    break;
+                case MyTowards.Left:
+                    alertTint.transform.localPosition = new Vector3(-alertIconOffsetX, alertIconOffsetY, 0);
+                    break;
+            }
          
 			alertTint.gameObject.SetActive(true);
 
@@ -452,12 +457,12 @@ namespace WordJourney
 				
 				battlePlayerCtr.TowardsLeft(!battlePlayerCtr.isInFight);
             
-                if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX - 1, playerPosY] == 1) {
-					monsterRunPos = new Vector3(playerPosX - 0.5f, playerPosY, 0);
+				if (playerPosX - 1 >= minX && playerPosX - 1 == monsterPosX && playerPosY == monsterPosY) {
+					monsterRunPos = new Vector3(playerPosX - 1f, playerPosY, 0);
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
-                } else if (playerPosX - 1 >= minX && playerPosX - 1 == monsterPosX && playerPosY == monsterPosY) {
-					monsterRunPos = new Vector3(playerPosX - 1f, playerPosY, 0);
+				} else if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX - 1, playerPosY] == 1) {
+					monsterRunPos = new Vector3(playerPosX - 0.5f, playerPosY, 0);
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
                 } else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
@@ -568,12 +573,12 @@ namespace WordJourney
 
 				battlePlayerCtr.TowardsRight (!battlePlayerCtr.isInFight);
             
-                if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [playerPosX + 1, playerPosY] == 1) {
-					monsterRunPos = new Vector3(playerPosX + 0.5f, playerPosY, 0);
+				if (playerPosX + 1 <= maxX && playerPosX + 1 == monsterPosX && playerPosY == monsterPosY) {
+					monsterRunPos = new Vector3(playerPosX + 1f, playerPosY, 0);
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
-                } else if (playerPosX + 1 <= maxX && playerPosX + 1 == monsterPosX && playerPosY == monsterPosY) {
-					monsterRunPos = new Vector3(playerPosX + 1f, playerPosY, 0);
+                } else if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX + 1, playerPosY] == 1) {
+					monsterRunPos = new Vector3(playerPosX + 0.5f, playerPosY, 0);
 					monsterFightPos = new Vector3 (playerPosX + 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
                 } else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
@@ -628,8 +633,10 @@ namespace WordJourney
 
 					if(transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x){
 						baCtr.TowardsRight();
+						boneTowards = MyTowards.Right;
 					}else{
 						baCtr.TowardsLeft();
+						boneTowards = MyTowards.Left;
 					}
 
 					if (!battlePlayerCtr.isInEscaping && !battlePlayerCtr.isInFight) {
@@ -668,18 +675,11 @@ namespace WordJourney
 			if (targetPosY == oriPosY) {
 				if (targetPosX >= oriPosX) {
 					baCtr.TowardsRight ();
+					boneTowards = MyTowards.Right;
 					alertTint.transform.localPosition = new Vector3 (alertIconOffsetX, alertIconOffsetY, 0);
-					//if (tmPro != null)
-					//{
-					//	tmPro.transform.localPosition = new Vector3(alertIconOffsetX-1000, alertIconOffsetY, 0);
-					//}
 				} else {
 					baCtr.TowardsLeft ();
-					alertTint.transform.localPosition = new Vector3 (-alertIconOffsetX, alertIconOffsetY, 0);
-					//if (tmPro != null)
-					//{
-					//	tmPro.transform.localPosition = new Vector3(-alertIconOffsetX-1000, alertIconOffsetY, 0);
-					//}
+					boneTowards = MyTowards.Left;
 				}
 			} 
 			else if(targetPosX == oriPosX){

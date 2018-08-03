@@ -107,13 +107,23 @@ namespace WordJourney
 				tintImage.enabled = false;
 				return;
 			}
-
+            
 			GameObject draggedObject = GetDraggedObject (eventData);
 
 			// 准备装上的装备
 			Equipment equipmentPrepareToLoad = itemInBag as Equipment;
 
-            bagView.GetComponent<BagViewController>().currentSelectItem = equipmentPrepareToLoad;
+
+			ItemDragControl dragControl = draggedObject.GetComponent<ItemDragControl>();
+
+			if(dragControl == null){
+				return;
+			}
+
+			if(bagView != null && !(dragControl is SpecialOperationItemDragControl)){
+				
+				bagView.GetComponent<BagViewController>().currentSelectItem = equipmentPrepareToLoad;
+            }
 
 			int indexInPanel = (int)equipmentPrepareToLoad.equipmentType;
 
@@ -127,7 +137,7 @@ namespace WordJourney
 			Equipment equipmentPrepareToUnload = Player.mainPlayer.allEquipedEquipments[indexInPanel];
 
 			// 如果是从装备栏中拖拽出来的物品
-			if (draggedObject.GetComponent<EquipedItemDragControl>() != null) {
+			if (dragControl is EquipedItemDragControl) {
 
 				SetDropResult (eventData, true);
 
@@ -136,7 +146,7 @@ namespace WordJourney
 			}
 
 			// 如果是从背包中拖拽出来的物品
-			if (draggedObject.GetComponent<ItemInBagDragControl>() != null) {
+			else if (dragControl is ItemInBagDragControl) {
 
 				PropertyChange propertyChangeFromUnload = new PropertyChange();
 
@@ -171,13 +181,7 @@ namespace WordJourney
 				bagView.RemoveBagItemAt (oriItemIndexInBag + (equipmentPrepareToUnload.itemId >= 0 ? 1 : 0));
 
 				SetDropResult (eventData, true);
-
-				//if (!Player.mainPlayer.CheckBagFull (equipmentPrepareToUnload)) {
-
-				//	bagView.GetComponent<BagViewController> ().AddItemInWait ();
-
-				//}
-
+            
 				bagView.SetUpItemDetail (equipmentPrepareToLoad);
 
 				tintImage.enabled = false;
@@ -185,6 +189,12 @@ namespace WordJourney
 				return;
 
 			}
+
+			//else if(dragControl is SpecialOperationItemDragControl){
+			//	SpecialOperationCell specialOperationCell = dragControl.GetComponent<SpecialOperationCell>();            
+   //             specialOperationCell.ResetSpecialOperationCell();
+   //             SetDropResult(eventData, true);            
+			//}
 
 			tintImage.enabled = false;
 

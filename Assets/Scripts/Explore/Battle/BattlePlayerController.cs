@@ -1202,6 +1202,8 @@ namespace WordJourney
 
 		public void QuitExplore(){
 
+			AllEffectAnimsIntoPool();
+
 			ClearReference ();
 
 			gameObject.SetActive (false);

@@ -29,28 +29,27 @@ namespace WordJourney
 		public void SetUpPurchasePendingHUD(string productId, CallBack purchaseFinishCallBack)
 		{
 
-			//Time.timeScale = 0;
+			Time.timeScale = 0;
 
 			currentPurchasingItemId = productId;
 
             this.purchaseFinishCallBack = purchaseFinishCallBack;
+
+			gameObject.SetActive(true);
 
 
 #if UNITY_IPHONE || UNITY_EDITOR   
 
 			pendingTint.gameObject.SetActive(true);
 			queryShareHUD.gameObject.SetActive(false);
-
-			gameObject.SetActive(true);
-                     
+      
 			StartCoroutine("PendingTintRotate");
-
+         
 			GameManager.Instance.purchaseManager.PurchaseProduct(productId, OnPurchaseSucceed, OnPurchaseFail);
-
-#elif UNITY_ANDROID
+         
+#elif UNITY_ANDROID         
 			pendingTint.gameObject.SetActive(false);
-			queryShareHUD.gameObject.SetActive(true);
-			ShowShareQueryHUD();
+            ShowShareQueryHUD();
 #endif         
 		}
 
@@ -115,6 +114,9 @@ namespace WordJourney
 
 			tintHUD.SetUpSingleTextTintHUD(purchaseResult);
 
+			BuyRecord.Instance.PurchaseSuccess(currentPurchasingItemId);
+
+         
 			if(purchaseFinishCallBack != null){
 				purchaseFinishCallBack();
 			}
@@ -158,6 +160,8 @@ namespace WordJourney
 		}
 
 		private void QuitPurchasePendingHUD(){
+
+			Time.timeScale = 1f;
 
 #if UNITY_IPHONE || UNITY_EDITOR         
 			StopCoroutine ("PendingTintRotate");

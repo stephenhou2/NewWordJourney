@@ -27,10 +27,7 @@ namespace WordJourney
 			self.AddManaGainAndShow(manaGain);
 
 			self.SetEffectAnim(selfEffectAnimName);
-
-            if(self.isInFight && self is BattlePlayerController){
-                ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
-            }      
+   
 		}
 
 	}

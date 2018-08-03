@@ -7257,6 +7257,16 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114628218187340250, guid: b39fbdfc467834e0caf272b48219ac0e,
+        type: 2}
+      propertyPath: allLearnedSkills.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114628218187340250, guid: b39fbdfc467834e0caf272b48219ac0e,
+        type: 2}
+      propertyPath: allLearnedSkillsRecord.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 224083384738156512, guid: b39fbdfc467834e0caf272b48219ac0e,
         type: 2}
       propertyPath: m_LocalPosition.x
@@ -7355,6 +7365,16 @@ Prefab:
     - target: {fileID: 1692192011387874, guid: b39fbdfc467834e0caf272b48219ac0e, type: 2}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114628218187340250, guid: b39fbdfc467834e0caf272b48219ac0e,
+        type: 2}
+      propertyPath: allLearnedSkillsRecord.Array.data[0].skillLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114628218187340250, guid: b39fbdfc467834e0caf272b48219ac0e,
+        type: 2}
+      propertyPath: allLearnedSkillsRecord.Array.data[0].skillId
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b39fbdfc467834e0caf272b48219ac0e, type: 2}
@@ -9675,18 +9695,25 @@ MonoBehaviour:
   devInfo:
     sinaweibo:
       Enable: 1
-      app_key: 568898243
-      app_secret: 38a4f8204cc784f81f9f0daaf31e02e3
-      redirect_uri: https://www.sharesdk.cn
-      auth_type: both
+      SortId: 4
+      AppKey: 568898243
+      AppSecret: 38a4f8204cc784f81f9f0daaf31e02e3
+      RedirectUrl: http://www.sharesdk.cn
+      ShareByAppClient: 0
     wechat:
       Enable: 1
-      app_id: wx4868b35061f87885
-      app_secret: 64020361b8ec4c99936c0e3999a9f249
+      SortId: 5
+      AppId: wx4868b35061f87885
+      AppSecret: 64020361b8ec4c99936c0e3999a9f249
+      UserName: gh_afb25ac019c9@app
+      Path: /page/API/pages/share/share
+      BypassApproval: 1
     wechatMoments:
       Enable: 1
-      app_id: wx4868b35061f87885
-      app_secret: 64020361b8ec4c99936c0e3999a9f249
+      SortId: 6
+      AppId: wx4868b35061f87885
+      AppSecret: 64020361b8ec4c99936c0e3999a9f249
+      BypassApproval: 1
 --- !u!114 &1267755638
 MonoBehaviour:
   m_ObjectHideFlags: 0

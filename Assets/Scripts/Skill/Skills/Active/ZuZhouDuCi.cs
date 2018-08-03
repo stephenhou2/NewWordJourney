@@ -39,36 +39,21 @@ namespace WordJourney
 
 		//本次攻击造成额外<color=orange> 技能等级×20+30</color>点魔法伤害,
 		//并使敌人中毒,每秒损失<color=orange> 技能等级×1%×物理攻击</color> 的生命, 持续4s
-
+        
 		protected override void ExcuteActiveSkillLogic(BattleAgentController self,BattleAgentController enemy){
+                 
+			int physicalHurt = fixHurt + hurtBase * skillLevel + self.agent.attack;
 
-   //         // 原始伤害值
-			//int physicalHurt = self.agent.attack;
-         
-			//int armorCal = enemy.agent.armor - self.agent.armorDecrease;
+			int armorCal = enemy.agent.armor - self.agent.armorDecrease/2;
 
-			//if (armorCal == -100)
-   //         {
-   //             armorCal = -99;
-   //         }
-
-   //         // 计算护甲和护甲穿透后的伤害值
-			//physicalHurt = Mathf.RoundToInt(physicalHurt /(armorCal/100f + 1));
-
-			//enemy.AddHurtAndShow (physicalHurt, HurtType.Physical,self.towards);
-
-			int magicalHurt = fixHurt + hurtBase * skillLevel + self.agent.attack;
-
-			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
-
-			if (magicResistCal < -50)
+			if (armorCal < -50)
             {
-                magicResistCal = -50;
+				armorCal = -50;
             }
 
-			magicalHurt = Mathf.RoundToInt(magicalHurt / (magicResistCal / 100f + 1));
+			physicalHurt = Mathf.RoundToInt(physicalHurt / (armorCal / 100f + 1));
 
-			enemy.AddHurtAndShow(magicalHurt, HurtType.Magical, self.towards);
+			enemy.AddHurtAndShow(physicalHurt, HurtType.Physical, self.towards);
          
 			enemy.PlayShakeAnim();         
 
@@ -80,7 +65,7 @@ namespace WordJourney
 
 			self.agent.magicAttackChangeFromSkill += magicAttackGain;
 
-			self.AddTintTextToQueue("魔法攻击\n提升");
+			self.AddTintTextToQueue("魔攻\n提升");
 
 			//enemy.SetEffectAnim(enemyEffectAnimName, null, 0, poisonDuration);
             

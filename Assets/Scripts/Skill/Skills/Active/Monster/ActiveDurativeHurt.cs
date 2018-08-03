@@ -41,16 +41,20 @@ namespace WordJourney
 			int count = 0;
 
 			while (count < hurtDuration)
-            {
-                SetEffectAnims(self, enemy);
+			{
 
-				enemy.AddHurtAndShow(hurtBase, HurtType.Physical, self.towards);
-
-                enemy.CheckFightEnd();
-
-                enemy.UpdateStatusPlane();
-
-                yield return new WaitForSeconds(1f);
+				if (enemy != null && !enemy.isDead){
+					
+					SetEffectAnims(self, enemy);
+					
+					enemy.AddHurtAndShow(hurtBase, HurtType.Physical, self.towards);
+					
+					enemy.CheckFightEnd();
+					
+					enemy.UpdateStatusPlane();
+					
+					yield return new WaitForSeconds(1f);
+                }
 
                 count++;
             }

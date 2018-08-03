@@ -282,7 +282,11 @@ namespace WordJourney{
 		public static float scalerToPresetResulotion = 1920f / Camera.main.pixelHeight;
 
 		// 当前屏幕宽高比与设计屏幕宽高比之间的比例
-		public static float ScalerToPresetHW = Camera.main.pixelHeight * 1080f / Camera.main.pixelWidth / 1920f;
+		public static float scalerToPresetHW = Camera.main.pixelHeight * 1080f / Camera.main.pixelWidth / 1920f;
+
+		public static float scalerToPresetW = Camera.main.pixelWidth / 1080f;
+		public static float scalerToPresetH = Camera.main.pixelHeight / 1920f;
+
 
 		public static int singleBagItemVolume = 21;
 		public static int singleWordsRecordsPageVolume = 7;

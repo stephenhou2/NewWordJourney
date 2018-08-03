@@ -67,6 +67,8 @@ namespace WordJourney
 
 		public HelpViewController helpHUD;//帮助界面
 
+		public PurchasePendingHUD purchaseHUD;
+
 		// 记录本关所有背过的单词
         public List<HLHWord> wordRecords = new List<HLHWord>();
 
@@ -240,6 +242,8 @@ namespace WordJourney
 			if(ExploreManager.Instance.battlePlayerCtr.isInEvent){
 				return;
 			}
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = true;
+			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
 			ExploreManager.Instance.MapWalkableEventsStopAction();
 			bigMapView.gameObject.SetActive(true);
 			bigMap.texture = Resources.Load("MiniMapTexture") as Texture;
@@ -252,6 +256,7 @@ namespace WordJourney
 
 		public void QuitBigMap(){
 			bigMapView.gameObject.SetActive(false);
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 			ExploreManager.Instance.MapWalkableEventsStartAction();
 		}
 
@@ -458,7 +463,15 @@ namespace WordJourney
         /// 显示日记显示界面
         /// </summary>
 		public void SetUpDiaryView(DiaryModel diaryModel){
-			
+
+			if(ExploreManager.Instance.battlePlayerCtr.isInEvent){
+				return;
+			}
+
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = true;
+
+			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
+            
 			ExploreManager.Instance.MapWalkableEventsStopAction();
          
 			if(diaryModel != null){
@@ -620,12 +633,16 @@ namespace WordJourney
 			
 
 		private void ConfirmBuyLife(){
-			Debug.Log ("BUY LIFE");
 			QuitFight ();
-			ExploreManager.Instance.battlePlayerCtr.RecomeToLife ();
+			purchaseHUD.SetUpPurchasePendingHUD(PurchaseManager.new_life_id, PlayerRecomeToLifeCallBack);         
 			HideFullMask ();
-			bpUICtr.UpdateAgentStatusPlane ();
-			ExploreManager.Instance.MapWalkableEventsStartAction ();
+		}
+
+		private void PlayerRecomeToLifeCallBack(){
+			buyLifeQueryHUD.QuitBuyLifeView();
+			ExploreManager.Instance.battlePlayerCtr.RecomeToLife();
+			bpUICtr.UpdateAgentStatusPlane();
+            ExploreManager.Instance.MapWalkableEventsStartAction();
 		}
 
 		private void CancelBuyLife(){

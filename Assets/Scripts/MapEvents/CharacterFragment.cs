@@ -33,6 +33,15 @@ namespace WordJourney
 
 		private ObtainCharacterFragmentCallBack obtainCharacterFragmentCallBack;
 
+		public CharacterSmallDetect characterSmallDetect;
+
+		private void Awake()
+		{
+			characterSmallDetect.InitSmallDetect(delegate
+			{
+				CharacterFragmentFlyToPlayer(ExploreManager.Instance.battlePlayerCtr);
+			});
+		}
 
 		public void SetPool(InstancePool pool){
 			this.characterFragmentPool = pool;
@@ -52,6 +61,8 @@ namespace WordJourney
 
 			this.boxCollider.enabled = true;
 
+			characterSmallDetect.SetBoxColliderEnable(true);
+
 			//oriPosY = fragmentTrans.localPosition.y;
 
 			fragmentTrans.GetComponent<SpriteRenderer>().sortingOrder = -Mathf.RoundToInt(position.y);
@@ -70,9 +81,10 @@ namespace WordJourney
 
 			int posX = Mathf.RoundToInt(oriPos.x);
 			int posY = Mathf.RoundToInt(oriPos.y);
-
-			//Debug.LogFormat("{0}/{1}", posX, posY);
+            
 			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[posX, posY] = 1;
+
+			characterSmallDetect.SetBoxColliderEnable(false);
 
 			pool.AddInstanceToPool(this.gameObject);
 
@@ -88,7 +100,11 @@ namespace WordJourney
 
 			StopFloating();
 
+			characterSmallDetect.SetBoxColliderEnable(false);
+
 			CharacterFragmentFlyToPlayer(battlePlayer);
+
+			//boxCollider.enabled = false;
 
 		}
 

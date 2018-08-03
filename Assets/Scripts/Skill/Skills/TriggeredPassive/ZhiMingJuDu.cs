@@ -54,16 +54,21 @@ namespace WordJourney
 
             while (count < poisonDuration)
             {
-                        
-				enemy.AddHurtAndShow(poisonHurt, HurtType.Physical, self.towards);
+				if (enemy != null && !enemy.isDead)
+				{
 
-				enemy.CheckFightEnd();
+					enemy.AddHurtAndShow(poisonHurt, HurtType.Physical, self.towards);
 
-                enemy.UpdateStatusPlane();
+					enemy.CheckFightEnd();
 
-                yield return new WaitForSeconds(1.0f);
+					enemy.UpdateStatusPlane();
 
-                count++;
+					yield return new WaitForSeconds(1.0f);
+
+				}
+
+				count++;
+				
             }
 
         }

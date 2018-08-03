@@ -51,7 +51,7 @@ namespace WordJourney
 
 			goldIcon.enabled = true;
 
-			goldTintText.text = string.Format("+{0}", goldCount);
+			goldTintText.text = string.Format("+<size=50>{0}</size>", goldCount);
 
 			goldTintText.enabled = true;
 

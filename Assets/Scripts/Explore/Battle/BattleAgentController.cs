@@ -158,7 +158,7 @@ namespace WordJourney
 
 			Vector3 basePosition = MyTool.ToPointInCanvas(transform.position);
 
-			basePosition = new Vector3(basePosition.x * CommonData.ScalerToPresetHW, basePosition.y, 0);
+			basePosition = new Vector3(basePosition.x * CommonData.scalerToPresetHW, basePosition.y, 0);
 
 			ExploreText ft = new ExploreText (text,towards,basePosition);
 
@@ -177,7 +177,7 @@ namespace WordJourney
 		{
 			Vector3 basePosition = MyTool.ToPointInCanvas (transform.position);
 
-			basePosition = new Vector3(basePosition.x * CommonData.ScalerToPresetHW, basePosition.y, 0);
+			basePosition = new Vector3(basePosition.x * CommonData.scalerToPresetHW, basePosition.y, 0);
 
 			ExploreText ft = new ExploreText (text,MyTowards.Left,basePosition);
 
@@ -259,7 +259,7 @@ namespace WordJourney
 			case HurtType.Magical:
 					if (this is BattlePlayerController)
                     {
-                        colorText = "purple";
+						colorText = "cyan";
                     }
                     else
                     {
@@ -309,6 +309,10 @@ namespace WordJourney
 
 			armatureCom.animation.timeScale = scale;
 
+		}
+
+		public float GetRoleAnimTimeScaler(){
+			return armatureCom.animation.timeScale;
 		}
 			
 
@@ -370,7 +374,7 @@ namespace WordJourney
 				int index = beAttackedTriggerExcutors.FindIndex (delegate(TriggeredSkillExcutor obj) {
 					return obj.triggeredSkill == skill;
 				});
-				beforeFightTriggerExcutors.RemoveAt (index);
+				beAttackedTriggerExcutors.RemoveAt (index);
 			}
 
 			if (skill.beHitTrigger) {
@@ -398,7 +402,9 @@ namespace WordJourney
 
 			float timePassed = 0;
 
-			while (timePassed < agent.attackInterval) {
+			float acutalAttackInterval = agent.attackInterval / armatureCom.animation.timeScale;
+
+			while (timePassed < acutalAttackInterval) {
 
 				timePassed += Time.deltaTime;
 

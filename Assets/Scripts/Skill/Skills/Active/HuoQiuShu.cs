@@ -24,7 +24,7 @@ namespace WordJourney
             // 原始魔法伤害
 			int hurt = self.agent.magicAttack + hurtBase * skillLevel + fixHurt;
 
-			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease;
+			int magicResistCal = enemy.agent.magicResist - self.agent.magicResistDecrease/2;
 
 			if (magicResistCal < -50)
             {

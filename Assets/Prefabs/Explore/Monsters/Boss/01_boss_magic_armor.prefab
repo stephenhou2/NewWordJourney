@@ -2117,11 +2117,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentName: "\u9B54\u6CD5\u62A4\u536B"
   agentLevel: 1
-  originalMaxHealth: 800
+  originalMaxHealth: 1000
   originalMaxMana: 0
   originalAttack: 50
   originalMagicAttack: 30
-  originalArmor: 50
+  originalArmor: 80
   originalMagicResist: 50
   originalArmorDecrease: 20
   originalMagicResistDecrease: 0
@@ -2153,13 +2153,13 @@ MonoBehaviour:
   critHurtScalerChangeFromSkill: 0
   healthRecoveryChangeFromSkill: 0
   magicRecoveryChangeFromSkill: 0
-  mMaxHealth: 800
-  mHealth: 800
+  mMaxHealth: 1000
+  mHealth: 1000
   mMaxMana: 0
   mMana: 0
   mAttack: 50
   mMagicAttack: 30
-  mArmor: 50
+  mArmor: 80
   mMagicResist: 50
   mArmorDecrease: 20
   mMagicResistDecrease: 0
@@ -2355,7 +2355,7 @@ MonoBehaviour:
   skillName: "\u6280\u80FD1"
   sfxName: Skill/01_boss_magic_armor_skill1
   skillId: -1
-  skillDescription: "\u56DE\u590D20%\u751F\u547D\u4E0A\u9650\u7684\u8840\u91CF"
+  skillDescription: "\u56DE\u590D15%\u751F\u547D\u4E0A\u9650\u7684\u8840\u91CF"
   skillIconName: 
   selfEffectAnimName: state_health_heal
   enemyEffectAnimName: 
@@ -2368,7 +2368,7 @@ MonoBehaviour:
   coolenPercentage: 0
   skillStatus: 0
   manaConsume: 0
-  healthRecoverScaler: 0.2
+  healthRecoverScaler: 0.15
 --- !u!114 &114818479111035486
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2398,9 +2398,9 @@ MonoBehaviour:
   - skill: {fileID: 114103396121728878}
     probabilityx100: 50
   - skill: {fileID: 114801657988040758}
-    probabilityx100: 35
+    probabilityx100: 25
   - skill: {fileID: 114373362050376354}
-    probabilityx100: 15
+    probabilityx100: 25
 --- !u!114 &114856685183879124
 MonoBehaviour:
   m_ObjectHideFlags: 1

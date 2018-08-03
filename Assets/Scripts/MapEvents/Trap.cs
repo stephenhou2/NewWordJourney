@@ -109,14 +109,19 @@ namespace WordJourney
 
         public override void EnterMapEvent(BattlePlayerController bp)
         {
+			
 			if(bp.fadeStepsLeft > 0){
-				bp.isInEvent = false;
+				bp.isInEvent = false;            
 			}
         }
 
         public override void MapEventTriggered(bool isSuccess, BattlePlayerController bp)
         {
-            ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+			bp.isInEvent = false;
+
+			if(bp.fadeStepsLeft > 0){
+				return;
+			}
 
 			switch(trapType){
 				case TrapType.Thorn:

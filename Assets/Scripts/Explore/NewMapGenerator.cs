@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace WordJourney
 {
 
@@ -244,11 +243,9 @@ namespace WordJourney
 			// 初始化地图事件
 			InitializeMapEvents ();
 
-
-
 			InitializePlayerAndSetCamera(fromLastLevel);       
 
-			DestroyUnusedMonsterAndNpc ();
+			//DestroyUnusedMonsterAndNpc ();
 
 			int mapIndex = Player.mainPlayer.GetMapIndex();
 
@@ -261,6 +258,8 @@ namespace WordJourney
 			}
                      
 			mySql.CloseConnection(CommonData.dataBaseName);
+
+			DestroyUnusedMapInstances();
 		}
         
 		private void GenerateDiaryPaper(){
@@ -341,11 +340,6 @@ namespace WordJourney
 			ExploreManager.Instance.expUICtr.UpdateCharacterFragmentsHUD();         
 		}
 
-		private void DestroyUnusedMonsterAndNpc(){
-			monstersPool.ClearInstancePool ();
-			npcsPool.ClearInstancePool ();
-			mapEventsPool.ClearInstancePool ();
-		}
 
       
 		/// <summary>
@@ -362,11 +356,11 @@ namespace WordJourney
 #warning 暂时关卡不随机，后面去掉
 			//randomMapIndex = Player.mainPlayer.currentLevelIndex;
             
-			//randomMapIndex = 29;
+			//randomMapIndex = 39;
 
-			//Player.mainPlayer.currentLevelIndex = 29;
+			//Player.mainPlayer.currentLevelIndex = 39;
 
-			//Player.mainPlayer.maxUnlockLevelIndex = 29;
+			//Player.mainPlayer.maxUnlockLevelIndex = 39;
          
 			mapData = GameManager.Instance.gameDataCenter.LoadMapDataOfLevel (randomMapIndex);
 
@@ -533,6 +527,8 @@ namespace WordJourney
 			HLHWord[] words = new HLHWord[mapEventCount];
 
 			string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
+
+			//Debug.Log("tableName" + currentWordsTableName);
 
 			string query = string.Format("SELECT learnedTimes FROM {0} ORDER BY learnedTimes ASC", currentWordsTableName);
 
@@ -1657,6 +1653,20 @@ namespace WordJourney
 
 			miniMapMaskPool.AddChildInstancesToPool(miniMapMaskContainer);
 
+		}
+
+		private void DestroyUnusedMapInstances(){
+			floorsPool.ClearInstancePool();
+			wallsPool.ClearInstancePool();
+			decorationsPool.ClearInstancePool();
+			miniMapInstancePool.ClearInstancePool();
+			miniMapMaskPool.ClearInstancePool();
+			rewardPool.ClearInstancePool();         
+			effectAnimPool.ClearInstancePool();         
+			characterFragmentPool.ClearInstancePool();
+			monstersPool.ClearInstancePool();
+            npcsPool.ClearInstancePool();
+            mapEventsPool.ClearInstancePool();
 		}
 
 			private void AllMapEventsToPool()

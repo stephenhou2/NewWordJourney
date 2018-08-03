@@ -131,17 +131,17 @@ namespace WordJourney
 				return;
 			}
                      
-			if(Player.mainPlayer.currentLevelIndex == CommonData.maxLevel && dialogGroup.triggerLevel == CommonData.maxLevel){
+			//if(Player.mainPlayer.currentLevelIndex == CommonData.maxLevel && dialogGroup.triggerLevel == CommonData.maxLevel){
 
-                this.gameObject.SetActive(false);
+   //             this.gameObject.SetActive(false);
             
-				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
-                {
-                    TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, null, null, null);
-                });
+			//	GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
+   //             {
+   //                 TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, null, null, null);
+   //             });
 
-				return;
-			}
+			//	return;
+			//}
 
 			QuitDialogPlane();
          

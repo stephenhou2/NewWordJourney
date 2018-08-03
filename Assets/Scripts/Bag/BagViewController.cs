@@ -20,18 +20,26 @@ namespace WordJourney
 			//for (int i = 501; i < 545;i++){
 			//	Player.mainPlayer.AddItem(Item.NewItemWith(i, 1));
 			//}
-            
+
+			//Player.mainPlayer.AddItem(Item.NewItemWith(600, 10));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(601, 10));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(1, 21));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(11, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(12, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(1, 1));
+
+			//Player.mainPlayer.AddItem(Item.NewItemWith(507, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(508, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(509, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(300, 10));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(301, 10));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(3, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(604, 9));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(605, 9));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(606, 9));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(400, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(401, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(600, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(601, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(511, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(513, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(514, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(515, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(527, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(531, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(539, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(543, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(544, 1));
 		}
 
 		//public void AddBagItemWhenBagFull(Item item){
@@ -223,6 +231,8 @@ namespace WordJourney
 
 			bool clearItemDetail = false;
 
+			Item specialOperaitonItem = null;
+
 			switch(currentSelectItem.itemType){
 				case ItemType.Consumables:
 					
@@ -272,6 +282,10 @@ namespace WordJourney
 
 					Item itemForSpecialOperation = bagView.itemDetail.soCell.itemInCell;
 
+					specialOperaitonItem = itemForSpecialOperation;
+
+					//currentSelectItem = specialItem;
+
 					switch(specialItem.specialItemType){
 						case SpecialItemType.ChongZhuShi:
 						case SpecialItemType.DianJinFuShi:
@@ -287,6 +301,7 @@ namespace WordJourney
 							Equipment equipment = itemForSpecialOperation as Equipment;
 							if(equipment.attachedPropertyGemstone.itemId == -1)
 							{
+								bagView.tintHUD.SetUpSingleTextTintHUD("当前装备未镶嵌宝石");
 								return;
 							}
 
@@ -315,16 +330,23 @@ namespace WordJourney
             }
 
 			clearItemDetail = Player.mainPlayer.RemoveItem(currentSelectItem, 1);
-
-
-			//if (itemToAddWhenBagFull != null && !Player.mainPlayer.CheckBagFull (itemToAddWhenBagFull)) {
-			//	AddItemInWait ();
-			//}
+           
                      
 			bagView.SetUpCurrentBagItemsPlane();
 
 			if (clearItemDetail) {
 				bagView.ClearItemDetail ();
+			}
+
+            // 进行特殊操作的物品，特殊操作结束后显示被操作物品的信息，并在背包中将该物品的选中框高亮
+			if(specialOperaitonItem != null){
+				currentSelectItem = specialOperaitonItem;
+				bagView.SetUpItemDetail(specialOperaitonItem);
+				int specialOperaitonItemIndexInBag = Player.mainPlayer.GetItemIndexInBag(specialOperaitonItem);
+				if(specialOperaitonItemIndexInBag >= 0){
+					int itemIndexInCurrentBag = specialOperaitonItemIndexInBag % CommonData.singleBagItemVolume;
+					bagView.bagItemsDisplay.SetSelectionIcon(itemIndexInCurrentBag, true);
+                }
 			}
                      
 

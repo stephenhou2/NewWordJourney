@@ -43,18 +43,9 @@ namespace WordJourney
 				return mBpCtr;
 			}
 		}
-
-		//public Transform directionArrowTowardsNextLevelExit;
-
-		//public Transform directionArrowTowardsLastLevelExit;
-
-
-
+             
 		public Transform levelUpPlane;
-
-
-
-
+              
 
 		/// <summary>
 		/// 初始化探索界面中玩家UI
@@ -114,9 +105,7 @@ namespace WordJourney
 
 		public void SetUpFightPlane(){
 			escapeBar.gameObject.SetActive (false);
-			for (int i = 0; i < player.attachedActiveSkills.Count;i++){
-				player.attachedActiveSkills[i].skillStatus = ActiveSkillStatus.None;
-			}
+
 			InitAllActiveSkillButtons();
 			SetUpActiveSkillButtons ();         
 		}
@@ -144,11 +133,13 @@ namespace WordJourney
 				ActiveSkill activeSkill = player.attachedActiveSkills[i];
 				activeSkill.coolenPercentage = 0;
 				activeSkill.skillStatus = ActiveSkillStatus.None;
+
             }
 
 			for (int i = 0; i < activeSkillButtonContainer.childCount;i++){
 				activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>().Reset();
 			}
+
 			activeSkillButtonPool.AddChildInstancesToPool (activeSkillButtonContainer);
 
 		}

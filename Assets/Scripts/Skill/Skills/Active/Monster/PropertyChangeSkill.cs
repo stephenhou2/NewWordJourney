@@ -89,7 +89,7 @@ namespace WordJourney
 					case PropertyType.MagicResistDecrease:
 						targetAgent.magicResistDecrease += (int)change;
 						targetAgent.magicResistDecreaseChangeFromSkill += (int)change;
-						tintString = change > 0 ? "魔法穿透\n提升" : "魔法穿透\n降低";
+						tintString = change > 0 ? "抗性穿透\n提升" : "抗性穿透\n降低";
 						break;
 					case PropertyType.Crit:
 						targetAgent.crit += change;

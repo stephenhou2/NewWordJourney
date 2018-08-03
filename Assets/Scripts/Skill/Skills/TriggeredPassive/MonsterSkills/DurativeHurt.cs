@@ -49,15 +49,19 @@ namespace WordJourney
 
             while (count < duration)
             {
-				SetEffectAnims(self, enemy);
+				if(enemy != null && !enemy.isDead){
+					
+					SetEffectAnims(self, enemy);
+					
+					enemy.AddHurtAndShow(hurt, HurtType.Physical, self.towards);
+					
+					enemy.CheckFightEnd();
+					
+					enemy.UpdateStatusPlane();
+					
+					yield return new WaitForSeconds(1f);
+                }
 
-                enemy.AddHurtAndShow(hurt, HurtType.Physical, self.towards);
-
-				enemy.CheckFightEnd();
-
-				enemy.UpdateStatusPlane();
-
-                yield return new WaitForSeconds(1f);
                             
                 count++;
             }

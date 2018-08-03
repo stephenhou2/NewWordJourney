@@ -19,11 +19,32 @@ namespace WordJourney
 
 		public void SetUpDifficultySelectHUD(CallBack selectDifficultyCallBack){
 
+			WordType currentWordType = GameManager.Instance.gameDataCenter.gameSettings.wordType;
+
+			this.difficulty = (int)currentWordType;
+         
 			this.selectDifficultyCallBack = selectDifficultyCallBack;
 
-			difficultySelectedIcons[0].gameObject.SetActive(true);
-			difficultySelectedIcons[1].gameObject.SetActive(false);
-			difficultySelectedIcons[2].gameObject.SetActive(false);
+
+			switch(currentWordType){
+				case WordType.Simple:
+					difficultySelectedIcons[0].gameObject.SetActive(true);
+                    difficultySelectedIcons[1].gameObject.SetActive(false);
+                    difficultySelectedIcons[2].gameObject.SetActive(false);
+					break;
+				case WordType.Medium:
+					difficultySelectedIcons[0].gameObject.SetActive(false);
+					difficultySelectedIcons[1].gameObject.SetActive(true);
+                    difficultySelectedIcons[2].gameObject.SetActive(false);
+					break;
+				case WordType.Master:
+					difficultySelectedIcons[0].gameObject.SetActive(false);
+                    difficultySelectedIcons[1].gameObject.SetActive(false);
+					difficultySelectedIcons[2].gameObject.SetActive(true);
+					break;
+
+			}
+
 
 			this.gameObject.SetActive(true);
 
@@ -53,7 +74,12 @@ namespace WordJourney
 			
 			WordType wordType = (WordType)difficulty;
 
+
 			if(wordType != GameManager.Instance.gameDataCenter.gameSettings.wordType){
+
+				//Debug.Log("ORI" + GameManager.Instance.gameDataCenter.gameSettings.wordType);
+				//Debug.Log("NOW" + wordType);
+
 				GameManager.Instance.gameDataCenter.gameSettings.wordType = wordType;
 				GameManager.Instance.persistDataManager.SaveGameSettings();
 			}

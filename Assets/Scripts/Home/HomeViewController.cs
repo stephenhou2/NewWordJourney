@@ -145,7 +145,7 @@ namespace WordJourney
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
 			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
 			{
-				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, ShareSucceedCallBack, ShareFailedCallBack,null);
+				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, null, null,null);
 				homeView.OnQuitHomeView();
 			},false,true);
 		}
@@ -154,20 +154,28 @@ namespace WordJourney
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
             GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
             {
-				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.Weibo, ShareSucceedCallBack, ShareFailedCallBack,null);
+				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.Weibo, null, null,null);
                 homeView.OnQuitHomeView();
             }, false, true);
 		}
 
-		private void ShareSucceedCallBack(){
-			string tintStr = "分享成功，获得金币x30";
-			homeView.tintHUD.SetUpSingleTextTintHUD(tintStr);
-		}
+		//private void ShareSucceedCallBack(){
+			
+		//	string tintStr = string.Empty;
+		//	if(GameManager.Instance.gameDataCenter.gameSettings.hasShared){
+		//		tintStr = "分享成功";
+		//	}else{
+		//		tintStr = "分享成功，获得金币x100";
+		//		Player.mainPlayer.totalGold += 100;
+		//	}         
 
-		private void ShareFailedCallBack(){
-			string tintStr = "打开客户端失败";
-			homeView.tintHUD.SetUpSingleTextTintHUD(tintStr);
-		}
+		//	homeView.tintHUD.SetUpSingleTextTintHUD(tintStr);
+		//}
+
+		//private void ShareFailedCallBack(){
+		//	string tintStr = "分享失败";
+		//	homeView.tintHUD.SetUpSingleTextTintHUD(tintStr);
+		//}
 
 
 		private void QuitHomeView(){

@@ -92,6 +92,8 @@ namespace WordJourney
 		{
 			exploreSceneReady = false;
 
+			GameManager.Instance.gameDataCenter.InitExplorePrepareGameData();
+
 			bool isFinalChapter = Player.mainPlayer.currentLevelIndex == CommonData.maxLevel;
 
 			System.GC.Collect();
@@ -119,13 +121,7 @@ namespace WordJourney
             
 			exploreSceneReady = true;
 
-			//GameManager.Instance.UIManager.RemoveCanvasCache("HomeCanvas");
-			//GameManager.Instance.UIManager.RemoveCanvasCache("ShareCanvas");
-			//GameManager.Instance.UIManager.RemoveCanvasCache("SettingCanvas");
-			//GameManager.Instance.UIManager.RemoveCanvasCache("LoadingCanvas");
-			//GameManager.Instance.UIManager.RemoveCanvasCache("GuideCanvas");
-
-         
+			MapWalkableEventsStartAction();
 		}
       
 
@@ -745,18 +741,43 @@ namespace WordJourney
 
 			TransformManager.DestroyTransfromWithName (CommonData.exploreScenePoolContainerName);
 
-			GameManager.Instance.gameDataCenter.ReleaseDataWithDataTypes (new GameDataCenter.GameDataType[] {
-				GameDataCenter.GameDataType.MapSprites,
-				GameDataCenter.GameDataType.SkillSprites,
-				GameDataCenter.GameDataType.NPCs,
-				GameDataCenter.GameDataType.GameLevelDatas
+			TransformManager.FindTransform("ExploreCanvas").GetComponent<ExploreUICotroller>().QuitExplore();
 
+			GameManager.Instance.gameDataCenter.ReleaseDataWithDataTypes (new GameDataCenter.GameDataType[] {   
+				GameDataCenter.GameDataType.GameLevelDatas,
+				GameDataCenter.GameDataType.EquipmentModels,
+				GameDataCenter.GameDataType.EquipmentSprites,
+				GameDataCenter.GameDataType.ConsumablesModels,
+				GameDataCenter.GameDataType.ConsumablesSprites,
+				GameDataCenter.GameDataType.SpecialItemModels,
+				GameDataCenter.GameDataType.SpecialItemSprites,
+				GameDataCenter.GameDataType.SkillGemstoneModels,
+				GameDataCenter.GameDataType.SkillGemstoneSprites,
+				GameDataCenter.GameDataType.SpellItemModels,
+				GameDataCenter.GameDataType.CharacterSprites,
+				GameDataCenter.GameDataType.ChatRecord,
+				GameDataCenter.GameDataType.Diary,
+				GameDataCenter.GameDataType.Monsters,
+				GameDataCenter.GameDataType.NPCs,
+				GameDataCenter.GameDataType.Skills,
+				GameDataCenter.GameDataType.SkillSprites,
+				GameDataCenter.GameDataType.Effects,
+				GameDataCenter.GameDataType.GameLevelDatas,
+				GameDataCenter.GameDataType.MapSprites,
+				GameDataCenter.GameDataType.MapTileAtlas,
+				GameDataCenter.GameDataType.Proverbs,
+				GameDataCenter.GameDataType.BagCanvas,
+				GameDataCenter.GameDataType.NPCCanvas,
+				GameDataCenter.GameDataType.ExploreScene,
+				GameDataCenter.GameDataType.SettingCanvas,
+				GameDataCenter.GameDataType.ShareCanvas,
+				GameDataCenter.GameDataType.GuideCanvas
 			});
 
-			MyResourceManager.Instance.UnloadAssetBundle (CommonData.exploreSceneBundleName, true);
 
-
-			TransformManager.FindTransform ("ExploreCanvas").GetComponent<ExploreUICotroller> ().QuitExplore ();
+			//MyResourceManager.Instance.UnloadAssetBundle(CommonData.bagCanvasBundleName, true);
+			//MyResourceManager.Instance.UnloadAssetBundle(CommonData.npcCanvasBundleName, true);
+			//MyResourceManager.Instance.UnloadAssetBundle(CommonData.exploreSceneBundleName, true);
 
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.homeCanvasBundleName, "HomeCanvas", () => {
 				TransformManager.FindTransform ("HomeCanvas").GetComponent<HomeViewController> ().SetUpHomeView ();

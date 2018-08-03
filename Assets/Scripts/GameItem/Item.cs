@@ -120,7 +120,7 @@ namespace WordJourney{
 					string error = string.Format("未找到id为{0}的物品", itemId);
                     Debug.LogError(error);
 				}
-				newItem = new SpecialItem(specialItemModel, 1);
+				newItem = new SpecialItem(specialItemModel, itemCount);
 			}
 
 			return newItem;

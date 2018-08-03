@@ -231,19 +231,17 @@ namespace WordJourney
                 maskTweener.Kill();
             }
 
-			//skill.skillStatus = ActiveSkillStatus.None;
-
 			if(validTint.animation != null){
 				validTint.animation.Stop();
 			}
 
 			validTint.gameObject.SetActive(false);
-
-			mask.enabled = false;
-
+         
 			skillIcon.sprite = null;
 
 			mask.fillAmount = 0;
+
+			mask.enabled = false;
 
 
 		}

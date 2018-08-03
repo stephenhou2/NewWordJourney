@@ -76,7 +76,7 @@ namespace WordJourney
 
 			ItemDragControl dragControl = draggedObject.GetComponent<ItemDragControl> ();
 
-            if(bagView != null){
+			if(bagView != null && !(dragControl is SpecialOperationItemDragControl)){
                 bagView.GetComponent<BagViewController>().currentSelectItem = draggedItem;
             }
 
