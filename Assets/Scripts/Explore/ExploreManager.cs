@@ -104,7 +104,7 @@ namespace WordJourney
 
             Player.mainPlayer.ClearCollectedCharacters();
 
-            expUICtr.SetUpExploreCanvas();
+			expUICtr.SetUpExploreCanvas();
 
             battlePlayerCtr.InitBattlePlayer();
 
@@ -122,6 +122,7 @@ namespace WordJourney
 			exploreSceneReady = true;
 
 			MapWalkableEventsStartAction();
+         
 		}
       
 
@@ -140,7 +141,7 @@ namespace WordJourney
 			Vector3 clickPos = Vector3.zero;
 
 	
-			if(EventSystem.current.IsPointerOverGameObject()){
+			if(EventSystem.current.IsPointerOverGameObject() || !GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished){
 //				Debug.LogFormat("点击在UI上{0}",EventSystem.current.currentSelectedGameObject);
 				return;
 			}
@@ -486,8 +487,7 @@ namespace WordJourney
             battleMonsterCtr.agent.ClearPropertyChangesFromSkill();
 
             battleMonsterCtr.agent.ResetBattleAgentProperties(false);
-
-
+         
             battlePlayerCtr.FixPositionToStandard ();
 
 			battlePlayerCtr.ResetToWaitAfterCurrentRoleAnimEnd ();
@@ -682,6 +682,8 @@ namespace WordJourney
 				}
 
 				SetUpExploreView(fromLastLevel);
+
+				expUICtr.tintHUD.SetUpSingleTextTintHUD("游戏数据已保存");
 			}
 		}
 

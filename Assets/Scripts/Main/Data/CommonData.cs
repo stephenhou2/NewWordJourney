@@ -317,6 +317,17 @@ namespace WordJourney{
 
 		public static Vector2 iphoneXResolution = new Vector2(1125,2436);
 
+
+		public static string[] gameTints = {
+            "每个NPC都有不同的技能，试试不同的搭配吧",
+            "并不是每个怪物都需要消灭，合理分配资源才能走到最后",
+            "城堡里有很多上了锁的门，需要用对应的钥匙才能打开",
+            "切换难度将会重置游戏进度，一定要慎重选择哦",
+            "尽可能去探索每一个房间，这会使你获得意想不到的收获",
+            "不要错过每个可以获取金币的机会，在城堡里金币才是硬通货",
+            "较低等级的关卡是提升实力和储备资源的好地方"
+        };
+
 		// 获得称号所需的条件
         public static LearnTitleQualification[] learnTitleQualifications = {
             new LearnTitleQualification(30,0,0,"单词菜鸟","· 背诵单词30个",50),

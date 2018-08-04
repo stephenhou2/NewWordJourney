@@ -16,8 +16,7 @@ namespace WordJourney
 			homeView.SetUpHomeView ();
 
 			Time.timeScale = 1f;
-
-
+         
 			//if (!GameManager.Instance.soundManager.bgmAS.isPlaying 
 			//	|| GameManager.Instance.soundManager.bgmAS.clip.name != CommonData.homeBgmName) {
 			//	GameManager.Instance.soundManager.PlayBgmAudioClip (CommonData.homeBgmName, true);

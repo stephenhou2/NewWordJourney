@@ -42,8 +42,8 @@ namespace WordJourney
 
 			loadingBar.InitHLHFillBar(100, 0);
 
-			int tintIndex = Random.Range(0,MyTool.gameTints.Length);
-			gameTint.text = MyTool.gameTints[tintIndex];
+			int tintIndex = Random.Range(0,CommonData.gameTints.Length);
+			gameTint.text = CommonData.gameTints[tintIndex];
 
 			GetComponent<Canvas>().enabled = true;
 
@@ -154,6 +154,7 @@ namespace WordJourney
             {
 				exploreManager = TransformManager.FindTransform("HomeCanvas");
                 timer += Time.unscaledDeltaTime;
+
                 yield return null;
             }
 

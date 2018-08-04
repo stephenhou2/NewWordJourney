@@ -109,8 +109,7 @@ namespace WordJourney
             {
                 return;
             }
-
-            Debug.Log("quit app");
+            
             if (ExploreManager.Instance != null)
             {
                 ExploreManager.Instance.UpdateWordDataBase();

@@ -33,11 +33,11 @@ namespace WordJourney
 
 			volumeControl.InitHLHSlider(volumeChangeCallBack);
 
-#if UNITY_ANDROID
-            quitAPPButton.gameObject.SetActive(true);
-#else
-            quitAPPButton.gameObject.SetActive(false);
-#endif
+//#if UNITY_ANDROID
+//            quitAPPButton.gameObject.SetActive(true);
+//#else
+//            quitAPPButton.gameObject.SetActive(false);
+//#endif
 
             GetComponent<Canvas> ().enabled = true;
 

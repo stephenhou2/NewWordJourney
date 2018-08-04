@@ -7,16 +7,24 @@ namespace WordJourney
 {
 
 	using UnityEditor;
-	using System.Text;
-	using System.IO;
 	using System;
 
+    /// <summary>
+    /// 装备数据初始化工具
+    /// </summary>
 	public class EquipmentDataHandler {
 
 		[MenuItem("EditHelper/NewEquipmentDataHandler")]
 		public static void GenerateNewEquipmentData(){
 
+
+			/******************** 注意： *******************/
+			// 1. 原始数据格式必须使用【装备原始数据表（01_equip_design）】导出的csv文件，原始表格尾部不能有空行
+            // 2. 原始数据存放的地址根据实际地址进行修改
 			string newItemDataSourcePath = "/Users/houlianghong/Desktop/MyGameData/装备原始数据.csv";
+            /******************** 注意： *******************/
+
+
 
 			string newItemDataString = DataHandler.LoadDataString (newItemDataSourcePath);
 

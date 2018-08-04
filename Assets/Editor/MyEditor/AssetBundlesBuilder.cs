@@ -4,6 +4,10 @@ using System.IO;
 
 namespace WordJourney
 {
+
+    /// <summary>
+    /// Bundle打包工具
+    /// </summary>
 	public class AssetBundlesBuilder {
 
 		[MenuItem("Assets/Build AssetBundles")]

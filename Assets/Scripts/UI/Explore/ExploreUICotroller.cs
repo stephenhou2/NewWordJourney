@@ -161,7 +161,7 @@ namespace WordJourney
 
 			while (tempAlpha < 1)
             {
-                tempAlpha += fadeSpeed * Time.deltaTime;
+				tempAlpha += fadeSpeed * Time.deltaTime;
                 transitionMask.color = new Color(0, 0, 0, tempAlpha);
                 yield return null;
             }
@@ -179,7 +179,7 @@ namespace WordJourney
 
 			while (tempAlpha > 0)
             {
-                tempAlpha -= fadeSpeed * Time.deltaTime;
+				tempAlpha -= fadeSpeed * Time.deltaTime;
                 transitionMask.color = new Color(0, 0, 0, tempAlpha);
                 yield return null;
             }
@@ -346,27 +346,63 @@ namespace WordJourney
        
 
 		public void ShowExploreSceneSlowly(){
-			if(Player.mainPlayer.isNewPlayer){
+			if (Player.mainPlayer.isNewPlayer)
+			{
 				return;
 			}
-			transitionMask.gameObject.SetActive (true);
-			transitionMask.color = Color.black;
-			Tweener tweener = transitionMask.DOFade (0, 1f).OnComplete (delegate {
-				HideExploreMask();
-				transitionMask.gameObject.SetActive(false);
-				if(GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished){
-					ExploreManager.Instance.MapWalkableEventsStartAction();
-				}else{
-					GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
-					{
-						TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(ExploreManager.Instance.MapWalkableEventsStartAction);                  
-					});
+			ShowExploreMask();
+			if (GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished)
+			{
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
+				{
+					TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(ExploreManager.Instance.MapWalkableEventsStartAction);
+					HideExploreMask();
+				});
+			}
+         
+			transitionMask.gameObject.SetActive(true);
+            transitionMask.color = Color.black;
+			
+                     
+			StopCoroutine("MyTransitionMaskSlowlyHide");
+			StartCoroutine("MyTransitionMaskSlowlyHide");
+		}
+
+		private IEnumerator MyTransitionMaskSlowlyHide(){
+
+            float tempAlpha = 1;
+
+			float fadeSpeed = 3f;
+
+			bool hasEnable = GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished;
+
+			if (hasEnable)
+            {
+                HideExploreMask();
+            }
+
+			while (tempAlpha > 0)
+            {
+                tempAlpha -= fadeSpeed * Time.deltaTime;
+                transitionMask.color = new Color(0, 0, 0, tempAlpha);
+                
+				if(tempAlpha < 0.5f && !hasEnable){
+					
+                    transitionMask.gameObject.SetActive(false);
+                    if (GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished)
+                    {
+                        ExploreManager.Instance.MapWalkableEventsStartAction();
+                        //tintHUD.SetUpSingleTextTintHUD("一种神秘力量将你传送到了入口位置");
+						hasEnable = true;
+                    }
+               
 				}
 
-                
-			});
-			tweener.SetUpdate(true);
+                yield return null;
+            }
+            
 		}
+
 
 		public void ShowFightPlane(){
 
@@ -375,8 +411,6 @@ namespace WordJourney
 			}
 
 			battlePlane.gameObject.SetActive (true);
-
-			//Debug.Log("show fight plane");
 
 			bpUICtr.SetUpFightPlane ();
 

@@ -8,14 +8,20 @@ namespace WordJourney
 	using UnityEditor;
 	using System;
 
+    /// <summary>
+	/// 消耗品数据初始化工具
+    /// </summary>
 	public class ConsumablesDataHandler
     {
 
 		[MenuItem("EditHelper/ConsumablesDataHelper")]
         public static void InitSpellItemsFromData()
         {
-
+            /******************** 注意： *******************/
+			// 1. 原始数据格式必须使用【消耗品原始数据表（02_resume_design）】导出的csv文件，原始表格尾部不能有空行
+            // 2. 原始数据存放的地址根据实际地址进行修改
             string consumablesOriFilePath = "/Users/houlianghong/Desktop/MyGameData/消耗品原始数据.csv";
+			/******************** 注意： *******************/
 
 			string consumablesDataString= DataHandler.LoadDataString(consumablesOriFilePath);
 
