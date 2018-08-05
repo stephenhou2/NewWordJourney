@@ -18,10 +18,10 @@ namespace WordJourney
 		// "convenience" general identifiers for use with Purchasing, and their store-specific identifier 
 		// counterparts for use with and outside of Unity Purchasing. Define store-specific identifiers 
 		// also on each platform's publisher dashboard (iTunes Connect, Google Play Developer Console, etc.
-		public static string extra_equipmentSlot_id = "com.yougan233.wordjourney.extraEquipmentSlot";
-		public static string extra_bag_2_id = "com.yougan233.wordjourney.extraBag_2";
-		public static string extra_bag_3_id = "com.yougan233.wordjourney.extraBag_3";
-		public static string extra_bag_4_id = "com.yougan233.wordjourney.extraBag_4";
+		public static string extra_equipmentSlot_id = "com.yougan233.wordjourney.extraEquipmentSlot_ring";
+		public static string extra_bag_2_id = "com.yougan233.wordjourney.extraBag_02";
+		public static string extra_bag_3_id = "com.yougan233.wordjourney.extraBag_03";
+		public static string extra_bag_4_id = "com.yougan233.wordjourney.extraBag_04";
 		public static string new_life_id = "com.yougan233.wordjourney.lifeCard";
 
 
@@ -33,10 +33,10 @@ namespace WordJourney
 		{
 			var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
-			builder.AddProduct(PurchaseManager.extra_equipmentSlot_id, ProductType.NonConsumable);
-			builder.AddProduct(PurchaseManager.extra_bag_2_id, ProductType.NonConsumable);
-			builder.AddProduct (PurchaseManager.extra_bag_3_id, ProductType.NonConsumable);
-			builder.AddProduct(PurchaseManager.extra_bag_4_id, ProductType.NonConsumable);
+			builder.AddProduct(PurchaseManager.extra_equipmentSlot_id, ProductType.Consumable);
+			builder.AddProduct(PurchaseManager.extra_bag_2_id, ProductType.Consumable);
+			builder.AddProduct (PurchaseManager.extra_bag_3_id, ProductType.Consumable);
+			builder.AddProduct(PurchaseManager.extra_bag_4_id, ProductType.Consumable);
 			builder.AddProduct (PurchaseManager.new_life_id, ProductType.Consumable);
 
 			UnityPurchasing.Initialize(this, builder);

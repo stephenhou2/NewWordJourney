@@ -351,7 +351,7 @@ namespace WordJourney
 				return;
 			}
 			ShowExploreMask();
-			if (GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished)
+			if (!GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished)
 			{
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
 				{
@@ -379,6 +379,7 @@ namespace WordJourney
 			if (hasEnable)
             {
                 HideExploreMask();
+				transitionMask.gameObject.SetActive(false);
             }
 
 			while (tempAlpha > 0)
@@ -400,6 +401,9 @@ namespace WordJourney
 
                 yield return null;
             }
+
+			HideExploreMask();
+            transitionMask.gameObject.SetActive(false);
             
 		}
 

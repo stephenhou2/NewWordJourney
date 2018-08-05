@@ -142,7 +142,7 @@ namespace WordJourney
 
 	
 			if(EventSystem.current.IsPointerOverGameObject() || !GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished){
-//				Debug.LogFormat("点击在UI上{0}",EventSystem.current.currentSelectedGameObject);
+				//Debug.LogFormat("点击在UI上{0},guide finished:{1}",EventSystem.current.currentSelectedGameObject,GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished);
 				return;
 			}
 

@@ -5,20 +5,7 @@ using UnityEngine;
 
 namespace WordJourney
 {   
-	//public struct CanvasInfo{
-	//	public int defaultSortingOrder;
-	//	public bool fixSortingOrder;
-	//	public CallBack loadCallBack;
-	//	public bool keepCanvas;
-	//	public string bundleName;
-	//	public string canvasName;
-	//}
-
-	//public struct CanvasDiplayInfo{
-	//	public Transform canvas;
- //       public int defaultSortingOrder;
- //       public bool fixSortingOrder;
-	//}
+	using UnityEngine.UI;
 
 	public class UIManager:MonoBehaviour{
 
@@ -47,7 +34,7 @@ namespace WordJourney
 					Canvas c = null;
 
 					foreach (GameObject asset in assets) {
-						GameObject obj = GameObject.Instantiate (asset);
+						GameObject obj = Instantiate (asset);
 						obj.name = asset.name;
 						if (obj.name == canvasName) {
 							c = obj.GetComponent<Canvas> ();
@@ -63,6 +50,12 @@ namespace WordJourney
 
 					c.transform.SetParent (canvasContainer);
 					c.transform.SetAsLastSibling ();               
+
+					if(CommonData.HWScalerOfCurrentScreen < 1.7f){
+						c.GetComponent<CanvasScaler>().matchWidthOrHeight = 1;
+					}else{
+						c.GetComponent<CanvasScaler>().matchWidthOrHeight = 0;
+					}
 
 					UIDic.Add (canvasName, c.transform);
 
@@ -140,7 +133,14 @@ namespace WordJourney
 			c.transform.SetParent(canvasContainer);
 			c.transform.SetAsLastSibling ();
 
-			//ResetCanvasesSortingOrder ();
+			if (CommonData.HWScalerOfCurrentScreen < 1.7f)
+            {
+                c.GetComponent<CanvasScaler>().matchWidthOrHeight = 1;
+            }
+            else
+            {
+                c.GetComponent<CanvasScaler>().matchWidthOrHeight = 0;
+            }
 
 			UIDic.Add (canvasName, c.transform);
 
