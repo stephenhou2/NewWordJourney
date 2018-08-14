@@ -18,6 +18,8 @@ namespace WordJourney
 
 		public Button nextDialogButton;
 
+		public TintHUD hintHUD;
+
 		public string[] finalDialogs = {
 			"恭喜你，我的朋友，你完成了最终的试炼",
 			"你是如此的不同，在漫漫岁月里，只有你最后来到了这里",
@@ -74,10 +76,18 @@ namespace WordJourney
 
 				nextDialogButton.interactable = false;
 
-				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate{
-					nextDialogButton.interactable = true;
-					TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, null, null, null);
-				});
+				//if (Application.internetReachability == NetworkReachability.NotReachable)
+				//{
+				//	hintHUD.SetUpSingleTextTintHUD("无网络连接");
+				//}
+				//else
+				//{
+					GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
+					{
+						nextDialogButton.interactable = true;
+						TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, null, null, null);
+					});
+				//}
 			}
 			else if (dialogIndex == finalDialogs.Length){
 
@@ -86,20 +96,19 @@ namespace WordJourney
 				ExploreManager.Instance.expUICtr.transitionMask.gameObject.SetActive(true);
 				ExploreManager.Instance.expUICtr.transitionMask.color = new Color(0, 0, 0, 1);
 
+				GameManager.Instance.soundManager.StopBgm();
+
 				ExploreManager.Instance.expUICtr.transitionView.PlayTransition(TransitionType.End, delegate
 				{
-					
+					GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
 
 					GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
-                    {
-
+                    {               
 						ExploreManager.Instance.QuitExploreScene();
 
                         TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, null, delegate {
                             GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.homeCanvasBundleName, "HomeCanvas", null);
                         });
-
-                        GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
 
                     });
 

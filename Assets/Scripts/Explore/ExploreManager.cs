@@ -92,6 +92,12 @@ namespace WordJourney
 		{
 			exploreSceneReady = false;
 
+			bool resetGameData = false;
+			if(Player.mainPlayer.health <= 0){
+				resetGameData = true;
+				GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
+			}
+
 			GameManager.Instance.gameDataCenter.InitExplorePrepareGameData();
 
 			bool isFinalChapter = Player.mainPlayer.currentLevelIndex == CommonData.maxLevel;
@@ -104,7 +110,7 @@ namespace WordJourney
 
             Player.mainPlayer.ClearCollectedCharacters();
 
-			expUICtr.SetUpExploreCanvas();
+			expUICtr.SetUpExploreCanvas(resetGameData);
 
             battlePlayerCtr.InitBattlePlayer();
 
@@ -462,8 +468,7 @@ namespace WordJourney
 			if (monsterTransArray.Length <= 0) {
 				return;
 			}
-
-
+         
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);
 
@@ -603,10 +608,12 @@ namespace WordJourney
 
 			expUICtr.QuitFight ();
 
+			//battlePlayerCtr.isInEvent = false;
+
+			GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+         
 			expUICtr.ShowBuyLifeQueryHUD ();
-
-			battlePlayerCtr.isInEvent = false;
-
+         
 		}
 
 
@@ -683,7 +690,7 @@ namespace WordJourney
 
 				SetUpExploreView(fromLastLevel);
 
-				expUICtr.tintHUD.SetUpSingleTextTintHUD("游戏数据已保存");
+				expUICtr.hintHUD.SetUpSingleTextTintHUD("数据已保存");
 			}
 		}
 
@@ -715,8 +722,7 @@ namespace WordJourney
 			GameManager.Instance.persistDataManager.SaveMapEventsRecord();
 
 			EnterLevel(level,ExitType.LastLevel);
-
-
+         
 			//Debug.LogFormat("finish loading time:{0}", Time.time);
 		}
 

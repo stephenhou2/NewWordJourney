@@ -128,9 +128,7 @@ namespace WordJourney
 			}
 
 			enemy.PlayShakeAnim ();
-
-
-
+                     
 			self.agent.physicalHurtToEnemy = actualPhysicalHurt;
 			self.agent.magicalHurtToEnemy = actualMagicalHurt;
 

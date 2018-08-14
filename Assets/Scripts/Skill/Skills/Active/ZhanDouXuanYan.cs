@@ -27,6 +27,11 @@ namespace WordJourney
 		{
 			int armorDecrease = armorDecreaseBase * skillLevel;
 
+			if(self.agent.armor < armorDecrease){
+				armorDecrease = self.agent.armor;
+			}
+
+
 			self.agent.armor -= armorDecrease;
 			self.agent.armorChangeFromSkill -= armorDecrease;
 
@@ -36,6 +41,9 @@ namespace WordJourney
 			self.agent.critChangeFromSkill += critIncrease;
 
 			self.SetEffectAnim(selfEffectAnimName);
+
+			self.AddTintTextToQueue("护甲\n降低");
+			self.AddTintTextToQueue("暴击\n提升");
 
 		}
 

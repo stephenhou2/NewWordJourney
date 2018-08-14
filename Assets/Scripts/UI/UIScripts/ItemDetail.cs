@@ -26,6 +26,7 @@ namespace WordJourney
 		public Image itemIconBackground;
 		public Image goldIcon;
 		public Text priceText;
+		public Text specialOperationHint;
 
 		public Transform equipButton;
 		public Transform unloadButton;
@@ -67,6 +68,7 @@ namespace WordJourney
     			case ItemType.Equipment:
     				Equipment eqp = item as Equipment;
     				itemDescription.text = item.itemDescription;
+					specialOperationHint.enabled = false;
     				attachedDescription.text = eqp.attachedPropertyDescription;
     				switch (eqp.quality) {
         				case EquipmentQuality.Gray:
@@ -103,6 +105,7 @@ namespace WordJourney
     				attachedDescription.text = item.itemDescription;
     				SetUpOperationButtons (false, false, true);
 					specialOperationContainer.gameObject.SetActive(false);
+					specialOperationHint.enabled = false;
     				//attachedSkillDisplay.gameObject.SetActive (false);
 					attachedGemstoneDisplay.gameObject.SetActive(false);
     				break;
@@ -116,6 +119,7 @@ namespace WordJourney
     				//});
 					SetUpOperationButtons (false, false, true);
 					specialOperationContainer.gameObject.SetActive (false);
+					specialOperationHint.enabled = false;
 					//attachedSkillDisplay.SetUpAttachedSkillDisplay(attachedSkill);
 					attachedGemstoneDisplay.gameObject.SetActive(false);
     				break;
@@ -124,11 +128,13 @@ namespace WordJourney
 					itemDescription.text = string.Empty;
 					SetUpOperationButtons(false, false, false);
 					specialOperationContainer.gameObject.SetActive(false);
+					specialOperationHint.enabled = false;
 					//attachedSkillDisplay.gameObject.SetActive(false);
 					attachedGemstoneDisplay.gameObject.SetActive(false);
 					break;
 				case ItemType.SpecialItem:
     				attachedDescription.text = item.itemDescription;
+					specialOperationHint.enabled = false;
 					SpecialItem specialItem = item as SpecialItem;
 					switch(specialItem.specialItemType){
 						case SpecialItemType.TieYaoShi:
@@ -146,6 +152,7 @@ namespace WordJourney
 							specialOperationContainer.gameObject.SetActive(true);
 							soCell.SetUpSpeicalOperationCell(null);
 							soCell.InitSpecialOperaiton(null);
+							specialOperationHint.enabled = true;
 							break;
 						default:
 							SetUpOperationButtons(false, false, true);

@@ -22,7 +22,7 @@ namespace WordJourney
 		public BagItemsDisplay bagItemsDisplay;
 
 
-		public TintHUD tintHUD;
+		public TintHUD hintHUD;
 
 		public ItemDetail itemDetail;
 
@@ -111,10 +111,20 @@ namespace WordJourney
 		public void SetUpPurchasePlane(string productID)
         {
 
-            purchaseHUD.SetUpPurchasePendingHUD(productID, delegate {
-                SetUpEquipedEquipmentsPlane();
-                bagItemsDisplay.UpdateBagTabs();
-            });
+			switch (Application.internetReachability)
+            {
+                case NetworkReachability.NotReachable:
+                    hintHUD.SetUpSingleTextTintHUD("无网络连接");
+                    break;
+                case NetworkReachability.ReachableViaCarrierDataNetwork:
+                case NetworkReachability.ReachableViaLocalAreaNetwork:
+					purchaseHUD.SetUpPurchasePendingHUD(productID, delegate {
+                        SetUpEquipedEquipmentsPlane();
+                        bagItemsDisplay.UpdateBagTabs();
+                    });
+                    break;
+            }
+           
 
         }
 			
@@ -344,7 +354,7 @@ namespace WordJourney
 
 
 		public void SetUpSingleTextTintHUD(string tint){
-			tintHUD.SetUpSingleTextTintHUD (tint);
+			hintHUD.SetUpSingleTextTintHUD (tint);
 		}
 			
 
@@ -362,7 +372,7 @@ namespace WordJourney
 		// 关闭背包界面
 		public void QuitBagPlane(){
 
-			tintHUD.QuitTintHUD ();
+			hintHUD.QuitTintHUD ();
 
 			bagItemsDisplay.QuitBagItemPlane ();
 

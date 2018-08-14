@@ -17,13 +17,15 @@ namespace WordJourney
 
 			Time.timeScale = 1f;
          
-			//if (!GameManager.Instance.soundManager.bgmAS.isPlaying 
-			//	|| GameManager.Instance.soundManager.bgmAS.clip.name != CommonData.homeBgmName) {
-			//	GameManager.Instance.soundManager.PlayBgmAudioClip (CommonData.homeBgmName, true);
-			//}
 
+                     
 		}
 			
+
+		public void OnConfirmNetStatusButtonClick(){
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
+			homeView.HideNoAvalableNetHintHUD();
+		}
 
 		public void OnExploreButtonClick(){
          
@@ -142,39 +144,48 @@ namespace WordJourney
 
 		public void OnWeChatShareButtonClick(){
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
-			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
-			{
-				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, null, null,null);
-				homeView.OnQuitHomeView();
-			},false,true);
+
+			//if (Application.internetReachability == NetworkReachability.NotReachable)
+			//{
+			//	homeView.tintHUD.SetUpSingleTextTintHUD("无网络连接");
+			//}
+			//else
+			//{
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
+				{
+					TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, ShareSucceedCallBack, ShareFailedCallBack, null);
+					homeView.OnQuitHomeView();
+				}, false, true);
+			//}
 		}
 
 		public void OnWeiBoShareButtonClick(){
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
-            GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
-            {
-				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.Weibo, null, null,null);
-                homeView.OnQuitHomeView();
-            }, false, true);
+			//if (Application.internetReachability == NetworkReachability.NotReachable)
+			//{
+			//	homeView.tintHUD.SetUpSingleTextTintHUD("无网络连接");
+			//}
+			//else
+			//{
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
+				{
+					TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.Weibo, ShareSucceedCallBack, ShareFailedCallBack, null);
+					homeView.OnQuitHomeView();
+				}, false, true);
+			//}
 		}
 
-		//private void ShareSucceedCallBack(){
+		private void ShareSucceedCallBack(){
 			
-		//	string tintStr = string.Empty;
-		//	if(GameManager.Instance.gameDataCenter.gameSettings.hasShared){
-		//		tintStr = "分享成功";
-		//	}else{
-		//		tintStr = "分享成功，获得金币x100";
-		//		Player.mainPlayer.totalGold += 100;
-		//	}         
+			string tintStr = "分享成功";    
 
-		//	homeView.tintHUD.SetUpSingleTextTintHUD(tintStr);
-		//}
+			homeView.tintHUD.SetUpSingleTextTintHUD(tintStr);
+		}
 
-		//private void ShareFailedCallBack(){
-		//	string tintStr = "分享失败";
-		//	homeView.tintHUD.SetUpSingleTextTintHUD(tintStr);
-		//}
+		private void ShareFailedCallBack(){
+			string tintStr = "分享失败，未检测到客户端";
+			homeView.tintHUD.SetUpSingleTextTintHUD(tintStr);
+		}
 
 
 		private void QuitHomeView(){

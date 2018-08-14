@@ -23,7 +23,7 @@ namespace WordJourney
 
 				enemy.SetRoleAnimTimeScale(1 - fixedAttackSpeedDecreaseScaler * Player.mainPlayer.agentLevel - fixedAttackSpeedDecrease);
                             
-				enemy.AddTintTextToQueue("攻速降低");
+				enemy.AddTintTextToQueue("攻速\n降低");
 
 				if(!effectAnimTriggered){
 					enemy.SetEffectAnim(enemyEffectAnimName, null, 0, 0);

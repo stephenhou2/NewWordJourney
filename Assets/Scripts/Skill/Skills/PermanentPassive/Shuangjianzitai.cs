@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
-	// 永久提升<color=white>(技能等级×0.5%)</color>的暴击率
+	// 永久提升<color=white>(技能等级×1%)</color>的暴击率
 	public class Shuangjianzitai : PermanentPassiveSkill {
 
 
@@ -17,8 +17,8 @@ namespace WordJourney
 
 		public override string GetDisplayDescription()
 		{
-			string critGainString = (skillLevel * skillSourceValue * 100).ToString("0.0");
-			return string.Format("永久提升<color=white>(技能等级×0.5%)</color><color=red>{0}%</color>的暴击率", critGainString);
+			string critGainString = (skillLevel * skillSourceValue * 100).ToString("0");
+			return string.Format("永久提升<color=white>(技能等级×1%)</color><color=red>{0}%</color>的暴击率", critGainString);
 		}
 	}
 }

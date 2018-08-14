@@ -283,12 +283,11 @@ namespace WordJourney
 			if (isDead) {
 				return;
 			}
-
-			enemy.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-
+         
 			exploreManager.DisableExploreInteractivity ();
 
 			isDead = true;
+			enemy.isIdle = true;
 
 			GetComponent<MapMonster>().DisableAllDetect();
 
@@ -296,10 +295,8 @@ namespace WordJourney
 
             QuitFight();
 
-			//enemy.AllEffectAnimsIntoPool();
-
 			exploreManager.BattlePlayerWin(new Transform[] { transform });
-
+         
 			exploreManager.expUICtr.QuitFight();
 
 			StartCoroutine ("LatelyDie");

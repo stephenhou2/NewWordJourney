@@ -12,35 +12,55 @@ namespace WordJourney
 	public class PurchaseManager : MonoBehaviour, IStoreListener
 	{
 		private IStoreController controller;
+		private IAppleExtensions m_appleExtension;
+		private ConfigurationBuilder builder;
+
+		//private string receipt;
 		//private IExtensionProvider extensions;
 
 		// Product identifiers for all products capable of being purchased: 
 		// "convenience" general identifiers for use with Purchasing, and their store-specific identifier 
 		// counterparts for use with and outside of Unity Purchasing. Define store-specific identifiers 
 		// also on each platform's publisher dashboard (iTunes Connect, Google Play Developer Console, etc.
-		public static string extra_equipmentSlot_id = "com.yougan233.wordjourney.extraEquipmentSlot_ring";
-		public static string extra_bag_2_id = "com.yougan233.wordjourney.extraBag_02";
-		public static string extra_bag_3_id = "com.yougan233.wordjourney.extraBag_03";
-		public static string extra_bag_4_id = "com.yougan233.wordjourney.extraBag_04";
+		public static string extra_equipmentSlot_id = "com.yougan233.wordjourney.extraEquipmentSlot_Ring";
+		public static string extra_bag_2_id = "com.yougan233.wordjourney.extraBagSlot_2";
+		public static string extra_bag_3_id = "com.yougan233.wordjourney.extraBagSlot_3";
+		public static string extra_bag_4_id = "com.yougan233.wordjourney.extraBagSlot_4";
 		public static string new_life_id = "com.yougan233.wordjourney.lifeCard";
 
 
 		private CallBack purchaseSucceedCallback;
 		private CallBack purchaseFailCallback;
 
+		private CallBackWithInt restoreCallBack;
 
 		void Start()
-		{
-			var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
+		{         
+                 
+			builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
-			builder.AddProduct(PurchaseManager.extra_equipmentSlot_id, ProductType.Consumable);
-			builder.AddProduct(PurchaseManager.extra_bag_2_id, ProductType.Consumable);
-			builder.AddProduct (PurchaseManager.extra_bag_3_id, ProductType.Consumable);
-			builder.AddProduct(PurchaseManager.extra_bag_4_id, ProductType.Consumable);
-			builder.AddProduct (PurchaseManager.new_life_id, ProductType.Consumable);
+            builder.AddProduct(PurchaseManager.extra_equipmentSlot_id, ProductType.Consumable);
+            builder.AddProduct(PurchaseManager.extra_bag_2_id, ProductType.Consumable);
+            builder.AddProduct(PurchaseManager.extra_bag_3_id, ProductType.Consumable);
+            builder.AddProduct(PurchaseManager.extra_bag_4_id, ProductType.Consumable);
+            builder.AddProduct(PurchaseManager.new_life_id, ProductType.Consumable);
 
-			UnityPurchasing.Initialize(this, builder);
+		    if (Application.internetReachability != NetworkReachability.NotReachable)
+            {
+			    UnityPurchasing.Initialize(this, builder);
+		    }
+			//receipt = builder.Configure<IAppleConfiguration>().appReceipt;
+			//Debug.Log(receipt);
 		}
+
+		//private void InitializePurchaseManager(){
+			
+
+
+  //          UnityPurchasing.Initialize(this, builder);
+
+
+		//}
 			
 
 		/// <summary>
@@ -53,24 +73,69 @@ namespace WordJourney
 				return;
 			}
 
-
 			this.controller = controller;
 
-//			this.extensions = extensions;
-//			Debug.Log("Initialize success");
+			this.m_appleExtension = extensions.GetExtension<IAppleExtensions>();
+
+
+			//Debug.Log("准备获取苹果商店扩展类");
+
+			//Debug.Log("获取finish, is going to refresh reciept");
+			//m_appleExtension.RefreshAppReceipt(receipt => {
+    //            // This handler is invoked if the request is successful.
+    //            // Receipt will be the latest app receipt.
+				//Debug.Log(receipt);
+    //        },
+    //        () => {
+    //            // This handler will be invoked if the request fails,
+    //            // such as if the network is unavailable or the user
+    //            // enters the wrong password.
+				//Debug.Log("refresh receipt failed!");
+            //});
 		}
 
 		private bool IsInitialized()
 		{
 			// Only say we are initialized if both the Purchasing references are set.
-			return controller != null; 
-//				&& extensions != null;
+			return controller != null && m_appleExtension != null;
+		}
+        
+      
+
+        /// <summary>
+        /// 恢复非消耗类商品的购买状态
+        /// </summary>
+		public void RestoreItems(CallBackWithInt restoreCallBack){
+
+
+			if (!IsInitialized() && Application.internetReachability != NetworkReachability.NotReachable)
+            {
+				UnityPurchasing.Initialize(this, builder);
+            }
+
+			this.restoreCallBack = restoreCallBack;
+
+			if(IsInitialized()){
+				m_appleExtension.RestoreTransactions(OnTransitionRestored);
+			}
+
 		}
 
+		private void OnTransitionRestored(bool success){
+			if(restoreCallBack != null){
+				restoreCallBack(success ? 1 : 0);
+				restoreCallBack = null;
+			}
+			//Debug.Log("restore result:" + success.ToString());
+		}
+        
 
 		public void PurchaseProduct(string productId,CallBack successCallback,CallBack failCallback){
 
-//			Debug.Log ("purchase action!!");
+			if (!IsInitialized() && Application.internetReachability != NetworkReachability.NotReachable)
+            {
+				UnityPurchasing.Initialize(this, builder);
+            }
 
 			this.purchaseSucceedCallback = successCallback;
 			this.purchaseFailCallback = failCallback;
@@ -97,6 +162,7 @@ namespace WordJourney
 		/// </summary>
 		public void OnInitializeFailed (InitializationFailureReason error)
 		{
+			
 			Debug.Log (error);
 		}
 

@@ -68,6 +68,10 @@ namespace WordJourney
 
                 int equipmentGrade = (Player.mainPlayer.maxUnlockLevelIndex - 1) / 5 + 1;
 
+				if(equipmentGrade == 10){
+					equipmentGrade = 9;
+				}
+
                 EquipmentModel equipmentModel = GameManager.Instance.gameDataCenter.allEquipmentModels.Find(delegate (EquipmentModel obj)
                 {
                     if (equipmentType == EquipmentType.Weapon)

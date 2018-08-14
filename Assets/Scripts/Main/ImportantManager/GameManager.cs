@@ -91,9 +91,10 @@ namespace WordJourney
 		{
 			SaveDataOnApplicationQuit();
 		}
-        
-        /// <summary>
-        /// 退出时保存数据的逻辑
+
+#warning 打包ios时需要在xcode中更改以下内容
+		/// <summary>
+		/// 退出时保存数据的逻辑
 		/// 该方法用于和ios交互
 		/// xcode中UnityAppController.mm  修改如下
 		/*
@@ -103,7 +104,7 @@ namespace WordJourney
             ::printf("-> applicationDidEnterBackground()\n");
         }
         */
-        /// </summary>
+		/// </summary>
 		public void SaveDataOnApplicationQuit(){
 			if (hasSavedDataOnQuit)
             {

@@ -26,7 +26,7 @@ namespace WordJourney
 
 		public PurchasePendingHUD purchasePendingHUD;
 
-		public TintHUD tintHUD;
+		public TintHUD hintHUD;
            
 
 		public float flyDuration;
@@ -50,6 +50,8 @@ namespace WordJourney
 		private HLHNPC npc;
 
 		private CallBack quitCallBack;
+
+		private int currentSelectGoodsIndex;
 
 		public Transform quitTradeButton;
 		public Transform quitAddGemstoneButton;
@@ -102,6 +104,7 @@ namespace WordJourney
 					currentSelectItemPrice = goods.GetGoodsPrice();
 					itemDetail.SetUpItemDetail(itemAsGoods, currentSelectItemPrice, ItemOperationType.Buy);
                     UpdateGoodsSelection(goodsIndex);
+					currentSelectGoodsIndex = goodsIndex;
 					bagItemsDisplay.HideAllItemSelectedTintIcon();
                 });
 
@@ -151,10 +154,21 @@ namespace WordJourney
         private void SetUpPurchasePlane(string productID)
         {
 
-            purchasePendingHUD.SetUpPurchasePendingHUD(productID, delegate {
-                bagItemsDisplay.UpdateBagTabs();
-            });
+			switch (Application.internetReachability)
+            {
+                case NetworkReachability.NotReachable:
+                    hintHUD.SetUpSingleTextTintHUD("无网络连接");
+                    break;
+                case NetworkReachability.ReachableViaCarrierDataNetwork:
+                case NetworkReachability.ReachableViaLocalAreaNetwork:
+					purchasePendingHUD.SetUpPurchasePendingHUD(productID, delegate {
+                        bagItemsDisplay.UpdateBagTabs();
+                    });               
+                    break;
+            }
 
+
+           
         }
             
 		private void EnterTradeDisplay()
@@ -203,13 +217,13 @@ namespace WordJourney
 			if (Player.mainPlayer.totalGold < currentSelectItemPrice)
             {
                 tint = "金钱不足";
-                tintHUD.SetUpSingleTextTintHUD(tint);
+                hintHUD.SetUpSingleTextTintHUD(tint);
                 return;
             }
 
 			if (Player.mainPlayer.CheckBagFull(currentSelectedItem)){
 				tint = "背包已满";
-                tintHUD.SetUpSingleTextTintHUD(tint);
+                hintHUD.SetUpSingleTextTintHUD(tint);
                 return;
 			}
 
@@ -220,7 +234,7 @@ namespace WordJourney
 
             player.AddItem(currentSelectedItem);
 
-            npc.SoldGoods(currentSelectedItem.itemId);
+			npc.SoldGoods(currentSelectGoodsIndex);
          
             ExploreManager.Instance.expUICtr.UpdateBottomBar();
 

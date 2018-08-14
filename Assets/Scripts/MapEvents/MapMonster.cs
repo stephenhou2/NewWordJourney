@@ -725,7 +725,11 @@ namespace WordJourney
 			int oriPosX = Mathf.RoundToInt (transform.position.x);
 			int oriPosY = Mathf.RoundToInt (transform.position.y);
 
-			int targetPosX = Mathf.RoundToInt (position.x);
+			// 怪物不是直接跑到战斗位置，而是先跑小角度，然后再做位置调整，所以这里给0.1的位置修正（[向右跑给+0.1，向左跑给-0.1]），保证下面近似出的targetPosX是正确的目标位置         
+			float targetPosFix = position.x > oriPosX ? 0.1f : -0.1f;
+
+
+			int targetPosX = Mathf.RoundToInt (position.x + targetPosFix);
 			int targetPosY = Mathf.RoundToInt (position.y);
 
 

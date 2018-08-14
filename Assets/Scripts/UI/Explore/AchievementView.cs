@@ -51,14 +51,17 @@ namespace WordJourney
 
 		public void ShareLearningInfo(){
 
-			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
-            GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
-            {
-				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, ShareSucceedCallBack, ShareFailedCallBack, null);
-				//QuitAchievementView();
-            }, false, true);
+			//if(Application.internetReachability == NetworkReachability.NotReachable){
+			//	tintHUD.SetUpSingleTextTintHUD("无网络连接");
+			//}else{
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
+                GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
+                {
+                    TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, ShareSucceedCallBack, ShareFailedCallBack, null);
+                    //QuitAchievementView();
+                }, false, true);
 
-
+			//}         
 		}
 
 		public void ShareSucceedCallBack(){
@@ -78,7 +81,7 @@ namespace WordJourney
 
 			QuitAchievementView(delegate
 			{
-				string hintStr = "分享失败";
+				string hintStr = "未检测到客户端";
 
 				tintHUD.SetUpSingleTextTintHUD(hintStr);
 			});

@@ -49,8 +49,8 @@ namespace WordJourney
                 
                 enemy.SetEffectAnim(enemyEffectAnimName);
 
-				enemy.AddTintTextToQueue("护甲降低");
-				enemy.AddTintTextToQueue("抗性降低");
+				enemy.AddTintTextToQueue("护甲\n降低");
+				enemy.AddTintTextToQueue("抗性\n降低");
 
 			}
 

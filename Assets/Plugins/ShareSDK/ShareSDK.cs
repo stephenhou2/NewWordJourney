@@ -33,39 +33,76 @@ namespace cn.sharesdk.unity3d
 		public EventHandler getFriendsHandler;
 		public EventHandler followFriendHandler;
 
+		private bool initialized;
+
 		void Awake()
-		{				
-			Type type = devInfo.GetType();
-			Hashtable platformConfigs = new Hashtable();
-			FieldInfo[] devInfoFields = type.GetFields();
-			foreach (FieldInfo devInfoField in devInfoFields) 
-			{	
-				DevInfo info = (DevInfo) devInfoField.GetValue(devInfo);
-				int platformId = (int) info.GetType().GetField("type").GetValue(info);
-				FieldInfo[] fields = info.GetType().GetFields();
-				Hashtable table = new Hashtable();
-				foreach (FieldInfo field in fields) 
-				{
-					if ("type".EndsWith(field.Name)) {
-						continue;
-					} else if ("Enable".EndsWith(field.Name) || "ShareByAppClient".EndsWith(field.Name) || "BypassApproval".EndsWith(field.Name)) {
-						table.Add(field.Name, Convert.ToString(field.GetValue(info)).ToLower());
-					} else {
-						table.Add(field.Name, Convert.ToString(field.GetValue(info)));
-					}
-				}
-				platformConfigs.Add(platformId, table);
+		{
+			initialized = false;
+
+			InitializeShareSDK();
+
+		}
+        
+        /// <summary>
+        /// 检查是否已经初始化
+        /// </summary>
+        /// <returns><c>true</c>, if initialization was checked, <c>false</c> otherwise.</returns>
+		public bool CheckInitialization(){
+
+			return initialized;
+
+		}
+
+        /// <summary>
+        /// 初始化shareSDK
+        /// </summary>
+		public void InitializeShareSDK(){
+		
+			if(initialized){
+				return;
 			}
 
-			#if UNITY_ANDROID
-			shareSDKUtils = new AndroidImpl(gameObject);
-			shareSDKUtils.InitSDK(appKey,appSecret);
-			#elif UNITY_IPHONE
-			shareSDKUtils = new iOSImpl(gameObject);
-			#endif
+			Type type = devInfo.GetType();
+            Hashtable platformConfigs = new Hashtable();
+            FieldInfo[] devInfoFields = type.GetFields();
+            foreach (FieldInfo devInfoField in devInfoFields)
+            {
+                DevInfo info = (DevInfo)devInfoField.GetValue(devInfo);
+                int platformId = (int)info.GetType().GetField("type").GetValue(info);
+                FieldInfo[] fields = info.GetType().GetFields();
+                Hashtable table = new Hashtable();
+                foreach (FieldInfo field in fields)
+                {
+                    if ("type".EndsWith(field.Name))
+                    {
+                        continue;
+                    }
+                    else if ("Enable".EndsWith(field.Name) || "ShareByAppClient".EndsWith(field.Name) || "BypassApproval".EndsWith(field.Name))
+                    {
+                        table.Add(field.Name, Convert.ToString(field.GetValue(info)).ToLower());
+                    }
+                    else
+                    {
+                        table.Add(field.Name, Convert.ToString(field.GetValue(info)));
+                    }
+                }
+                platformConfigs.Add(platformId, table);
+            }
 
-			shareSDKUtils.SetPlatformConfig(platformConfigs);
+#if UNITY_ANDROID
+            shareSDKUtils = new AndroidImpl(gameObject);
+            shareSDKUtils.InitSDK(appKey,appSecret);
+#elif UNITY_IPHONE
+            shareSDKUtils = new iOSImpl(gameObject);
+#endif
+
+			initialized = true;
+
+            shareSDKUtils.SetPlatformConfig(platformConfigs);
+         
 		}
+
+
 		
 		/// <summary>
 		/// callback the specified data.

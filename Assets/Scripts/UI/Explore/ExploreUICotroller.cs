@@ -11,7 +11,7 @@ namespace WordJourney
 
 	public class ExploreUICotroller : MonoBehaviour {
 
-		public TintHUD tintHUD;
+		public TintHUD hintHUD;
 		public PauseHUD pauseHUD;
 		public WordHUD wordHUD;
 		public WordDetailHUD wordDetailHUD;
@@ -69,10 +69,12 @@ namespace WordJourney
 
 		public PurchasePendingHUD purchaseHUD;
 
+		public CommentRecommendHUD commentRecommendHUD;// 评价引导弹框
+
 		// 记录本关所有背过的单词
         public List<HLHWord> wordRecords = new List<HLHWord>();
 
-		public void SetUpExploreCanvas(){
+		public void SetUpExploreCanvas(bool hasResetGame=false){
 
 			transitionMask.gameObject.SetActive (true);
 
@@ -105,12 +107,23 @@ namespace WordJourney
 
 
 			if (!Player.mainPlayer.isNewPlayer) {
-				bool playerDataExist = DataHandler.FileExist (CommonData.persistDataPath + "PlayerData.json");
-				if (!playerDataExist) {
-					GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
-				}
-				transitionMask.gameObject.SetActive(false);
 
+				bool playerDataExist = DataHandler.FileExist(CommonData.persistDataPath + "PlayerData.json");
+                if (!playerDataExist)
+                {
+                    GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+                }
+                transitionMask.gameObject.SetActive(false);
+
+				if (hasResetGame)
+				{
+					//GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
+
+					transitionView.PlayTransition(TransitionType.ResetGameHint, delegate
+					{
+						transitionMask.gameObject.SetActive(false);
+					});               
+				}          
 			} else {
 				
 				ExploreManager.Instance.MapWalkableEventsStopAction();
@@ -118,15 +131,16 @@ namespace WordJourney
 				transitionMask.gameObject.SetActive(true);
 
 				transitionView.PlayTransition(TransitionType.Introduce, delegate
-				{
-					GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
-					{
-						TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(null);                  
-					});
-					transitionMask.gameObject.SetActive(false);
+                {
+                    GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
+                    {
+                        TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(null);                  
+                    });
+                    transitionMask.gameObject.SetActive(false);
 
-				});  
+                });  
 
+            
 			}
 
 			creationView.InitCharacterFragmentsHUD(SetUpSpellItemView);
@@ -441,11 +455,11 @@ namespace WordJourney
 		}
 
 		public void SetUpSingleTextTintHUD(string tint){
-			tintHUD.SetUpSingleTextTintHUD (tint);
+			hintHUD.SetUpSingleTextTintHUD (tint);
 		}
 
 		public void SetUpGoldGainTintHUD(int goldGain){
-			tintHUD.SetUpGoldTintHUD (goldGain);
+			hintHUD.SetUpGoldTintHUD (goldGain);
 		}
 
 		/// <summary>
@@ -580,6 +594,14 @@ namespace WordJourney
 
 			ExploreManager.Instance.ChooseAnswerInWordHUD (isChooseCorrect);
 
+#if UNITY_IOS || UNITY_EDITOR
+			bool pushRecommend = CheckPushCommentRecommend();
+
+			if(pushRecommend){
+				commentRecommendHUD.SetUpCommentRecommendHUD();
+			}
+#endif
+
 			int qualificationIndex = CheckLearnTitleQualification();
 
 			if(qualificationIndex == -1){
@@ -592,6 +614,19 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 检测是否到了推送
+        /// </summary>
+        /// <returns><c>true</c>, if push comment recommend was checked, <c>false</c> otherwise.</returns>
+		private bool CheckPushCommentRecommend(){
+			bool push = false;
+			int totalLearnedWordCount = Player.mainPlayer.totalLearnedWordCount;
+			if(totalLearnedWordCount == 300){
+				push = true;
+			}         
+			return push;
+				
+		}
 
         /// <summary>
         /// 检查是否达成称号
@@ -671,9 +706,21 @@ namespace WordJourney
 			
 
 		private void ConfirmBuyLife(){
-			QuitFight ();
-			purchaseHUD.SetUpPurchasePendingHUD(PurchaseManager.new_life_id, PlayerRecomeToLifeCallBack);         
-			HideFullMask ();
+
+			switch (Application.internetReachability)
+            {
+                case NetworkReachability.NotReachable:
+                    hintHUD.SetUpSingleTextTintHUD("无网络连接");
+                    break;
+                case NetworkReachability.ReachableViaCarrierDataNetwork:
+                case NetworkReachability.ReachableViaLocalAreaNetwork:
+					QuitFight();
+                    purchaseHUD.SetUpPurchasePendingHUD(PurchaseManager.new_life_id, PlayerRecomeToLifeCallBack);
+                    HideFullMask();
+                    break;
+            }
+
+
 		}
 
 		private void PlayerRecomeToLifeCallBack(){

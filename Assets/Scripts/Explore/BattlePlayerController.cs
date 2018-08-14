@@ -1246,10 +1246,10 @@ namespace WordJourney
 			}
 
 			isDead = true;
-
+                     
 			ExploreManager.Instance.DisableAllInteractivity ();
 
-			enemy.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
+			exploreManager.expUICtr.ShowFullMask();
          
 			enemy.boxCollider.enabled = true;
 
@@ -1257,6 +1257,8 @@ namespace WordJourney
 
 			enemy.QuitFight();
             QuitFight();
+
+			isInEvent = true;
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.playerDieAudioName);
 
@@ -1285,13 +1287,13 @@ namespace WordJourney
 
 		public void RecomeToLife(){
 			FixPositionToStandard ();
-			agent.ResetBattleAgentProperties (true);
-			PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
+			agent.ResetBattleAgentProperties (true);         
 			isInFight = false;
 			inSingleMoving = false;
 			isInEvent = false;
 			needPosFix = false;
             isDead = false;
+			PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
 			moveDestination = transform.position;
 			singleMoveEndPos = transform.position;
 			pathPosList.Clear ();
@@ -1300,6 +1302,7 @@ namespace WordJourney
 				SetEffectAnim(CommonData.yinShenEffectName, null, 0, 0);
 			}
 			fadeStepsLeft = Mathf.Max(fadeStepsLeft, 5);
+			GameManager.Instance.persistDataManager.SaveCompletePlayerData();
 		}
 
 		void OnDestroy(){

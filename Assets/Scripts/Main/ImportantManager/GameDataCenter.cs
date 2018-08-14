@@ -924,7 +924,7 @@ namespace WordJourney
     				mAllCharacterSprites.Clear();
     				MyResourceManager.Instance.UnloadAssetBundle(CommonData.allCharacterSpritesBundleName, true);
     				break;
-    			case GameDataType.Skills:
+				case GameDataType.Skills:
     				mAllSkills.Clear ();
     				TransformManager.DestroyTransfromWithName ("AllSkills");
     				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allSkillsBundleName,true);

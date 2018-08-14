@@ -510,6 +510,11 @@ namespace WordJourney
          
 			isIdle = animName == CommonData.roleIdleAnimName;
 
+            // 死亡时只能播放死亡动画，其余动画请求全部直接返回
+			if(isDead && animName != CommonData.roleDieAnimName){
+				return;
+			}
+
 			// 如果还有等待上个角色动作结束的协程存在，则结束该协程
 			if (waitRoleAnimEndCoroutine != null) {
 				StopCoroutine (waitRoleAnimEndCoroutine);
@@ -535,10 +540,7 @@ namespace WordJourney
 		public void ResetToWaitAfterCurrentRoleAnimEnd(){
 
 			waitRoleAnimEndCoroutine = ExcuteCallBackAtEndOfRoleAnim (delegate {
-                if(!isIdle){
-                    PlayRoleAnim(CommonData.roleIdleAnimName,0,null);  
-                }
-   
+                PlayRoleAnim(CommonData.roleIdleAnimName,0,null);  
 				exploreManager.EnableExploreInteractivity();
 			});
 

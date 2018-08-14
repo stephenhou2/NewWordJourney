@@ -60,6 +60,13 @@ namespace WordJourney
 			ssdk = Camera.main.GetComponent<ShareSDK>();
 			//处理回调函数
 			ssdk.shareHandler = ShareResultHandler;
+
+			bool ssdkInitialized = ssdk.CheckInitialization();
+
+            if (!ssdkInitialized)
+            {
+                ssdk.InitializeShareSDK();
+            }
 		}
         
 		/// <summary>
@@ -70,6 +77,8 @@ namespace WordJourney
 			if(ExploreManager.Instance != null){
 				ExploreManager.Instance.UpdateWordDataBase();
 			}
+
+
          
 			this.shareType = shareType;
 

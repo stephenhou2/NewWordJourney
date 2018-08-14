@@ -63,25 +63,41 @@ namespace WordJourney
 		}
 
 		public void OnWechatShareButtonClick(){
-			
-			HideShareQueryHUD();
+			         
+			//if (Application.internetReachability == NetworkReachability.NotReachable)
+			//{
+			//	tintHUD.SetUpSingleTextTintHUD("无网络连接");
+			//}
+			//else
+			//{
 
-			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
-            {
-				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, OnPurchaseSucceed, OnPurchaseFail,OnQuitButtonClick);
+				HideShareQueryHUD();
+
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
+				{
+					TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, OnPurchaseSucceed, OnShareFaild, OnQuitButtonClick);
 
 
-            });
+				});
+			//}
 		}
 
 		public void OnWeiboShareButtonClick(){
+         
+			//if (Application.internetReachability == NetworkReachability.NotReachable)
+			//{
+			//	tintHUD.SetUpSingleTextTintHUD("无网络连接");
+			//}
+			//else
+			//{
 
-			HideShareQueryHUD();
+				HideShareQueryHUD();
 
-			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
-			{
-				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.Weibo, OnPurchaseSucceed, OnPurchaseFail,OnQuitButtonClick);
-			});
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
+				{
+					TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.Weibo, OnPurchaseSucceed, OnShareFaild, OnQuitButtonClick);
+				});
+			//}
 
 		}
 
@@ -124,6 +140,15 @@ namespace WordJourney
 			QuitPurchasePendingHUD();
 		}
 
+
+		private void OnShareFaild(){
+			
+			string shareResult = "未检测到客户端";
+
+			tintHUD.SetUpSingleTextTintHUD(shareResult);
+
+            QuitPurchasePendingHUD();
+		}
 
 		private void OnPurchaseFail(){
 

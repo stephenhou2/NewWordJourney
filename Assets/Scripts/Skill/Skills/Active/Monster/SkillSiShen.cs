@@ -38,13 +38,13 @@ namespace WordJourney
 				if(armorDecrease > 0){
 					enemy.agent.armor += armorChange;
                     enemy.agent.armorChangeFromSkill += armorChange;               
-					enemy.AddTintTextToQueue("护甲降低");
+					enemy.AddTintTextToQueue("护甲\n降低");
 				}
 
 				if(attackDecrease > 0){
 					enemy.agent.attack += attackChange;
                     enemy.agent.attackChangeFromSkill += attackChange;
-					enemy.AddTintTextToQueue("攻击降低");
+					enemy.AddTintTextToQueue("攻击\n降低");
 
 				}
                             

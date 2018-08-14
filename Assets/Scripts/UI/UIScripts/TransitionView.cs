@@ -12,7 +12,8 @@ namespace WordJourney
 		None,
 		Introduce,
 		Death,
-        End
+        End,
+        ResetGameHint
 	}
 
 	public class TransitionView : MonoBehaviour
@@ -38,12 +39,16 @@ namespace WordJourney
             "城堡的大门将永远敞开"
 		};
 
+		private string[] resetGameHintStrings = {};
+
 
 		public Text transitionTextModel;
 
 		public Transform transitionTextContainer;
 
 		public Text clickTintText;
+
+		public Text resetGameDataHintText;
 
 		public float fadeInTime = 1.5f;
 
@@ -57,10 +62,11 @@ namespace WordJourney
 
 		private int heightBase = 145;
 
-		public void SetUpTransitionView(TransitionType transitionType){
+		//public void SetUpTransitionView(TransitionType transitionType){
 
-			this.transitionType = transitionType;
-		}
+		//	this.transitionType = transitionType;
+
+		//}
               
 
 		public void PlayTransition(TransitionType transitionType,CallBack finishTransitionCallBack){
@@ -85,6 +91,9 @@ namespace WordJourney
 			case TransitionType.End:
 				transitionStrings = endStrings;
                 break;
+			case TransitionType.ResetGameHint:
+				transitionStrings = resetGameHintStrings;
+				break;
     		}
 
 			IEnumerator transitionCoroutine = PlayTransition (transitionStrings,finishTransitionCallBack);
@@ -109,6 +118,12 @@ namespace WordJourney
 
 			while(loadingCanvas != null){
 				yield return null;
+			}
+
+			if(transitionType == TransitionType.ResetGameHint){
+				resetGameDataHintText.enabled = true;
+			}else{
+				resetGameDataHintText.enabled = false;
 			}
 
 			if(transitionStrings != null){
@@ -152,6 +167,8 @@ namespace WordJourney
 					yield return new WaitForSeconds(sentenceInterval);
                 }
 
+				bool clickContinue = false;
+
 				switch (transitionType)
                 {
                     case TransitionType.Introduce:
@@ -161,46 +178,7 @@ namespace WordJourney
 						clickTintText.text = "点击屏幕继续";
                         clickTintText.enabled = true;
                         alpha = 0.5f;
-
-                        while (!hasUserClick)
-                        {
-
-                            while (alpha < 1f)
-                            {
-
-                                clickTintText.color = new Color(1, 1, 1, alpha);
-
-								//alpha += alphaChangeSpeed * Time.unscaledDeltaTime / 2;
-
-								alpha += alphaChangeSpeed * Time.deltaTime / 2;
-
-                                if (hasUserClick)
-                                {
-                                    break;
-                                }
-
-                                yield return null;
-
-                            }
-
-                            while (alpha > 0.5f)
-                            {
-
-                                clickTintText.color = new Color(1, 1, 1, alpha);
-
-								//alpha -= alphaChangeSpeed * Time.unscaledDeltaTime / 2;
-
-								alpha -= alphaChangeSpeed * Time.deltaTime / 2;
-
-                                if (hasUserClick)
-                                {
-                                    break;
-                                }
-
-                                yield return null;
-
-                            }
-                        }
+						clickContinue = true;                  
                         break;
 					case TransitionType.None:
                         break;
@@ -210,50 +188,62 @@ namespace WordJourney
 						transitionPlaneMask.enabled = true;
                         transitionPlaneMask.color = new Color(0, 0, 0, 0);
                         transitionPlaneMask.raycastTarget = true;
-                        clickTintText.text = "点击屏幕重置游戏进度";
+                        clickTintText.text = "点击屏幕重置进度";
                         clickTintText.enabled = true;
                         alpha = 0.5f;
+						clickContinue = true;
+						break;
+					case TransitionType.ResetGameHint:
+						transitionPlaneMask.enabled = true;
+                        transitionPlaneMask.color = new Color(0, 0, 0, 0);
+                        transitionPlaneMask.raycastTarget = true;
+                        clickTintText.text = "点击屏幕继续";
+                        clickTintText.enabled = true;
+                        alpha = 0.5f;
+						clickContinue = true;
+						break;
+ 
+                }
 
-                        while (!hasUserClick)
-                        {
-
-                            while (alpha < 1f)
-                            {
-
-                                clickTintText.color = new Color(1, 1, 1, alpha);
-
-                                //alpha += alphaChangeSpeed * Time.unscaledDeltaTime / 2;
-
-								alpha += alphaChangeSpeed * Time.deltaTime / 2;
-
-                                if (hasUserClick)
-                                {
-                                    break;
-                                }
-
-                                yield return null;
-
-                            }
-
-                            while (alpha > 0.5f)
-                            {
-
-                                clickTintText.color = new Color(1, 1, 1, alpha);
-
-                                //alpha -= alphaChangeSpeed * Time.unscaledDeltaTime / 2;
-
-								alpha -= alphaChangeSpeed * Time.deltaTime / 2;
-
-                                if (hasUserClick)
-                                {
-                                    break;
-                                }
-
-                                yield return null;
-
-                            }
-                        }
-                        break;
+                // 如果需要点击屏幕才可以继续的情况
+				if(clickContinue){
+					while (!hasUserClick)
+					{
+						
+						while (alpha < 1f)
+						{
+							
+							clickTintText.color = new Color(1, 1, 1, alpha);
+							
+							//alpha += alphaChangeSpeed * Time.unscaledDeltaTime / 2;
+							
+							alpha += alphaChangeSpeed * Time.deltaTime / 2;
+							
+							if (hasUserClick)
+							{
+								break;
+							}
+							
+							yield return null;
+							
+						}
+						
+						while (alpha > 0.5f)
+						{
+							
+							clickTintText.color = new Color(1, 1, 1, alpha);
+							
+							alpha -= alphaChangeSpeed * Time.deltaTime / 2;
+							
+							if (hasUserClick)
+							{
+								break;
+							}
+							
+							yield return null;
+							
+						}
+					}
                 }
 
 				alpha = 0;
@@ -282,6 +272,9 @@ namespace WordJourney
                 case TransitionType.End:
                     //GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
                     break;
+				case TransitionType.ResetGameHint:
+					//GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
+					break;
             }
 		
 			if (finishTransitionCallBack != null)

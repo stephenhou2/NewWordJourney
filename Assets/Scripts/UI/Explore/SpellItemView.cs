@@ -17,6 +17,8 @@ namespace WordJourney
 
 		public Text spellText;
 
+		public Text pronounceNotAvalableHintText;
+
 		private SpellItem spellItem;
 
 		private StringBuilder playerSpell;
@@ -32,7 +34,7 @@ namespace WordJourney
 			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = true;
 			ExploreManager.Instance.MapWalkableEventsStopAction();
-
+                     
 			this.spellItem = spellItem;
 
 			this.createSuccessCallBack = createSuccessCallBack;
@@ -43,7 +45,17 @@ namespace WordJourney
 				StopCoroutine(zoomCoroutine);
 			}
 
-			zoomCoroutine = HUDZoomIn();
+			zoomCoroutine = HUDZoomIn(delegate {
+			
+				if (Application.internetReachability == NetworkReachability.NotReachable)
+                {
+                    pronounceNotAvalableHintText.enabled = true;
+                }
+                else
+                {
+                    pronounceNotAvalableHintText.enabled = false;
+                }
+			});
 
 			StartCoroutine(zoomCoroutine);
 
@@ -161,7 +173,9 @@ namespace WordJourney
         /// 点击了发音按钮
         /// </summary>
 		public void OnPronunceButtonClick(){
-
+			if(Application.internetReachability == NetworkReachability.NotReachable){
+				return;
+			}
 			GameManager.Instance.pronounceManager.PronunceWordFromURL(spellItem.pronounciationURL);
 
 		}
@@ -207,7 +221,9 @@ namespace WordJourney
 			{
 				StopCoroutine(zoomCoroutine);
 			}
-         
+
+			pronounceNotAvalableHintText.enabled = false;
+
 			zoomCoroutine = HUDZoomOut();
 
 			StartCoroutine(zoomCoroutine);

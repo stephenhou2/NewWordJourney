@@ -154,6 +154,10 @@ namespace WordJourney
 			mapItemRenderer.sprite = thornTrapOnSprite;
 			MyTowards towards = battlePlayer.GetReversedTowards();
 			battlePlayer.AddHurtAndShow(50, HurtType.Physical, towards);
+			if (battlePlayer.agent.health <= 0)
+            {
+                battlePlayer.AgentDie();
+            }
 			ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
 		}
 
@@ -164,6 +168,9 @@ namespace WordJourney
 				yield return new WaitForSeconds(1f);
 				MyTowards towards = battlePlayer.GetReversedTowards();
 				battlePlayer.AddHurtAndShow(50, HurtType.Physical, towards);
+				if(battlePlayer.agent.health<=0){
+					battlePlayer.AgentDie();
+				}
 				ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
 				count++;
 			}
@@ -177,6 +184,10 @@ namespace WordJourney
                 yield return new WaitForSeconds(1f);
                 MyTowards towards = battlePlayer.GetReversedTowards();
                 battlePlayer.AddHurtAndShow(100, HurtType.Physical, towards);
+				if (battlePlayer.agent.health <= 0)
+                {
+                    battlePlayer.AgentDie();
+                }
 				ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
                 count++;
             }

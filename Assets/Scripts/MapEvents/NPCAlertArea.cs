@@ -50,53 +50,53 @@ namespace WordJourney
 		}
 
 
-		public void OnTriggerEnter2D (Collider2D col)
-		{
+		//public void OnTriggerEnter2D (Collider2D col)
+		//{
 
-			BattleAgentController ba = col.GetComponent<BattleAgentController> ();
+			//BattleAgentController ba = col.GetComponent<BattleAgentController> ();
 
-			if (!(ba is BattlePlayerController)) {
-				return;
-			}
-
-			//if (mapNPC.npc.isExcutor && Player.mainPlayer.robTime <= 0) {
+			//if (!(ba is BattlePlayerController)) {
 			//	return;
 			//}
 
-			BattlePlayerController bp = ba as BattlePlayerController;
+			////if (mapNPC.npc.isExcutor && Player.mainPlayer.robTime <= 0) {
+			////	return;
+			////}
 
-			if (bp.isInEvent) {
-				return;
-			}
+			//BattlePlayerController bp = ba as BattlePlayerController;
 
-			if (bp.isInFight) {
-				return;
-			}
+			//if (bp.isInEvent) {
+			//	return;
+			//}
 
-			if (mapNPC.needPosFix) {
-				return;
-			}
+			//if (bp.isInFight) {
+			//	return;
+			//}
 
-			if (bp.needPosFix) {
-				return;
-			}
+			//if (mapNPC.needPosFix) {
+			//	return;
+			//}
+
+			//if (bp.needPosFix) {
+			//	return;
+			//}
 
 				
-			mapNPC.DetectPlayer (bp);
+			//mapNPC.DetectPlayer (bp);
 
 
-		}
+		//}
 
-		public void OnTriggerExit2D(Collider2D col){
+//		public void OnTriggerExit2D(Collider2D col){
 
-			BattleAgentController ba = col.GetComponent<BattleAgentController> ();
+//			BattleAgentController ba = col.GetComponent<BattleAgentController> ();
 
-			if (!(ba is BattlePlayerController)) {
-				return;
-			}
+//			if (!(ba is BattlePlayerController)) {
+//				return;
+//			}
 
-//			mapNPC.canShowNpcPlane = true;
-		}
+////			mapNPC.canShowNpcPlane = true;
+		//}
 
 
 	}

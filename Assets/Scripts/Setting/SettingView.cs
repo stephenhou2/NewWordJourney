@@ -19,13 +19,28 @@ namespace WordJourney
 
         public Transform queryChangeWordHUD;
 
+		public Transform restoreMask;
+
         public Image pronounceOnImage;
         public Image pronounceOffImage;
+
+		public Button restoreItemsButton;
+
+		public TintHUD hintHUD;
+
 
 		public void SetUpSettingView(GameSettings settings,CallBackWithFloat volumeChangeCallBack)
         {
 
-            volumeControl.value = (int)(settings.systemVolume * 100);
+			float volume = settings.systemVolume;
+
+			if(volume < 0){
+				volume = 0;
+			}else if(volume > 1f){
+				volume = 1f;
+			}
+
+			volumeControl.value = (int)(volume * 100);
 
             UpdatePronounceControl(settings.isAutoPronounce);
 
@@ -33,11 +48,11 @@ namespace WordJourney
 
 			volumeControl.InitHLHSlider(volumeChangeCallBack);
 
-//#if UNITY_ANDROID
-//            quitAPPButton.gameObject.SetActive(true);
-//#else
-//            quitAPPButton.gameObject.SetActive(false);
-//#endif
+#if UNITY_IPHONE || UNITY_EDITOR
+			restoreItemsButton.gameObject.SetActive(true);
+#else
+			restoreItemsButton.gameObject.SetActive(false);
+#endif
 
             GetComponent<Canvas> ().enabled = true;
 
@@ -68,7 +83,13 @@ namespace WordJourney
 
 		}
 
+		public void ShowRestoreMask(){
+			restoreMask.gameObject.SetActive(true);
+		}
 
+		public void HideRestoreMask(){
+			restoreMask.gameObject.SetActive(false);
+		}
 
 		public void ShowAlertHUD(){
 			queryChangeWordHUD.gameObject.SetActive (true);

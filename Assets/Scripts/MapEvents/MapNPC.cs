@@ -12,7 +12,7 @@ namespace WordJourney
 
         [HideInInspector] public HLHNPC npc;
 
-        public NPCAlertArea[] alertAreas;
+        //public NPCAlertArea[] alertAreas;
 
         [HideInInspector] public HLHNPCReward fightReward;
 
@@ -22,7 +22,7 @@ namespace WordJourney
         public override void AddToPool(InstancePool pool)
         {
             bc2d.enabled = false;
-            DisableAllDetect();
+            //DisableAllDetect();
             StopCoroutine("DelayedMovement");
             pool.AddInstanceToPool(this.gameObject);
             StopMoveImmidiately();
@@ -53,54 +53,54 @@ namespace WordJourney
         private IEnumerator DelayedMovement(int delay)
         {
 
-            DisableAllDetect();
+            //DisableAllDetect();
 
             yield return new WaitForSeconds(delay);
 
-            EnableAllDetect();
+            //EnableAllDetect();
 
             StartMove();
 
         }
               
-        private void DisableAllDetect()
-        {
+        //private void DisableAllDetect()
+        //{
 
-            DisableAllAlertAreaDetect();
+        //    DisableAllAlertAreaDetect();
 
-            bc2d.enabled = false;
+        //    bc2d.enabled = false;
 
-        }
+        //}
 
-        private void EnableAllDetect()
-        {
-            EnableAllAlertAreaDetect();
-            bc2d.enabled = true;
-        }
+        //private void EnableAllDetect()
+        //{
+        //    EnableAllAlertAreaDetect();
+        //    bc2d.enabled = true;
+        //}
 
-        private void InitAllAlertAreaDetect()
-        {
-            for (int i = 0; i < alertAreas.Length; i++)
-            {
-                alertAreas[i].InitializeAlertArea();
-            }
-        }
+        //private void InitAllAlertAreaDetect()
+        //{
+        //    for (int i = 0; i < alertAreas.Length; i++)
+        //    {
+        //        alertAreas[i].InitializeAlertArea();
+        //    }
+        //}
 
-        private void EnableAllAlertAreaDetect()
-        {
-            for (int i = 0; i < alertAreas.Length; i++)
-            {
-                alertAreas[i].EnableAlertDetect();
-            }
-        }
+        //private void EnableAllAlertAreaDetect()
+        //{
+        //    for (int i = 0; i < alertAreas.Length; i++)
+        //    {
+        //        alertAreas[i].EnableAlertDetect();
+        //    }
+        //}
 
-        private void DisableAllAlertAreaDetect()
-        {
-            for (int i = 0; i < alertAreas.Length; i++)
-            {
-                alertAreas[i].DisableAlertDetect();
-            }
-        }
+        //private void DisableAllAlertAreaDetect()
+        //{
+        //    for (int i = 0; i < alertAreas.Length; i++)
+        //    {
+        //        alertAreas[i].DisableAlertDetect();
+        //    }
+        //}
 
 
         public override void InitializeWithAttachedInfo(int mapIndex, MapAttachedInfoTile attachedInfo)
@@ -116,7 +116,8 @@ namespace WordJourney
 
             npc = GameManager.Instance.gameDataCenter.LoadNpc(npcId);
 
-            InitAllAlertAreaDetect();
+			bc2d.enabled = true;
+            //InitAllAlertAreaDetect();
 
             gameObject.SetActive(true);
 
@@ -130,52 +131,52 @@ namespace WordJourney
 
             needPosFix = false;
 
-            for (int i = 0; i < alertAreas.Length; i++)
-            {
-                alertAreas[i].InitializeAlertArea();
-            }
+            //for (int i = 0; i < alertAreas.Length; i++)
+            //{
+            //    alertAreas[i].InitializeAlertArea();
+            //}
 
-            StartMove();
+            //StartMove();
         }
 
 
-        public void OnTriggerEnter2D(Collider2D col)
-        {
+        //public void OnTriggerEnter2D(Collider2D col)
+        //{
 
-            BattlePlayerController bp = col.GetComponent<BattlePlayerController>();
+        //    BattlePlayerController bp = col.GetComponent<BattlePlayerController>();
 
-            if (bp == null)
-            {
-                return;
-            }
+        //    if (bp == null)
+        //    {
+        //        return;
+        //    }
 
-            if (bp.isInEvent)
-            {
-                return;
-            }
+        //    if (bp.isInEvent)
+        //    {
+        //        return;
+        //    }
 
-            if (bp.needPosFix)
-            {
-                return;
-            }
+        //    if (bp.needPosFix)
+        //    {
+        //        return;
+        //    }
 
-            if (needPosFix)
-            {
-                return;
-            }
+        //    if (needPosFix)
+        //    {
+        //        return;
+        //    }
 
-            if (baCtr.isDead)
-            {
-                return;
-            }
+        //    if (baCtr.isDead)
+        //    {
+        //        return;
+        //    }
 
-            if (bp.isInPosFixAfterFight)
-            {
-                return;
-            }
+        //    if (bp.isInPosFixAfterFight)
+        //    {
+        //        return;
+        //    }
 
-            EnterMapEvent(bp);
-        }
+        //    EnterMapEvent(bp);
+        //}
 
         //      public void OnTriggerExit2D(Collider2D col){
         //
@@ -202,16 +203,16 @@ namespace WordJourney
             MapEventTriggered(false, bp);
         }
 
-        public void DetectPlayer(BattlePlayerController bp)
-        {
-            if (isInMoving)
-            {
-                RefreshWalkableInfoWhenTriggeredInMoving();
-            }
-            bp.StopMoveAtEndOfCurrentStep();
-            bp.isInEvent = true;
-            MapEventTriggered(true, bp);
-        }
+        //public void DetectPlayer(BattlePlayerController bp)
+        //{
+        //    if (isInMoving)
+        //    {
+        //        RefreshWalkableInfoWhenTriggeredInMoving();
+        //    }
+        //    bp.StopMoveAtEndOfCurrentStep();
+        //    bp.isInEvent = true;
+        //    MapEventTriggered(true, bp);
+        //}
 
         public override void MapEventTriggered(bool isFromDetect, BattlePlayerController bp)
         {
@@ -252,15 +253,15 @@ namespace WordJourney
         public override void ResetWhenDie()
         {
             StopAllCoroutines();
-            DisableAllDetect();
+			bc2d.enabled = false;
         }
 
-        public void EnterFight(BattlePlayerController bp)
-        {
-            bp.escapeFromFight = false;
-            bp.isInEscaping = false;
-            StartCoroutine("AdjustPositionAndTowardsAndFight", bp);
-        }
+        //public void EnterFight(BattlePlayerController bp)
+        //{
+        //    bp.escapeFromFight = false;
+        //    bp.isInEscaping = false;
+        //    StartCoroutine("AdjustPositionAndTowardsAndFight", bp);
+        //}
 
 
         /// <summary>
@@ -362,279 +363,279 @@ namespace WordJourney
 
         }
 
-        private IEnumerator AdjustPositionAndTowardsAndFight(BattlePlayerController battlePlayerCtr)
-        {
+        //private IEnumerator AdjustPositionAndTowardsAndFight(BattlePlayerController battlePlayerCtr)
+        //{
 
-            yield return new WaitUntil(() => battlePlayerCtr.isIdle);
+        //    yield return new WaitUntil(() => battlePlayerCtr.isIdle);
 
-            Vector3 playerOriPos = battlePlayerCtr.transform.position;
-            Vector3 npcOriPos = transform.position;
+        //    Vector3 playerOriPos = battlePlayerCtr.transform.position;
+        //    Vector3 npcOriPos = transform.position;
 
-            int playerPosX = Mathf.RoundToInt(playerOriPos.x);
-            int playerPosY = Mathf.RoundToInt(playerOriPos.y);
-            int npcPosX = Mathf.RoundToInt(npcOriPos.x);
-            int npcPosY = Mathf.RoundToInt(npcOriPos.y);
+        //    int playerPosX = Mathf.RoundToInt(playerOriPos.x);
+        //    int playerPosY = Mathf.RoundToInt(playerOriPos.y);
+        //    int npcPosX = Mathf.RoundToInt(npcOriPos.x);
+        //    int npcPosY = Mathf.RoundToInt(npcOriPos.y);
 
-            int npcLayerOrder = -npcPosY;
+        //    int npcLayerOrder = -npcPosY;
 
-            int posOffsetX = playerPosX - npcPosX;
-            int posOffsetY = playerPosY - npcPosY;
+        //    int posOffsetX = playerPosX - npcPosX;
+        //    int posOffsetY = playerPosY - npcPosY;
 
-            Vector3 npcFightPos = Vector3.zero;
-            Vector3 playerFightPos = new Vector3(playerPosX, playerPosY, 0);
+        //    Vector3 npcFightPos = Vector3.zero;
+        //    Vector3 playerFightPos = new Vector3(playerPosX, playerPosY, 0);
 
-            int minX = 0;
-            int maxX = ExploreManager.Instance.newMapGenerator.columns - 1;
+        //    int minX = 0;
+        //    int maxX = ExploreManager.Instance.newMapGenerator.columns - 1;
 
-            if (posOffsetX > 0)
-            {
+        //    if (posOffsetX > 0)
+        //    {
 
-                battlePlayerCtr.TowardsLeft(false);
-                baCtr.TowardsRight();
+        //        battlePlayerCtr.TowardsLeft(false);
+        //        baCtr.TowardsRight();
 
-                if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX - 1, playerPosY] == 1)
-                {
-                    npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
-                    npcLayerOrder = -playerPosY;
-                    needPosFix = false;
-                    battlePlayerCtr.needPosFix = false;
-                }
-                else if (playerPosX - 1 >= minX && playerPosX - 1 == npcPosX && playerPosY == npcPosY)
-                {
-                    npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
-                    npcLayerOrder = -playerPosY;
-                    needPosFix = false;
-                    battlePlayerCtr.needPosFix = false;
-                }
-                else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
-                {
-                    npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
-                    npcLayerOrder = -playerPosY;
-                    needPosFix = false;
-                    battlePlayerCtr.needPosFix = false;
-                }
-                else
-                {
-                    if (posOffsetY > 0)
-                    {
+        //        if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX - 1, playerPosY] == 1)
+        //        {
+        //            npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
+        //            npcLayerOrder = -playerPosY;
+        //            needPosFix = false;
+        //            battlePlayerCtr.needPosFix = false;
+        //        }
+        //        else if (playerPosX - 1 >= minX && playerPosX - 1 == npcPosX && playerPosY == npcPosY)
+        //        {
+        //            npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
+        //            npcLayerOrder = -playerPosY;
+        //            needPosFix = false;
+        //            battlePlayerCtr.needPosFix = false;
+        //        }
+        //        else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
+        //        {
+        //            npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
+        //            npcLayerOrder = -playerPosY;
+        //            needPosFix = false;
+        //            battlePlayerCtr.needPosFix = false;
+        //        }
+        //        else
+        //        {
+        //            if (posOffsetY > 0)
+        //            {
 
-                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
-                        npcLayerOrder = -playerPosY + 1;
+        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+        //                npcLayerOrder = -playerPosY + 1;
 
-                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
-                        baCtr.SetSortingOrder(-playerPosY + 1);
+        //                baCtr.SetSortingOrder(-playerPosY + 1);
 
-                    }
-                    else
-                    {
+        //            }
+        //            else
+        //            {
 
-                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
-                        npcLayerOrder = -playerPosY - 1;
+        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+        //                npcLayerOrder = -playerPosY - 1;
 
-                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
-                        baCtr.SetSortingOrder(-playerPosY - 1);
+        //                baCtr.SetSortingOrder(-playerPosY - 1);
 
-                    }
-                    needPosFix = true;
-                    battlePlayerCtr.needPosFix = true;
-                }
+        //            }
+        //            needPosFix = true;
+        //            battlePlayerCtr.needPosFix = true;
+        //        }
 
-            }
-            else if (posOffsetX == 0)
-            {
+        //    }
+        //    else if (posOffsetX == 0)
+        //    {
 
-                if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX + 1, playerPosY] == 1)
-                {
+        //        if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX + 1, playerPosY] == 1)
+        //        {
 
-                    baCtr.TowardsLeft();
+        //            baCtr.TowardsLeft();
 
-                    battlePlayerCtr.TowardsRight(false);
+        //            battlePlayerCtr.TowardsRight(false);
 
-                    npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
+        //            npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
 
-                    needPosFix = false;
-                    battlePlayerCtr.needPosFix = false;
+        //            needPosFix = false;
+        //            battlePlayerCtr.needPosFix = false;
 
-                }
-                else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
-                {
-                    baCtr.TowardsLeft();
+        //        }
+        //        else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
+        //        {
+        //            baCtr.TowardsLeft();
 
-                    battlePlayerCtr.TowardsRight(false);
+        //            battlePlayerCtr.TowardsRight(false);
 
-                    npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
+        //            npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
 
-                    needPosFix = false;
-                    battlePlayerCtr.needPosFix = false;
-                }
-                else if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX - 1, playerPosY] == 1)
-                {
+        //            needPosFix = false;
+        //            battlePlayerCtr.needPosFix = false;
+        //        }
+        //        else if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX - 1, playerPosY] == 1)
+        //        {
 
-                    baCtr.TowardsRight();
+        //            baCtr.TowardsRight();
 
-                    battlePlayerCtr.TowardsLeft(false);
+        //            battlePlayerCtr.TowardsLeft(false);
 
-                    npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
+        //            npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
 
-                    needPosFix = false;
-                    battlePlayerCtr.needPosFix = false;
+        //            needPosFix = false;
+        //            battlePlayerCtr.needPosFix = false;
 
-                }
-                else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
-                {
+        //        }
+        //        else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
+        //        {
 
-                    baCtr.TowardsRight();
+        //            baCtr.TowardsRight();
 
-                    battlePlayerCtr.TowardsLeft(false);
+        //            battlePlayerCtr.TowardsLeft(false);
 
-                    npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
+        //            npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
 
-                    needPosFix = false;
-                    battlePlayerCtr.needPosFix = false;
+        //            needPosFix = false;
+        //            battlePlayerCtr.needPosFix = false;
 
-                }
-                else
-                {
+        //        }
+        //        else
+        //        {
 
-                    baCtr.TowardsLeft();
+        //            baCtr.TowardsLeft();
 
-                    battlePlayerCtr.TowardsRight(false);
+        //            battlePlayerCtr.TowardsRight(false);
 
-                    if (posOffsetY > 0)
-                    {
+        //            if (posOffsetY > 0)
+        //            {
 
-                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
-                        npcLayerOrder = -playerPosY + 1;
+        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+        //                npcLayerOrder = -playerPosY + 1;
 
-                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
-                        baCtr.SetSortingOrder(-playerPosY + 1);
+        //                baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+        //                //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
-                    }
-                    else
-                    {
+        //            }
+        //            else
+        //            {
 
-                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
-                        npcLayerOrder = -playerPosY - 1;
+        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+        //                npcLayerOrder = -playerPosY - 1;
 
-                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
-                        baCtr.SetSortingOrder(-playerPosY - 1);
+        //                baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
-                    }
+        //                //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+        //            }
 
-                    needPosFix = true;
-                    battlePlayerCtr.needPosFix = true;
+        //            needPosFix = true;
+        //            battlePlayerCtr.needPosFix = true;
 
-                }
+        //        }
 
-            }
-            else if (posOffsetX < 0)
-            {
+        //    }
+        //    else if (posOffsetX < 0)
+        //    {
 
-                battlePlayerCtr.TowardsRight(false);
-                baCtr.TowardsLeft();
+        //        battlePlayerCtr.TowardsRight(false);
+        //        baCtr.TowardsLeft();
 
-                if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX + 1, playerPosY] == 1)
-                {
+        //        if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX + 1, playerPosY] == 1)
+        //        {
 
-                    npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
+        //            npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
 
-                    needPosFix = false;
-                    battlePlayerCtr.needPosFix = false;
+        //            needPosFix = false;
+        //            battlePlayerCtr.needPosFix = false;
 
-                }
-                else if (playerPosX + 1 <= maxX && playerPosX + 1 == npcPosX && playerPosY == npcPosY)
-                {
+        //        }
+        //        else if (playerPosX + 1 <= maxX && playerPosX + 1 == npcPosX && playerPosY == npcPosY)
+        //        {
 
-                    npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
+        //            npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
 
-                    needPosFix = false;
-                    battlePlayerCtr.needPosFix = false;
+        //            needPosFix = false;
+        //            battlePlayerCtr.needPosFix = false;
 
-                }
-                else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
-                {
-                    npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
+        //        }
+        //        else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
+        //        {
+        //            npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
 
-                    needPosFix = false;
-                    battlePlayerCtr.needPosFix = false;
+        //            needPosFix = false;
+        //            battlePlayerCtr.needPosFix = false;
 
-                }
-                else
-                {
-                    if (posOffsetY > 0)
-                    {
+        //        }
+        //        else
+        //        {
+        //            if (posOffsetY > 0)
+        //            {
 
-                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
-                        npcLayerOrder = -playerPosY + 1;
+        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
+        //                npcLayerOrder = -playerPosY + 1;
 
-                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
+        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
-                        baCtr.SetSortingOrder(-playerPosY + 1);
+        //                baCtr.SetSortingOrder(-playerPosY + 1);
 
-                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+        //                //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 
-                    }
-                    else
-                    {
+        //            }
+        //            else
+        //            {
 
-                        npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
-                        npcLayerOrder = -playerPosY - 1;
+        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
+        //                npcLayerOrder = -playerPosY - 1;
 
-                        playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
-                        baCtr.SetSortingOrder(-playerPosY - 1);
+        //                baCtr.SetSortingOrder(-playerPosY - 1);
 
-                        //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
-                    }
+        //                //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
+        //            }
 
-                    needPosFix = true;
-                    battlePlayerCtr.needPosFix = true;
+        //            needPosFix = true;
+        //            battlePlayerCtr.needPosFix = true;
 
-                }
+        //        }
 
-            }
+        //    }
 
-            battlePlayerCtr.FixPosTo(playerFightPos, null);
+        //    battlePlayerCtr.FixPosTo(playerFightPos, null);
 
-            RunToPosition(npcFightPos, delegate {
+        //    RunToPosition(npcFightPos, delegate {
 
-                if (!battlePlayerCtr.escapeFromFight)
-                {
-                    if (transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x)
-                    {
-                        baCtr.TowardsRight();
-                    }
-                    else
-                    {
-                        baCtr.TowardsLeft();
-                    }
-                    if (!battlePlayerCtr.isInEscaping)
-                    {
-                        ExploreManager.Instance.EnterFight(this.transform);
-                        ExploreManager.Instance.PlayerAndMonsterStartFight();
-                    }
-                    else
-                    {
-                        ExploreManager.Instance.EnterFight(this.transform);
-                        ExploreManager.Instance.MonsterStartFight();
-                    }
-                }
-                else
-                {
-                    bool monsterDie = baCtr.agent.health <= 0;
-                    RefreshWalkableInfoWhenQuit(monsterDie);
-                    QuitFightAndDelayMove(5);
-                    battlePlayerCtr.escapeFromFight = false;
-                }
-            }, npcLayerOrder);
-        }
+        //        if (!battlePlayerCtr.escapeFromFight)
+        //        {
+        //            if (transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x)
+        //            {
+        //                baCtr.TowardsRight();
+        //            }
+        //            else
+        //            {
+        //                baCtr.TowardsLeft();
+        //            }
+        //            if (!battlePlayerCtr.isInEscaping)
+        //            {
+        //                ExploreManager.Instance.EnterFight(this.transform);
+        //                ExploreManager.Instance.PlayerAndMonsterStartFight();
+        //            }
+        //            else
+        //            {
+        //                ExploreManager.Instance.EnterFight(this.transform);
+        //                ExploreManager.Instance.MonsterStartFight();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            bool monsterDie = baCtr.agent.health <= 0;
+        //            RefreshWalkableInfoWhenQuit(monsterDie);
+        //            QuitFightAndDelayMove(5);
+        //            battlePlayerCtr.escapeFromFight = false;
+        //        }
+        //    }, npcLayerOrder);
+        //}
 
 
 		private IEnumerator AdjustPositionAndTowards(BattlePlayerController battlePlayerCtr)

@@ -27,6 +27,8 @@ namespace WordJourney
 
 		private IEnumerator logoFloatCoroutine;
 
+		public Transform noAvalableNetHintHUD;
+
 		public void SetUpHomeView(){
 
 			GetComponent<Canvas> ().enabled = true;
@@ -45,7 +47,15 @@ namespace WordJourney
 		private void HideMaskImage(){
 			maskImage.gameObject.SetActive (false);
 		}
-			
+
+
+		public void ShowNoAvalableNetHintHUD(){
+			noAvalableNetHintHUD.gameObject.SetActive(true);
+		}
+
+		public void HideNoAvalableNetHintHUD(){
+			noAvalableNetHintHUD.gameObject.SetActive(false);
+		}
         
 		/// <summary>
 		/// 初始化难度选择面板

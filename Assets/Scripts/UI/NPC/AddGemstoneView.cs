@@ -19,6 +19,8 @@ namespace WordJourney
 
 		public PurchasePendingHUD purchasePendingHUD;
 
+		public TintHUD hintHUD;
+
 		//private HLHNPC npc;
               
 		public float flyDuration;
@@ -86,9 +88,19 @@ namespace WordJourney
 		private void SetUpPurchasePlane(string productID)
         {
 
-			purchasePendingHUD.SetUpPurchasePendingHUD(productID, delegate {
-                bagItemsDisplay.UpdateBagTabs();
-            });
+			switch (Application.internetReachability)
+            {
+                case NetworkReachability.NotReachable:
+                    hintHUD.SetUpSingleTextTintHUD("无网络连接");
+                    break;
+                case NetworkReachability.ReachableViaCarrierDataNetwork:
+                case NetworkReachability.ReachableViaLocalAreaNetwork:
+					purchasePendingHUD.SetUpPurchasePendingHUD(productID, delegate {
+                        bagItemsDisplay.UpdateBagTabs();
+                    });
+                    break;
+            }
+
 
         }
             

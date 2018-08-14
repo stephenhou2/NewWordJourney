@@ -22,7 +22,7 @@ namespace WordJourney
 				enemy.agent.armor += armorDecrease;
                 //enemy.UpdateStatusPlane();
 
-				enemy.AddTintTextToQueue("护甲降低");
+				enemy.AddTintTextToQueue("护甲\n降低");
 
 				SetEffectAnims(self, enemy);
 

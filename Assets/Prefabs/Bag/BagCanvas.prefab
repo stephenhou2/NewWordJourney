@@ -330,7 +330,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1072971101935000
 GameObject:
   m_ObjectHideFlags: 1
@@ -4528,6 +4528,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1892603112500058
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 224617676934882818}
+  - component: {fileID: 222605056152602486}
+  - component: {fileID: 114757014596475034}
+  m_Layer: 0
+  m_Name: SpecialOperationHint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1895987725982206
 GameObject:
   m_ObjectHideFlags: 1
@@ -6523,6 +6540,7 @@ MonoBehaviour:
   itemIconBackground: {fileID: 114219426535747022}
   goldIcon: {fileID: 114571436659521536}
   priceText: {fileID: 114574196830111146}
+  specialOperationHint: {fileID: 114757014596475034}
   equipButton: {fileID: 224015503565622686}
   unloadButton: {fileID: 224527558347083526}
   useButton: {fileID: 224129569798552494}
@@ -10671,7 +10689,7 @@ MonoBehaviour:
   - {fileID: 224324708106507268}
   - {fileID: 224550493185182762}
   bagItemsDisplay: {fileID: 114109845799573158}
-  tintHUD: {fileID: 114802985772146022}
+  hintHUD: {fileID: 114802985772146022}
   itemDetail: {fileID: 114161299865992782}
   choiceHUDButtonsContainer: {fileID: 224318391925426886}
   purchaseHUD: {fileID: 114602459708952524}
@@ -11963,6 +11981,39 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114757014596475034
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1892603112500058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.9999993, g: 0.9999744, b: 0.9999913, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 30
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 3
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: "\u62D6\u52A8\u88C5\u5907\u5230\u53F3\u4FA7\u7269\u54C1\u680F\u4E2D"
 --- !u!114 &114757856290622796
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -15201,6 +15252,12 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1659653380571458}
+--- !u!222 &222605056152602486
+CanvasRenderer:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1892603112500058}
 --- !u!222 &222606016640675646
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -19163,6 +19220,24 @@ RectTransform:
   m_AnchoredPosition: {x: 140, y: 25.3}
   m_SizeDelta: {x: 201.7, y: 62}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!224 &224617676934882818
+RectTransform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1892603112500058}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 224999703429175942}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -130}
+  m_SizeDelta: {x: 452.5, y: 97.3}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224621594838606730
 RectTransform:
   m_ObjectHideFlags: 1
@@ -21324,6 +21399,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 224280962008098722}
+  - {fileID: 224617676934882818}
   m_Father: {fileID: 224040657723779344}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

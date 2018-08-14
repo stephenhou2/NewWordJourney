@@ -110,7 +110,7 @@ namespace WordJourney
 		// 是否是新建的玩家
 		public bool isNewPlayer = true;
       
-		private int maxBagCount{ 
+		public int maxBagCount{ 
 			get{
 				int max = 1;
 				if (BuyRecord.Instance.bag_2_unlocked)
@@ -257,35 +257,35 @@ namespace WordJourney
 			this.allLearnedSkillsRecord = playerData.allLearnedSkillsRecord;
                      
 			allEquipedEquipments = new Equipment[7];
+
 			for(int i = 0;i<allEquipedEquipments.Length;i++){
 				allEquipedEquipments [i] = new Equipment ();
 			}
 
 
-			//for (int i = 0; i < allEquipmentsInBag.Count; i++) {
+			for (int i = 0; i < allEquipmentsInBag.Count; i++) {
 
-			//	Equipment e = allEquipmentsInBag [i];
+				Equipment e = allEquipmentsInBag [i];
 
-			//	if (!e.equiped) {
-			//		continue;
-			//	}
-			//	int equipmentTypeIndex = (int)e.equipmentType;
+				if (!e.equiped) {
+					continue;
+				}
+				int equipmentTypeIndex = (int)e.equipmentType;
 
-			//	if (e.equipmentType == EquipmentType.Ring && allEquipedEquipments [5].itemId >= 0) {
-			//		allEquipedEquipments [6] = e;
-			//	}else{
+				if (e.equipmentType == EquipmentType.Ring && allEquipedEquipments [5].itemId >= 0) {
+					allEquipedEquipments [6] = e;
+				}else{
+					allEquipedEquipments[equipmentTypeIndex] = e;
+				}         
+			}
+
+			//for (int i = 0; i < allEquipmentsInBag.Count;i++){
+			//	Equipment e = allEquipmentsInBag[i];
+			//	if(e.itemId >=0){
+			//		int equipmentTypeIndex = (int)(e.equipmentType);
 			//		allEquipedEquipments[equipmentTypeIndex] = e;
 			//	}
-
-
 			//}
-
-			for (int i = 0; i < playerData.allEquipedEquipments.Length;i++){
-				Equipment e = playerData.allEquipedEquipments[i];
-				if(e.itemId >=0){
-					allEquipedEquipments[i] = e;
-				}
-			}
             
 			this.currentLevelIndex = playerData.currentLevelIndex;
 			this.maxUnlockLevelIndex = playerData.maxUnlockLevelIndex;
@@ -451,84 +451,205 @@ namespace WordJourney
 			int extraGoldRecord = extraGold;
 			int extraExperienceRecord = extraExperience;
 
-            maxHealth = originalMaxHealth + maxHealthChangeFromSkill;
-            maxMana = originalMaxMana + maxManaChangeFromSkill;
+            // 方案一：
+            // 因为人物属性都是>0的【逻辑上已进行强制】,原始属性+技能属性变化可能时负值，故需使用一个中间值进行存储
+   //         int tempMaxHealth = originalMaxHealth + maxHealthChangeFromSkill;
+   //         int tempMaxMana = originalMaxMana + maxManaChangeFromSkill;
 
-            attack = originalAttack + attackChangeFromSkill;
-            magicAttack = originalMagicAttack + magicAttackChangeFromSkill;
+   //         int tempAttack = originalAttack + attackChangeFromSkill;
+   //         int tempMagicAttack = originalMagicAttack + magicAttackChangeFromSkill;
 
-            armor = originalArmor + armorChangeFromSkill;
-            magicResist = originalMagicResist + magicResistChangeFromSkill;
+   //         int tempArmor = originalArmor + armorChangeFromSkill;
+   //         int tempMagicResist = originalMagicResist + magicResistChangeFromSkill;
 
-            armorDecrease = originalArmorDecrease + armorDecreaseChangeFromSkill;
-			magicResistDecrease = originalMagicResistDecrease + magicResistDecreaseChangeFromSkill;
+   //         int tempArmorDecrease = originalArmorDecrease + armorDecreaseChangeFromSkill;
+			//int tempMagicResistDecrease = originalMagicResistDecrease + magicResistDecreaseChangeFromSkill;
 
-			attackSpeed = originalAttackSpeed;
-            moveSpeed = originalMoveSpeed + moveSpeedChangeFromSkill;
+			//attackSpeed = originalAttackSpeed;
+   //         int tempMoveSpeed = originalMoveSpeed + moveSpeedChangeFromSkill;
 
-            crit = originalCrit + critChangeFromSkill;
-            dodge = originalDodge + dodgeChangeFromSkill;
+			//float tempCrit = originalCrit + critChangeFromSkill;
+   //         float tempDodge = originalDodge + dodgeChangeFromSkill;
 
-            critHurtScaler = originalCritHurtScaler + critHurtScalerChangeFromSkill;
-            physicalHurtScaler = originalPhysicalHurtScaler + physicalHurtScalerChangeFromSkill;
-            magicalHurtScaler = originalMagicalHurtScaler + magicalHurtScalerChangeFromSkill;
+   //         float tempCritHurtScaler = originalCritHurtScaler + critHurtScalerChangeFromSkill;
+   //         float tempPhysicalHurtScaler = originalPhysicalHurtScaler + physicalHurtScalerChangeFromSkill;
+   //         float tempMagicalHurtScaler = originalMagicalHurtScaler + magicalHurtScalerChangeFromSkill;
 
-            extraGold = originalExtraGold + extraGoldChangeFromSkill;
-            extraExperience = originalExtraExperience + extraExperienceChangeFromSkill;
+   //         int tempExtraGold = originalExtraGold + extraGoldChangeFromSkill;
+   //         int tempExtraExperience = originalExtraExperience + extraExperienceChangeFromSkill;
 
-            healthRecovery = originalHealthRecovery + healthRecoveryChangeFromSkill;
-            magicRecovery = originalMagicRecovery + magicRecoveryChangeFromSkill;
+   //         int tempHealthRecovery = originalHealthRecovery + healthRecoveryChangeFromSkill;
+   //         int tempMagicRecovery = originalMagicRecovery + magicRecoveryChangeFromSkill;
 
-			this.extraLuckInOpenTreasure = 0;
-			this.extraLuckInMonsterTreasure = 0;
+			//this.extraLuckInOpenTreasure = 0;
+			//this.extraLuckInMonsterTreasure = 0;
 
-			for (int i = 0; i < allEquipedEquipments.Length; i++) {
+			//for (int i = 0; i < allEquipedEquipments.Length; i++) {
 
-				Equipment eqp = allEquipedEquipments [i];
+			//	Equipment eqp = allEquipedEquipments [i];
 
-				if (eqp.itemId < 0) {
-					continue;
-				}
+			//	if (eqp.itemId < 0) {
+			//		continue;
+			//	}
 
-				maxHealth += eqp.maxHealthGain + eqp.attachedPropertyGemstone.maxHealthGain;
-				maxMana += eqp.maxManaGain + eqp.attachedPropertyGemstone.maxManaGain;
+			//	tempMaxHealth += eqp.maxHealthGain + eqp.attachedPropertyGemstone.maxHealthGain;
+			//	tempMaxMana += eqp.maxManaGain + eqp.attachedPropertyGemstone.maxManaGain;
 
-				attack += eqp.attackGain + eqp.attachedPropertyGemstone.attackGain;
-				magicAttack += eqp.magicAttackGain + eqp.attachedPropertyGemstone.magicAttackGain;
+			//	tempAttack += eqp.attackGain + eqp.attachedPropertyGemstone.attackGain;
+			//	tempMagicAttack+= eqp.magicAttackGain + eqp.attachedPropertyGemstone.magicAttackGain;
 
-				armor += eqp.armorGain + eqp.attachedPropertyGemstone.armorGain;
-				magicResist += eqp.magicResistGain + eqp.attachedPropertyGemstone.magicResistGain;
+			//	tempArmor += eqp.armorGain + eqp.attachedPropertyGemstone.armorGain;
+			//	tempMagicResist += eqp.magicResistGain + eqp.attachedPropertyGemstone.magicResistGain;
 
-				armorDecrease += eqp.armorDecreaseGain + eqp.attachedPropertyGemstone.armorDecreaseGain;
-				magicResistDecrease += eqp.magicResistDecreaseGain + eqp.attachedPropertyGemstone.magicResistDecreaseGain;
+			//	tempArmorDecrease += eqp.armorDecreaseGain + eqp.attachedPropertyGemstone.armorDecreaseGain;
+			//	tempMagicResistDecrease += eqp.magicResistDecreaseGain + eqp.attachedPropertyGemstone.magicResistDecreaseGain;
 
-				if (eqp.equipmentType == EquipmentType.Weapon) {
-					attackSpeed = eqp.attackSpeed;
-				}
-				moveSpeed += eqp.moveSpeedGain + eqp.attachedPropertyGemstone.moveSpeedGain;
+			//	if (eqp.equipmentType == EquipmentType.Weapon) {
+			//		attackSpeed = eqp.attackSpeed;
+			//	}
 
-				crit += eqp.critGain + eqp.attachedPropertyGemstone.critGain / 100f;
-				dodge += eqp.dodgeGain + eqp.attachedPropertyGemstone.dodgeGain / 100f;
+			//	tempMoveSpeed += eqp.moveSpeedGain + eqp.attachedPropertyGemstone.moveSpeedGain;
 
-				critHurtScaler += eqp.critHurtScalerGain + eqp.attachedPropertyGemstone.critHurtScalerGain / 100f;
-				physicalHurtScaler += eqp.physicalHurtScalerGain + eqp.attachedPropertyGemstone.physicalHurtScalerGain / 100f;
-				magicalHurtScaler += eqp.magicalHurtScalerGain + eqp.attachedPropertyGemstone.magicalHurtScalerGain / 100f;
+			//	tempCrit += eqp.critGain + eqp.attachedPropertyGemstone.critGain / 100f;
+			//	tempDodge += eqp.dodgeGain + eqp.attachedPropertyGemstone.dodgeGain / 100f;
 
-				extraGold += eqp.extraGoldGain + eqp.attachedPropertyGemstone.extraGoldGain;
-				extraExperience += eqp.extraExperienceGain + eqp.attachedPropertyGemstone.extraExperienceGain;
+			//	tempCritHurtScaler += eqp.critHurtScalerGain + eqp.attachedPropertyGemstone.critHurtScalerGain / 100f;
+			//	tempPhysicalHurtScaler += eqp.physicalHurtScalerGain + eqp.attachedPropertyGemstone.physicalHurtScalerGain / 100f;
+			//	tempMagicalHurtScaler += eqp.magicalHurtScalerGain + eqp.attachedPropertyGemstone.magicalHurtScalerGain / 100f;
 
-				healthRecovery += eqp.healthRecoveryGain + eqp.attachedPropertyGemstone.healthRecoveryGain;
-				magicRecovery += eqp.magicRecoveryGain + eqp.attachedPropertyGemstone.magicRecoveryGain;
+			//	tempExtraGold += eqp.extraGoldGain + eqp.attachedPropertyGemstone.extraGoldGain;
+			//	tempExtraExperience += eqp.extraExperienceGain + eqp.attachedPropertyGemstone.extraExperienceGain;
+
+			//	tempHealthRecovery += eqp.healthRecoveryGain + eqp.attachedPropertyGemstone.healthRecoveryGain;
+			//	tempMagicRecovery += eqp.magicRecoveryGain + eqp.attachedPropertyGemstone.magicRecoveryGain;
                             
 
-			}
+			//}
 
-		    for (int i = 0; i < attachedPermanentPassiveSkills.Count;i++){
-				PermanentPassiveSkill pps = attachedPermanentPassiveSkills[i];
-				pps.AffectAgents(battleAgentCtr, null);
-              
-		    }
 
+			//maxHealth = tempMaxHealth;
+			//maxMana = tempMaxMana;
+			//attack = tempAttack;
+			//magicAttack = tempMagicAttack;
+			//armor = tempArmor;
+			//magicResist = tempMagicResist;
+			//armorDecrease = tempArmorDecrease;
+			//magicResistDecrease = tempMagicResistDecrease;
+			//moveSpeed = tempMoveSpeed;
+			//crit = tempCrit;
+			//dodge = tempDodge;
+			//critHurtScaler = tempCritHurtScaler;
+			//physicalHurtScaler = tempPhysicalHurtScaler;
+			//magicalHurtScaler = tempMagicalHurtScaler;
+			//extraGold = tempExtraGold;
+			//extraExperience = tempExtraExperience;
+			//healthRecovery = tempHealthRecovery;
+			//magicRecovery = tempMagicRecovery;
+
+            
+			/// 方案二：不使用中间值存储的方案 
+            // 先计算人物带上装备，考虑永久型技能影响后的属性，再计算主动技能和被动技能对属性的影响
+			maxHealth = originalMaxHealth;
+			maxMana = originalMaxMana;
+			attack = originalAttack;
+			magicAttack = originalMagicAttack;
+			armor = originalArmor;
+			magicResist = originalMagicResist;
+			armorDecrease = originalArmorDecrease;
+			magicResistDecrease = originalMagicResistDecrease;
+			moveSpeed = originalMoveSpeed;
+			attackSpeed = originalAttackSpeed;
+			crit = originalCrit;
+			dodge = originalDodge;
+			critHurtScaler = originalCritHurtScaler;
+			physicalHurtScaler = originalPhysicalHurtScaler;
+			magicalHurtScaler = originalMagicalHurtScaler;
+			extraGold = originalExtraGold;
+			extraExperience = originalExtraExperience;
+			healthRecovery = originalHealthRecovery;
+			magicRecovery = originalMagicRecovery;
+
+			this.extraLuckInOpenTreasure = 0;
+            this.extraLuckInMonsterTreasure = 0;
+
+			for (int i = 0; i < allEquipedEquipments.Length; i++)
+            {
+
+                Equipment eqp = allEquipedEquipments[i];
+
+                if (eqp.itemId < 0)
+                {
+                    continue;
+                }
+
+                maxHealth += eqp.maxHealthGain + eqp.attachedPropertyGemstone.maxHealthGain;
+                maxMana += eqp.maxManaGain + eqp.attachedPropertyGemstone.maxManaGain;
+
+                attack += eqp.attackGain + eqp.attachedPropertyGemstone.attackGain;
+                magicAttack += eqp.magicAttackGain + eqp.attachedPropertyGemstone.magicAttackGain;
+
+                armor += eqp.armorGain + eqp.attachedPropertyGemstone.armorGain;
+                magicResist += eqp.magicResistGain + eqp.attachedPropertyGemstone.magicResistGain;
+
+                armorDecrease += eqp.armorDecreaseGain + eqp.attachedPropertyGemstone.armorDecreaseGain;
+                magicResistDecrease += eqp.magicResistDecreaseGain + eqp.attachedPropertyGemstone.magicResistDecreaseGain;
+
+                if (eqp.equipmentType == EquipmentType.Weapon)
+                {
+                    attackSpeed = eqp.attackSpeed;
+                }
+                moveSpeed += eqp.moveSpeedGain + eqp.attachedPropertyGemstone.moveSpeedGain;
+
+                crit += eqp.critGain + eqp.attachedPropertyGemstone.critGain / 100f;
+                dodge += eqp.dodgeGain + eqp.attachedPropertyGemstone.dodgeGain / 100f;
+
+                critHurtScaler += eqp.critHurtScalerGain + eqp.attachedPropertyGemstone.critHurtScalerGain / 100f;
+                physicalHurtScaler += eqp.physicalHurtScalerGain + eqp.attachedPropertyGemstone.physicalHurtScalerGain / 100f;
+                magicalHurtScaler += eqp.magicalHurtScalerGain + eqp.attachedPropertyGemstone.magicalHurtScalerGain / 100f;
+
+                extraGold += eqp.extraGoldGain + eqp.attachedPropertyGemstone.extraGoldGain;
+                extraExperience += eqp.extraExperienceGain + eqp.attachedPropertyGemstone.extraExperienceGain;
+
+                healthRecovery += eqp.healthRecoveryGain + eqp.attachedPropertyGemstone.healthRecoveryGain;
+                magicRecovery += eqp.magicRecoveryGain + eqp.attachedPropertyGemstone.magicRecoveryGain;
+
+
+            }
+
+			for (int i = 0; i < attachedPermanentPassiveSkills.Count; i++)
+            {
+                PermanentPassiveSkill pps = attachedPermanentPassiveSkills[i];
+                pps.AffectAgents(battleAgentCtr, null);
+            }
+
+			maxHealth += maxHealthChangeFromSkill;
+            maxMana += maxManaChangeFromSkill;
+
+            attack += attackChangeFromSkill;
+            magicAttack += magicAttackChangeFromSkill;
+
+            armor += armorChangeFromSkill;
+            magicResist += magicResistChangeFromSkill;
+
+            armorDecrease += armorDecreaseChangeFromSkill;
+            magicResistDecrease += magicResistDecreaseChangeFromSkill;
+
+            
+            moveSpeed += moveSpeedChangeFromSkill;
+
+            crit += critChangeFromSkill;
+            dodge += dodgeChangeFromSkill;
+
+            critHurtScaler += critHurtScalerChangeFromSkill;
+            physicalHurtScaler += physicalHurtScalerChangeFromSkill;
+            magicalHurtScaler += magicalHurtScalerChangeFromSkill;
+
+            extraGold += extraGoldChangeFromSkill;
+            extraExperience += extraExperienceChangeFromSkill;
+
+            healthRecovery += healthRecoveryChangeFromSkill;
+            magicRecovery += magicRecoveryChangeFromSkill;
+                     
 
 			if (toOriginalState) {
 				health = maxHealth;
@@ -1585,7 +1706,6 @@ namespace WordJourney
 		public int[] charactersCount = new int[26];//剩余的字母碎片信息
 
 		public List<Equipment> allEquipmentsInBag;//背包中所有装备信息
-		public Equipment[] allEquipedEquipments;//已装备的所有装备信息
 		public List<Consumables> allConsumablesInBag;//背包中所有消耗品信息
 		public List<PropertyGemstone> allPropertyGemstonesInBag;//背包中所有的技能宝石
 		public List<SkillScroll> allSkillScrollsInBag = new List<SkillScroll>();//背包中所有的技能卷轴
@@ -1696,8 +1816,9 @@ namespace WordJourney
 			this.healthRecovery = player.healthRecovery;
 			this.magicRecovery = player.magicRecovery;
 
+
 			this.allEquipmentsInBag = player.allEquipmentsInBag;
-			this.allEquipedEquipments = player.allEquipedEquipments;
+			//this.allEquipedEquipments = player.allEquipedEquipments;
 			this.allConsumablesInBag = player.allConsumablesInBag;
 			this.allPropertyGemstonesInBag = player.allPropertyGemstonesInBag;
 			this.allSkillScrollsInBag = player.allSkillScrollsInBag;

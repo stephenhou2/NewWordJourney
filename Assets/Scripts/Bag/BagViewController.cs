@@ -11,48 +11,29 @@ namespace WordJourney
 
 		public Item currentSelectItem;
 
-		//public Item itemForSpecialOperation;
-        
-		//private Item itemToAddWhenBagFull;
-        
 		void Awake(){
 
-			//for (int i = 501; i < 545;i++){
+			//for (int i = 194; i < 215;i++){
 			//	Player.mainPlayer.AddItem(Item.NewItemWith(i, 1));
 			//}
 
-			//Player.mainPlayer.AddItem(Item.NewItemWith(600, 10));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(601, 10));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(1, 21));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(11, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(12, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(1, 1));
+			////Player.mainPlayer.AddItem(Item.NewItemWith(300, 10));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(532, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(534, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(542, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(535, 1));
 
-			//Player.mainPlayer.AddItem(Item.NewItemWith(507, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(508, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(509, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(511, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(513, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(512, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(514, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(515, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(527, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(531, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(539, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(543, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(544, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(520, 1));
+
+			//Player.mainPlayer.AddItem(Item.NewItemWith(304, 10));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(307, 10));
+
+			//Player.mainPlayer.totalGold = 6666;
 		}
 
-		//public void AddBagItemWhenBagFull(Item item){
-
-		//	SetUpBagView (true);
-
-		//	bagView.SetUpSingleTextTintHUD ("背包已满，请先整理背包");
-
-		//	itemToAddWhenBagFull = item;
-
-		//}
-
-
+      
 
 		public void SetUpBagView(bool setVisible){
 
@@ -233,12 +214,18 @@ namespace WordJourney
 
 			Item specialOperaitonItem = null;
 
+			bool totallyRemoved = true;
+
 			switch(currentSelectItem.itemType){
 				case ItemType.Consumables:
 					
 					Consumables consumables = currentSelectItem as Consumables;
 
 					PropertyChange propertyChange = consumables.UseConsumables(null);
+
+					if(consumables.itemCount > 0){                  
+						totallyRemoved = false;                  
+					}
 
 					bool isLevelUp = Player.mainPlayer.LevelUpIfExperienceEnough();
                     if (isLevelUp)
@@ -268,7 +255,9 @@ namespace WordJourney
 						bagView.SetUpSingleTextTintHUD("不能重复学习技能");
 						return;
 					}
-               
+
+					totallyRemoved = true;
+
 					propertyChange = skillScroll.UseSkillScroll();
 
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
@@ -298,11 +287,20 @@ namespace WordJourney
                             {
                                 return;
                             }
+
 							Equipment equipment = itemForSpecialOperation as Equipment;
+
 							if(equipment.attachedPropertyGemstone.itemId == -1)
 							{
-								bagView.tintHUD.SetUpSingleTextTintHUD("当前装备未镶嵌宝石");
+								bagView.hintHUD.SetUpSingleTextTintHUD("当前装备未镶嵌宝石");
 								return;
+							}
+
+							bool bagFull = specialItem.itemCount > 1 && Player.mainPlayer.allItemsInBag.Count >= Player.mainPlayer.maxBagCount * CommonData.singleBagItemVolume;
+
+							if(bagFull){
+								bagView.hintHUD.SetUpSingleTextTintHUD("背包已满");
+                                return;
 							}
 
 							break;
@@ -346,6 +344,13 @@ namespace WordJourney
 				if(specialOperaitonItemIndexInBag >= 0){
 					int itemIndexInCurrentBag = specialOperaitonItemIndexInBag % CommonData.singleBagItemVolume;
 					bagView.bagItemsDisplay.SetSelectionIcon(itemIndexInCurrentBag, true);
+                }
+			}else if(!totallyRemoved){
+				int itemIndexInBag = Player.mainPlayer.GetItemIndexInBag(currentSelectItem);
+				if (itemIndexInBag >= 0)
+                {
+					int itemIndexInCurrentBag = itemIndexInBag % CommonData.singleBagItemVolume;
+                    bagView.bagItemsDisplay.SetSelectionIcon(itemIndexInCurrentBag, true);
                 }
 			}
                      

@@ -25,7 +25,7 @@ namespace WordJourney
                 //enemy.UpdateStatusPlane();
 
 
-				enemy.AddTintTextToQueue("抗性降低");
+				enemy.AddTintTextToQueue("抗性\n降低");
 
 				SetEffectAnims(self, enemy);
 

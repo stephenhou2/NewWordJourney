@@ -29,6 +29,12 @@ namespace WordJourney
 		public void ChangeVolume(float volume)
         {
 
+			if(volume<0){
+				volume = 0;
+			}else if(volume > 1f){
+				volume = 1f;
+			}
+
 			GameManager.Instance.gameDataCenter.gameSettings.systemVolume = volume;
 
             GameManager.Instance.soundManager.UpdateVolume();
@@ -106,6 +112,34 @@ namespace WordJourney
             settingView.QuitAlertHUD();
         }
 
+        /// <summary>
+        /// 恢复购买按钮点击响应
+		/// 恢复非消耗类商品的购买状态
+        /// </summary>
+		public void OnRestoreButtonClick(){
+			switch(Application.internetReachability){
+				case NetworkReachability.NotReachable:
+					settingView.hintHUD.SetUpSingleTextTintHUD("无网络连接");
+					break;
+				case NetworkReachability.ReachableViaCarrierDataNetwork:
+				case NetworkReachability.ReachableViaLocalAreaNetwork:
+					settingView.ShowRestoreMask();
+                    GameManager.Instance.purchaseManager.RestoreItems(RestoreFinishCallBack);
+					break;
+			}
+
+		}
+
+		private void RestoreFinishCallBack(int result){
+			settingView.HideRestoreMask();
+			bool success = result == 1;
+			if(success){
+				settingView.hintHUD.SetUpSingleTextTintHUD("成功恢复已购买项");
+			}else{
+				settingView.hintHUD.SetUpSingleTextTintHUD("恢复失败，请稍后重试");
+			}
+				
+		}
 
         public void OnQuitSettingViewButtonClick()
         {

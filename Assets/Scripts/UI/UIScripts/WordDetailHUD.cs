@@ -18,6 +18,8 @@ namespace WordJourney{
         public Text sentenceCH;
 
 		public Text indexTint;
+
+		public Text pronounceNotAvalableHintText;
               
         private CallBack quitCallBack;
 
@@ -41,6 +43,7 @@ namespace WordJourney{
 
 			indexTint.text = string.Format("{0}/{1}", wordRecords.Count, wordRecords.Count);
 
+
 			this.gameObject.SetActive(true);
             if (zoomCoroutine != null)
             {
@@ -49,7 +52,20 @@ namespace WordJourney{
 
 			if (GameManager.Instance.gameDataCenter.gameSettings.isAutoPronounce)
 			{
-				zoomCoroutine = HUDZoomIn(OnPronunceButtonClick);
+				zoomCoroutine = HUDZoomIn(delegate{
+					
+					if (Application.internetReachability == NetworkReachability.NotReachable)
+                    {
+                        pronounceNotAvalableHintText.enabled = true;
+
+                    }
+                    else
+                    {
+                        pronounceNotAvalableHintText.enabled = false;
+						OnPronunceButtonClick();
+                    }
+
+				});
 			}else{
 				zoomCoroutine = HUDZoomIn();
 			}
@@ -111,8 +127,14 @@ namespace WordJourney{
 
 
         public void OnPronunceButtonClick(){
+			
+			if (Application.internetReachability == NetworkReachability.NotReachable)
+			{
+				return;
+			}
 
 			GameManager.Instance.pronounceManager.PronounceWord(currentWord);
+           
         }
 
         public void QuitWordDetailHUD(){
@@ -129,6 +151,8 @@ namespace WordJourney{
             zoomCoroutine = HUDZoomOut();
 
             StartCoroutine(zoomCoroutine);
+
+			pronounceNotAvalableHintText.enabled = false;
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
 

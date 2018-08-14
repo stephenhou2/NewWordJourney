@@ -21,6 +21,11 @@ namespace WordJourney
 			set{
 				float scaler = (float)value / maxNum;
 				float sliderWidth = slider.rect.width;
+				if(scaler < 0){
+					scaler = 0;
+				}else if(scaler > 1f){
+					scaler = 1f;
+				}
 				handler.localPosition = new Vector3(sliderWidth * scaler, 0, 0);
 				mValue = value;
 				fillBar.value = value;

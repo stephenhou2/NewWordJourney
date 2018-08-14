@@ -36,9 +36,20 @@ namespace WordJourney
 
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.homeCanvasBundleName, "HomeCanvas", () => {
 
-				TransformManager.FindTransform("HomeCanvas").GetComponent<HomeViewController> ().SetUpHomeView ();
+				HomeViewController homeViewController = TransformManager.FindTransform("HomeCanvas").GetComponent<HomeViewController>();
 
-				GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
+				homeViewController.SetUpHomeView ();
+
+				if (Application.internetReachability == NetworkReachability.NotReachable)
+                {
+					homeViewController.homeView.ShowNoAvalableNetHintHUD();
+                }
+                else
+                {
+					homeViewController.homeView.HideNoAvalableNetHintHUD();
+                }
+
+				GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);            
 
 			});
 

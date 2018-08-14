@@ -163,18 +163,19 @@ namespace WordJourney
 
 
 		/// <summary>
-		/// npc卖东西给玩家(如果商品是固定数量的，则当商品卖出后该商品的数量会-1，否则商品数量不变)
+		/// npc卖东西给玩家
 		/// </summary>
-		/// <param name="goodsId">Goods identifier.</param>
-		/// <param name="player">Player.</param>
-		public void SoldGoods(int goodsId){
+		/// <param name="goodsIndex">商品在列表中的序号</param>
+		public void SoldGoods(int goodsIndex){
 
-			int goodsDisplayIndex = goodsInSellRecord.FindIndex (delegate(HLHNPCGoods obj) {
-				return obj.goodsId == goodsId;
-			});
-
-			goodsInSellRecord.RemoveAt (goodsDisplayIndex);
-
+			//int goodsDisplayIndex = goodsInSellRecord.FindIndex (delegate(HLHNPCGoods obj) {
+			//	return obj.goodsId == goodsId;
+			//});
+            
+			if(goodsInSellRecord.Count > 0 && goodsIndex < goodsInSellRecord.Count){
+				goodsInSellRecord.RemoveAt(goodsIndex);
+			}
+         
 		}      
 
 	}

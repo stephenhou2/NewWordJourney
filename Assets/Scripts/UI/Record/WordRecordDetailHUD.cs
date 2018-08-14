@@ -23,6 +23,8 @@ namespace WordJourney
 		public Text sentenceENText;
         
 		public Text sentenceCHText;
+
+		public Text pronounceNotAvalableHintText;
         
 		private HLHWord word;
 
@@ -63,13 +65,26 @@ namespace WordJourney
 
 			sentenceCHText.text = word.sentenceCH;
 
+
 			this.gameObject.SetActive(true);
 
 			if(zoomCoroutine != null){
 				StopCoroutine(zoomCoroutine);
 			}
 
-			zoomCoroutine = HUDZoomIn();
+			zoomCoroutine = HUDZoomIn(delegate {
+			
+				if (Application.internetReachability == NetworkReachability.NotReachable)
+                {
+                    pronounceNotAvalableHintText.enabled = true;
+
+                }
+                else
+                {
+                    pronounceNotAvalableHintText.enabled = false;
+                }
+
+			});
 
 			StartCoroutine(zoomCoroutine);
          
@@ -100,8 +115,16 @@ namespace WordJourney
 
 		}
 
-		public void OnPronunceButtonClick(){         
+		public void OnPronunceButtonClick(){
+
+			if (Application.internetReachability == NetworkReachability.NotReachable)
+			{
+				return;
+			}
+
 			GameManager.Instance.pronounceManager.PronounceWord(word);
+			        
+
 		}
       
 
@@ -120,6 +143,7 @@ namespace WordJourney
                 return;
             }
 
+			pronounceNotAvalableHintText.enabled = false;
 
 			if(zoomCoroutine != null){
 				StopCoroutine(zoomCoroutine);

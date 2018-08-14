@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
-	// 造成<color=orange>技能等级×8%×护甲+10</color>的真实伤害，同时提高自身<color=orange>技能等级×4</color>的护甲至战斗结束，不叠加
+	// 造成<color=orange>技能等级×6%×护甲+10</color>的真实伤害，同时提高自身<color=orange>技能等级×4</color>的护甲至战斗结束，不叠加
 	public class WuWeiFanJi : ActiveSkill
     {
 
@@ -19,7 +19,7 @@ namespace WordJourney
 		{
 			int hurt = Mathf.RoundToInt(skillLevel * healthDecreaseScaler * Player.mainPlayer.armor + fixHealthDecrease);
 			int armorGain = skillLevel * armorGainBase;
-			return string.Format("造成<color=white>(技能等级×8%×护甲+10)</color><color=red>{0}</color>的真实伤害，" +
+			return string.Format("造成<color=white>(技能等级×6%×护甲+10)</color><color=red>{0}</color>的真实伤害，" +
 								 "同时提高自身<color=white>(技能等级×4)</color><color=red>{1}</color>的护甲至战斗结束，可叠加", hurt, armorGain);
 		}
 
