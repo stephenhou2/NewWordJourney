@@ -27,7 +27,7 @@ namespace WordJourney{
     }
 
 
-	public delegate void CallBack ();
+	public delegate void CallBack();
 	public delegate void ChooseCallBack(bool arg);
 
 //	public delegate void CallBack<T>(T[] parameters);

@@ -13,6 +13,8 @@ namespace WordJourney
 
 	public delegate void SkillCallBack(BattleAgentController selfBaCtr,BattleAgentController enemyBaCtr);
 
+
+
 	public class TriggeredSkillExcutor{
 		public TriggeredPassiveSkill triggeredSkill;
 		public SkillCallBack triggeredCallback;

@@ -22,7 +22,7 @@ namespace WordJourney
 
 			this.changeWordStatusCallBack = changeWordStatusCallBack;
 
-			bool hasGrasped = word.learnedTimes > word.ungraspTimes;
+			bool hasGrasped = word.isFamiliar;
 
 			string wordListName = hasGrasped ? "已掌握单词" : "未掌握单词";
 
