@@ -144,6 +144,7 @@ namespace WordJourney
 		private List<Trap> allTrapsInMap = new List<Trap>();
 		public List<MapMonster> allMonstersInMap = new List<MapMonster> ();
 		public List<MapNPC> allNPCsInMap = new List<MapNPC>();
+		//private List<SavePoint> allSavePointsInMap = new List<SavePoint>();
 
 		private List<int> valableNpcIds = new List<int> { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -302,8 +303,16 @@ namespace WordJourney
 			mySql.CloseConnection(CommonData.dataBaseName);
 
 			DestroyUnusedMapInstances();
+
+			//AllSavePointsIntoUse();
 		}
         
+		//private void AllSavePointsIntoUse(){
+		//	for (int i = 0; i < allSavePointsInMap.Count;i++){
+		//		allSavePointsInMap[i].isInSavingData = false;
+		//	}
+		//}
+
 		private void GenerateDiaryPaper(){
 
 			int randomSeed = Random.Range(0,allValidCharacterFragmentPositions.Count);
@@ -556,6 +565,7 @@ namespace WordJourney
 			allNPCsInMap.Clear();
 			allTrapsInMap.Clear();
 			allValidCharacterFragmentPositions.Clear();
+			//allSavePointsInMap.Clear();
 		}
 
 		/// <summary>
@@ -1043,6 +1053,7 @@ namespace WordJourney
 							playerSaveTowards = Player.mainPlayer.saveTowards;
 							savePosValid = true;
 						}
+						//allSavePointsInMap.Add(mapEvent as SavePoint);
 						break;
 				}
 
@@ -1463,6 +1474,7 @@ namespace WordJourney
          
 
 				Transform player = Player.mainPlayer.transform.Find("BattlePlayer");
+         
 				player.position = position;
 
 				BattlePlayerController bp = player.GetComponent<BattlePlayerController>();

@@ -187,6 +187,8 @@ namespace WordJourney
 
 		public string currentExploreStartDateString;
 
+		public bool canSave;//是否可以存档【刚进入探索界面时不存档】
+
 		// 记录到的存档点位置
 		public Vector3 savePosition;
 
@@ -1768,6 +1770,7 @@ namespace WordJourney
         public int correctWordsCountInCurrentExplore;
 
 		public string currentExploreStartDateString;
+
 
         // 记录到的存档点位置
 		public Vector3 savePosition = -Vector3.one;

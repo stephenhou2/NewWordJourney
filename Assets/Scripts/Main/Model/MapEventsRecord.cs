@@ -159,9 +159,9 @@ namespace WordJourney
         
 		public static bool CheckRecordValid(CurrentMapEventsRecord record){
 			return record != null && record.mapIndex >= 0 && record.mapIndex <= CommonData.maxLevelIndex && record.triggeredEventPositions != null 
-				   && record.npcPosArray != null &&record.npcPosArray.Length > 0
+				   && record.npcPosArray != null && record.npcPosArray.Length > 0
 				   && record.npcArray != null && record.npcArray.Length > 0 
-				   && record.puzzleDoorPosArray == null && record.puzzleDoorPosArray.Length > 0;
+				   && record.puzzleDoorPosArray != null && record.puzzleDoorPosArray.Length > 0;
 		}
         
 		public void Reset(){

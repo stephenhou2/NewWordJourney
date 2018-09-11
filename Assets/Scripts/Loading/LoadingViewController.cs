@@ -53,6 +53,7 @@ namespace WordJourney
             
 			switch(loadingType){
 				case LoadingType.EnterExplore:
+					Player.mainPlayer.canSave = false;
 					IEnumerator loadingAndEnterExploreCoroutine = LoadingBarAnimationEnterExplore();
 					StartCoroutine(loadingAndEnterExploreCoroutine);           
 					break;
@@ -126,6 +127,8 @@ namespace WordJourney
 
 			yield return new WaitForSecondsRealtime(0.3f);
 
+			Player.mainPlayer.canSave = true;
+
 			if(lampCoroutine != null){
 				StopCoroutine(lampCoroutine);
 			}
@@ -169,7 +172,9 @@ namespace WordJourney
 
             yield return new WaitForSecondsRealtime(2.0f);
 
-         
+
+
+
 			if(lampCoroutine != null){
 				StopCoroutine(lampCoroutine);
 			}

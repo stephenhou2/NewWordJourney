@@ -21,12 +21,12 @@ namespace WordJourney
 
 		//public BoxCollider2D bigCollider;
 
-		private bool isInSavingData;
+		public bool isInSavingData;
           
 		public override void InitializeWithAttachedInfo(int mapIndex, MapAttachedInfoTile attachedInfo)
         {
 			this.transform.position = attachedInfo.position;
-         
+			isInSavingData = false;
         }
       
 		public override void AddToPool(InstancePool pool)
@@ -66,6 +66,14 @@ namespace WordJourney
 
 		public override void MapEventTriggered(bool longDealy, BattlePlayerController bp)
 		{
+			bp.isInEvent = false;
+
+			if(!Player.mainPlayer.canSave){
+				return;
+			}
+
+			Debug.Log("save data at save point");
+
 			isInSavingData = true;
 
 			Player.mainPlayer.savePosition = this.transform.position;
@@ -87,7 +95,7 @@ namespace WordJourney
 
             MySQLiteHelper.Instance.CloseAllConnections();
 
-			bp.isInEvent = false;
+
 
 			IEnumerator saveHintCoroutine = SaveHint(longDealy ? 0.5f : 0.1f);
 
