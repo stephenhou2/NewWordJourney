@@ -42,32 +42,35 @@ namespace WordJourney
 			int gameLevelIndex = int.Parse (dataStrings [0]);
 
 			Debug.LogFormat ("{0}####瓦罐", dataStrings [1]);
-			List<int> itemIdsInPot = InitIntArrayWithString (dataStrings [1]);
+			List<int> itemIdsInPot = InitIntAndCountArrayWithString (dataStrings [1]);
 
 			Debug.LogFormat ("{0}####木桶", dataStrings [2]);
-			List<int> itemIdsInBucket = InitIntArrayWithString (dataStrings [2]);
+			List<int> itemIdsInBucket = InitIntAndCountArrayWithString (dataStrings [2]);
 
 			Debug.LogFormat ("{0}####普通宝箱", dataStrings [3]);
-			List<int> itemIdsInNormalTreasureBox = InitIntArrayWithString (dataStrings [3]);
+			List<int> itemIdsInNormalTreasureBox = InitIntAndCountArrayWithString (dataStrings [3]);
 
 			//Debug.LogFormat("{0}####金色宝箱", dataStrings[4]);
             //List<int> itemIdsInGoldTreasureBox = InitIntArrayWithString(dataStrings[4]);
 
 			Debug.LogFormat ("{0}####怪物", dataStrings [4]);
-			List<int> monsterIds = InitIntArrayWithString (dataStrings [4]);
+			List<int> monsterIds = InitIntAndCountArrayWithString (dataStrings [4]);
 
 			int bossId = int.Parse (dataStrings [5]);
 
 			Debug.LogFormat ("{0}####钱袋", dataStrings [6]);
 			Count goldAmountRange = InitCountWithString (dataStrings [6]);
 
-			HLHGameLevelData levelData = new HLHGameLevelData (gameLevelIndex, itemIdsInPot, itemIdsInBucket, itemIdsInNormalTreasureBox, monsterIds,bossId,goldAmountRange);
+			Debug.LogFormat("{0}####本层怪物id", dataStrings[7]);
+			List<int> monsterIdsOfCurrentLevel = InitIntArrayWithString(dataStrings[7]);
+
+			HLHGameLevelData levelData = new HLHGameLevelData (gameLevelIndex, itemIdsInPot, itemIdsInBucket, itemIdsInNormalTreasureBox, monsterIds,bossId,goldAmountRange,monsterIdsOfCurrentLevel);
 
 			return levelData;
 
 		}
 
-		private List<int> InitIntArrayWithString(string dataString){
+		private List<int> InitIntAndCountArrayWithString(string dataString){
 			
 			string[] idStrings = dataString.Split (new char[]{ '_' }, System.StringSplitOptions.RemoveEmptyEntries);
 			List<int> idList = new List<int> ();
@@ -82,6 +85,21 @@ namespace WordJourney
 			}
 			return idList;
 		}
+
+		private List<int> InitIntArrayWithString(string dataString)
+        {
+
+            string[] idStrings = dataString.Split(new char[] { '_' }, System.StringSplitOptions.RemoveEmptyEntries);
+            List<int> idList = new List<int>();
+            for (int i = 0; i < idStrings.Length; i++)
+            {
+				int id = int.Parse(idStrings[i]);
+
+                idList.Add(id);
+
+            }
+            return idList;
+        }
 
 		private Count InitCountWithString(string dataString){
 

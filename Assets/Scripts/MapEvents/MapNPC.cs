@@ -18,12 +18,17 @@ namespace WordJourney
 
         public bool needPosFix;
 
+		private IEnumerator delayMoveCoroutine;
+
 
         public override void AddToPool(InstancePool pool)
         {
             bc2d.enabled = false;
             //DisableAllDetect();
-            StopCoroutine("DelayedMovement");
+			if(delayMoveCoroutine != null){
+				StopCoroutine(delayMoveCoroutine);
+			}
+            //StopCoroutine("DelayedMovement");
             pool.AddInstanceToPool(this.gameObject);
             StopMoveImmidiately();
             gameObject.SetActive(false);
@@ -43,9 +48,13 @@ namespace WordJourney
             isInAutoWalk = false;
             isTriggered = false;
 
-            StopCoroutine("DelayedMovement");
+			if (delayMoveCoroutine != null)
+            {
+                StopCoroutine(delayMoveCoroutine);
+            }
 
-            StartCoroutine("DelayedMovement", delay);
+			delayMoveCoroutine = DelayedMovement(delay);
+			StartCoroutine(delayMoveCoroutine);
 
         }
 
@@ -114,8 +123,40 @@ namespace WordJourney
 
             baCtr.SetSortingOrder(-(int)transform.position.y);
 
-            npc = GameManager.Instance.gameDataCenter.LoadNpc(npcId);
+			npc = null;
 
+			for (int i = 0; i < GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcPosArray.Length;i++){
+
+				Vector2 pos = GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcPosArray[i];
+
+				//if(pos == -Vector2.one){
+				//	break;
+				//}
+
+				if(MyTool.ApproximatelySameIntPosition2D(pos,attachedInfo.position)){
+					npc = GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcArray[i];
+					break;
+				}            
+			}
+
+			if(npc == null){
+				npc = GameManager.Instance.gameDataCenter.LoadNpc(npcId);
+				for (int i = 0; i < GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcPosArray.Length; i++)
+                {
+
+                    Vector2 pos = GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcPosArray[i];
+
+                    if (pos == -Vector2.one)
+                    {
+						GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcPosArray[i] = transform.position;
+						GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcArray[i] = npc;
+                        break;
+                    }
+
+                    
+                }
+			}
+         
 			bc2d.enabled = true;
             //InitAllAlertAreaDetect();
 
@@ -130,6 +171,14 @@ namespace WordJourney
             isInAutoWalk = false;
 
             needPosFix = false;
+
+			Sprite miniMapNpcSprite = GameManager.Instance.gameDataCenter.allMiniMapNpcSprites.Find(delegate (Sprite obj)
+            {
+
+				return obj.name == string.Format("MiniMapNPC_{0}",npc.npcId);
+            });
+
+            miniMapInstance.GetComponent<SpriteRenderer>().sprite = miniMapNpcSprite;
 
             //for (int i = 0; i < alertAreas.Length; i++)
             //{
@@ -239,11 +288,13 @@ namespace WordJourney
 
             if (canMove)
             {
-                StartCoroutine("AdjustPositionAndTowards", bp);
+				IEnumerator adjustAndFightCoroutine = AdjustPositionAndTowards(bp);
+				StartCoroutine(adjustAndFightCoroutine);
             }
             else
             {
-                StartCoroutine("AdjustTowards", bp);
+				IEnumerator adjustCoroutine = AdjustTowards(bp);
+				StartCoroutine(adjustCoroutine);
             }
 
             isTriggered = true;

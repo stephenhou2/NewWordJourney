@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace WordJourney
 {
+
 	public class HomeViewController : MonoBehaviour {
 
 		public HomeView homeView;
@@ -16,11 +17,8 @@ namespace WordJourney
 			homeView.SetUpHomeView ();
 
 			Time.timeScale = 1f;
-         
-
-                     
 		}
-			
+        
 
 		public void OnConfirmNetStatusButtonClick(){
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
@@ -29,7 +27,7 @@ namespace WordJourney
 
 		public void OnExploreButtonClick(){
          
-			if (Player.mainPlayer.isNewPlayer) {
+			if (Player.mainPlayer.needChooseDifficulty) {
 
 				GameManager.Instance.soundManager.PlayAudioClip (CommonData.paperAudioName);
 
@@ -56,6 +54,8 @@ namespace WordJourney
 		/// <param name="difficulty">Difficulty.</param>
 		public void OnDifficultyChoose(){
 
+			Player.mainPlayer.needChooseDifficulty = false;
+
 			homeView.ShowMaskImage ();
 
 			GameManager.Instance.soundManager.StopBgm();
@@ -71,7 +71,8 @@ namespace WordJourney
 		}
 
 		private void LoadExplore(){
-			StartCoroutine("LoadExploreData");
+			IEnumerator loadExploreCoroutine = LoadExploreData();
+			StartCoroutine(loadExploreCoroutine);
 		}
 
 
@@ -86,14 +87,15 @@ namespace WordJourney
 				"RecordCanvas",
 				"SettingCanvas",
 				"SpellCanvas",
-				"LearnCanvas"
+				"LearnCanvas",
+                "PlayRecordCanvas"
 			});
 
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.exploreSceneBundleName, "ExploreCanvas", () => {
 				if(Player.mainPlayer.isNewPlayer){
 					Player.mainPlayer.InitializeMapIndex();
 				}            
-				ExploreManager.Instance.SetUpExploreView(true);            
+				ExploreManager.Instance.SetUpExploreView(MapSetUpFrom.Home);            
 			},false,true);
 
 		}
@@ -144,35 +146,23 @@ namespace WordJourney
 
 		public void OnWeChatShareButtonClick(){
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
+         
+			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
+			{
+				TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, ShareSucceedCallBack, ShareFailedCallBack, null);
+				homeView.OnQuitHomeView();
+			}, false, true);
 
-			//if (Application.internetReachability == NetworkReachability.NotReachable)
-			//{
-			//	homeView.tintHUD.SetUpSingleTextTintHUD("无网络连接");
-			//}
-			//else
-			//{
-				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
-				{
-					TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, ShareSucceedCallBack, ShareFailedCallBack, null);
-					homeView.OnQuitHomeView();
-				}, false, true);
-			//}
 		}
 
-		public void OnWeiBoShareButtonClick(){
+		public void OnPlayRecordButtonClick(){
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
-			//if (Application.internetReachability == NetworkReachability.NotReachable)
-			//{
-			//	homeView.tintHUD.SetUpSingleTextTintHUD("无网络连接");
-			//}
-			//else
-			//{
-				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", () =>
-				{
-					TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.Weibo, ShareSucceedCallBack, ShareFailedCallBack, null);
-					homeView.OnQuitHomeView();
-				}, false, true);
-			//}
+
+			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.playRecordCanvasBundleName, "PlayRecordCanvas", () =>
+			{
+				TransformManager.FindTransform("PlayRecordCanvas").GetComponent<PlayRecordViewController>().SetUpPlayerRecordView();
+			}, false, true);
+
 		}
 
 		private void ShareSucceedCallBack(){

@@ -53,37 +53,39 @@ namespace WordJourney{
 
 		protected IEnumerator HUDZoomOut(CallBack callBack = null)
         {
+         
 			inZoomingOut = true;
 
-            float scale = 1f;
+			float scale = 1f;
 
-            float zoomInSpeed = (1 - 0.2f) / zoomDuration;
+			float zoomInSpeed = (1 - 0.2f) / zoomDuration;
 
-            float lastFrameRealTime = Time.realtimeSinceStartup;
+			float lastFrameRealTime = Time.realtimeSinceStartup;
 
-            while (scale > 0.2f)
-            {
+			while (scale > 0.2f)
+			{
 
-                yield return null;
+				yield return null;
 
-                scale -= zoomInSpeed * (Time.realtimeSinceStartup - lastFrameRealTime);
+				scale -= zoomInSpeed * (Time.realtimeSinceStartup - lastFrameRealTime);
 
-                lastFrameRealTime = Time.realtimeSinceStartup;
+				lastFrameRealTime = Time.realtimeSinceStartup;
 
-                contentContainer.transform.localScale = new Vector3(scale, scale, 1);
+				contentContainer.transform.localScale = new Vector3(scale, scale, 1);
 
-            }
+			}
 
-            contentContainer.localScale = new Vector3(0.2f, 0.2f, 1);
+			contentContainer.localScale = new Vector3(0.2f, 0.2f, 1);
 
 			if (callBack != null)
-            {
-                callBack();
-            }
+			{
+				callBack();
+			}
 
-            this.gameObject.SetActive(false);
+			this.gameObject.SetActive(false);
+		}
          
-        }
+        
 
 
     }

@@ -64,7 +64,7 @@ namespace WordJourney
 		private void UpdateBarWithoutAnim(){
 			if(fillText != null){
 				fillText.text = string.Format("{0} / {1}", value, maxValue);
-			}         
+			}     
 			fillImage.fillAmount = (float)value / maxValue;
 		}
 
@@ -75,7 +75,6 @@ namespace WordJourney
 				fillText.text = string.Format("{0} / {1}", mValue, mMaxValue);
                 
 			}
-
 			if(fillTweener != null){
 				fillTweener.Kill();
 			}

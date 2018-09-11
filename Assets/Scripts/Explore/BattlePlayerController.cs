@@ -58,6 +58,8 @@ namespace WordJourney
         
 		private IEnumerator attackDelayWhenChangeWeapon;// 更换武器时的等待携程
 
+		private IEnumerator newMoveCoroutine;// 新的行走协程
+
         public TextMeshPro stepCount;
         private int mFadeStepsLeft;
 		public int fadeStepsLeft
@@ -96,6 +98,7 @@ namespace WordJourney
                 }
             }
         }
+        
 
         protected override void Awake()
         {
@@ -176,7 +179,9 @@ namespace WordJourney
             // 计算自动寻路路径
             pathPosList = navHelper.FindPath(singleMoveEndPos, moveDestination, mapWalkableInfoArray);
 
-            StopCoroutine("MoveWithNewPath");
+			if(newMoveCoroutine != null){
+				StopCoroutine(newMoveCoroutine);
+			}
 
             this.moveDestination = moveDestination;
 
@@ -202,7 +207,8 @@ namespace WordJourney
                 return false;
             }
 
-            StartCoroutine("MoveWithNewPath");
+			newMoveCoroutine = MoveWithNewPath();
+			StartCoroutine(newMoveCoroutine);
 
             return pathPosList.Count > 0;
 
@@ -225,6 +231,8 @@ namespace WordJourney
 					Vector3 targetPos = transform.position;
 
 					exploreManager.newMapGenerator.miniMapPlayer.localPosition = targetPos;
+
+
 
                     exploreManager.newMapGenerator.ClearMiniMapMaskAround(targetPos);
 
@@ -610,7 +618,10 @@ namespace WordJourney
 
             //			Debug.LogFormat ("{0}/{1}", transform.position, singleMoveEndPos);
 
-            StopCoroutine("MoveWithNewPath");
+			if (newMoveCoroutine != null)
+            {
+                StopCoroutine(newMoveCoroutine);
+            }
 
             this.moveDestination = singleMoveEndPos;
 
@@ -657,7 +668,10 @@ namespace WordJourney
 
         public void StopMoveAndWait()
         {
-            StopCoroutine("MoveWithNewPath");
+			if (newMoveCoroutine != null)
+            {
+                StopCoroutine(newMoveCoroutine);
+            }
             moveTweener.Kill(false);
             inSingleMoving = false;
             if (!isIdle) 
@@ -1246,6 +1260,8 @@ namespace WordJourney
 			}
 
 			isDead = true;
+
+			BattleAgentController enemyRecord = enemy;
                      
 			ExploreManager.Instance.DisableAllInteractivity ();
 
@@ -1265,7 +1281,8 @@ namespace WordJourney
 			enemy.AllEffectAnimsIntoPool();
 
 			PlayRoleAnim (CommonData.roleDieAnimName, 1, ()=>{
-				StartCoroutine("QueryBuyLife",fromFight);
+				IEnumerator queryBuyLifeCoroutine = QueryBuyLife(fromFight, enemyRecord);
+				StartCoroutine(queryBuyLifeCoroutine);
 				AllEffectAnimsIntoPool();
 				enemy.AllEffectAnimsIntoPool();
 				enemy = null;
@@ -1273,14 +1290,18 @@ namespace WordJourney
 
 		}
 			
-		private IEnumerator QueryBuyLife(bool fromFight){
+		private IEnumerator QueryBuyLife(bool fromFight,BattleAgentController enemyRecord){
 
 			yield return new WaitForSeconds (0.5f);
 
 			if(fromFight){
-				exploreManager.BattlePlayerLose ();
+				exploreManager.BattlePlayerLose (enemyRecord);
 			}else{
 				exploreManager.expUICtr.ShowBuyLifeQueryHUD();
+				PlayRecord playRecord = new PlayRecord(false, "陷阱");
+				List<PlayRecord> playRecords = GameManager.Instance.gameDataCenter.allPlayRecords;            
+				playRecords.Add(playRecord);
+				GameManager.Instance.persistDataManager.SavePlayRecords(playRecords);
 			}
 		}
 

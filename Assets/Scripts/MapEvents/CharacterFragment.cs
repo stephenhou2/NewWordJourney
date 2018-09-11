@@ -100,6 +100,8 @@ namespace WordJourney
 
 			StopFloating();
 
+			boxCollider.enabled = false;
+
 			characterSmallDetect.SetBoxColliderEnable(false);
 
 			CharacterFragmentFlyToPlayer(battlePlayer);

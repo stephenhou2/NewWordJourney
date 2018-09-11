@@ -115,7 +115,7 @@ namespace WordJourney
 
 			Player.mainPlayer.totalGold -= propertyPromotion.promotionPrice;
 
-			Player.mainPlayer.PlayerPropertyChange(propertyPromotion.propertyType, propertyPromotion.promotion);
+			PlayerPropertyChange(propertyPromotion.propertyType, propertyPromotion.promotion);
 
 			string tint = propertyPromotion.GetPropertyPromotionTint();
 
@@ -124,6 +124,99 @@ namespace WordJourney
 			ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
 
 		}
+
+		public void PlayerPropertyChange(PropertyType type, int change)
+        {
+			Player player = Player.mainPlayer;
+
+            switch (type)
+            {
+                case PropertyType.MaxHealth:
+					int maxHealthRecord = player.maxHealth;
+					player.originalMaxHealth += change;
+					player.maxHealth += change;
+					player.health = (int)(player.health * (float)player.maxHealth / maxHealthRecord);
+                    break;
+                //case PropertyType.Health:
+                //health += change;
+                //break;
+                case PropertyType.MaxMana:
+					int maxManaRecord = player.maxMana;
+					player.originalMaxMana += change;
+					player.maxMana += change;
+					player.mana = (int)(player.mana * (float)player.maxMana / maxManaRecord);
+                    break;
+                case PropertyType.Attack:
+					player.originalAttack += change;
+					player.attack += change;
+                    break;
+                case PropertyType.MagicAttack:
+					player.originalMagicAttack += change;
+					player.magicAttack += change;
+                    break;
+                case PropertyType.Armor:
+					player.originalArmor += change;
+					player.armor += change;
+                    break;
+                case PropertyType.MagicResist:
+					player.originalMagicResist += change;
+					player.magicResist += change;
+                    break;
+                case PropertyType.ArmorDecrease:
+					player.originalArmorDecrease += change;
+					player.armorDecrease += change;
+                    break;
+                case PropertyType.MagicResistDecrease:
+					player.originalMagicResistDecrease += change;
+					player.magicResistDecrease += change;
+                    break;
+                case PropertyType.MoveSpeed:
+					player.originalMoveSpeed += change;
+					player.moveSpeed += change;
+                    break;
+                case PropertyType.Dodge:
+                    float changeInFloat = (float)change / 1000;
+					player.originalDodge += changeInFloat;
+					player.dodge += changeInFloat;
+                    break;
+                case PropertyType.Crit:
+                    changeInFloat = (float)change / 1000;
+					player.originalCrit += changeInFloat;
+					player.crit += changeInFloat;
+                    break;
+                case PropertyType.CritHurtScaler:
+                    changeInFloat = (float)change / 1000;
+					player.originalCritHurtScaler += changeInFloat;
+					player.critHurtScaler += changeInFloat;
+                    break;
+                case PropertyType.PhysicalHurtScaler:
+                    changeInFloat = (float)change / 1000;
+					player.originalPhysicalHurtScaler += changeInFloat;
+					player.physicalHurtScaler += changeInFloat;
+                    break;
+                case PropertyType.MagicalHurtScaler:
+                    changeInFloat = (float)change / 1000;
+					player.originalMagicalHurtScaler += changeInFloat;
+					player.magicalHurtScaler += changeInFloat;
+                    break;
+                case PropertyType.ExtraGold:
+					player.originalExtraGold += change;
+					player.extraGold += change;
+                    break;
+                case PropertyType.ExtraExperience:
+					player.originalExtraExperience += change;
+					player.extraExperience += change;
+                    break;
+                case PropertyType.HealthRecovery:
+					player.originalHealthRecovery += change;
+					player.healthRecovery += change;
+                    break;
+                case PropertyType.MagicRecovery:
+					player.originalMagicRecovery += change;
+					player.magicRecovery += change;
+                    break;
+            }
+        }
 
         
 

@@ -19,6 +19,8 @@ namespace WordJourney
 		// 奖励的物品
 		public Item rewardItem;
 
+		protected int mapIndex;       
+
 		//public Animator mapItemAnimator;
 
 		//public float dropItemOffsetY;
@@ -107,6 +109,8 @@ namespace WordJourney
 		{
 			transform.position = attachedInfo.position;
 
+			this.mapIndex = mapIndex;
+
 			int rewardItemId = GetRandomItemIdFromGameLevelData();
 
 			rewardItem = Item.NewItemWith (rewardItemId, 1);
@@ -168,6 +172,8 @@ namespace WordJourney
 			ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y)] = 1;
 
 			Vector3 droppedItemPos = transform.position;
+
+			GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
 
 			PlayAnimAndAudio (delegate {
 

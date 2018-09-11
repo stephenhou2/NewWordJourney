@@ -9,7 +9,7 @@ namespace WordJourney
 
 	public enum ValidDropType{
 		Equipment,
-		EquipmentWithoutGemstone,
+		EquipmentWithGemstoneNotFull,
         PropertyGemstone
 	}
 
@@ -73,12 +73,12 @@ namespace WordJourney
     					isValid = false;
     				}
     				break;
-    			case ValidDropType.EquipmentWithoutGemstone:
+    			case ValidDropType.EquipmentWithGemstoneNotFull:
     				if (draggedItem.itemType != ItemType.Equipment) {
     					isValid = false;
     				} else {
 						Equipment equipment = draggedItem as Equipment;
-						isValid = equipment.attachedPropertyGemstone.itemId == -1;
+						isValid = equipment.attachedPropertyGemstones.Count < 2;
     				}
     				break;
     			case ValidDropType.PropertyGemstone:

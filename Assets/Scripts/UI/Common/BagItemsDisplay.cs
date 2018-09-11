@@ -36,25 +36,30 @@ namespace WordJourney
 				return minItemIndexOfCurrentBag + CommonData.singleBagItemVolume - 1;
 			}
 		}
-
+        
         // 背包物品点击事件回调
 		private CallBackWithItem itemClickCallBack;
 
         // 触发appstore购买行为的回调
 		private CallBackWithInt initPurchaseBag;
+
+        // 进入购买金币的界面
+		private CallBack enterPurchaseGold;
         
         /// <summary>
         /// 初始化背包物品显示界面[不初始化任何显示，只初始化各种回调和背包切换按钮状态]
         /// </summary>
         /// <param name="itemClickCallBack">Item click call back.</param>
         /// <param name="initPurchaseBag">Init purchase bag.</param>
-		public void InitBagItemsDisplayPlane(CallBackWithItem itemClickCallBack,CallBackWithInt initPurchaseBag){
+		public void InitBagItemsDisplayPlane(CallBackWithItem itemClickCallBack,CallBackWithInt initPurchaseBag,CallBack enterPurchaseGold){
 
 			currentBagIndex = 0;
 
 			this.itemClickCallBack = itemClickCallBack;
 
 			this.initPurchaseBag = initPurchaseBag;
+
+			this.enterPurchaseGold = enterPurchaseGold;
 
 			UpdateBagTabs();
 
@@ -165,9 +170,9 @@ namespace WordJourney
 
             bagTabs[2].transform.GetComponentInChildren<Text>().enabled = BuyRecord.Instance.bag_3_unlocked;
 
-            bagTabs[3].transform.Find("LockIcon").gameObject.SetActive(!BuyRecord.Instance.bag_4_unlocked);
+            //bagTabs[3].transform.Find("LockIcon").gameObject.SetActive(!BuyRecord.Instance.bag_4_unlocked);
 
-            bagTabs[3].transform.GetComponentInChildren<Text>().enabled = BuyRecord.Instance.bag_4_unlocked;
+            //bagTabs[3].transform.GetComponentInChildren<Text>().enabled = BuyRecord.Instance.bag_4_unlocked;
 		}
 
 		public void ArrangeBag(){
@@ -186,7 +191,7 @@ namespace WordJourney
 			
 
         
-		public void ChangeBag(int bagIndex){
+		public void BagTabsChangeTo(int bagIndex){
 
 			if (bagIndex == currentBagIndex)
             {
@@ -213,20 +218,9 @@ namespace WordJourney
                 return;
             }
 
-
-			if (bagIndex == 3 && !BuyRecord.Instance.bag_4_unlocked) {
-				if (!BuyRecord.Instance.bag_2_unlocked)
-                {
-                    initPurchaseBag(1);
-                }
-                else if (!BuyRecord.Instance.bag_3_unlocked)
-                {
-                    initPurchaseBag(2);
-                }
-				else
-				{
-					initPurchaseBag(3);
-				}            
+            
+			if (bagIndex == 3 && enterPurchaseGold != null) {
+				enterPurchaseGold();         
 				return;
 			}
          

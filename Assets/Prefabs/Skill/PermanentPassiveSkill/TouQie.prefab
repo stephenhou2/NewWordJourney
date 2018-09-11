@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1043964897260680}
+  m_IsPrefabParent: 1
+--- !u!1 &1043964897260680
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4430670815072084}
+  - component: {fileID: 114801490238433760}
+  m_Layer: 0
+  m_Name: TouQie
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4430670815072084
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1043964897260680}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 184.51376, y: 928.2188, z: -3.4349313}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114801490238433760
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1043964897260680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93b53e3305ac544c3ad95669b9fe35a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillName: "\u5077\u7A83"
+  sfxName: 
+  skillId: 24
+  skillDescription: "\u6C38\u4E45\u63D0\u5347<color=orange>\u6280\u80FD\u7B49\u7EA7\xD72</color>\u7684\u989D\u5916\u91D1\u5E01"
+  skillIconName: 24_touQie
+  selfEffectAnimName: 
+  enemyEffectAnimName: 
+  skillType: 1
+  skillLevel: 1
+  wordCountToLearn: 8
+  hasTriggered: 0
+  skillSourceValue: 2

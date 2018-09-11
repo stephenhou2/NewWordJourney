@@ -21,7 +21,7 @@ namespace WordJourney
         
 
 		public Sprite wiseManSprite;
-		public Sprite youXiaSprite;
+		//public Sprite youXiaSprite;
 
 		private HLHNPC npc;
 
@@ -49,10 +49,10 @@ namespace WordJourney
 				npcIcon.sprite = wiseManSprite;
 			}
 
-			if(npc.npcName.Equals("游侠·安科尔")){
-				hasNpcIcon = true;
-				npcIcon.sprite = youXiaSprite;
-			}
+			//if(npc.npcName.Equals("游侠·安科尔")){
+			//	hasNpcIcon = true;
+			//	npcIcon.sprite = youXiaSprite;
+			//}
          
 			npcIcon.enabled = hasNpcIcon;
 

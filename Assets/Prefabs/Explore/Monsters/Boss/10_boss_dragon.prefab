@@ -4020,6 +4020,10 @@ MonoBehaviour:
   rewardGold: 0
   mAttackInterval: 1.1
   isBoss: 1
+  monsterSays:
+  - 
+  - 
+  - 
 --- !u!114 &114077058012485690
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4174,7 +4178,7 @@ MonoBehaviour:
   enemyEffectAnimName: se_qiXueZhanJi
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: skill2
   skillCoolenTime: 0
@@ -4329,7 +4333,7 @@ MonoBehaviour:
   enemyEffectAnimName: se_huoYanFenShao
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: attack
   skillCoolenTime: 0
@@ -4356,7 +4360,7 @@ MonoBehaviour:
   enemyEffectAnimName: state_burned
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: skill1
   skillCoolenTime: 0
@@ -4399,6 +4403,7 @@ MonoBehaviour:
   collisionLayer:
     serializedVersion: 2
     m_Bits: 2048
+  monsterSayContainer: {fileID: 0}
   isReadyToFight: 0
   pairEventPos: {x: 0, y: 0, z: 0}
   oriPos: {x: 0, y: 0}

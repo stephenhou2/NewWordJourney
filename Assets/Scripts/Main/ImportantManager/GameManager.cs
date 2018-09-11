@@ -47,6 +47,9 @@ namespace WordJourney
 
 		public PurchaseManager purchaseManager;
 
+		// 当前版本信息【格式：x.xx  例如：1.01 代表1.01版，  版本更新时版本号需比上一版大】
+		public float currentVersion;
+
 		private bool hasSavedDataOnQuit;
 
 		private void Awake()
@@ -89,7 +92,7 @@ namespace WordJourney
 		/// </summary>
 		void OnApplicationQuit()
 		{
-			SaveDataOnApplicationQuit();
+			//SaveDataOnApplicationQuit();
 		}
 
 #warning 打包ios时需要在xcode中更改以下内容
@@ -119,6 +122,7 @@ namespace WordJourney
             persistDataManager.SaveGameSettings();
             persistDataManager.SaveMapEventsRecord();
             persistDataManager.SaveCompletePlayerData();
+			persistDataManager.SaveMiniMapRecords();
 
             MySQLiteHelper.Instance.CloseAllConnections();
 

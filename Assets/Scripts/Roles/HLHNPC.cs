@@ -50,13 +50,13 @@ namespace WordJourney
 		// 本层触发的对话组的记录
 		private HLHDialogGroup dialogGroupRecord;
 
-		private List<HLHNPCGoods> goodsInSellRecord = new List<HLHNPCGoods>();
+		public List<HLHNPCGoods> goodsInSellRecord = new List<HLHNPCGoods>();
 
 		private bool isGoodsInitialized;
       
 		public List<int> npcSkillIds = new List<int>();
-       
 
+		public bool hasTeachedASkill = false;
         
 
 
@@ -167,18 +167,13 @@ namespace WordJourney
 		/// </summary>
 		/// <param name="goodsIndex">商品在列表中的序号</param>
 		public void SoldGoods(int goodsIndex){
-
-			//int goodsDisplayIndex = goodsInSellRecord.FindIndex (delegate(HLHNPCGoods obj) {
-			//	return obj.goodsId == goodsId;
-			//});
             
 			if(goodsInSellRecord.Count > 0 && goodsIndex < goodsInSellRecord.Count){
 				goodsInSellRecord.RemoveAt(goodsIndex);
 			}
-         
 		}      
 
-	}
+    }
 
 
 	[System.Serializable]
@@ -372,6 +367,9 @@ namespace WordJourney
                     case 2:
 						equipment.ResetPropertiesByQuality(EquipmentQuality.Gold);
                         break;
+					case 3:
+						equipment.ResetPropertiesByQuality(EquipmentQuality.Purple);
+						break;
                 }
 
 			}

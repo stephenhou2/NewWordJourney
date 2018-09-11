@@ -31,6 +31,8 @@ namespace WordJourney
 
 		public PurchasePendingHUD purchaseHUD;
 
+		public BuyGoldView buyGoldView;
+
 		public Transform queryRemoveHUD;
 
 		public SkillsView skillsView;
@@ -72,7 +74,7 @@ namespace WordJourney
 
 				CallBackWithItem shortClickCallback = GetComponent<BagViewController> ().OnItemInBagClick;
 
-				bagItemsDisplay.InitBagItemsDisplayPlane (shortClickCallback, PurchaseBagCallBack);
+				bagItemsDisplay.InitBagItemsDisplayPlane (shortClickCallback, PurchaseBagCallBack,buyGoldView.SetUpBuyGoldView);
 
 				skillsView.InitSkillsView(SetUpPlayerStatusPlane);
 
@@ -100,9 +102,6 @@ namespace WordJourney
 					break;
 				case 2:
 					SetUpPurchasePlane(PurchaseManager.extra_bag_3_id);
-					break;
-				case 3:
-					SetUpPurchasePlane(PurchaseManager.extra_bag_4_id);
 					break;
 			}
 

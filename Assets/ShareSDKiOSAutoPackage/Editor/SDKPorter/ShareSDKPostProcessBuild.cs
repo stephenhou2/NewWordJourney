@@ -48,8 +48,8 @@ public static class ShareSDKPostProcessBuild
 				<dict>
 					<key>CFBundleURLSchemes</key>
 					<array>
-					<string>wx4868b35061f87885</string>
-					<string>wb568898243</string>
+					<string>wx90291970b846cf26</string>
+					<string>wb3132883834</string>
 					</array>
 				</dict>
 			</array>";

@@ -11,7 +11,8 @@ namespace WordJourney
     {
 		public Image skillIcon;
 		public Text skillNameText;
-		public Text learnPrice;
+		public Text learnNeedText;
+		//public Text learnPrice;
 		public Image selectedIcon;
 
 		private Skill skill;
@@ -37,10 +38,12 @@ namespace WordJourney
 			skillIcon.enabled = skillSprite != null;
 
 			skillNameText.text = skill.skillName;
+
+			learnNeedText.text = string.Format("学习要求:{0}个单词", skill.wordCountToLearn);
                      
 			//bool skillLearned = Player.mainPlayer.CheckSkillHasLearned(skill);
          
-			learnPrice.text = skill.price.ToString();
+			//learnPrice.text = skill.price.ToString();
 
 		}
 		                                  

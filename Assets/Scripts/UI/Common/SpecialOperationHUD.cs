@@ -31,8 +31,8 @@ namespace WordJourney
 				case ItemType.Equipment:
 					Equipment equipment = item as Equipment;
 
-					if(equipment.attachedPropertyGemstone.itemId != -1){
-						tintHUD.SetUpSingleTextTintHUD("一件装备最多只能镶嵌一个宝石");
+					if(equipment.attachedPropertyGemstones.Count == 2){
+						tintHUD.SetUpSingleTextTintHUD("没有可用的宝石槽");
 					}else{
 						equipmentCell.SetUpSpeicalOperationCell(item);
 						addSucceed = true;
@@ -79,8 +79,8 @@ namespace WordJourney
 				return;
 			}
 
-			if (equipment.attachedPropertyGemstone.itemId != -1) {
-				tintHUD.SetUpSingleTextTintHUD ("该装备已经镶嵌过宝石");
+			if (equipment.attachedPropertyGemstones.Count == 2) {
+				tintHUD.SetUpSingleTextTintHUD ("没有可用的宝石槽");
 				return;
 			}
 
@@ -101,7 +101,7 @@ namespace WordJourney
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.gemstoneAudioName);
 
-			equipmentCell.ResetSpecialOperationCell ();
+			//equipmentCell.ResetSpecialOperationCell ();
            
 			functionalItemCell.ResetSpecialOperationCell ();
 
@@ -114,11 +114,10 @@ namespace WordJourney
 
 		public void QuitSpecialOperationHUD(){
 
-            equipmentCell.soDragControl.Reset();
+			equipmentCell.ResetSpecialOperationCell();
 
-            functionalItemCell.soDragControl.Reset();
-
-			//gameObject.SetActive (false);
+			functionalItemCell.ResetSpecialOperationCell();
+            
 
 		}
 

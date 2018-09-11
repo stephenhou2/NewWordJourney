@@ -24,9 +24,9 @@ namespace WordJourney
 
 			bool hasGrasped = word.isFamiliar;
 
-			string wordListName = hasGrasped ? "已掌握单词" : "未掌握单词";
+			string wordListName = hasGrasped ? "不熟悉" : "熟悉";
 
-			string query = string.Format("是否确定将{0}移除出{1}列表？",word.spell,wordListName);
+			string query = string.Format("是否将单词\n\n<color=orange><size=70>{0}</size></color>\n\n移至<color=orange>{1}</color>单词列表？",word.spell,wordListName);
 
 			queryText.text = query;
 

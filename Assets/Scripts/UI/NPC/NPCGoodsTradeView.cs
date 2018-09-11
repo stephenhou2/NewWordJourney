@@ -26,6 +26,8 @@ namespace WordJourney
 
 		public PurchasePendingHUD purchasePendingHUD;
 
+		public BuyGoldView buyGoldView;
+
 		public TintHUD hintHUD;
            
 
@@ -68,7 +70,7 @@ namespace WordJourney
 
             UpdateGoodsDisplay();
 
-			bagItemsDisplay.InitBagItemsDisplayPlane(OnItemInBagClickInTrade, PurchaseBagCallBack);
+			bagItemsDisplay.InitBagItemsDisplayPlane(OnItemInBagClickInTrade, PurchaseBagCallBack,buyGoldView.SetUpBuyGoldView);
             bagItemsDisplay.SetUpBagItemsPlane(0);
             
             EnterTradeDisplay();
@@ -119,7 +121,11 @@ namespace WordJourney
 
 			if(item.itemType == ItemType.Equipment){
 				Equipment equipment = item as Equipment;
-				currentSelectItemPrice = equipment.price + equipment.attachedPropertyGemstone.price;
+				currentSelectItemPrice = equipment.price;
+                // 装备的价格需要计算上镶嵌在装备上的宝石价格
+				for (int i = 0; i < equipment.attachedPropertyGemstones.Count;i++){
+					currentSelectItemPrice += equipment.attachedPropertyGemstones[i].price;
+				}
 			}else{
 				currentSelectItemPrice = item.price;
 			}

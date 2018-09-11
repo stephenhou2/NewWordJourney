@@ -21,6 +21,8 @@ namespace WordJourney
 
 		protected IEnumerator moveCoroutine;
 
+		private IEnumerator autoWalkCoroutine;
+
 		public Vector3 moveOrigin;
 		public Vector3 moveDestination;
         
@@ -68,9 +70,13 @@ namespace WordJourney
 				return;
 			}
 
-				
-			StartCoroutine ("AutoWalk");
-			isInAutoWalk = true;
+			if(autoWalkCoroutine != null){
+				StopCoroutine(autoWalkCoroutine);
+			}
+
+			autoWalkCoroutine = AutoWalk();	
+			StartCoroutine (autoWalkCoroutine);
+
 		}
 
 
@@ -79,7 +85,9 @@ namespace WordJourney
 			if (moveCoroutine != null) {
 				StopCoroutine (moveCoroutine);
 			}
-			StopCoroutine("AutoWalk");
+			if(autoWalkCoroutine != null){
+				StopCoroutine(autoWalkCoroutine);
+			}
 			isInAutoWalk = false;
             isInMoving = false;
 			if (!baCtr.isIdle) {
@@ -88,8 +96,11 @@ namespace WordJourney
 		}
 
 		public void StopMoveAtEndOfCurrentMove(){
-			
-			StopCoroutine("AutoWalk");
+
+			if(autoWalkCoroutine != null){
+				StopCoroutine(autoWalkCoroutine);
+			}
+
 			isInAutoWalk = false;
 
 			Transform bpTrans = ExploreManager.Instance.battlePlayerCtr.transform;
@@ -99,52 +110,69 @@ namespace WordJourney
             if (distance > movableDistance)
             {
                 baCtr.KillRoleAnim();
-				isInMoving = false;
 				isInAutoWalk = false;
             }
 		}
 
 
-		private IEnumerator AutoWalk(){
+		protected IEnumerator AutoWalk(){
 
 			if(!baCtr.isIdle){
 				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
 			}
 
-			while (true) {
+			isInAutoWalk = true;
+            
+			while (true)
+            {           
 
-				float standDuration = Random.Range (2.0f, 4.0f);
+				float standDuration = Random.Range(2.0f, 4.0f);
+            
+                float timer = 0;
 
-				float timer = 0;
-
-				while (timer < standDuration) {
-
+				while(isInMoving){
 					yield return null;
-
-					timer += Time.deltaTime;
-
 				}
 
-				Transform bpTrans = ExploreManager.Instance.battlePlayerCtr.transform;
-
-                float distance = (bpTrans.position - this.transform.position).magnitude;
-
-                if (distance > movableDistance)
+                while (timer < standDuration)
                 {
-                    baCtr.KillRoleAnim();
-					isInAutoWalk = false;
-					isInMoving = false;
-					break;
-                }
 
-				if (CheckCanWalk ()) {
-					Walk ();
-				}
-			}
+                    yield return null;
+
+                    timer += Time.deltaTime;   
+                                   
+                }  
+
+
+                            
+                if (CheckCanWalk())
+                {
+					isInMoving = true;
+
+					Walk(delegate{
+
+						Transform bpTrans = ExploreManager.Instance.battlePlayerCtr.transform;
+                        float distance = (bpTrans.position - this.transform.position).magnitude;
+
+						if (distance > movableDistance)
+                        {
+                            baCtr.KillRoleAnim();
+                            isInAutoWalk = false;
+							if(autoWalkCoroutine != null){
+								StopCoroutine(autoWalkCoroutine);
+							}
+                        }
+					});
+                }
+            }
+
+
+
+
 
 		}
-
-		protected void Walk(){
+        
+		protected void Walk(CallBack callBack){
 
 			int[,] mapWalkableInfo = ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray;
 			int[,] mapWalkableEventInfoArray = ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray;
@@ -178,7 +206,7 @@ namespace WordJourney
 				}
 			}
 
-			WalkToPosition (randomPositionAround,null);
+			WalkToPosition (randomPositionAround,callBack);
 
 		}
 

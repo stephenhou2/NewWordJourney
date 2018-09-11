@@ -9,7 +9,15 @@ namespace WordJourney
 	using DragonBones;
 	using Transform = UnityEngine.Transform;
 
+	public enum MapSetUpFrom{
+		LastLevel,
+        NextLevel,
+        Home
+	}
+
 	public class NewMapGenerator : MonoBehaviour {
+
+        
 
 		// 地图信息（用于绘制地图）
 		private HLHMapData mapData;
@@ -60,11 +68,20 @@ namespace WordJourney
 
 		public Crystal crystalModel;//水晶模型
 
+		public ReviewPool wishPoolModel;//许愿池模型
+
+
 		public Transform rewardModel;//奖励物品模型
 
 		public Transform characterFragmentModel;//字母碎片模型
 
 		public DiaryPaper diaryPaperModel;//日记模型
+
+		public FinalExit finalExitModel;//最终出口模型
+
+		public RebuildStone rebuildStoneModel;//重塑石柱模型
+
+		public SavePoint savePointModel;//存档点模型
 
 
 		//************ 容器 **************//
@@ -117,6 +134,12 @@ namespace WordJourney
         // 记录玩家返回该层的位置
 		private Vector2 playerReturnPos;
 
+		private Vector2 playerSavePos;
+
+		private bool savePosValid;
+
+		private MyTowards playerSaveTowards;
+
 		private List<TriggeredGear> allTriggeredMapEvents = new List<TriggeredGear> ();
 		private List<Trap> allTrapsInMap = new List<Trap>();
 		public List<MapMonster> allMonstersInMap = new List<MapMonster> ();
@@ -161,7 +184,7 @@ namespace WordJourney
 
 		//public Transform miniMapCrystalModel;
 
-		//public Transform miniMapNpcModel;
+		public Transform miniMapNpcModel;
 
 		//public Transform miniMapGoldPackModel;
 
@@ -217,13 +240,32 @@ namespace WordJourney
 		private List<Transform> allMiniMapMasks = new List<Transform>();
 
 		private Camera miniMapCamera;
-              
 
-        /// <summary>
-        /// 初始化地图
-        /// </summary>
-        /// 从上一关进入时人物出现在初始位置，从下一关回来时，出现在返回位置
-		public void SetUpMap(bool fromLastLevel)
+		private IEnumerator minimapSleepCoroutine;
+		//private object currentMiniMapRecord;
+
+
+		private MiniMapRecord mCurrentMiniMapRecord;
+
+        public MiniMapRecord currentMiniMapRecord
+		{
+			get
+			{
+				if (mCurrentMiniMapRecord == null)
+				{
+					int currentMapIndex = Player.mainPlayer.GetMapIndex();
+					mCurrentMiniMapRecord = GameManager.Instance.gameDataCenter.GetMiniMapRecordAt(currentMapIndex);
+				}
+				return mCurrentMiniMapRecord;
+			}
+		}
+
+
+		/// <summary>
+		/// 初始化地图
+		/// </summary>
+		/// 从上一关进入时人物出现在初始位置，从下一关回来时，出现在返回位置
+		public void SetUpMap(MapSetUpFrom from)
 		{
 
 			if(miniMapCamera == null){
@@ -243,17 +285,17 @@ namespace WordJourney
 			// 初始化地图事件
 			InitializeMapEvents ();
 
-			InitializePlayerAndSetCamera(fromLastLevel);       
+			InitializePlayerAndSetCamera(from);       
 
 			//DestroyUnusedMonsterAndNpc ();
 
 			int mapIndex = Player.mainPlayer.GetMapIndex();
 
-			if(!MapEventsRecord.IsSpellFinish(mapIndex) && Player.mainPlayer.currentLevelIndex < CommonData.maxLevel){
+			if(!MapEventsRecord.IsSpellFinish(mapIndex) && Player.mainPlayer.currentLevelIndex < CommonData.maxLevelIndex){
 				GenerateCharacterFragments();
 			}
 
-			if((Player.mainPlayer.currentLevelIndex+1) % 5 == 0 && Player.mainPlayer.currentLevelIndex < 45 && !MapEventsRecord.IsDiaryFinish(mapIndex)){
+			if(HLHGameLevelData.HasDiaryPaper() && !MapEventsRecord.IsDiaryFinish(mapIndex)){
 				GenerateDiaryPaper();
 			}
                      
@@ -373,7 +415,7 @@ namespace WordJourney
 			columns = mapData.columnCount;
 
             // 绘制小地图上每个地图块上的遮罩
-			DrawMiniMapMasks();
+			DrawMiniMapMasks(randomMapIndex);
 
 			mapWalkableInfoArray = new int[columns, rows];
 			mapWalkableEventInfoArray = new int[columns, rows];
@@ -381,17 +423,38 @@ namespace WordJourney
 			valableNpcIds = new List<int> { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
 			InitMapWalkableInfoAndMonsterPosInfo ();
+
+			savePosValid = false;
          
 		}
 
         /// <summary>
 		/// 绘制小地图上每个地图块上的遮罩
         /// </summary>
-		private void DrawMiniMapMasks(){
+		private void DrawMiniMapMasks(int mapIndex){
 
-			for (int i = 0; i < rows;i++){
-				for (int j = 0; j < columns;j++){
+			MiniMapRecord miniMapRecord = GameManager.Instance.gameDataCenter.GetMiniMapRecordAt(mapIndex);
 
+			if(miniMapRecord == null){
+				miniMapRecord = new MiniMapRecord(mapIndex,columns,rows);
+               
+				GameManager.Instance.gameDataCenter.allMiniMapRecords.Add(miniMapRecord);
+
+			} 
+
+			if(miniMapRecord.recordArray == null 
+			   || miniMapRecord.mapWidth != columns 
+			   || miniMapRecord.mapHeight != rows)
+			{
+				miniMapRecord.recordArray = new int[columns*rows];
+			}
+
+
+
+			for (int i = 0; i < rows;i++){            
+
+				for (int j = 0; j < columns;j++){ 
+					
 					Vector3 maskLocalPos = new Vector3(j, i, 0);
 
 					Transform miniMapMask = miniMapMaskPool.GetInstance<Transform>(miniMapMaskModel.gameObject, miniMapMaskContainer);
@@ -407,16 +470,38 @@ namespace WordJourney
 				}
 			}
 
+			for (int i = 0; i < rows; i++)
+            {
+
+                for (int j = 0; j < columns; j++)
+                {
+					Vector3 pos = new Vector3(j, i, 0);
+					int indexInArray = i * columns + j;
+
+					if(miniMapRecord.recordArray[indexInArray] == 1){
+						ClearMiniMapMaskAround(pos,false);
+					}
+                }
+            }
+
 		}
 
         /// <summary>
         /// 清除小地图上一个点附近的阴影遮罩
         /// </summary>
         /// <param name="position">Position.</param>
-		public void ClearMiniMapMaskAround(Vector3 position){
+		public void ClearMiniMapMaskAround(Vector3 position,bool needRecord = true){
 
 			int basePosX = Mathf.RoundToInt(position.x);
-			int basePosY = Mathf.RoundToInt(position.y);
+            int basePosY = Mathf.RoundToInt(position.y);
+                
+
+			if(needRecord){
+				
+				int indexInRecord = basePosY * columns + basePosX;
+				
+				currentMiniMapRecord.recordArray[indexInRecord] = 1;
+            }
 
 			for (int i = basePosX - 3; i < basePosX + 4; i++)
 			{
@@ -430,14 +515,19 @@ namespace WordJourney
 
 					allMiniMapMasks[index].gameObject.SetActive(false);
 
+
+
 				}            
 			}         
 		}
 
 		public void MiniMapCameraLatelySleep(){
 			miniMapCamera.enabled = true;
-			StopCoroutine("MiniMapCameraSleepInOneFrame");
-			StartCoroutine("MiniMapCameraSleepInOneFrame");
+			if(minimapSleepCoroutine != null){
+				StopCoroutine(minimapSleepCoroutine);
+			}
+			minimapSleepCoroutine = MiniMapCameraSleepInOneFrame();
+			StartCoroutine(minimapSleepCoroutine);
 		}
 
 		private IEnumerator MiniMapCameraSleepInOneFrame(){
@@ -527,9 +617,7 @@ namespace WordJourney
 			HLHWord[] words = new HLHWord[mapEventCount];
 
 			string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
-
-			//Debug.Log("tableName" + currentWordsTableName);
-
+         
 			string query = string.Format("SELECT learnedTimes FROM {0} ORDER BY learnedTimes ASC", currentWordsTableName);
 
 			IDataReader reader = mySql.ExecuteQuery(query);
@@ -695,231 +783,335 @@ namespace WordJourney
 				}
 
 			}
-
-
-    //			for (int i = 0; i < words.Length; i++)
-    //			{
-				//Debug.LogFormat("spell:{0},learnedTimes:{1},ungraspTimes:{2}",words[i].spell,words[i].learnedTimes,words[i].ungraspTimes);
-    			//}
-
-    			return words;
-    		}
+    		return words;
+    	}
 
 
 
-			private void InitializeMapEventsOfLayer(int mapIndex, MapAttachedInfoLayer layer, HLHWord[] words, List<int> unusedWordIndexList)
+		private void InitializeMapEventsOfLayer(int mapIndex, MapAttachedInfoLayer layer, HLHWord[] words, List<int> unusedWordIndexList)
+		{
+
+			bool exitOpen = true;
+			Exit exit = null;
+			Exit returnExit = null;
+
+			List<Door> doors = new List<Door>();
+
+			if (!CurrentMapEventsRecord.CheckRecordValid(GameManager.Instance.gameDataCenter.currentMapEventsRecord))
 			{
+				GameManager.Instance.gameDataCenter.currentMapEventsRecord = new CurrentMapEventsRecord(mapIndex, new List<Vector2>());
+			}
 
-				bool exitOpen = true;
-				Exit exit = null;
+			Vector2 puzzleDoorPos_0 = GameManager.Instance.gameDataCenter.currentMapEventsRecord.puzzleDoorPosArray[0];
+			Vector2 puzzleDoorPos_1 = GameManager.Instance.gameDataCenter.currentMapEventsRecord.puzzleDoorPosArray[1];
 
+			for (int i = 0; i < layer.tileDatas.Count; i++)
+			{
+				MapAttachedInfoTile eventTile = layer.tileDatas[i];
+				int posX = Mathf.RoundToInt(eventTile.position.x);
+				int posY = Mathf.RoundToInt(eventTile.position.y);
 
-				for (int i = 0; i < layer.tileDatas.Count; i++)
+				MapEvent mapEvent = null;
+
+				switch (eventTile.type)
 				{
+					case "playerStart":
+						playerStartPos = new Vector2(posX, posY);
+						break;
+					case "playerReturn":
+						playerReturnPos = new Vector2(posX, posY);
+						break;
+					case "exit":
+						mapEvent = mapEventsPool.GetInstanceWithName<Exit>(exitModel.name, exitModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 5;
+						exitPos = new Vector2(posX, posY);
+						allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+						exit = mapEvent as Exit;
+						exit.SetUpExitType(ExitType.NextLevel);
+						int towardsInt = int.Parse(KVPair.GetPropertyStringWithKey("direction", eventTile.properties));
+						MyTowards towards = (MyTowards)towardsInt;
+						Transform miniMapInstance = DrawMiniMapInstance(miniMapExitModel, eventTile.position, miniMapInstanceContainer);
+						mapEvent.miniMapInstance = miniMapInstance;
 
-					MapAttachedInfoTile eventTile = layer.tileDatas[i];
-
-					int posX = Mathf.RoundToInt(eventTile.position.x);
-					int posY = Mathf.RoundToInt(eventTile.position.y);
-
-					MapEvent mapEvent = null;
-
-					switch (eventTile.type)
-					{
-						case "playerStart":
-							playerStartPos = new Vector2(posX, posY);
-							break;
-						case "playerReturn":
-							playerReturnPos = new Vector2(posX, posY);
-							break;
-						case "exit":
-							mapEvent = mapEventsPool.GetInstanceWithName<Exit>(exitModel.name, exitModel.gameObject, mapEventsContainer);
-							mapWalkableInfoArray[posX, posY] = 5;
-							exitPos = new Vector2(posX, posY);
-							allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
-							exit = mapEvent as Exit;
-							exit.SetUpExitType(ExitType.NextLevel);
-    						int towardsInt = int.Parse(KVPair.GetPropertyStringWithKey("direction", eventTile.properties));
-    						MyTowards towards = (MyTowards)towardsInt;                  
-    						Transform miniMapInstance = DrawMiniMapInstance(miniMapExitModel, eventTile.position, miniMapInstanceContainer);
-    						mapEvent.miniMapInstance = miniMapInstance;
-
-						switch(towards){
+						switch (towards)
+						{
 							case MyTowards.Up:
 								miniMapInstance.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
-								//miniMapInstance.localPosition = eventTile.position + new Vector2(0, 0.3f);
 								break;
 							case MyTowards.Down:
 								miniMapInstance.localRotation = Quaternion.Euler(new Vector3(0, 0, 180));
-								//miniMapInstance.localPosition = eventTile.position + new Vector2(0, -0.3f);
 								break;
 							case MyTowards.Left:
 								miniMapInstance.localRotation = Quaternion.Euler(new Vector3(0, 0, 90));
-								//miniMapInstance.localPosition = eventTile.position + new Vector2(-0.3f, 0);
 								break;
 							case MyTowards.Right:
 								miniMapInstance.localRotation = Quaternion.Euler(new Vector3(0, 0, 270));
-								//miniMapInstance.localPosition = eventTile.position + new Vector2(0.3f, 0);
 								break;
 						}
-                                          
-							break;
-						case "return":
-							mapEvent = mapEventsPool.GetInstanceWithName<Exit>(exitModel.name, exitModel.gameObject, mapEventsContainer);
-							mapWalkableInfoArray[posX, posY] = 5;
-							returnExitPos = new Vector2(posX, posY);
-							allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
-							Exit returnExit = mapEvent as Exit;
-							returnExit.SetUpExitType(ExitType.LastLevel);
-    						miniMapInstance = DrawMiniMapInstance(miniMapReturnExitModel, eventTile.position, miniMapInstanceContainer);
-    						mapEvent.miniMapInstance = miniMapInstance;
-                            //miniMapInstance.localPosition = eventTile.position + new Vector2(0, -0.3f);
-							break;
-						case "billboard":
-							mapEvent = mapEventsPool.GetInstanceWithName<Billboard>(billboardModel.name, billboardModel.gameObject, mapEventsContainer);
-							mapWalkableInfoArray[posX, posY] = 0;
-							break;
-						case "item":
-							if (MapEventsRecord.IsMapEventTriggered(mapIndex, eventTile.position))
-							{
-								continue;
-							}
-							mapEvent = mapEventsPool.GetInstanceWithName<PickableItem>(pickableItemModel.name, pickableItemModel.gameObject, mapEventsContainer);
-							mapWalkableInfoArray[posX, posY] = 5;
-    						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
-                            HLHWord[] wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);                  
-                            mapEvent.wordsArray = wordsArray;
-							break;
-						case "monster":
-							mapEvent = GetMonster(eventTile);
-							if (mapEvent != null)
-							{
-								(mapEvent as MapMonster).SetPosTransferSeed(rows);
-								mapWalkableInfoArray[posX, posY] = 5;
-								mapWalkableEventInfoArray[posX, posY] = 1;
-								allMonstersInMap.Add(mapEvent as MapMonster);
-							}
-							break;
-						case "boss":
-							if (MapEventsRecord.IsMapEventTriggered(mapIndex, eventTile.position))
-							{
-								continue;
-							}
-							mapEvent = GetBoss(eventTile);
-							if (mapEvent != null)
-							{
-								(mapEvent as MapMonster).SetPosTransferSeed(rows);
-								mapWalkableInfoArray[posX, posY] = 5;
-								mapWalkableEventInfoArray[posX, posY] = 1;
-								allMonstersInMap.Add(mapEvent as MapMonster);
-								exitOpen = false;
-							}
-							break;
-						case "goldPack":
-							mapEvent = mapEventsPool.GetInstanceWithName<GoldPack>(goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
-							mapWalkableInfoArray[posX, posY] = 0;
-    						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
-                            wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);                  
-                            mapEvent.wordsArray = wordsArray;
-							break;
-						case "bucket":
-							mapEvent = mapEventsPool.GetInstanceWithName<Treasure>(bucketModel.name, bucketModel.gameObject, mapEventsContainer);
-							mapWalkableInfoArray[posX, posY] = 0;
-							(mapEvent as Treasure).treasureType = TreasureType.Bucket;
-    						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
-                            wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);                  
-                            mapEvent.wordsArray = wordsArray;
-							break;
-						case "pot":
-							mapEvent = mapEventsPool.GetInstanceWithName<Treasure>(potModel.name, potModel.gameObject, mapEventsContainer);
-							mapWalkableInfoArray[posX, posY] = 0;
-							(mapEvent as Treasure).treasureType = TreasureType.Pot;
-    						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
-                            wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);                  
-                            mapEvent.wordsArray = wordsArray;
-							break;
-						case "treasure":
-							mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox>(treasureBoxModel.name, treasureBoxModel.gameObject, mapEventsContainer);
-							mapWalkableInfoArray[posX, posY] = 0;
-    						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
-                            wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);                  
-                            mapEvent.wordsArray = wordsArray;
-							break;
-						case "crystal":
-							mapEvent = mapEventsPool.GetInstanceWithName<Crystal>(crystalModel.name, crystalModel.gameObject, mapEventsContainer);
-							mapWalkableInfoArray[posX, posY] = 0;
-    						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
-                            wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);                  
-                            mapEvent.wordsArray = wordsArray;
-							break;
-						case "doorGear":
-							mapEvent = mapEventsPool.GetInstanceWithName<Door>(doorModel.name, doorModel.gameObject, mapEventsContainer);
-							(mapEvent as Door).SetPosTransferSeed(rows);
-							mapWalkableInfoArray[posX, posY] = 5;
-							allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
-						    DrawExtraWallsAroundDoor(eventTile);
-    						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
-                            wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);                  
-                            mapEvent.wordsArray = wordsArray;
-							break;
-						case "keyDoorGear":
-							mapEvent = mapEventsPool.GetInstanceWithName<KeyDoor>(keyDoorModel.name, keyDoorModel.gameObject, mapEventsContainer);
-							(mapEvent as KeyDoor).SetPosTransferSeed(rows);
-							mapWalkableInfoArray[posX, posY] = 5;
-							allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
-						    DrawExtraWallsAroundDoor(eventTile);
-    						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
-                            wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);                  
-                            mapEvent.wordsArray = wordsArray;
-							break;                  
-						case "pressSwitch":
-							mapEvent = mapEventsPool.GetInstanceWithName<PressSwitch>(pressSwitchModel.name, pressSwitchModel.gameObject, mapEventsContainer);
-							(mapEvent as PressSwitch).SetPosTransferSeed(rows);
-							mapWalkableInfoArray[posX, posY] = 0;
-							allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
-    						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
-                            wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);                  
-                            mapEvent.wordsArray = wordsArray;
-							break;
-    					case "thornTrap":
-						case "fireTrap":
-					    case "poisonTrap":
-    						mapEvent = mapEventsPool.GetInstanceWithName<Trap>(trapModel.name, trapModel.gameObject, mapEventsContainer);
-                            mapWalkableInfoArray[posX, posY] = 1;
-                            allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
-                            allTrapsInMap.Add(mapEvent as Trap);
-						    break;
-						case "npc":
-							mapEvent = GetMapNPC(eventTile);
-							if (mapEvent != null)
-							{
-								mapWalkableInfoArray[posX, posY] = 0;
-								mapWalkableEventInfoArray[posX, posY] = 1;
-								allNPCsInMap.Add(mapEvent as MapNPC);
-							}
-							break;
-
-					}
-
-					if (mapEvent != null)
-					{               
-						mapEvent.InitializeWithAttachedInfo(mapIndex, eventTile);
-
-						if (allValidCharacterFragmentPositions.Contains(eventTile.position))
+						break;
+					case "return":
+						mapEvent = mapEventsPool.GetInstanceWithName<Exit>(exitModel.name, exitModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 5;
+						returnExitPos = new Vector2(posX, posY);
+						allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+						returnExit = mapEvent as Exit;
+						returnExit.SetUpExitType(ExitType.LastLevel);
+						miniMapInstance = DrawMiniMapInstance(miniMapReturnExitModel, eventTile.position, miniMapInstanceContainer);
+						mapEvent.miniMapInstance = miniMapInstance;
+						//miniMapInstance.localPosition = eventTile.position + new Vector2(0, -0.3f);
+						break;
+					case "billboard":
+						mapEvent = mapEventsPool.GetInstanceWithName<Billboard>(billboardModel.name, billboardModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 0;
+						break;
+					case "item":
+						if (MapEventsRecord.IsMapEventTriggered(mapIndex, eventTile.position))
 						{
-							allValidCharacterFragmentPositions.Remove(eventTile.position);
+							continue;
+						}
+						mapEvent = mapEventsPool.GetInstanceWithName<PickableItem>(pickableItemModel.name, pickableItemModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 5;
+						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
+						HLHWord[] wordsArray = GetDifferentMonsterWords(words, 3);
+
+						mapEvent.wordsArray = wordsArray;
+
+						break;
+					case "monster":
+						mapEvent = GetMonster(eventTile);
+						if (mapEvent != null)
+						{
+							(mapEvent as MapMonster).SetPosTransferSeed(rows);
+							mapWalkableInfoArray[posX, posY] = 5;
+							mapWalkableEventInfoArray[posX, posY] = 1;
+							allMonstersInMap.Add(mapEvent as MapMonster);
+							wordsArray = GetDifferentMonsterWords(words, 3);
+							mapEvent.wordsArray = wordsArray;
+						}
+						break;
+					case "boss":
+						if (!HLHGameLevelData.IsBossLevel() || MapEventsRecord.IsMapEventTriggered(mapIndex, eventTile.position))
+						{
+							exitOpen = true;
+							continue;
+						}
+						mapEvent = GetBoss(eventTile);
+						if (mapEvent != null)
+						{
+							(mapEvent as MapMonster).SetPosTransferSeed(rows);
+							mapWalkableInfoArray[posX, posY] = 5;
+							mapWalkableEventInfoArray[posX, posY] = 1;
+							allMonstersInMap.Add(mapEvent as MapMonster);
+							exitOpen = false;
+							wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);
+							mapEvent.wordsArray = wordsArray;
+						}
+						break;
+					case "goldPack":
+						if (GameManager.Instance.gameDataCenter.currentMapEventsRecord.IsMapEventTriggered(mapIndex, eventTile.position))
+						{
+							continue;
+						}
+						mapEvent = mapEventsPool.GetInstanceWithName<GoldPack>(goldPackModel.name, goldPackModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 0;
+						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
+						wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);
+						mapEvent.wordsArray = wordsArray;
+						break;
+					case "bucket":
+						if (GameManager.Instance.gameDataCenter.currentMapEventsRecord.IsMapEventTriggered(mapIndex, eventTile.position))
+						{
+							continue;
+						}
+						mapEvent = mapEventsPool.GetInstanceWithName<Treasure>(bucketModel.name, bucketModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 0;
+						(mapEvent as Treasure).treasureType = TreasureType.Bucket;
+						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
+						wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);
+						mapEvent.wordsArray = wordsArray;
+						break;
+					case "pot":
+						if (GameManager.Instance.gameDataCenter.currentMapEventsRecord.IsMapEventTriggered(mapIndex, eventTile.position))
+						{
+							continue;
 						}
 
-					}
+						mapEvent = mapEventsPool.GetInstanceWithName<Treasure>(potModel.name, potModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 0;
+						(mapEvent as Treasure).treasureType = TreasureType.Pot;
+						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
+						wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);
+						mapEvent.wordsArray = wordsArray;
+						break;
+					case "treasure":
+						if (GameManager.Instance.gameDataCenter.currentMapEventsRecord.IsMapEventTriggered(mapIndex, eventTile.position))
+						{
+							continue;
+						}
+						mapEvent = mapEventsPool.GetInstanceWithName<TreasureBox>(treasureBoxModel.name, treasureBoxModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 0;
+						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
+						wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);
+						mapEvent.wordsArray = wordsArray;
+						break;
+					case "crystal":
+						mapEvent = mapEventsPool.GetInstanceWithName<Crystal>(crystalModel.name, crystalModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 0;
+						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
+						wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);
+						mapEvent.wordsArray = wordsArray;
+						break;
+					case "doorGear":
+						mapEvent = mapEventsPool.GetInstanceWithName<Door>(doorModel.name, doorModel.gameObject, mapEventsContainer);
+						(mapEvent as Door).SetPosTransferSeed(rows);
+						mapWalkableInfoArray[posX, posY] = 5;
+						allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+						DrawExtraWallsAroundDoor(eventTile);
+						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
+						wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);
+						mapEvent.wordsArray = wordsArray;
+						bool isWordTrigger = bool.Parse(KVPair.GetPropertyStringWithKey("isWordTrigger", eventTile.properties));
+						bool isOpen = bool.Parse(KVPair.GetPropertyStringWithKey("isOpen", eventTile.properties));
+						if (!isOpen && isWordTrigger)
+						{
+							doors.Add(mapEvent as Door);
+						}
+						break;
+					case "keyDoorGear":
+						mapEvent = mapEventsPool.GetInstanceWithName<KeyDoor>(keyDoorModel.name, keyDoorModel.gameObject, mapEventsContainer);
+						(mapEvent as KeyDoor).SetPosTransferSeed(rows);
+						mapWalkableInfoArray[posX, posY] = 5;
+						allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+						DrawExtraWallsAroundDoor(eventTile);
+						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
+						wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);
+						mapEvent.wordsArray = wordsArray;
+						break;
+					case "pressSwitch":
+						mapEvent = mapEventsPool.GetInstanceWithName<PressSwitch>(pressSwitchModel.name, pressSwitchModel.gameObject, mapEventsContainer);
+						(mapEvent as PressSwitch).SetPosTransferSeed(rows);
+						mapWalkableInfoArray[posX, posY] = 0;
+						allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+						// 取3个不同的单词（首项做为目标单词，其余两项做为混淆单词）
+						wordsArray = GetDifferentWords(words, unusedWordIndexList, 3);
+						mapEvent.wordsArray = wordsArray;
+						break;
+					case "thornTrap":
+					case "fireTrap":
+					case "poisonTrap":
+						mapEvent = mapEventsPool.GetInstanceWithName<Trap>(trapModel.name, trapModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 1;
+						allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
+						allTrapsInMap.Add(mapEvent as Trap);
+						break;
+					case "npc":
+						if (MapEventsRecord.IsMapEventTriggered(mapIndex, eventTile.position))
+						{
+							continue;
+						}
+						mapEvent = GetMapNPC(eventTile);
+						if (mapEvent != null)
+						{
+							mapWalkableInfoArray[posX, posY] = 0;
+							mapWalkableEventInfoArray[posX, posY] = 1;
+							allNPCsInMap.Add(mapEvent as MapNPC);
 
+							miniMapInstance = DrawMiniMapInstance(miniMapNpcModel, eventTile.position, miniMapInstanceContainer);
+
+							mapEvent.miniMapInstance = miniMapInstance;
+						}
+						break;
+					case "wordReview":
+						mapEvent = mapEventsPool.GetInstanceWithName<ReviewPool>(wishPoolModel.name, wishPoolModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 0;
+						break;
+					case "finalExit":
+						mapEvent = mapEventsPool.GetInstanceWithName<FinalExit>(finalExitModel.name, finalExitModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 0;
+						break;
+					case "rebuildStone":
+						mapEvent = mapEventsPool.GetInstanceWithName<RebuildStone>(rebuildStoneModel.name, rebuildStoneModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 0;
+
+						break;
+					case "savePoint":
+						mapEvent = mapEventsPool.GetInstanceWithName<SavePoint>(savePointModel.name, savePointModel.gameObject, mapEventsContainer);
+						mapWalkableInfoArray[posX, posY] = 2;
+						if (MyTool.ApproximatelySameIntPosition2D(Player.mainPlayer.savePosition, eventTile.position))
+						{
+							playerSavePos = eventTile.position;
+							playerSaveTowards = Player.mainPlayer.saveTowards;
+							savePosValid = true;
+						}
+						break;
 				}
 
-				if (exit != null && !exitOpen)
+				if (mapEvent != null)
 				{
-					exit.isOpen = false;
+					mapEvent.InitializeWithAttachedInfo(mapIndex, eventTile);
+
+					if (allValidCharacterFragmentPositions.Contains(eventTile.position))
+					{
+						allValidCharacterFragmentPositions.Remove(eventTile.position);
+					}
+
 				}
 
 			}
+
+
+			if (doors.Count > 0)
+			{
+
+				if (puzzleDoorPos_0 != -Vector2.one && puzzleDoorPos_1 != -Vector2.one)
+				{
+
+					for (int i = 0; i < doors.Count; i++)
+					{
+						Door tempDoor = doors[i];
+						if (MyTool.ApproximatelySameIntPosition2D(tempDoor.transform.position, puzzleDoorPos_0)
+							|| MyTool.ApproximatelySameIntPosition2D(tempDoor.transform.position, puzzleDoorPos_1))
+						{
+							tempDoor.hasPuzzle = true;
+							break;
+						}
+					}
+
+				}
+				else
+				{
+
+					int randomSeed = Random.Range(0, doors.Count);
+					Door door = doors[randomSeed];
+					door.hasPuzzle = true;
+
+					for (int i = 0; i < doors.Count; i++)
+					{
+						Door tempDoor = doors[i];
+						if (MyTool.ApproximatelySameIntPosition2D(tempDoor.transform.position, door.pairDoorPos))
+						{
+							tempDoor.hasPuzzle = true;
+							break;
+						}
+					}
+
+					GameManager.Instance.gameDataCenter.currentMapEventsRecord.puzzleDoorPosArray[0] = door.transform.position;
+					GameManager.Instance.gameDataCenter.currentMapEventsRecord.puzzleDoorPosArray[1] = door.pairDoorPos;
+
+					if (exit != null && HLHGameLevelData.IsBossLevel() && !exitOpen)
+					{
+						exit.SealExit(SealType.Boss);
+					}
+
+					if (returnExit != null)
+					{
+						returnExit.SealExit(SealType.ReturnExit);
+					}
+				}
+
+			}
+		}
+            
 
 		private void DrawExtraWallsAroundDoor(MapAttachedInfoTile eventTile)
 		{
@@ -956,22 +1148,22 @@ namespace WordJourney
 		}
 
 		public void ChangeMapEventStatusAtPosition(Vector3 position)
+		{
+
+			for (int i = 0; i < allTriggeredMapEvents.Count; i++)
 			{
 
-				for (int i = 0; i < allTriggeredMapEvents.Count; i++)
+				TriggeredGear tg = allTriggeredMapEvents[i];
+
+				if (!MyTool.ApproximatelySamePosition2D(tg.transform.position, position))
 				{
-
-					TriggeredGear tg = allTriggeredMapEvents[i];
-
-					if (!MyTool.ApproximatelySamePosition2D(tg.transform.position, position))
-					{
-						continue;
-					}
-
-					tg.ChangeStatus();
-
+					continue;
 				}
+
+				tg.ChangeStatus();
+
 			}
+		}
 
 			public void ChangeAllTrapsStatusInMap()
 			{
@@ -985,6 +1177,37 @@ namespace WordJourney
 
 				}
 			}
+
+
+    		private HLHWord[] GetDifferentMonsterWords(HLHWord[] words,int count){
+			
+			    if (words.Length < count || words.Length == 0)
+                {
+                    return null;
+                }
+
+
+    			HLHWord[] wordsArray = new HLHWord[count];
+
+                // 记录已选过的单词在words数组中的位置信息
+                List<int> tempList = new List<int>();
+
+    			for (int i = 0; i < words.Length;i++){
+    				tempList.Add(i);
+    			}
+
+    			for (int i = 0; i < count;i++){
+    				int randomSeed = Random.Range(0, tempList.Count);
+    				int wordIndex = tempList[randomSeed];
+    				tempList.RemoveAt(randomSeed);
+    				HLHWord word = words[wordIndex];
+    				wordsArray[i] = word;
+    			}
+
+                return wordsArray;
+                
+
+    		}
 
 			/// <summary>
 			/// 选择指定数量的不重复的随机单词
@@ -1126,11 +1349,24 @@ namespace WordJourney
 
 
 			private MapEvent GetMapNPC(MapAttachedInfoTile info)
-			{
+			{         
 
 				int npcId = int.Parse(KVPair.GetPropertyStringWithKey("npcID", info.properties));
 
-				if (npcId == 0 && !HLHGameLevelData.HasWiseMan())
+    			CurrentMapEventsRecord currentMapEventsRecord = GameManager.Instance.gameDataCenter.currentMapEventsRecord;
+
+    			for (int i = 0; i < currentMapEventsRecord.npcPosArray.Length;i++){				
+
+			        Vector2 pos = currentMapEventsRecord.npcPosArray[i];
+
+    				if(MyTool.ApproximatelySameIntPosition2D(pos,info.position)){
+    					HLHNPC npc = currentMapEventsRecord.npcArray[i];
+    					npcId = npc.npcId;
+                  }            
+
+    			}
+       
+			    if (npcId == 0 && !HLHGameLevelData.HasWiseMan())
 				{
 					return null;
 				}
@@ -1173,52 +1409,58 @@ namespace WordJourney
 			}
 
       
-			//public void AddNewPickableItem(Vector3 position, Item attachedItem)
-			//{
-
-			//	Transform pickableItem = Instantiate(pickableItemModel.gameObject, mapEventsContainer).transform;
-
-			//	pickableItem.GetComponent<PickableItem>().InitializeWithItemAndPosition(position, attachedItem);
-
-			//}
-
 
 
 			/// <summary>
 			/// 将人物放置在人物初始点
 			/// </summary>
-			private void InitializePlayerAndSetCamera(bool fromLastLevel)
-			{
-
-
+		    private void InitializePlayerAndSetCamera(MapSetUpFrom from)
+			{         
 				MyTowards towards = MyTowards.Down;
 				Vector3 position = Vector3.zero;
 
-				if (fromLastLevel)
-				{
-					if (Mathf.RoundToInt(playerStartPos.x) == Mathf.RoundToInt(returnExitPos.x))
-					{
-						towards = playerStartPos.y >= returnExitPos.y ? MyTowards.Up : MyTowards.Down;
-					}
-					else
-					{
-						towards = playerStartPos.x >= returnExitPos.x ? MyTowards.Right : MyTowards.Left;
-					}
-					position = playerStartPos;
-				}
-				else
-				{
-					if (Mathf.RoundToInt(playerReturnPos.x) == Mathf.RoundToInt(exitPos.x))
-					{
-						towards = playerReturnPos.y >= exitPos.y ? MyTowards.Up : MyTowards.Down;
-					}
-					else
-					{
-						towards = playerReturnPos.x >= exitPos.x ? MyTowards.Right : MyTowards.Left;
-					}
-					position = playerReturnPos;
-				}
+    			switch(from){
+    				case MapSetUpFrom.LastLevel:
+    					if (Mathf.RoundToInt(playerStartPos.x) == Mathf.RoundToInt(returnExitPos.x))
+                        {
+                            towards = playerStartPos.y >= returnExitPos.y ? MyTowards.Up : MyTowards.Down;
+                        }
+                        else
+                        {
+                            towards = playerStartPos.x >= returnExitPos.x ? MyTowards.Right : MyTowards.Left;
+                        }
+                        position = playerStartPos;
+    					break;
+    				case MapSetUpFrom.NextLevel:
+    					if (Mathf.RoundToInt(playerReturnPos.x) == Mathf.RoundToInt(exitPos.x))
+                        {
+                            towards = playerReturnPos.y >= exitPos.y ? MyTowards.Up : MyTowards.Down;
+                        }
+                        else
+                        {
+                            towards = playerReturnPos.x >= exitPos.x ? MyTowards.Right : MyTowards.Left;
+                        }
+                        position = playerReturnPos;
+    					break;
+    				case MapSetUpFrom.Home:
+    					if(savePosValid){
+    						position = playerSavePos;
+    						towards = playerSaveTowards;
+    					}else{
+    						if (Mathf.RoundToInt(playerStartPos.x) == Mathf.RoundToInt(returnExitPos.x))
+                            {
+                                towards = playerStartPos.y >= returnExitPos.y ? MyTowards.Up : MyTowards.Down;
+                            }
+                            else
+                            {
+                                towards = playerStartPos.x >= returnExitPos.x ? MyTowards.Right : MyTowards.Left;
+                            }
+                            position = playerStartPos;
+    					}
+    					break;
+    			}
 
+         
 
 				Transform player = Player.mainPlayer.transform.Find("BattlePlayer");
 				player.position = position;
@@ -1231,6 +1473,7 @@ namespace WordJourney
 				bp.SetSortingOrder(-Mathf.RoundToInt(position.y));
 
 				bp.isIdle = false;
+			    bp.isInEvent = true;
 
 				switch (towards)
 				{
@@ -1248,6 +1491,9 @@ namespace WordJourney
 						break;
 
 				}
+
+			    bp.isDead = false;
+			    bp.PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
 
 				bp.StopMoveAndWait();
 

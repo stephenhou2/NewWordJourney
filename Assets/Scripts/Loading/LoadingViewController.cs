@@ -28,7 +28,8 @@ namespace WordJourney
 
 		public float alphaChangeCircle = 2f;
 
-		//private LoadingType loadingType;
+		private IEnumerator lampCoroutine;// 灯光闪烁的动画协程
+        
 
 		public void SetUpLoadingView(LoadingType loadingType,CallBack beginLoadCallBack ,CallBack finishLoadingCallBack){
 
@@ -47,14 +48,17 @@ namespace WordJourney
 
 			GetComponent<Canvas>().enabled = true;
 
-			StartCoroutine("LampAnimation");
-
+			lampCoroutine = LampAnimation();
+			StartCoroutine(lampCoroutine);
+            
 			switch(loadingType){
 				case LoadingType.EnterExplore:
-					StartCoroutine("LoadingBarAnimationEnterExplore");           
+					IEnumerator loadingAndEnterExploreCoroutine = LoadingBarAnimationEnterExplore();
+					StartCoroutine(loadingAndEnterExploreCoroutine);           
 					break;
 				case LoadingType.QuitExplore:
-					StartCoroutine("LoadingBarAnimationQuitExplore");         
+					IEnumerator loadingAndQuitExploreCoroutine = LoadingBarAnimationQuitExplore();
+					StartCoroutine(loadingAndQuitExploreCoroutine);         
 					break;
 			}
 
@@ -122,8 +126,9 @@ namespace WordJourney
 
 			yield return new WaitForSecondsRealtime(0.3f);
 
-
-			StopCoroutine("LampAnimation");
+			if(lampCoroutine != null){
+				StopCoroutine(lampCoroutine);
+			}
 
 			if(finishLoadingCallBack != null){
 				finishLoadingCallBack();
@@ -165,8 +170,9 @@ namespace WordJourney
             yield return new WaitForSecondsRealtime(2.0f);
 
          
-
-            StopCoroutine("LampAnimation");
+			if(lampCoroutine != null){
+				StopCoroutine(lampCoroutine);
+			}
 
             if (finishLoadingCallBack != null)
             {

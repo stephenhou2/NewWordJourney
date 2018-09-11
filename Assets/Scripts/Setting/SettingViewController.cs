@@ -74,7 +74,7 @@ namespace WordJourney
 
             settingView.QuitAlertHUD();
 
-            GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
+           
 
             switch (currentSelectWordTypeIndex)
             {
@@ -89,6 +89,10 @@ namespace WordJourney
                     break;
 
             }
+
+			Player.mainPlayer.needChooseDifficulty = false;
+
+			GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
 
 
             if (ExploreManager.Instance != null)

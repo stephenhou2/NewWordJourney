@@ -25,8 +25,16 @@ namespace WordJourney
 		public static string extra_equipmentSlot_id = "com.yougan233.wordjourney.extraEquipmentSlot_Ring";
 		public static string extra_bag_2_id = "com.yougan233.wordjourney.extraBagSlot_2";
 		public static string extra_bag_3_id = "com.yougan233.wordjourney.extraBagSlot_3";
+		// 注：version1.1中背包4取消，已购买的用户改为奖励500金币
 		public static string extra_bag_4_id = "com.yougan233.wordjourney.extraBagSlot_4";
 		public static string new_life_id = "com.yougan233.wordjourney.lifeCard";
+
+		//version1.1新增商品
+		public static string gold_500_id = "com.yougan233.wordjourney.500_gold";//500金币
+		public static string gold_1600_id = "com.yougan233.wordjourney.1600_gold";//1600金币
+		public static string gold_3500_id = "com.yougan233.wordjourney.3500_gold";//3000金币
+		public static string gold_5000_id = "com.yougan233.wordjourney.5000_gold";//5000金币
+
 
 
 		private CallBack purchaseSucceedCallback;
@@ -39,11 +47,16 @@ namespace WordJourney
                  
 			builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
-            builder.AddProduct(PurchaseManager.extra_equipmentSlot_id, ProductType.Consumable);
-            builder.AddProduct(PurchaseManager.extra_bag_2_id, ProductType.Consumable);
-            builder.AddProduct(PurchaseManager.extra_bag_3_id, ProductType.Consumable);
-            builder.AddProduct(PurchaseManager.extra_bag_4_id, ProductType.Consumable);
-            builder.AddProduct(PurchaseManager.new_life_id, ProductType.Consumable);
+			builder.AddProduct(PurchaseManager.extra_equipmentSlot_id, ProductType.NonConsumable);
+			builder.AddProduct(PurchaseManager.extra_bag_2_id, ProductType.NonConsumable);
+			builder.AddProduct(PurchaseManager.extra_bag_3_id, ProductType.NonConsumable);
+			builder.AddProduct(PurchaseManager.extra_bag_4_id, ProductType.NonConsumable);
+			builder.AddProduct(PurchaseManager.new_life_id, ProductType.Consumable);
+
+			builder.AddProduct(PurchaseManager.gold_500_id, ProductType.Consumable);
+			builder.AddProduct(PurchaseManager.gold_1600_id, ProductType.Consumable);
+			builder.AddProduct(PurchaseManager.gold_3500_id, ProductType.Consumable);
+			builder.AddProduct(PurchaseManager.gold_5000_id, ProductType.Consumable);	
 
 		    if (Application.internetReachability != NetworkReachability.NotReachable)
             {

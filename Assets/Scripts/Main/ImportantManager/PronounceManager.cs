@@ -120,36 +120,48 @@ namespace WordJourney
 		/// </summary>
 		/// <returns>The pronunciation when finish downloading.</returns>
 		/// <param name="www">Www.</param>
-		private IEnumerator PlayPronunciationWhenFinishDownloading(WWW www){
+		private IEnumerator PlayPronunciationWhenFinishDownloading(WWW www)
+		{
 
 			float timer = 0;
 
-			while (!www.isDone && timer < wwwTimeOutInterval) {
+			while (!www.isDone && timer < wwwTimeOutInterval)
+			{
 				timer += Time.deltaTime;
 				yield return null;
 			}
 
-			if (www.isDone) {
+			if (www.isDone)
+			{
 
-				AudioClip pronunciationClip = www.GetAudioClip (false);
+				//bool downloadSucceed = true;
 
-				if (pronunciationClip == null) {
-					www.Dispose ();
-				} else {
+				try
+				{
+					AudioClip pronunciationClip = www.GetAudioClip(false, false, AudioType.MPEG);
+                                   
+					if (pronunciationClip == null)
+					{
+						www.Dispose();
+					}
+					else
+					{
 
-					Pronunciation pro = new Pronunciation (wordToPronounce, pronunciationClip);
+						Pronunciation pro = new Pronunciation(wordToPronounce, pronunciationClip);
 
-					pronunciationCache.Add (pro);
+						pronunciationCache.Add(pro);
 
-					GameManager.Instance.soundManager.PlayPronuncitaion (pronunciationClip, false);
+						GameManager.Instance.soundManager.PlayPronuncitaion(pronunciationClip, false);
 
-					www.Dispose ();
-				}
-			} else {
-				// 下载超时时不播放读音,并关闭下载任务
-				www.Dispose ();
-			}
-
+						www.Dispose();
+					}
+				}catch (System.Exception e){
+    				Debug.Log(e);
+    			}
+    		}else {
+                // 下载超时时不播放读音,并关闭下载任务
+                www.Dispose();
+            }
 		}
 
 

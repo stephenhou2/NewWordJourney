@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace WordJourney{
 
-
     using UnityEngine.UI;
 
     public class WordDetailHUD : ZoomHUD

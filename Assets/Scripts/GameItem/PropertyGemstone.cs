@@ -56,7 +56,8 @@ namespace WordJourney
 
 		public GemstoneGrade grade;
 
-		public string finalDescription;
+        // 宝石的属性描述
+		public string propertyDescription;
               
         // 默认构造函数
         // 没有数据的宝石物品id为-1
@@ -195,7 +196,7 @@ namespace WordJourney
 				stringBuilder.Remove(stringBuilder.Length - 1, 1);
 			}
 
-			finalDescription = stringBuilder.ToString();
+			propertyDescription = stringBuilder.ToString();
 
 		}
 

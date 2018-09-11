@@ -31,17 +31,12 @@ namespace WordJourney
 
 		public Text pronounceNotAvalableHintTextInExplain;
 
-		public Text pronounceNotAvalableHintTextInFill;
-
-
-
-
+		public Text pronounceNotAvalableHintTextInFill;      
 		// ************* 选择正确释义的UI部分 *************** //
 
 
 
-		// ************* 选择正确字母的UI部分 *************** //
-
+		// ************* 选择正确字母的UI部分 *************** //      
 		public Transform characterFillPlane;
 
 		public Text questionForCharacterFill;
@@ -58,10 +53,10 @@ namespace WordJourney
 
 		public Sprite lockSprite;
 		public Sprite unlockSprite;
-
-		public Image mask;
-
 		// ************* 选择正确释义的UI部分 *************** //
+
+
+		public Image mask; // 选择完成时的屏幕遮挡，禁止多次屏幕点击 
 
 		// 退出WordHUD时的回调
 		private bool quitWhenClickBackground;
@@ -239,7 +234,8 @@ namespace WordJourney
 				canQuitWhenClickBackground = false;
 				lockStatusIcon.sprite = unlockSprite;
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.lockOffAudioName);
-				StartCoroutine ("DelayWhenCharactersAllFillCorrect");
+				IEnumerator delayCoroutine = DelayWhenCharactersAllFillCorrect();
+				StartCoroutine (delayCoroutine);
 			}
 
 
@@ -315,7 +311,7 @@ namespace WordJourney
 			answerIndex = GetARandomValidIndex ();
 
 			choiceTexts [answerIndex].text = questionWord.explaination;
-			choiceTexts[answerIndex].color = CommonData.regularTextColor;
+			choiceTexts[answerIndex].color = CommonData.darkYellowTextColor;
 
 			for(int i = 1; i < 3; i++){
 
@@ -328,7 +324,7 @@ namespace WordJourney
 //				int index = recordList [randomSeed];
 					
 				choiceTexts [randomIndex].text = word.explaination;
-				choiceTexts [randomIndex].color = CommonData.regularTextColor;
+				choiceTexts [randomIndex].color = CommonData.darkYellowTextColor;
 
 			}
 
@@ -395,6 +391,9 @@ namespace WordJourney
 
             if (chooseCorrect)
             {
+				Player.mainPlayer.learnedWordsCountInCurrentExplore++;
+                Player.mainPlayer.correctWordsCountInCurrentExplore++;
+
 
 				if (questionWord.ungraspTimes == 0 && questionWord.learnedTimes == 0)
                 {
@@ -408,7 +407,8 @@ namespace WordJourney
 				questionWord.learnedTimes++;
 
                 choiceTexts[index].color = Color.green;
-                StartCoroutine("ShowChooseResultForAWhile", true);
+				IEnumerator delayCoroutine = ShowChooseResultForAWhile(true);
+				StartCoroutine(delayCoroutine);
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.correctTintAudioName);
             
                 // 如果当前单词不是从错误列表中抽出来重新背的，那么背诵正确时更新玩家学习单词的总数
@@ -419,6 +419,8 @@ namespace WordJourney
             }
             else
             {
+				Player.mainPlayer.learnedWordsCountInCurrentExplore++;
+
 				// 如果当前单词不是从错误列表中抽出来重新背的，那么背诵正确时更新玩家学习单词的总数和背错单词的总数
                 if (questionWord.ungraspTimes == 0 && questionWord.learnedTimes == 0)
                 {
@@ -436,11 +438,13 @@ namespace WordJourney
 
 
 				questionWord.learnedTimes++;
-				questionWord.ungraspTimes++;
+				questionWord.ungraspTimes = questionWord.learnedTimes;
 
                 choiceTexts[index].color = Color.red;
                 choiceTexts[answerIndex].color = Color.green;
-                StartCoroutine("ShowChooseResultForAWhile", false);
+
+				IEnumerator delayCoroutine = ShowChooseResultForAWhile(false);
+				StartCoroutine(delayCoroutine);
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.wrongTintAudioName);
 				ExploreManager.Instance.RecordWord(questionWord, false);
             

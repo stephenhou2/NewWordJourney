@@ -209,6 +209,9 @@ namespace WordJourney
 				case "FinalChapterCanvas":
 					UIDic[canvasName].GetComponent<FinalChapterViewControlller>().DestroyInstances();
 					break;
+				case "PlayRecordCanvas":
+					UIDic[canvasName].GetComponent<PlayRecordViewController>().DestroyInstances();
+					break;
 
 			}
 

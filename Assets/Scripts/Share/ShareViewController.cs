@@ -110,7 +110,7 @@ namespace WordJourney
 
 			correctPercentageText.text = string.Format("<size=60>{0}</size>  %", correctPercentageMultiply100);
 
-			exploredLevelCountText.text = string.Format("<size=60>{0}</size>  层", Player.mainPlayer.maxUnlockLevelIndex);
+			exploredLevelCountText.text = string.Format("<size=60>{0}</size>  层", Player.mainPlayer.maxUnlockLevelIndex + 1 > 50 ? 50 : Player.mainPlayer.maxUnlockLevelIndex + 1);
 
 			switch (shareType)
 			{
@@ -141,7 +141,8 @@ namespace WordJourney
 
 			shareButton.enabled = false;
 
-			StartCoroutine("TrimScreenShotAndShare");
+			IEnumerator trimAndShareCoroutine = TrimScreenShotAndShare();
+			StartCoroutine(trimAndShareCoroutine);
 		}
 
 

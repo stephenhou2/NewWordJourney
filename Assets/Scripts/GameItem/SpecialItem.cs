@@ -63,8 +63,11 @@ namespace WordJourney
 				case SpecialItemType.TuiMoJuanZhou:
 					if(itemForSpecialOperation is Equipment){
 						Equipment equipment = itemForSpecialOperation as Equipment;
-						PropertyGemstone propertyGemstone = equipment.RemovePropertyGemstone();
-						Player.mainPlayer.AddItem(propertyGemstone);
+						PropertyGemstone[] propertyGemstones = equipment.RemovePropertyGemstons();
+						for (int i = 0; i < propertyGemstones.Length;i++){
+							Player.mainPlayer.AddItem(propertyGemstones[i]);
+						}
+
 						if(refreshItemDetailCallBack != null){
 							refreshItemDetailCallBack(equipment);
 						}  

@@ -91,14 +91,10 @@ namespace WordJourney
     				SetUpOperationButtons (!eqp.equiped, eqp.equiped, false);
 
 					specialOperationContainer.gameObject.SetActive (false);
-
-					//attachedSkillDisplay.gameObject.SetActive(false);
-
-					if(eqp.attachedPropertyGemstone.itemId != -1){
-						attachedGemstoneDisplay.SetUpAttachedSkillDisplay(eqp.attachedPropertyGemstone);
-					}else{
-						attachedGemstoneDisplay.gameObject.SetActive(false);
-					}
+           
+					attachedGemstoneDisplay.SetUpAttachedSkillDisplay(eqp.attachedPropertyGemstones);
+				
+					attachedGemstoneDisplay.gameObject.SetActive(true);
     				break;
     			case ItemType.Consumables:
     				//Consumables cons = item as Consumables;

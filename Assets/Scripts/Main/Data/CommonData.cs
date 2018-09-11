@@ -4,27 +4,6 @@ using UnityEngine;
 
 namespace WordJourney{
 
-	public class LearnTitleQualification
-    {
-        public int totalWordsCount;
-        public float totalCorrectPercentage;
-        public int continuousCorrectWordCount;
-		public string title;
-		public string qualificationNeed;
-		public int rewardGold;
-
-		public LearnTitleQualification(int totalWordsCount, float totalCorrectPercentage, int continuousCorrectWordCount, string title,string qualificationNeed, int rewardGold)
-		{
-			this.totalWordsCount = totalWordsCount;
-			this.totalCorrectPercentage = totalCorrectPercentage;
-			this.continuousCorrectWordCount = continuousCorrectWordCount;
-			this.qualificationNeed = qualificationNeed;
-			this.title = title;
-			this.rewardGold = rewardGold;
-		}
-		
-
-    }
 
 
 	public delegate void CallBack();
@@ -70,17 +49,26 @@ namespace WordJourney{
 			new KVPair("SkillScrollDatas","/Data/GameItems/SkillScrollDatas.json"),
 			new KVPair("SpecialItemDatas","/Data/GameItems/SpecialItemDatas.json"),
 			new KVPair("SpellItemDatas","/Data/GameItems/SpellItemDatas.json"),
+			new KVPair("PlayerData","/Data/PlayerData.json"),
 			new KVPair("OriginalPlayerData","/Data/OriginalPlayerData.json"),
 			new KVPair("Level","/Data/MapData/Level"),
 			new KVPair("NPC","/Data/NPCs"),
+			new KVPair("Monster","/Data/MonstersData.json"),
             new KVPair("ProverbData","/Data/HLHSentenceAndPoemData.json"),
 			new KVPair("MapEventsRecord","/Data/MapEventsRecord.json"),
-			new KVPair("DiaryData","/Data/DiaryData.json")
+			new KVPair("DiaryData","/Data/DiaryData.json"),
+            new KVPair("PuzzleData","/Data/PuzzleDatas.json"),
+			new KVPair("PlayRecordData","/Data/PlayRecords.json"),
+            new KVPair("MiniMapRecordData","/Data/MiniMapRecords.json"),
+			new KVPair("CurrentMapEventsRecordData","/Data/CurrentMapEventsRecord.json")
 		};
 
 
 		public static string assetBundleRootName = "AssetBundle";
-        
+
+		public static string playerDataFilePath = persistDataPath + "/PlayerData.json";
+		public static string oriPlayerDataFilePath = persistDataPath + "/OriginalPlayerData.json";
+		public static string gameSettingsDataFilePath = persistDataPath + "/GameSettings.json";
 		public static string gameLevelDataFilePath = persistDataPath + "/GameLevelDatas.json";
 		public static string equipmentDataFilePath = persistDataPath + "/GameItems/EquipmentDatas.json";
 		public static string consumablesDataFilePath = persistDataPath + "/GameItems/ConsumablesDatas.json";
@@ -89,13 +77,18 @@ namespace WordJourney{
 		public static string specialItemDataFilePath = persistDataPath + "/GameItems/SpecialItemDatas.json";
 		public static string spellItemDataFilePath = persistDataPath + "/GameItems/SpellItemDatas.json";
         public static string proverbsDataFilePath = persistDataPath + "/HLHSentenceAndPoemData.json";
+		public static string puzzlesDataFilePath = persistDataPath + "/PuzzleDatas.json";
 		public static string diaryDataFilePath = persistDataPath + "/DiaryData.json";
 		public static string npcsDataDirPath = persistDataPath + "/NPCs";
+		public static string monstersDataFilePath = persistDataPath + "/MonstersData.json";
 
 		public static string buyRecordFilePath = persistDataPath + "/BuyRecord.json";
 		public static string chatRecordsFilePath = persistDataPath + "/ChatRecords.json";
 		public static string mapEventsRecordFilePath = persistDataPath + "/MapEventsRecord.json";
 
+		public static string playRecordsFilePath = persistDataPath + "/PlayRecords.json";
+		public static string miniMapRecordsFilePath = persistDataPath + "/MiniMapRecords.json";
+		public static string currentMapEventsRecordFilePath = persistDataPath + "/CurrentMapEventsRecord.json";
 
 
 		public static string dataBaseName = "MyGameDB.db";
@@ -125,9 +118,11 @@ namespace WordJourney{
 		public static string npcCanvasBundleName = "npc/canvas";
 		public static string shareCanvasBundleName = "share/canvas";
 		public static string allMonstersBundleName = "explore/monsters";
+		public static string allMonstersUIBundleNAme = "explore/monsters_ui";
 		public static string allMapNpcBundleName = "explore/npcs";
 		public static string allEffectsBundleName = "skills/effects";
 		public static string finalChapterCanvasBundleName = "finalchapter/canvas";
+		public static string playRecordCanvasBundleName = "playrecord/canvas";
 
 		public static string allEquipmentSpritesBundleName = "item/equipment_icons";
 		public static string allConsumablesSpritesBundleName = "item/consumables_icons";
@@ -135,6 +130,7 @@ namespace WordJourney{
 		public static string allSkillScrollSpritesBundleName = "item/skillscroll_icons";
 		public static string allSpecialItemSpritesBundleName = "item/specialitem_icons";
 		public static string allMapSpritesBundleName = "explore/mapicons";
+		public static string allMinimapNpcSpritesBundleName = "explore/minimap_npcs";
 		public static string allCharacterSpritesBundleName = "item/character_icons";
 		public static string allSkillsBundleName = "skills/skills";
 		public static string allSkillSpritesBundleName = "skills/icons";
@@ -293,7 +289,7 @@ namespace WordJourney{
 		public static int singleBagItemVolume = 21;
 		public static int singleWordsRecordsPageVolume = 7;
 
-		public static int maxLevel = 50;
+		public static int maxLevelIndex = 50;
 
 		public static char diamond = (char)6;
 		public static int totalFadeStep = 20;
@@ -309,7 +305,8 @@ namespace WordJourney{
 		public static Color tabBarTitleNormalColor = new Color(166f / 255, 147f / 255, 124f / 255);
 		public static Color tabBarTitleSelectedColor = new Color(243f / 255, 152f / 255, 0);
 
-		public static Color regularTextColor = new Color(222f / 255, 202f / 255, 170f / 255);
+		public static Color darkYellowTextColor = new Color(222f / 255, 202f / 255, 170f / 255);
+		public static Color orangeTextColor = new Color(243f / 255, 152f / 255, 0);
 
 
 		public static string homeBgmName = "Castle";

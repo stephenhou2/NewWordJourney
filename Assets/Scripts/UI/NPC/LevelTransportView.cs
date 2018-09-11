@@ -20,6 +20,8 @@ namespace WordJourney
 
 		public TintHUD tintHUD;
 
+		public Text noValidLevelHint;
+
 		private LevelTransportSelectCallBack levelSelectCallBack;
 		private CallBack quitCallBack;
 
@@ -49,6 +51,14 @@ namespace WordJourney
 
 			bool showUpAndDownButton = false;
 
+			if(npc.transportLevelList == null || npc.transportLevelList.Count == 0){
+				noValidLevelHint.enabled = true;
+				return;
+			}else{
+				noValidLevelHint.enabled = false;
+			}
+
+
 			for (int i = 0; i < npc.transportLevelList.Count; i++)
 			{            
 				int transportLevel = npc.transportLevelList[i];
@@ -75,6 +85,8 @@ namespace WordJourney
 					}
 
 					Player.mainPlayer.totalGold -= transportCost;
+
+					GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
                     
 					if(levelSelectCallBack != null){
 						levelSelectCallBack(transportLevel);

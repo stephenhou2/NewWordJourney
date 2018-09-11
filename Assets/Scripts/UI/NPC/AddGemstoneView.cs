@@ -19,6 +19,8 @@ namespace WordJourney
 
 		public PurchasePendingHUD purchasePendingHUD;
 
+		public BuyGoldView buyGoldView;
+
 		public TintHUD hintHUD;
 
 		//private HLHNPC npc;
@@ -57,7 +59,7 @@ namespace WordJourney
 
 			itemDetail.ClearItemDetails();
 
-			bagItemsDisplay.InitBagItemsDisplayPlane(OnItemInBagClickInSpecialOperation, PurchaseBagCallBack);
+			bagItemsDisplay.InitBagItemsDisplayPlane(OnItemInBagClickInSpecialOperation, PurchaseBagCallBack, buyGoldView.SetUpBuyGoldView);
 
             bagItemsDisplay.SetUpBagItemsPlane(0);
 
@@ -67,6 +69,8 @@ namespace WordJourney
 
 			quitTradeButton.gameObject.SetActive(false);
 			quitAddGemstoneButton.gameObject.SetActive(true);
+
+            
 
 		}
 
@@ -175,7 +179,7 @@ namespace WordJourney
             specialOperationHUD.SetUpHUDWhenRemoveItem(currentSelectedItem);
             itemDetail.ClearItemDetails();
             currentSelectedItem = null;
-
+			bagItemsDisplay.HideAllItemSelectedTintIcon();
         }
 
 		private void RefreshCurrentSelectItemDetailDisplay(Item item)
@@ -185,15 +189,15 @@ namespace WordJourney
 
             if (currentSelectedItem != null)
             {
-				if (currentSelectedItem.itemType == ItemType.Equipment || currentSelectedItem.itemType == ItemType.PropertyGemstone)
-                {
-					itemDetail.SetUpItemDetail(currentSelectedItem, currentSelectedItem.price, ItemOperationType.Remove);
-                }
-                else
-                {
-					itemDetail.SetUpItemDetail(currentSelectedItem, currentSelectedItem.price, ItemOperationType.None);
-                }
-                return;
+				//if (currentSelectedItem.itemType == ItemType.Equipment || currentSelectedItem.itemType == ItemType.PropertyGemstone)
+     //           {
+					//itemDetail.SetUpItemDetail(currentSelectedItem, currentSelectedItem.price, ItemOperationType.Remove);
+                //}
+                //else
+                //{
+				itemDetail.SetUpItemDetail(currentSelectedItem, currentSelectedItem.price, ItemOperationType.Remove);
+                //}
+            //    return;
             }
 
 
@@ -220,6 +224,7 @@ namespace WordJourney
             itemDetail.transform.DOLocalMoveX (itemDetailPlaneStartPos.x, flyDuration);
             specialOperationHUD.transform.DOLocalMoveX (specialOperationHUDStartPos.x, flyDuration);
             bagItemsDisplay.transform.DOLocalMoveY (bagItemsPlaneStartPos.y, flyDuration);
+			specialOperationHUD.equipmentCell.ResetSpecialOperationCell();
             specialOperationHUD.QuitSpecialOperationHUD();
         }
             

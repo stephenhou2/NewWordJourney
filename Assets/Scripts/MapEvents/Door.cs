@@ -28,13 +28,17 @@ namespace WordJourney
 
 		protected int mapIndex;
 
+		public bool hasPuzzle;
 
 
+
+        
 		public void SetPosTransferSeed(int mapHeight){
 			this.mapHeight = mapHeight;
 		}
 
 		public virtual void OpenTheDoor(bool playAudio = true){
+			
 			if(isOpen){
 				return;
 			}
@@ -43,7 +47,10 @@ namespace WordJourney
             {
                 MapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
                 MapEventsRecord.AddEventTriggeredRecord(mapIndex, pairDoorPos);
-            }
+			}else{
+				GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
+				GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, pairDoorPos);
+			}
 
 
 			mapItemRenderer.sprite = null;
@@ -77,6 +84,10 @@ namespace WordJourney
 			this.mapIndex = mapIndex;
 
 			transform.position = attachedInfo.position;
+            
+			//this.hasPuzzle = true;
+			this.hasPuzzle = false;
+
 
 			isWordTrigger = bool.Parse (KVPair.GetPropertyStringWithKey ("isWordTrigger", attachedInfo.properties));
 			isOpen = bool.Parse (KVPair.GetPropertyStringWithKey ("isOpen", attachedInfo.properties));
@@ -86,6 +97,8 @@ namespace WordJourney
 			direction = int.Parse(KVPair.GetPropertyStringWithKey("direction",attachedInfo.properties));
 
 			if(MapEventsRecord.IsMapEventTriggered(mapIndex,attachedInfo.position)){
+				OpenTheDoor(false);
+			}else if(GameManager.Instance.gameDataCenter.currentMapEventsRecord.IsMapEventTriggered(mapIndex,attachedInfo.position)){
 				OpenTheDoor(false);
 			}
 
@@ -148,8 +161,25 @@ namespace WordJourney
                 bp.isInEvent = false;
 			}else{
 
-				ExploreManager.Instance.ShowCharacterFillPlane(word);
+				if(hasPuzzle){
+               
+                    ExploreManager.Instance.MapWalkableEventsStopAction();
 
+					ExploreManager.Instance.ShowPuzzleView(delegate {
+						OpenTheDoor(true);      
+						ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+						ExploreManager.Instance.EnableExploreInteractivity();                  
+                        ExploreManager.Instance.MapWalkableEventsStartAction();
+					},delegate {
+						ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+                        ExploreManager.Instance.EnableExploreInteractivity();
+                        ExploreManager.Instance.MapWalkableEventsStartAction();
+					});
+
+				}else{
+					ExploreManager.Instance.MapWalkableEventsStopAction();
+					ExploreManager.Instance.ShowCharacterFillPlane(word);
+				}            
 			}
 
            
@@ -256,7 +286,10 @@ namespace WordJourney
             {
                 MapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
                 MapEventsRecord.AddEventTriggeredRecord(mapIndex, pairDoorPos);
-            }
+			}else{
+				GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
+				GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, pairDoorPos);
+			}
 
 
             mapItemRenderer.sprite = null;

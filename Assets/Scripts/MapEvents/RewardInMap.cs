@@ -27,6 +27,8 @@ namespace WordJourney
 
 		private InstancePool rewardPool;
 
+		private IEnumerator rewardFloatCoroutine;
+
 		public override void InitializeWithAttachedInfo(int mapIndex, MapAttachedInfoTile attachedInfo)
 		{
 			
@@ -64,7 +66,11 @@ namespace WordJourney
 				}
 
 				bc2d.enabled = true;
-				StartCoroutine("RewardFloat");
+				if(rewardFloatCoroutine != null){
+					StopCoroutine(rewardFloatCoroutine);
+				}
+				rewardFloatCoroutine = RewardFloat();
+				StartCoroutine(rewardFloatCoroutine);
 				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[Mathf.RoundToInt(rewardPosition.x), Mathf.RoundToInt(rewardPosition.y)] = 2;
 			}else{
                 
@@ -162,8 +168,10 @@ namespace WordJourney
 		}
 
 		private IEnumerator FlyToPlayer(CallBack cb,bool needFloat){
-
-			StopCoroutine("RewardFloat");
+			
+			if(rewardFloatCoroutine != null){
+				StopCoroutine(rewardFloatCoroutine);
+			}
 
 			if(needFloat){
 				

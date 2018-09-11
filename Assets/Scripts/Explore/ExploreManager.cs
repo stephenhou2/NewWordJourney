@@ -88,7 +88,7 @@ namespace WordJourney
 		}
 			
 		//Initializes the game for each level.
-		public void SetUpExploreView(bool fromLastLevel)
+		public void SetUpExploreView(MapSetUpFrom from)
 		{
 			exploreSceneReady = false;
 
@@ -100,13 +100,13 @@ namespace WordJourney
 
 			GameManager.Instance.gameDataCenter.InitExplorePrepareGameData();
 
-			bool isFinalChapter = Player.mainPlayer.currentLevelIndex == CommonData.maxLevel;
+			bool isFinalChapter = Player.mainPlayer.currentLevelIndex == CommonData.maxLevelIndex;
 
 			System.GC.Collect();
 
             DisableExploreInteractivity();
 
-            newMapGenerator.SetUpMap(fromLastLevel);
+			newMapGenerator.SetUpMap(from);
 
             Player.mainPlayer.ClearCollectedCharacters();
 
@@ -115,8 +115,8 @@ namespace WordJourney
             battlePlayerCtr.InitBattlePlayer();
 
 			if(isFinalChapter){
-				expUICtr.transitionMask.color = new Color(0, 0, 0, 0.75f);
-				expUICtr.transitionMask.gameObject.SetActive(true);
+				DisableAllInteractivity();
+				expUICtr.HideUpAndBottomUIs();
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.finalChapterCanvasBundleName, "FinalChapterCanvas", delegate
 				{
 					TransformManager.FindTransform("FinalChapterCanvas").GetComponent<FinalChapterViewControlller>().SetUpFinalChapterView();
@@ -212,23 +212,75 @@ namespace WordJourney
 			newMapGenerator.PlayDestinationAnim (targetPos, arrivable);
 
 		}
-			
 
+		public bool CheckWordExistInCorrectRecordList(HLHWord word){
+			bool exist = false;
+			for (int i = 0; i < correctWordList.Count; i++)
+            {
+				HLHWord wordRecord = correctWordList[i];
+				if (word.wordId == wordRecord.wordId)
+                {
+					exist = true;
+                    break;
+                }
+            }
+            return exist;
+		}
+
+		public bool CheckWordExistInWrongRecordList(HLHWord word){
+			bool exist = false;
+            for (int i = 0; i < wrongWordList.Count; i++)
+            {
+                HLHWord wordRecord = wrongWordList[i];
+				if (word.wordId == wordRecord.wordId)
+                {
+					exist = true;
+                    break;
+                }
+            }
+			return exist;
+		}
+        
 		/// <summary>
-		/// 记录选择过的单词
+		/// 记录选择过的单词,这里的记录将用于更新数据库
 		/// </summary>
 		/// <param name="word">Word.</param>
 		/// <param name="isChooseRight">If set to <c>true</c> is choose right.</param>
 		public void RecordWord(HLHWord word,bool isChooseRight){
 
 			if (isChooseRight) {
-				if(!correctWordList.Contains(word)){
-					correctWordList.Add (word);
+				
+				bool update = !CheckWordExistInCorrectRecordList(word);
+
+				if (update)
+                {
+                    correctWordList.Add(word);
                 }
+
+				for (int i = 0; i < wrongWordList.Count;i++){
+					HLHWord wordRecord = wrongWordList[i];
+					if(wordRecord.wordId == word.wordId){
+						wrongWordList.RemoveAt(i);
+					}
+				}
+
 			} else {
-				if(!wrongWordList.Contains(word)){
+				bool update = !CheckWordExistInWrongRecordList(word);
+
+                if (update)
+                {
 					wrongWordList.Add(word);
-				}            
+				}     
+
+				for (int i = 0; i < correctWordList.Count; i++)
+                {
+					HLHWord wordRecord = correctWordList[i];
+                    if (wordRecord.wordId == word.wordId)
+                    {
+						correctWordList.RemoveAt(i);
+                    }
+                }
+
 			}
 
 		}
@@ -246,6 +298,7 @@ namespace WordJourney
 			HLHWord word = null;
             
 			for (int i = 0; i < correctWordList.Count;i++){
+				
 				word = correctWordList[i];
 
 				string familiarStr = word.isFamiliar ? "1" : "0";
@@ -263,6 +316,9 @@ namespace WordJourney
 				string[] values = { word.learnedTimes.ToString(), word.ungraspTimes.ToString(),familiarStr };
                 sql.UpdateValues(currentWordsTableName, colFields, values, conditions, true);
 			}
+
+			correctWordList.Clear();
+			wrongWordList.Clear();
             
 			sql.CloseConnection(CommonData.dataBaseName);    
 
@@ -275,9 +331,15 @@ namespace WordJourney
 		}
 
 		public void ShowCharacterFillPlane(HLHWord word){
-			MapWalkableEventsStopAction ();
+			
 			expUICtr.SetUpWordHUD (word);
 		}
+
+		public void ShowPuzzleView(CallBack answerRightCallBack,CallBack answerWrongCallBack)
+        {
+            MapWalkableEventsStopAction();
+			expUICtr.SetUpPuzzleView(answerRightCallBack,answerWrongCallBack);
+        }
 
 		public void ChooseAnswerInWordHUD(bool isChooseCorret){
 
@@ -468,6 +530,8 @@ namespace WordJourney
 			if (monsterTransArray.Length <= 0) {
 				return;
 			}
+
+			Player.mainPlayer.totaldefeatMonsterCount++;
          
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);
@@ -482,7 +546,6 @@ namespace WordJourney
 
 			Player player = Player.mainPlayer;
             
-
 			FightEndCallBacks ();
 
             battlePlayerCtr.agent.ClearPropertyChangesFromSkill();
@@ -514,9 +577,6 @@ namespace WordJourney
 				if (mm.pairEventPos != -Vector3.one) {
 					newMapGenerator.ChangeMapEventStatusAtPosition (mm.pairEventPos);
 				}
-
-				//int posX = Mathf.RoundToInt(this.transform.position.x);
-                //int posY = Mathf.RoundToInt(this.transform.position.y);
 
 				if(monster.isBoss){
 					MapEventsRecord.AddEventTriggeredRecord(mm.mapIndex, mm.oriPos);
@@ -591,7 +651,10 @@ namespace WordJourney
             GameManager.Instance.soundManager.PlayAudioClip (CommonData.levelUpAudioName);
 		}
 
-		public void BattlePlayerLose(){
+        /// <summary>
+        /// 战斗中失败
+        /// </summary>
+		public void BattlePlayerLose(BattleAgentController enemy){
          
             battlePlayerCtr.agent.ClearPropertyChangesFromSkill();
             battleMonsterCtr.agent.ClearPropertyChangesFromSkill();
@@ -600,17 +663,22 @@ namespace WordJourney
 
 			battlePlayerCtr.SetRoleAnimTimeScale (1.0f);
 			battleMonsterCtr.SetRoleAnimTimeScale (1.0f);
-            
-
+               
 			FightEndCallBacks ();
 
 			battleMonsterCtr.ResetToWaitAfterCurrentRoleAnimEnd ();
 
 			expUICtr.QuitFight ();
-
-			//battlePlayerCtr.isInEvent = false;
-
+         
 			GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+
+			PlayRecord playRecord = new PlayRecord(false, enemy.agent.agentName);
+
+			List<PlayRecord> playRecords = GameManager.Instance.gameDataCenter.allPlayRecords;
+         
+			playRecords.Add(playRecord);
+
+			GameManager.Instance.persistDataManager.SavePlayRecords(playRecords);
          
 			expUICtr.ShowBuyLifeQueryHUD ();
          
@@ -671,26 +739,20 @@ namespace WordJourney
                 player.maxUnlockLevelIndex = player.currentLevelIndex;
             }
 
-			if (player.currentLevelIndex <= CommonData.maxLevel)
-			{
-
-				GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-
-				bool fromLastLevel = true;
-
+			if (player.currentLevelIndex <= CommonData.maxLevelIndex)
+			{            
+            
 				switch (exitType)
 				{
 					case ExitType.LastLevel:
-						fromLastLevel = false;
+						SetUpExploreView(MapSetUpFrom.LastLevel);
 						break;
 					case ExitType.NextLevel:
-						fromLastLevel = true;
+						SetUpExploreView(MapSetUpFrom.NextLevel);
 						break;
 				}
 
-				SetUpExploreView(fromLastLevel);
 
-				expUICtr.hintHUD.SetUpSingleTextTintHUD("数据已保存");
 			}
 		}
 
@@ -705,7 +767,9 @@ namespace WordJourney
 				Player.mainPlayer.maxUnlockLevelIndex = level;
 			}
 
-			GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+			//GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+
+			GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
 
 			EnterLevel(level, ExitType.NextLevel);
 
@@ -714,14 +778,16 @@ namespace WordJourney
 		}
 
 		public void EnterLastLevel(){
-         
-			UpdateWordDataBase();
 
-			int level = Player.mainPlayer.currentLevelIndex - 1;
+			expUICtr.SetUpSingleTextTintHUD("这里好像已经被封印了...");
 
-			GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+			//UpdateWordDataBase();
 
-			EnterLevel(level,ExitType.LastLevel);
+			//int level = Player.mainPlayer.currentLevelIndex - 1;
+
+			//GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+
+			//EnterLevel(level,ExitType.LastLevel);
          
 			//Debug.LogFormat("finish loading time:{0}", Time.time);
 		}
@@ -751,7 +817,7 @@ namespace WordJourney
 
 			TransformManager.FindTransform("ExploreCanvas").GetComponent<ExploreUICotroller>().QuitExplore();
 
-			GameManager.Instance.gameDataCenter.ReleaseDataWithDataTypes (new GameDataCenter.GameDataType[] {   
+			GameManager.Instance.gameDataCenter.ReleaseDataWithDataTypes(new GameDataCenter.GameDataType[] {
 				GameDataCenter.GameDataType.GameLevelDatas,
 				GameDataCenter.GameDataType.EquipmentModels,
 				GameDataCenter.GameDataType.EquipmentSprites,
@@ -773,6 +839,7 @@ namespace WordJourney
 				GameDataCenter.GameDataType.GameLevelDatas,
 				GameDataCenter.GameDataType.MapSprites,
 				GameDataCenter.GameDataType.MapTileAtlas,
+				GameDataCenter.GameDataType.MiniMapNpcSprites,
 				GameDataCenter.GameDataType.Proverbs,
 				GameDataCenter.GameDataType.BagCanvas,
 				GameDataCenter.GameDataType.NPCCanvas,

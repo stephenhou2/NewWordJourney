@@ -20,7 +20,7 @@ namespace WordJourney
 
 			switch(exitType){
 				case ExitType.LastLevel:
-					queryText.text = "是否确认返回上一层?";
+					//queryText.text = "是否确认返回上一层?";
 					break;
 				case ExitType.NextLevel:
 					queryText.text = "是否确认进入下一层?";
@@ -43,7 +43,7 @@ namespace WordJourney
 				switch (exitType)
                 {
                     case ExitType.LastLevel:
-                        ExploreManager.Instance.EnterLastLevel();
+                        //ExploreManager.Instance.EnterLastLevel();
                         break;
                     case ExitType.NextLevel:
                         ExploreManager.Instance.EnterNextLevel();

@@ -4294,7 +4294,7 @@ MonoBehaviour:
   enemyEffectAnimName: state_paralyzed
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: skill1
   skillCoolenTime: 0
@@ -4385,6 +4385,7 @@ MonoBehaviour:
   collisionLayer:
     serializedVersion: 2
     m_Bits: 2048
+  monsterSayContainer: {fileID: 0}
   isReadyToFight: 0
   pairEventPos: {x: 0, y: 0, z: 0}
   oriPos: {x: 0, y: 0}
@@ -4501,6 +4502,10 @@ MonoBehaviour:
   rewardGold: 280
   mAttackInterval: 1.1
   isBoss: 1
+  monsterSays:
+  - 
+  - 
+  - 
 --- !u!114 &114474545125856408
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4566,7 +4571,7 @@ MonoBehaviour:
   enemyEffectAnimName: 
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: attack
   skillCoolenTime: 0
@@ -4655,7 +4660,7 @@ MonoBehaviour:
   enemyEffectAnimName: 
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: skill2
   skillCoolenTime: 0

@@ -10,10 +10,12 @@ namespace WordJourney
 
 		public bool isExausted;
 
-//		public Animator mapItemAnimator;
+		public Transform blinkAnim;
 
 		public Sprite crystalShiningSprite;
 		public Sprite crystalExaustedSprite;
+
+		private int mapIndex;
 
 		//private PropertyType propertyType;
 		//private int gainAmount;
@@ -25,6 +27,12 @@ namespace WordJourney
 			isExausted = true;
             
 			mapItemRenderer.sprite = crystalExaustedSprite;
+
+			blinkAnim.gameObject.SetActive(false);
+
+			tmPro.enabled = false;
+
+			GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
          
 		}
 
@@ -37,12 +45,19 @@ namespace WordJourney
 		{
 			transform.position = attachedInfo.position;
 
+			this.mapIndex = mapIndex;
+
 			isExausted = false;
 			bc2d.enabled = true;
 			mapItemRenderer.sprite = crystalShiningSprite;
 			SetSortingOrder (-(int)transform.position.y);
-
+			blinkAnim.gameObject.SetActive(true);
 			CheckIsWordTriggeredAndShow ();
+
+			if (GameManager.Instance.gameDataCenter.currentMapEventsRecord.IsMapEventTriggered(mapIndex, attachedInfo.position))
+            {
+                CrystalExausted();
+            }
 		}
 
 
@@ -71,13 +86,19 @@ namespace WordJourney
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.crystalAudioName);
                 
 				ExploreManager.Instance.battlePlayerCtr.SetEffectAnim(CommonData.skillPointUpEffectName);
+
+
 			} 
 
 			isExausted = true;
 
+			blinkAnim.gameObject.SetActive(false);
+
 			tmPro.enabled = false;
 
 			mapItemRenderer.sprite = crystalExaustedSprite;
+
+			GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
 		}
 
 

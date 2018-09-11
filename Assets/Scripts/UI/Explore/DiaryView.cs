@@ -35,6 +35,11 @@ namespace WordJourney
 
 		public void QuitDiaryView(){
 
+			if (inZoomingOut)
+            {
+                return;
+            }
+
 			if (zoomCoroutine != null)
             {
                 StopCoroutine(zoomCoroutine);

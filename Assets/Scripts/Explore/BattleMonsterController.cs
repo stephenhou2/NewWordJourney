@@ -86,6 +86,8 @@ namespace WordJourney
 
 
 		}
+
+
 			
 
 		public void SetEnemy(BattlePlayerController bpCtr){
@@ -299,7 +301,8 @@ namespace WordJourney
          
 			exploreManager.expUICtr.QuitFight();
 
-			StartCoroutine ("LatelyDie");
+			IEnumerator latelyDieCoroutine = LatelyDie();
+			StartCoroutine (latelyDieCoroutine);
 		}
 
 		private IEnumerator LatelyDie(){

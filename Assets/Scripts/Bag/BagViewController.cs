@@ -12,13 +12,9 @@ namespace WordJourney
 		public Item currentSelectItem;
 
 		void Awake(){
-
-			//for (int i = 194; i < 215;i++){
-			//	Player.mainPlayer.AddItem(Item.NewItemWith(i, 1));
-			//}
-
-			////Player.mainPlayer.AddItem(Item.NewItemWith(300, 10));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(532, 1));
+                 
+			//Player.mainPlayer.AddItem(Item.NewItemWith(604, 10));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(401, 10));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(534, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(542, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(535, 1));
@@ -290,13 +286,27 @@ namespace WordJourney
 
 							Equipment equipment = itemForSpecialOperation as Equipment;
 
-							if(equipment.attachedPropertyGemstone.itemId == -1)
+							if(equipment.attachedPropertyGemstones.Count == 0)
 							{
 								bagView.hintHUD.SetUpSingleTextTintHUD("当前装备未镶嵌宝石");
 								return;
 							}
 
-							bool bagFull = specialItem.itemCount > 1 && Player.mainPlayer.allItemsInBag.Count >= Player.mainPlayer.maxBagCount * CommonData.singleBagItemVolume;
+							int addItemCount = 0;
+
+							for (int i = 0; i < equipment.attachedPropertyGemstones.Count;i++){
+								PropertyGemstone propertyGemstone = equipment.attachedPropertyGemstones[i];
+								bool gemstoneExist = Player.mainPlayer.CheckItemExistInBag(propertyGemstone);
+								if(!gemstoneExist){
+									addItemCount++;
+								}                         
+							}
+
+							if(specialItem.itemCount == 1){
+								addItemCount--;
+							}
+
+							bool bagFull = Player.mainPlayer.allItemsInBag.Count + addItemCount >= Player.mainPlayer.maxBagCount * CommonData.singleBagItemVolume;
 
 							if(bagFull){
 								bagView.hintHUD.SetUpSingleTextTintHUD("背包已满");

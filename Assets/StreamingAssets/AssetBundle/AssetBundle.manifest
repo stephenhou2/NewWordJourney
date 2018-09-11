@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 2377558273
+CRC: 3293281699
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -72,8 +72,9 @@ AssetBundleManifest:
       Name: guide/canvas
       Dependencies:
         Dependency_0: ui/common
-        Dependency_1: item/character_icons
-        Dependency_2: fonts
+        Dependency_1: explore/scene
+        Dependency_2: item/character_icons
+        Dependency_3: fonts
     Info_18:
       Name: setting/canvas
       Dependencies:
@@ -96,7 +97,8 @@ AssetBundleManifest:
       Dependencies: {}
     Info_24:
       Name: explore/monsters
-      Dependencies: {}
+      Dependencies:
+        Dependency_0: explore/mapicons
     Info_25:
       Name: skills/skills
       Dependencies: {}
@@ -107,8 +109,20 @@ AssetBundleManifest:
       Name: finalchapter/canvas
       Dependencies:
         Dependency_0: ui/common
-        Dependency_1: npc/canvas
+        Dependency_1: bag/canvas
         Dependency_2: fonts
     Info_28:
       Name: fonts
       Dependencies: {}
+    Info_29:
+      Name: explore/monsters_ui
+      Dependencies: {}
+    Info_30:
+      Name: explore/minimap_npcs
+      Dependencies: {}
+    Info_31:
+      Name: playrecord/canvas
+      Dependencies:
+        Dependency_0: ui/common
+        Dependency_1: bag/canvas
+        Dependency_2: fonts

@@ -78,7 +78,8 @@ namespace WordJourney
 		public void AddHurtText(ExploreText exploreText){
 			exploreText.indexInList = hurtTextList.Count;
 			hurtTextList.Add (exploreText);
-			StartCoroutine ("ShowANewHurtText",exploreText);
+			IEnumerator showNewHurtTextCoroutine = ShowANewHurtText(exploreText);
+			StartCoroutine (showNewHurtTextCoroutine);
 		}
 
 		/// <summary>
@@ -88,7 +89,8 @@ namespace WordJourney
 		public void AddTintText(ExploreText exploreText){
 			exploreText.indexInList = tintTextList.Count;
 			tintTextList.Add (exploreText);
-			StartCoroutine ("ShowANewTintText", exploreText);
+			IEnumerator showNewHintTextCoroutine = ShowANewTintText(exploreText);
+			StartCoroutine (showNewHintTextCoroutine);
 		}
 
 		private IEnumerator ShowANewHurtText(ExploreText exploreText){

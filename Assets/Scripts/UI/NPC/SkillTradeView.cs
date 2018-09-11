@@ -28,10 +28,13 @@ namespace WordJourney
         private List<SkillGoodsInTrade> allSkillGoods = new List<SkillGoodsInTrade>();
 		public SimpleSkillDetail[] allLearnedSkillDetails;
 
+		private HLHNPC currentNpc;
 
         private Skill currentSelectedSkill;
 		private List<int> skillGoodsIds;
         private CallBack quitCallBack;
+
+		public SkillLearnQuizView learnQuizView;
 
         public TintHUD tintHUD;
 
@@ -51,26 +54,28 @@ namespace WordJourney
 
         
       
-		public void SetUpSkillLearningView(List<int> skillIds,CallBack quitCallBack){
+		public void SetUpSkillLearningView(HLHNPC npc,CallBack quitCallBack){
+
+			this.currentNpc = npc;
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.merchantAudioName);
 
 			gameObject.SetActive(true);
 
-			this.skillGoodsIds = skillIds;
+			this.skillGoodsIds = npc.npcSkillIds;
 
 			this.quitCallBack = quitCallBack;
 
 			skillGoodsPool.AddChildInstancesToPool(skillGoodsContainer);
          
-			for (int i = 0; i < skillIds.Count; i++)
+			for (int i = 0; i < skillGoodsIds.Count; i++)
             {
 
 				SkillGoodsInTrade skillGoodsDetail = skillGoodsPool.GetInstance<SkillGoodsInTrade>(skillGoodsModel.gameObject, skillGoodsContainer);
 
                 Skill skill = GameManager.Instance.gameDataCenter.allSkills.Find(delegate (Skill obj)
                 {
-					return obj.skillId == skillIds[i];               
+					return obj.skillId == skillGoodsIds[i];               
                 });
 
 				skillGoodsDetail.SetupSkillDetailInNPC(skill,SkillGoodsSelectCallBack);
@@ -91,7 +96,7 @@ namespace WordJourney
                     
 					Skill learnedSkill = Player.mainPlayer.allLearnedSkills[i];
 
-					learnedSkillDetail.SetUpSimpleSkillDetail(learnedSkill, LearndSkillSelectCallBack);
+					learnedSkillDetail.SetUpSimpleSkillDetail(learnedSkill, LearnedSkillSelectCallBack);
 				}else{
 					learnedSkillDetail.ClearSimpleSkillDetail();
 				}
@@ -136,7 +141,7 @@ namespace WordJourney
 		/// 已学习技能的被选中的回调
         /// </summary>
         /// <param name="skill">Skill.</param>
-		private void LearndSkillSelectCallBack(Skill skill){
+		private void LearnedSkillSelectCallBack(Skill skill){
 
 			for (int i = 0; i < Player.mainPlayer.allLearnedSkills.Count; i++)
             {
@@ -184,7 +189,7 @@ namespace WordJourney
 
 					Skill learnedSkill = Player.mainPlayer.allLearnedSkills[i];
 
-					learnedSkillDetail.SetUpSimpleSkillDetail(learnedSkill, LearndSkillSelectCallBack);
+					learnedSkillDetail.SetUpSimpleSkillDetail(learnedSkill, LearnedSkillSelectCallBack);
 
 					//if (learnedSkill.skillId == skill.skillId)
 					//{
@@ -210,10 +215,10 @@ namespace WordJourney
                 return;
             }
 
-            if (Player.mainPlayer.totalGold < currentSelectedSkill.price)
-            {
-                tintHUD.SetUpSingleTextTintHUD("金币不足");
-            }
+            //if (Player.mainPlayer.totalGold < currentSelectedSkill.price)
+            //{
+            //    tintHUD.SetUpSingleTextTintHUD("金币不足");
+            //}
             else if (Player.mainPlayer.CheckSkillFull())
             {
                 tintHUD.SetUpSingleTextTintHUD("只能学习6个技能");
@@ -224,13 +229,23 @@ namespace WordJourney
             }
             else
             {
-                Player.mainPlayer.totalGold -= currentSelectedSkill.price;
+				//            Player.mainPlayer.totalGold -= currentSelectedSkill.price;
 
-				Player.mainPlayer.LearnSkill(currentSelectedSkill.skillId);
-            
-				UpdateLearnedSkillsPlane(currentSelectedSkill);
+				//Player.mainPlayer.LearnSkill(currentSelectedSkill.skillId);
 
-                ExploreManager.Instance.expUICtr.UpdatePlayerGold();
+				//UpdateLearnedSkillsPlane(currentSelectedSkill);
+
+				//ExploreManager.Instance.expUICtr.UpdatePlayerGold();
+                
+				QuitSkilllGoodsTradeViewDisplay();
+
+				learnQuizView.SetUpSkillLearnQuizView(currentNpc,currentSelectedSkill,delegate {
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.merchantAudioName);
+					UpdateLearnedSkillsPlane(currentSelectedSkill);
+					if(quitCallBack != null){
+						quitCallBack();
+					}               
+				});
 
             }
 

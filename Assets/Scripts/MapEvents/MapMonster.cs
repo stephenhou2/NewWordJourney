@@ -7,6 +7,7 @@ namespace WordJourney
 {
 	using System.Data;
 	using DragonBones;
+	using Transform = UnityEngine.Transform;
 
 	public class MapMonster : MapWalkableEvent {
 
@@ -19,8 +20,11 @@ namespace WordJourney
 		private float alertIconOffsetX;
 		private float alertIconOffsetY;
 
-		//private float wordOffsetX;
-		//private float wordOffsetY;
+		private float monsterSayContainerOffsetX;
+		private float monsterSayContainerOffsetY;
+      
+        // 怪物说的话容器
+		public SpriteRenderer monsterSayContainer;
 
 		public bool isReadyToFight;
 
@@ -37,6 +41,10 @@ namespace WordJourney
 
 		private MyTowards boneTowards;
 
+		private IEnumerator delayMoveCoroutine;
+
+		private IEnumerator monsterSayCoroutine;
+
 		public void SetPosTransferSeed(int mapHeight){
 			this.mapHeight = mapHeight;
 		}
@@ -50,18 +58,19 @@ namespace WordJourney
 			alertIconOffsetX = alertTint.transform.localPosition.x;
 			alertIconOffsetY = alertTint.transform.localPosition.y;
 
-			//if(tmPro != null){
-			//	wordOffsetX = tmPro.transform.localPosition.x + 1000;
-   //             wordOffsetY = tmPro.transform.localPosition.y;
-			//}
+			if(monsterSayContainer != null){
+				monsterSayContainerOffsetX = 1000 + monsterSayContainer.transform.localPosition.x;
+                monsterSayContainerOffsetY = monsterSayContainer.transform.localPosition.y;
+			}
 
 		}
 
 		public override void AddToPool (InstancePool pool)
 		{
 			StopMoveImmidiately ();
-			StopCoroutine ("DelayedMovement");
-			//StopCoroutine("WordShowAndHide");
+			if(delayMoveCoroutine != null){
+				StopCoroutine(delayMoveCoroutine);
+			}
 			DisableAllDetect ();
 			isReadyToFight = false;
 			HideAllAlertAreas ();
@@ -93,9 +102,14 @@ namespace WordJourney
 
 			bc2d.enabled = true;
 
-			StopCoroutine ("DelayedMovement");
+			if (delayMoveCoroutine != null)
+            {
+                StopCoroutine(delayMoveCoroutine);
+            }
 
-			StartCoroutine ("DelayedMovement",delay);
+			delayMoveCoroutine = DelayedMovement(delay);
+
+			StartCoroutine (delayMoveCoroutine);
 
 		}
 
@@ -239,6 +253,16 @@ namespace WordJourney
 
 			this.moveDestination = attachedInfo.position;
 
+			if(monsterSayContainer != null){
+				monsterSayContainer.enabled = false;
+			}
+
+			if(tmPro != null){
+				tmPro.text = string.Empty;
+			}
+                     
+
+
 			canMove = bool.Parse(KVPair.GetPropertyStringWithKey("canMove",attachedInfo.properties));
 
 			string pairEventPosString = KVPair.GetPropertyStringWithKey ("pairEventPos", attachedInfo.properties);
@@ -342,7 +366,63 @@ namespace WordJourney
          
 			alertTint.gameObject.SetActive(true);
 
-			StartCoroutine("AlertTintLatelyHide");
+			IEnumerator alertCoroutine = AlertTintLatelyHide();
+			StartCoroutine(alertCoroutine);
+		}
+
+
+
+		private void ShowMonsterSay(string say){
+			switch (boneTowards)
+            {
+                case MyTowards.Right:
+					monsterSayContainer.transform.localPosition = new Vector3(monsterSayContainerOffsetX - 1000, monsterSayContainerOffsetY, 0);
+                    break;
+                case MyTowards.Left:
+					monsterSayContainer.transform.localPosition = new Vector3(-monsterSayContainerOffsetX - 1000, monsterSayContainerOffsetY, 0);
+                    break;
+            }
+
+			monsterSayContainer.enabled = true;
+
+			tmPro.text = say;
+
+			if(monsterSayCoroutine != null){
+				StopCoroutine(monsterSayCoroutine);
+			}
+
+			monsterSayCoroutine = MonsterSayDelayDisappear();
+
+			StartCoroutine(monsterSayCoroutine);
+		}
+
+		private IEnumerator MonsterSayDelayDisappear(){
+			yield return new WaitForSeconds(2.0f);
+			monsterSayContainer.enabled = false;
+			tmPro.text = string.Empty;
+		}
+
+		private string GetMonsterSay(){
+			string say = string.Empty;
+			if (wordsArray != null && wordsArray.Length > 0)
+			{
+
+
+				int randomSeed = Random.Range(0, 2);
+				if (randomSeed == 0)
+				{
+					randomSeed = Random.Range(0, 3);
+					say = (baCtr.agent as Monster).monsterSays[randomSeed];
+				}
+				else
+				{
+					randomSeed = Random.Range(0, 3);
+					HLHWord word = wordsArray[randomSeed];
+					say = word.spell;
+				}
+			}
+
+			return say;
 		}
 
 		private IEnumerator AlertTintLatelyHide(){
@@ -364,8 +444,6 @@ namespace WordJourney
 				return;
 			}
 
-			//Debug.Log("monster is not in triggered");
-
 			bp.escapeFromFight = false;
 			bp.isInEscaping = false;
 
@@ -373,9 +451,8 @@ namespace WordJourney
 				ExploreManager.Instance.PlayerStartFight ();
 			}
 
-			//StartCoroutine ("AlertToFightIconShining");
-
-			StartCoroutine ("ResetPositionAndStartFight", bp);
+			IEnumerator resetPositionAndFightCoroutine = ResetPositionAndStartFight(bp);
+			StartCoroutine (resetPositionAndFightCoroutine);
 
 			isTriggered = true;
 
@@ -640,7 +717,9 @@ namespace WordJourney
 					}
 
 					if (!battlePlayerCtr.isInEscaping && !battlePlayerCtr.isInFight) {
-						ExploreManager.Instance.PlayerAndMonsterStartFight ();  
+						
+						ExploreManager.Instance.PlayerAndMonsterStartFight();
+						               
 					} else {
 						ExploreManager.Instance.MonsterStartFight ();
 
@@ -673,13 +752,25 @@ namespace WordJourney
 			RefreshWalkableInfoWhenStartMove ();
 
 			if (targetPosY == oriPosY) {
-				if (targetPosX >= oriPosX) {
-					baCtr.TowardsRight ();
+				if (targetPosX >= oriPosX)
+				{
+					baCtr.TowardsRight();
 					boneTowards = MyTowards.Right;
-					alertTint.transform.localPosition = new Vector3 (alertIconOffsetX, alertIconOffsetY, 0);
-				} else {
-					baCtr.TowardsLeft ();
+					alertTint.transform.localPosition = new Vector3(alertIconOffsetX, alertIconOffsetY, 0);
+					if (monsterSayContainer != null)
+					{
+						monsterSayContainer.transform.localPosition = new Vector3(monsterSayContainerOffsetX - 1000, monsterSayContainerOffsetY, 0);
+					}
+				}
+				else
+				{
+					baCtr.TowardsLeft();
 					boneTowards = MyTowards.Left;
+					alertTint.transform.localPosition = new Vector3(-alertIconOffsetX, alertIconOffsetY, 0);
+					if (monsterSayContainer != null)
+					{
+						monsterSayContainer.transform.localPosition = new Vector3(-monsterSayContainerOffsetX - 1000, monsterSayContainerOffsetY, 0);                  
+					}
 				}
 			} 
 			else if(targetPosX == oriPosX){
@@ -704,6 +795,14 @@ namespace WordJourney
 			moveCoroutine = MoveTo (position,timeScale,delegate{
 				
 				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName,0,null);
+
+				bool saySomething = Random.Range(0,5) <= 1 && !(baCtr.agent as Monster).isBoss;
+
+				if(saySomething){
+					string say = GetMonsterSay();
+					tmPro.alignment = TMPro.TextAlignmentOptions.Center;
+					ShowMonsterSay(say);
+				}
 
 				if(cb != null){
 					cb();

@@ -2565,6 +2565,7 @@ MonoBehaviour:
   collisionLayer:
     serializedVersion: 2
     m_Bits: 2048
+  monsterSayContainer: {fileID: 0}
   isReadyToFight: 0
   pairEventPos: {x: 0, y: 0, z: 0}
   oriPos: {x: 0, y: 0}
@@ -2621,7 +2622,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentName: "\u7A81\u51FB\u8005"
   agentLevel: 1
-  originalMaxHealth: 1900
+  originalMaxHealth: 1600
   originalMaxMana: 0
   originalAttack: 100
   originalMagicAttack: 0
@@ -2657,8 +2658,8 @@ MonoBehaviour:
   critHurtScalerChangeFromSkill: 0
   healthRecoveryChangeFromSkill: 0
   magicRecoveryChangeFromSkill: 0
-  mMaxHealth: 1900
-  mHealth: 1900
+  mMaxHealth: 1600
+  mHealth: 1600
   mMaxMana: 0
   mMana: 0
   mAttack: 100
@@ -2692,6 +2693,10 @@ MonoBehaviour:
   rewardGold: 80
   mAttackInterval: 1.2
   isBoss: 1
+  monsterSays:
+  - 
+  - 
+  - 
 --- !u!114 &114267617863802020
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2724,7 +2729,7 @@ MonoBehaviour:
   enemyEffectAnimName: state_armor_down
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: skill1
   skillCoolenTime: 0
@@ -2881,7 +2886,7 @@ MonoBehaviour:
   enemyEffectAnimName: se_heiAnZhiWu
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: skill2
   skillCoolenTime: 0
@@ -2960,7 +2965,7 @@ MonoBehaviour:
   enemyEffectAnimName: 
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: attack
   skillCoolenTime: 0

@@ -29,6 +29,7 @@ namespace WordJourney
 
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
+			bp.isInEvent = false;
 			MapEventTriggered(true, bp);
 		}
 
@@ -42,7 +43,7 @@ namespace WordJourney
 		}
 
 		public override void MapEventTriggered(bool isSuccess, BattlePlayerController bp)
-		{
+		{   
 			ExploreManager.Instance.expUICtr.SetUpDiaryView(diary);
 
 			MapEventsRecord.DiaryFinishAtMapIndex(mapIndex);

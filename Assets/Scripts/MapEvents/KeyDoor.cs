@@ -15,17 +15,22 @@ namespace WordJourney
 
 	public class KeyDoor : Door
     {
+        
+		//private KeyType keyType;
 
-		private KeyType keyType;
+		private int unlockDifficulty;
 
-		//private int mapIndex;
-
-		private void ToolSelectCallBack(Item tool)
+		private void UnlockDoorSuccessCallBack()
         {
 			OpenTheDoor();
-			Player.mainPlayer.RemoveItem(tool, 1);
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
         }
+
+		private void UnlockDoorFailCallBack(){
+			// 后面找一个钥匙断掉的音效
+            //GameManager.Instance.soundManager.PlayAudioClip(CommonData.)
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+		}
 
 
 		public override void OpenTheDoor(bool playAudio = true)
@@ -51,7 +56,7 @@ namespace WordJourney
 
             direction = int.Parse(KVPair.GetPropertyStringWithKey("direction", attachedInfo.properties));
 
-            keyType = (KeyType)int.Parse(KVPair.GetPropertyStringWithKey("type", attachedInfo.properties));
+			unlockDifficulty = int.Parse(KVPair.GetPropertyStringWithKey("type", attachedInfo.properties));
 
 			string pairDoorPosString = KVPair.GetPropertyStringWithKey("pairDoorPos", attachedInfo.properties);
 
@@ -87,40 +92,43 @@ namespace WordJourney
                      
         }
 
-
+        
         /// <summary>
         /// 查找人物身上对应的钥匙
         /// </summary>
         /// <returns>The key for key type.</returns>
         /// <param name="keyType">Key type.</param>
-		private List<SpecialItem> FindKeyForKeyType(KeyType keyType){
+		private List<SpecialItem> FindAllKeyOnPlayer(){
 
 			List<SpecialItem> keys = new List<SpecialItem>();
 
 			SpecialItem key = null;
-
-            switch (keyType)
+           
+			key = Player.mainPlayer.allSpecialItemsInBag.Find(delegate (SpecialItem obj)
             {
-				case KeyType.Iron:
-					key = Player.mainPlayer.allSpecialItemsInBag.Find(delegate (SpecialItem obj)
-                    {
-                        return obj.specialItemType == SpecialItemType.TieYaoShi;
-                    });               
-                    break;
-				case KeyType.Brass:
-                    key = Player.mainPlayer.allSpecialItemsInBag.Find(delegate (SpecialItem obj)
-                    {
-                        return obj.specialItemType == SpecialItemType.TongYaoShi;
-                    });               
-                    break;
-				case KeyType.Gold:
-                    key = Player.mainPlayer.allSpecialItemsInBag.Find(delegate (SpecialItem obj)
-                    {
-                        return obj.specialItemType == SpecialItemType.JinYaoShi;
-                    });
-                    break;
-            }
+                return obj.specialItemType == SpecialItemType.TieYaoShi;
+            });  
 
+			if (key != null)
+            {
+                keys.Add(key);
+            }
+        
+            key = Player.mainPlayer.allSpecialItemsInBag.Find(delegate (SpecialItem obj)
+            {
+                return obj.specialItemType == SpecialItemType.TongYaoShi;
+            });     
+
+			if (key != null)
+            {
+                keys.Add(key);
+            }
+    
+            key = Player.mainPlayer.allSpecialItemsInBag.Find(delegate (SpecialItem obj)
+            {
+                return obj.specialItemType == SpecialItemType.JinYaoShi;
+            });
+                       
 			if(key != null){
 				keys.Add(key);
 			}
@@ -143,7 +151,8 @@ namespace WordJourney
             if (key != null)
             {
                 keys.Add(key);
-            }         
+            }   
+
 			return keys;
 		}
 
@@ -156,32 +165,17 @@ namespace WordJourney
                 return;
             }
 
-			List<SpecialItem> keys = FindKeyForKeyType(keyType);
+			List<SpecialItem> keys = FindAllKeyOnPlayer();
 
             if (keys.Count == 0)
             {
-
-                string keyName = string.Empty;
-
-                switch (keyType)
-                {
-                    case KeyType.Iron:
-                        keyName = "铁钥匙";
-                        break;
-                    case KeyType.Brass:
-                        keyName = "铜钥匙";
-                        break;
-                    case KeyType.Gold:
-                        keyName = "金钥匙";
-                        break;
-                }
-                string tint = string.Format("缺少{0}x1", keyName);
+				string tint = "没有可用的钥匙";
                 ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD(tint);
                 bp.isInEvent = false;            
             }
             else
             {
-                ExploreManager.Instance.expUICtr.SetUpToolSelectView(keys, ToolSelectCallBack);
+				ExploreManager.Instance.expUICtr.SetUpUnlockDoorView(keys, unlockDifficulty, UnlockDoorSuccessCallBack,UnlockDoorFailCallBack);
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.keyAudioName);
             }
         }

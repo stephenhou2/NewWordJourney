@@ -23,7 +23,7 @@ namespace WordJourney
 
 		public Button learnButton;
 
-		public Button forgetButton;
+		public Text learnedHint;
 
 		public TintHUD tintHUD;
 
@@ -61,7 +61,7 @@ namespace WordJourney
 
          
 			learnButton.gameObject.SetActive(!skillHasLearned);
-			forgetButton.gameObject.SetActive(skillHasLearned);
+			learnedHint.enabled = skillHasLearned;
                      
 
 		}
@@ -86,7 +86,7 @@ namespace WordJourney
 
 			learnButton.gameObject.SetActive(false);
 
-			forgetButton.gameObject.SetActive(false);
+			learnedHint.enabled = false;
 
 		}
 

@@ -139,6 +139,84 @@ namespace WordJourney
 		}
        
     }
+
+
+    // 本层地图事件触发记录
+	[System.Serializable]
+	public class CurrentMapEventsRecord{
+
+		// 地图序号
+        public int mapIndex;
+
+        // 已触发过的事件位置记录表
+        public List<Vector2> triggeredEventPositions = new List<Vector2>();
+
+		public Vector2[] npcPosArray;
+
+		public HLHNPC[] npcArray;
+
+		public Vector2[] puzzleDoorPosArray;
+        
+		public static bool CheckRecordValid(CurrentMapEventsRecord record){
+			return record != null && record.mapIndex >= 0 && record.mapIndex <= CommonData.maxLevelIndex && record.triggeredEventPositions != null 
+				   && record.npcPosArray != null &&record.npcPosArray.Length > 0
+				   && record.npcArray != null && record.npcArray.Length > 0 
+				   && record.puzzleDoorPosArray == null && record.puzzleDoorPosArray.Length > 0;
+		}
+        
+		public void Reset(){
+			mapIndex = -1;
+		}
+
+
+		public CurrentMapEventsRecord(int mapIndex, List<Vector2> triggeredEventPositions)
+        {
+            this.mapIndex = mapIndex;
+            this.triggeredEventPositions = triggeredEventPositions;
+			npcPosArray = new Vector2[] { -Vector2.one, -Vector2.one, -Vector2.one, -Vector2.one};
+			npcArray = new HLHNPC[4];
+			puzzleDoorPosArray = new Vector2[] { -Vector2.one, -Vector2.one };
+        }
+
+
+		/// <summary>
+        /// 判断制定地图上的指定位置上的事件是否已经触发过
+        /// </summary>
+        /// <returns><c>true</c>, if map event triggered was ised, <c>false</c> otherwise.</returns>
+        /// <param name="mapIndex">Map index.</param>
+        /// <param name="eventPos">Event position.</param>
+        public bool IsMapEventTriggered(int mapIndex, Vector2 eventPos)
+        {
+
+            bool eventTriggered = false;
+
+			for (int i = 0; i <GameManager.Instance.gameDataCenter.currentMapEventsRecord.triggeredEventPositions.Count; i++)
+            {
+
+				Vector2 triggeredPos = GameManager.Instance.gameDataCenter.currentMapEventsRecord.triggeredEventPositions[i];
+
+                if (MyTool.ApproximatelySameIntPosition2D(eventPos, triggeredPos))
+                {
+                    eventTriggered = true;
+                    break;
+                }
+
+            }   
+
+            return eventTriggered;         
+        }
+
+		public void AddEventTriggeredRecord(int mapIndex, Vector2 eventPos)
+        {     
+			if (!GameManager.Instance.gameDataCenter.currentMapEventsRecord.triggeredEventPositions.Contains(eventPos))
+            {
+				GameManager.Instance.gameDataCenter.currentMapEventsRecord.triggeredEventPositions.Add(eventPos);
+            }         
+        }      
+
+	}
+
+
 }
 
 

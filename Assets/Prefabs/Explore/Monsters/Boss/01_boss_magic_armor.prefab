@@ -2009,7 +2009,7 @@ MonoBehaviour:
   enemyEffectAnimName: 
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: attack
   skillCoolenTime: 0
@@ -2117,11 +2117,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentName: "\u9B54\u6CD5\u62A4\u536B"
   agentLevel: 1
-  originalMaxHealth: 1000
+  originalMaxHealth: 750
   originalMaxMana: 0
   originalAttack: 50
   originalMagicAttack: 30
-  originalArmor: 80
+  originalArmor: 60
   originalMagicResist: 50
   originalArmorDecrease: 20
   originalMagicResistDecrease: 0
@@ -2153,13 +2153,13 @@ MonoBehaviour:
   critHurtScalerChangeFromSkill: 0
   healthRecoveryChangeFromSkill: 0
   magicRecoveryChangeFromSkill: 0
-  mMaxHealth: 1000
-  mHealth: 1000
+  mMaxHealth: 750
+  mHealth: 750
   mMaxMana: 0
   mMana: 0
   mAttack: 50
   mMagicAttack: 30
-  mArmor: 80
+  mArmor: 60
   mMagicResist: 50
   mArmorDecrease: 20
   mMagicResistDecrease: 0
@@ -2188,6 +2188,10 @@ MonoBehaviour:
   rewardGold: 50
   mAttackInterval: 1.3
   isBoss: 1
+  monsterSays:
+  - 
+  - 
+  - 
 --- !u!114 &114341913916371778
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2233,7 +2237,7 @@ MonoBehaviour:
   enemyEffectAnimName: 
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: skill2
   skillCoolenTime: 0
@@ -2336,6 +2340,7 @@ MonoBehaviour:
   collisionLayer:
     serializedVersion: 2
     m_Bits: 2048
+  monsterSayContainer: {fileID: 0}
   isReadyToFight: 0
   pairEventPos: {x: 0, y: 0, z: 0}
   oriPos: {x: 0, y: 0}
@@ -2361,7 +2366,7 @@ MonoBehaviour:
   enemyEffectAnimName: 
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: skill1
   skillCoolenTime: 0

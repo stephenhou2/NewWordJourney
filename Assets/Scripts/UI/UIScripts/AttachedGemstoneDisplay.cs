@@ -8,22 +8,46 @@ namespace WordJourney
 	using UnityEngine.UI;
 
 	public class AttachedGemstoneDisplay : MonoBehaviour {
-      
-		public Image gemstoneIcon;
-		public Text attachedGemstoneDescription;
+        
+		public Image[] attachedGemstoneIcons;
+		public Text[] attachedGemstoneDescriptions;
 
 
-		public void SetUpAttachedSkillDisplay(PropertyGemstone propertyGemstone){
+		public void SetUpAttachedSkillDisplay(List<PropertyGemstone> propertyGemstones){
+
+
+			for (int i = 0; i < attachedGemstoneIcons.Length;i++){
+				Image attachedGemstoneIcon = attachedGemstoneIcons[i];
+				if (i < propertyGemstones.Count)
+                {
+                    PropertyGemstone propertyGemstone = propertyGemstones[i];
+					Sprite s = GameManager.Instance.gameDataCenter.GetGameItemSprite(propertyGemstone);
+					if(s != null){
+						attachedGemstoneIcon.sprite = s;
+						attachedGemstoneIcon.enabled = true;
+					}else{
+						attachedGemstoneIcon.enabled = false;
+					}
+                }
+                else
+                {
+					attachedGemstoneIcon.enabled = false;
+                }
+			}
+
+			for (int i = 0; i < attachedGemstoneDescriptions.Length;i++){
+
+				Text gemstoneDesc = attachedGemstoneDescriptions[i];
+
+				if(i<propertyGemstones.Count){
+					PropertyGemstone propertyGemstone = propertyGemstones[i];
+					gemstoneDesc.text = propertyGemstone.propertyDescription;
+				}else{
+					gemstoneDesc.text = string.Empty;
+				}
+
+			}
          
-			Sprite s = GameManager.Instance.gameDataCenter.allPropertyGemstoneSprites.Find (delegate(Sprite obj) {
-				return obj.name == propertyGemstone.spriteName;
-			});
-
-			gemstoneIcon.sprite = s;
-			gemstoneIcon.enabled = s != null;
-
-			attachedGemstoneDescription.text = propertyGemstone.finalDescription;
-
 			this.gameObject.SetActive(true);
 		}
 

@@ -12,6 +12,8 @@ namespace WordJourney
 
 		public int goldAmount;
 
+		private int mapIndex;
+
 		//public Animator mapItemAnimator;
 
 
@@ -24,6 +26,8 @@ namespace WordJourney
 		public override void InitializeWithAttachedInfo(int mapIndex, MapAttachedInfoTile attachedInfo)
 		{
 			transform.position = attachedInfo.position;
+
+			this.mapIndex = mapIndex;
 
 			Count goldAmountRange = GameManager.Instance.gameDataCenter.gameLevelDatas[Player.mainPlayer.currentLevelIndex].goldAmountRange;
 
@@ -79,6 +83,7 @@ namespace WordJourney
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.goldAudioName);
 				ExploreManager.Instance.UpdatePlayerStatusPlane();
 				ExploreManager.Instance.expUICtr.SetUpGoldGainTintHUD(goldGain);
+				GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
 			}
 
 

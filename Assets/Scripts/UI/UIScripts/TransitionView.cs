@@ -27,7 +27,7 @@ namespace WordJourney
 			"你的故事将从这里开始…"
 		};
 		private string[] deadStrings = {
-			"渐渐得人们忘记了你的名字",
+			"渐渐的人们忘记了你的名字",
 			"只是流传着曾经有一个勇者来过这里"
 		};
 
@@ -269,11 +269,15 @@ namespace WordJourney
                     break;
 				case TransitionType.None:
                 case TransitionType.Death:
-                case TransitionType.End:
-                    //GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
+
+					break;
+                case TransitionType.End: 
+					PlayRecord playRecord = new PlayRecord(true, "");
+                    List<PlayRecord> playRecords = GameManager.Instance.gameDataCenter.allPlayRecords;
+                    playRecords.Add(playRecord);
+                    GameManager.Instance.persistDataManager.SavePlayRecords(playRecords);
                     break;
 				case TransitionType.ResetGameHint:
-					//GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
 					break;
             }
 		

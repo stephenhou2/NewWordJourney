@@ -24,7 +24,7 @@ namespace WordJourney
 
 		public Transform queryShareHUD;
 
-
+		private IEnumerator pendingCoroutine;
 
 		public void SetUpPurchasePendingHUD(string productId, CallBack purchaseFinishCallBack)
 		{
@@ -42,8 +42,9 @@ namespace WordJourney
 
 			pendingTint.gameObject.SetActive(true);
 			queryShareHUD.gameObject.SetActive(false);
-      
-			StartCoroutine("PendingTintRotate");
+
+			pendingCoroutine = PendingTintRotate();
+			StartCoroutine(pendingCoroutine);
          
 			GameManager.Instance.purchaseManager.PurchaseProduct(productId, OnPurchaseSucceed, OnPurchaseFail);
          
@@ -188,8 +189,11 @@ namespace WordJourney
 
 			Time.timeScale = 1f;
 
-#if UNITY_IPHONE || UNITY_EDITOR         
-			StopCoroutine ("PendingTintRotate");
+#if UNITY_IPHONE || UNITY_EDITOR    
+			if(pendingCoroutine != null){
+				StopCoroutine(pendingCoroutine);
+			}
+
 #endif         
 			gameObject.SetActive (false);
 

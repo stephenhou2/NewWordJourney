@@ -56,6 +56,11 @@ namespace WordJourney
 
 		public void QuitCommentRecommendHUD(){
 
+			if (inZoomingOut)
+            {
+                return;
+            }
+
 			if(zoomCoroutine != null){
 				StopCoroutine(zoomCoroutine);
 			}

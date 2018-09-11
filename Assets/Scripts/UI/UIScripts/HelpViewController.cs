@@ -7,7 +7,6 @@ namespace WordJourney
     {
 		public Text helpText_1;
 		public Text helpText_2;
-		public Text helpText_3;
       
 		public Text pageText;
 
@@ -34,7 +33,7 @@ namespace WordJourney
 
 		public void OnNextPageButtonClick(){
 
-			if(currentHelpPage >= 2){
+			if(currentHelpPage >= 1){
 				return;
 			}
 
@@ -60,29 +59,27 @@ namespace WordJourney
        
 		public void UpdateHelpDisplay(){
 			
-			pageText.text = string.Format("{0}/3", currentHelpPage + 1);
+			pageText.text = string.Format("{0}/2", currentHelpPage + 1);
 
 			switch(currentHelpPage){
 				case 0:
 					helpText_1.enabled = true;
 					helpText_2.enabled = false;
-					helpText_3.enabled = false;
 					break;
 				case 1:
 					helpText_1.enabled = false;
 					helpText_2.enabled = true;
-                    helpText_3.enabled = false;
-					break;
-				case 2:
-					helpText_1.enabled = false;
-                    helpText_2.enabled = false;
-					helpText_3.enabled = true;
 					break;
 			}
 		}
 
 
 		public void QuitHelpHUD(){
+
+			if (inZoomingOut)
+            {
+                return;
+            }
 
 			if(zoomCoroutine != null){
 				StopCoroutine(zoomCoroutine);

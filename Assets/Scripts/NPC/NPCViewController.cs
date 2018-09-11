@@ -154,29 +154,31 @@ namespace WordJourney
 		}
 
 
-        /// <summary>
-        /// 显示npc主界面
-        /// </summary>
-		private void ShowMainNpcView(){
-
+		/// <summary>
+		/// 显示npc主界面
+		/// </summary>
+		private void ShowMainNpcView()
+		{
 			mainNPCView.gameObject.SetActive(true);
+			int randomSeed = Random.Range(0, npc.regularGreetings.Count);
+
+			HLHDialog greeting = npc.regularGreetings[randomSeed];
+
+			dialogText.text = greeting.dialogContent;
 		}
-
-
-		//public void SetUpPropertyPromotionView(){
-
-		//	propertyPromotionView.SetUpPropertyPromotionView(npc, ShowMainNpcView);
-
-		//	mainNPCView.gameObject.SetActive(false);
-		//}
-      
+        
 			
 		public void SetupSkillLearningPlane(){
 
-			mainNPCView.gameObject.SetActive(false);
-         
-			skillsTradeView.SetUpSkillLearningView(npc.npcSkillIds,ShowMainNpcView);
+			if(!npc.hasTeachedASkill){
+				
+				mainNPCView.gameObject.SetActive(false);
 
+                skillsTradeView.SetUpSkillLearningView(npc, ShowMainNpcView);
+			}else{            
+				dialogText.text = "我现在有点累了，暂时无法再教你任何技能，你可以先去其他地方探索一下。";            
+			}
+         
 		}
 
 
@@ -200,12 +202,21 @@ namespace WordJourney
               
 
 		public void QuitNPCPlane(){
-
+                 
 			ExploreManager.Instance.expUICtr.HideTopBarMask();
 
 			if (npc == null) {
 				return;
 			}
+
+			for (int i = 0; i < GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcArray.Length;i++){
+				HLHNPC tempNpc = GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcArray[i];
+				if(tempNpc != null && tempNpc.npcId == npc.npcId){
+					GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcArray[i] = npc;
+					break;
+				}
+			}
+
          
 			dialogText.text = string.Empty;
 

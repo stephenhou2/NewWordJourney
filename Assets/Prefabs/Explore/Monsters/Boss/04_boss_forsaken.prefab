@@ -2093,7 +2093,7 @@ MonoBehaviour:
   enemyEffectAnimName: 
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: attack
   skillCoolenTime: 0
@@ -2182,7 +2182,7 @@ MonoBehaviour:
   enemyEffectAnimName: 
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: skill2
   skillCoolenTime: 0
@@ -2243,7 +2243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentName: "\u653E\u9010\u8005"
   agentLevel: 1
-  originalMaxHealth: 2500
+  originalMaxHealth: 2900
   originalMaxMana: 0
   originalAttack: 240
   originalMagicAttack: 0
@@ -2279,8 +2279,8 @@ MonoBehaviour:
   critHurtScalerChangeFromSkill: 0
   healthRecoveryChangeFromSkill: 0
   magicRecoveryChangeFromSkill: 0
-  mMaxHealth: 2500
-  mHealth: 2500
+  mMaxHealth: 2900
+  mHealth: 2900
   mMaxMana: 0
   mMana: 0
   mAttack: 240
@@ -2314,6 +2314,10 @@ MonoBehaviour:
   rewardGold: 160
   mAttackInterval: 1.3
   isBoss: 1
+  monsterSays:
+  - 
+  - 
+  - 
 --- !u!114 &114580389605221850
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2334,7 +2338,7 @@ MonoBehaviour:
   enemyEffectAnimName: se_xueBao
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: skill1
   skillCoolenTime: 0
@@ -2465,6 +2469,7 @@ MonoBehaviour:
   collisionLayer:
     serializedVersion: 2
     m_Bits: 2048
+  monsterSayContainer: {fileID: 0}
   isReadyToFight: 0
   pairEventPos: {x: 0, y: 0, z: 0}
   oriPos: {x: 0, y: 0}

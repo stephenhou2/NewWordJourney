@@ -11,11 +11,22 @@ namespace WordJourney
 
 		public Text countDownText;
 
+		public Transform warningContainer;
+
 		private CallBack confirmBuyCallBack;
 
 		private CallBack cancelBuyCallBack;
 
+        // 是否在取消购买的警告界面
+		private bool isInCancelWarning;
+
+		private IEnumerator queryCoroutine;// 询问购买的协程
+
 		public void SetUpBuyLifeQueryView(CallBack confirmBuyCallBack,CallBack cancelBuyCallBack){
+
+			warningContainer.gameObject.SetActive(false);
+
+			isInCancelWarning = false;
 
 			this.confirmBuyCallBack = confirmBuyCallBack;
 
@@ -25,21 +36,49 @@ namespace WordJourney
 
 			gameObject.SetActive (true);
 
-			StartCoroutine ("QueryCountDown");
+			if(queryCoroutine != null){
+				StopCoroutine(queryCoroutine);
+			}
+
+			queryCoroutine = QueryCountDown();
+			StartCoroutine (queryCoroutine);
 
 		}
 
-		public void ConfirmBuyLife(){
-			confirmBuyCallBack ();
+		public void OnConfirmBuyLifeButtonClick()
+		{
+			if(confirmBuyCallBack != null){
+				confirmBuyCallBack();
+			}
+		}
+        
+		public void OnCancelBuyLifeButtonClick(){
+			Time.timeScale = 0;
+			warningContainer.gameObject.SetActive(true);
+		}
+
+		public void OnConfirmButtonInWarningClick(){
+			Time.timeScale = 1f;
+			warningContainer.gameObject.SetActive(false);
+			CancelBuyLife();
+		}
+
+		public void OnCancelButtonInWarningClick(){
+			Time.timeScale = 1f;
+			warningContainer.gameObject.SetActive(false);
 		}
 
 		public void CancelBuyLife(){
+			isInCancelWarning = true;
 			cancelBuyCallBack ();
 			QuitBuyLifeView ();
 		}
 
 		public void QuitBuyLifeView(){
-			StopCoroutine("QueryCountDown");
+			if (queryCoroutine != null)
+            {
+                StopCoroutine(queryCoroutine);
+            }
 			gameObject.SetActive (false);
 		}
 

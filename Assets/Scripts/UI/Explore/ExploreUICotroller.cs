@@ -7,7 +7,19 @@ using UnityEngine;
 namespace WordJourney
 {
 	using UnityEngine.UI;
-	using DG.Tweening;
+
+	public class MonsterDataWithUIDipslay
+	{
+		public MonsterData monsterData;
+		public Transform monsterUI;
+		public MonsterUIInfo monsterUIInfo;
+		public MonsterDataWithUIDipslay(MonsterData monsterData, Transform monsterUI,MonsterUIInfo monsterUIInfo)
+		{
+			this.monsterData = monsterData;
+			this.monsterUI = monsterUI;
+			this.monsterUIInfo = monsterUIInfo;
+		}
+	}
 
 	public class ExploreUICotroller : MonoBehaviour {
 
@@ -17,6 +29,7 @@ namespace WordJourney
 		public WordDetailHUD wordDetailHUD;
         public BillboardHUD billboardHUD;
 
+		public Transform wordRecordContainer;
         public Text wordRecordText;
 		public Transform exploreMask;// 小遮罩，不遮盖底部消耗品栏和背包按钮
 		public Transform topBarMask;// 探索顶部栏地遮罩，只有进入npc界面时开启
@@ -35,6 +48,10 @@ namespace WordJourney
 		public BattlePlayerUIController bpUICtr;
 		public BattleMonsterUIController bmUICtr;
 
+		public Transform topBarContainer;
+		public Transform bottomBarContainer;
+
+		public Transform miniMapContainer;
 		public RawImage miniMap;
         private int miniMapWidth;
         private int miniMapHeight;
@@ -44,8 +61,7 @@ namespace WordJourney
 		public Transform bigMapView;
 		public RawImage bigMap;
 
-
-
+      
 		public TransitionView transitionView;
 
 		public SimpleItemDetail simpleItemDetail;
@@ -59,13 +75,13 @@ namespace WordJourney
 
 		public Transform fullMask;// 覆盖整个屏幕的遮罩，禁止一切点击响应
 
-		public ToolSelectView toolSelectView;// 工具选择界面
+		public KeyDoorOperatorView keyDoorOperatorView;// 开锁界面
 
 		public AchievementView achievementView;// 成就达成展示界面
 
 		public DiaryView diaryView;// 日记显示界面
 
-		public HelpViewController helpHUD;//帮助界面
+		//public HelpViewController helpHUD;//帮助界面
 
 		public PurchasePendingHUD purchaseHUD;
 
@@ -73,6 +89,22 @@ namespace WordJourney
 
 		// 记录本关所有背过的单词
         public List<HLHWord> wordRecords = new List<HLHWord>();
+
+		private IEnumerator enterLevelMaskShowAndHideCoroutine;
+		private IEnumerator myTransitionMaskHideCoroutine;
+
+		public MonstersDisplayView monstersDisplayView;
+
+		public InstancePool monsterUIPool;
+            
+		private List<MonsterDataWithUIDipslay> monstersInfoWithDisplayUI = new List<MonsterDataWithUIDipslay>();
+
+		public WordRecordQuizView wordRecordQuizView;
+
+		public PuzzleView puzzleView;
+
+		public Transform finishGameQueryHUD;
+
 
 		public void SetUpExploreCanvas(bool hasResetGame=false){
 
@@ -108,7 +140,7 @@ namespace WordJourney
 
 			if (!Player.mainPlayer.isNewPlayer) {
 
-				bool playerDataExist = DataHandler.FileExist(CommonData.persistDataPath + "PlayerData.json");
+				bool playerDataExist = DataHandler.FileExist(CommonData.playerDataFilePath);
                 if (!playerDataExist)
                 {
                     GameManager.Instance.persistDataManager.SaveCompletePlayerData();
@@ -152,15 +184,139 @@ namespace WordJourney
 			LoadMiniMapTexture();
 
 			UpdateMiniMapDisplay(ExploreManager.Instance.battlePlayerCtr.transform.position);
+                     
+			if(Player.mainPlayer.currentLevelIndex < CommonData.maxLevelIndex){
 
+				for (int i = 0; i < monstersInfoWithDisplayUI.Count; i++)
+                {
+
+                    Transform monsterUI = monstersInfoWithDisplayUI[i].monsterUI;
+
+                    monsterUIPool.AddInstanceToPool(monsterUI.gameObject);
+                }
+
+                monstersInfoWithDisplayUI.Clear();
+
+                GetMonstersDataAndUI();
+
+                monstersDisplayView.InitMonsterDisplayView(monstersInfoWithDisplayUI);
+
+                monsterUIPool.ClearInstancePool();
+
+			}         
 		}
 
+		public void HideUpAndBottomUIs(){
+			topBarContainer.gameObject.SetActive(false);
+			miniMapContainer.gameObject.SetActive(false);
+			wordRecordContainer.gameObject.SetActive(false);
+			bottomBarContainer.gameObject.SetActive(false); 
+		}
 
 		public void EnterLevelMaskShowAndHide(CallBack callBack){
-			StopCoroutine("MyEnterLevelMaskShowAndHide");
-			StartCoroutine("MyEnterLevelMaskShowAndHide",callBack);
+			if(enterLevelMaskShowAndHideCoroutine != null){
+				StopCoroutine(enterLevelMaskShowAndHideCoroutine);
+			}
+			enterLevelMaskShowAndHideCoroutine = MyEnterLevelMaskShowAndHide(callBack);
+			StartCoroutine(enterLevelMaskShowAndHideCoroutine);
 		}
         
+
+
+        
+        /// <summary>
+        /// 显示最终的通关询问界面
+        /// </summary>
+		public void ShowFinalQuitQueryHUD(){
+			finishGameQueryHUD.gameObject.SetActive(true);
+		}
+
+		public void OnConfirmFinishGame(){
+			finishGameQueryHUD.gameObject.SetActive(false);
+			transitionMask.gameObject.SetActive(true);
+            transitionMask.color = new Color(0, 0, 0, 1);
+
+            GameManager.Instance.soundManager.StopBgm();
+
+            transitionView.PlayTransition(TransitionType.End, delegate
+            {
+				Player.mainPlayer.needChooseDifficulty = true;
+
+                GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
+
+                GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
+                {
+                    ExploreManager.Instance.QuitExploreScene();
+
+                    TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, null, delegate {
+                        GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.homeCanvasBundleName, "HomeCanvas", null);
+                    });
+
+                });
+
+            });
+		}
+
+		public void OnCancelFinishGame(){
+			finishGameQueryHUD.gameObject.SetActive(false);
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+		}
+
+        /// <summary>
+        /// 获取本层怪物UI龙骨
+        /// </summary>
+		private void GetMonstersDataAndUI(){
+				
+			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas[Player.mainPlayer.currentLevelIndex];
+			List<MonsterData> monsterDatas = GameManager.Instance.gameDataCenter.monsterDatas;
+
+			for (int i = 0; i < levelData.monsterIdsOfCurrentLevel.Count; i++)
+			{
+				int monsterId = levelData.monsterIdsOfCurrentLevel[i];
+				string monsterUIName = MyTool.GetMonsterUIName(monsterId);
+				Transform monsterUI = monsterUIPool.GetInstanceWithName<Transform>(monsterUIName);
+				if (monsterUI == null)
+				{
+					monsterUI = GameManager.Instance.gameDataCenter.LoadMonsterUI(monsterUIName).transform;
+				}
+
+				monsterUI.gameObject.SetActive(false);
+
+				MonsterData monsterData = monsterDatas.Find(delegate (MonsterData obj)
+				{
+					return obj.monsterId == monsterId;
+
+				});
+
+				MonsterUIInfo monsterUIInfo = monsterUI.GetComponent<MonsterUIInfo>();
+
+				MonsterDataWithUIDipslay monsterDataWithUIDipslay = new MonsterDataWithUIDipslay(monsterData, monsterUI,monsterUIInfo);
+
+				monstersInfoWithDisplayUI.Add(monsterDataWithUIDipslay);
+			}
+
+			if(HLHGameLevelData.IsBossLevel()){
+					
+				int monsterId = levelData.bossId;
+				string monsterUIName = MyTool.GetMonsterUIName(monsterId);
+				Transform monsterUI = monsterUIPool.GetInstanceWithName<Transform>(monsterUIName);
+				if(monsterUI == null){
+					monsterUI = GameManager.Instance.gameDataCenter.LoadMonsterUI(monsterUIName).transform;
+				}
+
+				MonsterData monsterData = monsterDatas.Find(delegate (MonsterData obj)
+                {
+                    return obj.monsterId == monsterId;
+
+                });
+
+				MonsterUIInfo monsterUIInfo = monsterUI.GetComponent<MonsterUIInfo>();
+				MonsterDataWithUIDipslay monsterDataWithUIDipslay = new MonsterDataWithUIDipslay(monsterData, monsterUI,monsterUIInfo);
+
+				monstersInfoWithDisplayUI.Add(monsterDataWithUIDipslay);
+			}
+
+		}
         
 		private IEnumerator MyEnterLevelMaskShowAndHide(CallBack callBack){
 			
@@ -205,11 +361,12 @@ namespace WordJourney
 		public void DisplayTransitionMaskAnim(CallBack cb){
 			ExploreManager.Instance.MapWalkableEventsStopAction ();
 			transitionMask.gameObject.SetActive (true);
-			StartCoroutine ("TransitionMaskShowAndHide", cb);
+			IEnumerator transitionMaskDisplayCoroutine = TransitionMaskShowAndHide(cb);
+			StartCoroutine (transitionMaskDisplayCoroutine);
 		}
 
-		public void SetUpToolSelectView(List<SpecialItem> tools,CallBackWithItem toolSelectCallBack){
-			toolSelectView.SetUpToolSelectView(tools, toolSelectCallBack);
+		public void SetUpUnlockDoorView(List<SpecialItem> keys, int doorDifficulty, CallBack unlockSuccessCallBack, CallBack unlockFailCallBack){
+			keyDoorOperatorView.SetUpKeyDoorOperatorView(keys,doorDifficulty, unlockSuccessCallBack, unlockFailCallBack);
 		}
 
 		public void UpdateMiniMapDisplay(Vector3 playerPos)
@@ -376,10 +533,13 @@ namespace WordJourney
          
 			transitionMask.gameObject.SetActive(true);
             transitionMask.color = Color.black;
-			
-                     
-			StopCoroutine("MyTransitionMaskSlowlyHide");
-			StartCoroutine("MyTransitionMaskSlowlyHide");
+
+
+			if(myTransitionMaskHideCoroutine != null){
+				StopCoroutine(myTransitionMaskHideCoroutine);
+			}
+			myTransitionMaskHideCoroutine = MyTransitionMaskSlowlyHide(); 
+			StartCoroutine(myTransitionMaskHideCoroutine);
 		}
 
 		private IEnumerator MyTransitionMaskSlowlyHide(){
@@ -417,6 +577,7 @@ namespace WordJourney
             }
 
 			HideExploreMask();
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
             transitionMask.gameObject.SetActive(false);
             
 		}
@@ -445,8 +606,16 @@ namespace WordJourney
 			bpUICtr.RemoveActiveSkillButton(skill);
 		}
 
-		public void OnHelpButtonClick(){
-			helpHUD.SetUpHelpView();
+		public void OnMonsterDisplayButtonClick(){
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = true;
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+			monstersDisplayView.SetUpmonstersDisplayView(CallBackOnQuitMonsterDisplay);
+		}
+
+		private void CallBackOnQuitMonsterDisplay(Transform trans){
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+            ExploreManager.Instance.MapWalkableEventsStartAction();
+            monsterUIPool.AddChildInstancesToPool(trans);
 		}
 
 
@@ -479,7 +648,17 @@ namespace WordJourney
 		}
 
 
+		public void UpdateMonsterStatusPlane(Monster monster)
+        {
+            // 初始化怪物状态栏
+            bmUICtr.SetUpMonsterStatusPlane(monster);
+        }
+        
+		public void SetUpPuzzleView(CallBack answerRightCallBack,CallBack answerWrongCallBack){
+            
+			puzzleView.SetUpMonsterPuzzleView(answerRightCallBack,answerWrongCallBack);
 
+		}
 
 
 		public void EnterNPC(HLHNPC npc){
@@ -490,7 +669,12 @@ namespace WordJourney
 
 		}
 
+        
 
+		public void QueryEnterWordRecordQuizView(CallBack enterQuizCallBack){
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+			wordRecordQuizView.SetUpwordRecordQuizView(wordRecords,enterQuizCallBack);
+		}
 
 		/// <summary>
 		/// 初始化公告牌
@@ -576,6 +760,8 @@ namespace WordJourney
 
 		}
 
+
+
         private void QuitWordHUDCallBack(HLHWord word)
 		{
             ExploreManager.Instance.MapWalkableEventsStartAction();
@@ -587,8 +773,45 @@ namespace WordJourney
 
             wordRecordText.text = word.spell;
 
-			wordRecords.Add(word);
+			bool update = true;
+            for (int j = 0; j < wordRecords.Count; j++){
+                if(wordRecords[j].wordId == word.wordId){
+                    update = false;
+                    break;
+                }
+            }
+            if(update){
+				wordRecords.Add(word);
+            }            
+
 		}
+
+		public void UpdateWordRecords(List<HLHWord> words){
+			
+			for (int i = 0; i < words.Count; i++)
+			{
+				HLHWord word = words[i];
+
+				if(word == null){
+					continue;
+				}
+
+				bool update = true;
+				for (int j = 0; j < wordRecords.Count; j++){
+					if(wordRecords[j].wordId == word.wordId){
+						update = false;
+						break;
+					}
+				}
+				if(update){
+					wordRecords.Add(words[i]);
+				}            
+			}
+			if(words.Count>0 && words[words.Count - 1] != null){
+				wordRecordText.text = words[words.Count - 1].spell;            
+			}
+		}
+
 
 		private void ChooseAnswerInWordHUDCallBack(bool isChooseCorrect){
 
@@ -602,7 +825,7 @@ namespace WordJourney
 			}
 #endif
 
-			int qualificationIndex = CheckLearnTitleQualification();
+			int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
 
 			if(qualificationIndex == -1){
 				return;
@@ -628,66 +851,7 @@ namespace WordJourney
 				
 		}
 
-        /// <summary>
-        /// 检查是否达成称号
-		/// 如果没有新的称号达成，返回-1
-		/// 如果有新的称号达成，返回称号序号
-        /// </summary>
-		private int CheckLearnTitleQualification(){
-			
-			int qualificationIndex = -1;
-
-			int totalLearnedWordCount = Player.mainPlayer.totalLearnedWordCount;
-
-			int totalUngraspWordCount = Player.mainPlayer.totalUngraspWordCount;
-
-			int continuousCorrectWordCount = Player.mainPlayer.maxWordContinuousRightRecord;
-
-			float correctPercentage = totalLearnedWordCount == 0 ? 0 : (float)(totalLearnedWordCount - totalUngraspWordCount) / totalLearnedWordCount;
-         
-			for (int i = 0; i < CommonData.learnTitleQualifications.Length;i++){
-
-				bool titleQualified = Player.mainPlayer.titleQualifications[i];
-
-				if(titleQualified){
-					continue;
-				}
-
-				LearnTitleQualification qualification = CommonData.learnTitleQualifications[i];
-
-				titleQualified = totalLearnedWordCount >= qualification.totalWordsCount 
-				                 && correctPercentage >= qualification.totalCorrectPercentage - float.Epsilon 
-				                 && continuousCorrectWordCount >= qualification.continuousCorrectWordCount;
-
-				bool dataCorrect = false;
-
-				if(titleQualified){
-
-					ExploreManager.Instance.UpdateWordDataBase();
-
-					int learnWordCountFromDB = LearningInfo.Instance.learnedWordCount;
-					int ungraspWordCountFromDB = LearningInfo.Instance.ungraspedWordCount;
-					dataCorrect = learnWordCountFromDB == totalLearnedWordCount && ungraspWordCountFromDB == totalUngraspWordCount;
-
-					if (dataCorrect)
-                    {
-                        Player.mainPlayer.titleQualifications[i] = true;
-                        qualificationIndex = i;
-                        break;
-                    }
-                    else
-                    {
-						Player.mainPlayer.totalLearnedWordCount = learnWordCountFromDB;
-						Player.mainPlayer.totalUngraspWordCount = ungraspWordCountFromDB;
-						GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-						return CheckLearnTitleQualification();
-   
-                     }
-				}          
-			}         
-			return qualificationIndex;
-		}
-
+        
 
 
 		public void SetUpSimpleItemDetail(Item item){
@@ -731,6 +895,9 @@ namespace WordJourney
 		}
 
 		private void CancelBuyLife(){
+			
+			Player.mainPlayer.needChooseDifficulty = true;
+
 			transitionView.PlayTransition (TransitionType.Death, delegate {
 				transitionMask.gameObject.SetActive(true);
 				transitionMask.color = Color.black;

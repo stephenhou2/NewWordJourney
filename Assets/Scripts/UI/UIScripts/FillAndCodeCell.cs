@@ -72,11 +72,14 @@ namespace WordJourney
 				GenerateCharsToFill (realChar);
 
 				fillText.text = string.Empty;
+				fillText.color = CommonData.orangeTextColor;
+                
 				//fillBackground.color = Color.cyan;
 				fillButton.interactable = true;
 
 				for (int i = 0; i < codeTexts.Length; i++) {
 					codeTexts [i].text = codeArray [i].ToString ();
+					//codeTexts[i].color = CommonData.orangeTextColor;
 				}
 
 				return ' ';
@@ -84,6 +87,7 @@ namespace WordJourney
 			} else {
 
 				fillText.text = charInQuestion.ToString ();
+				fillText.color = CommonData.darkYellowTextColor;
 				//fillBackground.color = Color.white;
 				fillButton.interactable = false;
 				return charInQuestion;

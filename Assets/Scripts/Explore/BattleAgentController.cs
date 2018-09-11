@@ -132,8 +132,6 @@ namespace WordJourney
 				playerBackwardArmature.AddEventListener(EventObject.FRAME_EVENT, keyFrameListener);
 			}
 
-			//isIdle = true;
-
             isDead = false;
 
 		}
@@ -426,7 +424,8 @@ namespace WordJourney
 			if (agent.health <= 0) {
 				return;
 			}
-			StartCoroutine ("PlayAgentShake");
+			IEnumerator playerShakeCoroutine = PlayAgentShake();
+			StartCoroutine (playerShakeCoroutine);
 		}
 
         /// <summary>
@@ -546,8 +545,9 @@ namespace WordJourney
 				exploreManager.EnableExploreInteractivity();
 			});
 
-			StartCoroutine(waitRoleAnimEndCoroutine);
-
+			if(waitRoleAnimEndCoroutine != null){
+				StartCoroutine(waitRoleAnimEndCoroutine);
+			}         
 		}
 			
 

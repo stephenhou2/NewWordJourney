@@ -112,7 +112,7 @@ namespace WordJourney
 
 		public WeaponType weaponType;
 
-		public PropertyGemstone attachedPropertyGemstone;// 镶嵌的属性宝石
+		public List<PropertyGemstone> attachedPropertyGemstones;// 镶嵌的属性宝石
 
 //		public EquipmentModel.ItemInfoForProduce[] itemInfosForProduce;
 
@@ -201,7 +201,7 @@ namespace WordJourney
 
 			this.weaponType = equipmentModel.weaponType;
 
-			attachedPropertyGemstone = new PropertyGemstone();
+			attachedPropertyGemstones = new List<PropertyGemstone>();
 
 			InitDescription ();
 		}
@@ -240,57 +240,28 @@ namespace WordJourney
          
 			propertyGemstone.GemStonePropertyConfigure();
 
-			attachedPropertyGemstone = propertyGemstone;
+			attachedPropertyGemstones.Add(propertyGemstone);
 
 			//Debug.Log(attachedPropertyGemstone.itemCount);
 		}
 
+        /// <summary>
+        /// 移除装备上镶嵌的所有宝石
+        /// </summary>
+        /// <returns>The property gemstons.</returns>
+		public PropertyGemstone[] RemovePropertyGemstons(){
 
-		public PropertyGemstone RemovePropertyGemstone(){
+			PropertyGemstone[] propertyGemstones = new PropertyGemstone[attachedPropertyGemstones.Count];
 
-			attachedPropertyGemstone.itemCount = 1;
+			for (int i = 0; i < propertyGemstones.Length;i++){
+				PropertyGemstone propertyGemstone = attachedPropertyGemstones[i];
+				propertyGemstone.itemCount = 1;
+				propertyGemstones[i] = propertyGemstone;
+			}
+         
+			attachedPropertyGemstones.Clear();
 
-			PropertyGemstone propertyGemstone = attachedPropertyGemstone;
-
-			//maxHealthGain -= propertyGemstone.maxHealthGain;
-
-            //maxManaGain -= propertyGemstone.maxManaGain;
-
-            //attackGain -= propertyGemstone.attackGain;
-
-            //magicAttackGain -= propertyGemstone.magicAttackGain;
-
-            //armorGain -= propertyGemstone.armorGain;
-
-            //magicResistGain -= propertyGemstone.magicResistGain;
-
-            //armorDecreaseGain -= propertyGemstone.armorDecreaseGain;
-
-            //magicResistDecreaseGain -= propertyGemstone.magicResistDecreaseGain;
-
-            //moveSpeedGain -= propertyGemstone.moveSpeedGain;
-
-            //critGain -= propertyGemstone.critGain;
-
-            //dodgeGain -= propertyGemstone.dodgeGain;
-
-            //critHurtScalerGain -= propertyGemstone.critHurtScalerGain;
-
-            //physicalHurtScalerGain -= propertyGemstone.physicalHurtScalerGain;
-
-            //magicalHurtScalerGain -= propertyGemstone.magicalHurtScalerGain;
-
-            //extraGoldGain -= propertyGemstone.extraGoldGain;
-
-            //extraExperienceGain -= propertyGemstone.extraExperienceGain;
-
-            //healthRecoveryGain -= propertyGemstone.healthRecoveryGain;
-
-            //magicResistGain -= propertyGemstone.magicRecoveryGain;
-
-			attachedPropertyGemstone = new PropertyGemstone();
-
-			return propertyGemstone;
+			return propertyGemstones;
 
 		}
         

@@ -51,15 +51,14 @@ namespace WordJourney
 
         public void OnTriggerEnter2D(Collider2D col)
         {
-
-            ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-         
             BattlePlayerController bp = col.GetComponent<BattlePlayerController>();
 
             if (bp == null)
             {
                 return;
             }
+
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 
 			MapEventTriggered(true, bp);
 
@@ -127,7 +126,8 @@ namespace WordJourney
 				case TrapType.Thorn:
 					ThornTrapTriggered(bp);
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.thornTrapAudioName);
-					StartCoroutine("ThornTrapOff");
+					IEnumerator trapOffCoroutine = ThornTrapOff();
+					StartCoroutine(trapOffCoroutine);
 					break;
 				case TrapType.Fire:
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.fireTrapAudioName);

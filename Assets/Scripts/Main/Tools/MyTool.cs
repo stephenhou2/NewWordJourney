@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	using System.Data;
+
 	public static class MyTool {
 
 
@@ -187,6 +189,50 @@ namespace WordJourney
 			"10_boss_dragon"
 		};
 
+		private static string[] normalMonsterUINames = new string[]{
+            "01_skeleton_UI",
+			"02_alchemist_UI",
+			"03_berserker_UI",
+			"04_ghoul_UI",
+			"05_bloody_warrior_UI",
+			"06_blue_devil_UI",
+			"07_armed_warrior_UI",
+			"08_arcane_wizard_UI",
+			"09_death_bear_UI",
+			"10_explorer_UI",
+			"11_ice_beast_UI",
+			"12_fire_wizard_UI",
+			"13_orc_warrior_UI",
+			"14_bloody_wizard_UI",
+			"15_dark_knight_UI",
+			"16_glutton_UI",
+			"17_zombie_sword_UI",
+			"18_dark_parasite_UI",
+			"19_butcher_UI",
+			"20_dark_wizard_UI",
+			"21_magic_creature_UI",
+			"22_break_orc_UI",
+			"23_heresy_wizard_UI",
+			"24_swordsman_UI",
+			"25_lava_beast_UI",
+			"26_death_wolf_UI",
+			"27_cyclops_UI"
+        };
+
+        private static string[] bossUINames = new string[] {
+			"01_boss_magic_armor_UI",
+			"02_boss_commando_UI",
+			"03_boss_pharmacist_UI",
+			"04_boss_forsaken_UI",
+			"05_boss_lava_beast_UI",
+			"06_boss_earthen_UI",
+			"07_boss_cyclops_UI",
+			"08_boss_death_UI",
+			"09_boss_demon_UI",
+			"10_boss_dragon_UI"
+        };
+
+
 		public static string GetMonsterName(int monsterId){
             if(monsterId <= 0)
             {
@@ -200,6 +246,21 @@ namespace WordJourney
             {
 				return bossNames [monsterId - 101];
 			}
+		}
+
+		public static string GetMonsterUIName(int monsterId){
+			if (monsterId <= 0)
+            {
+                return string.Empty;
+            }
+            else if (monsterId < 100)
+            {
+                return normalMonsterUINames[monsterId - 1];
+            }
+            else
+            {
+                return bossUINames[monsterId - 101];
+            }
 		}
 
 		private static string[] npcNames = new string[]{
@@ -236,10 +297,10 @@ namespace WordJourney
 				propertyName = "魔法上限";
 				break;
 			case PropertyType.Attack:
-				propertyName = "物理伤害";
+				propertyName = "攻击";
 				break;
 			case PropertyType.MagicAttack:
-				propertyName = "魔法伤害";
+				propertyName = "魔攻";
 				break;
 			case PropertyType.MoveSpeed:
 				propertyName = "移动速度";
@@ -282,26 +343,15 @@ namespace WordJourney
 			return propertyName;
 		}
 
-		//public static Dictionary<string,string> propertyChangeStrings = new Dictionary<string, string>{
-		//	{"Status_Poison_Durative","中毒"},
-		//	{"Status_Burn_Durative","烧伤"},
-		//	{"Status_DecreaseAttack","攻击降低"},
-		//	{"Status_DecreaseMana","魔法降低"},
-		//	{"Status_DecreaseHit","命中降低"},
-		//	{"Status_DecreaseAttackSpeed","攻速降低"},
-		//	{"Status_DecreaseArmor","护甲降低"},
-		//	{"Status_DecreaseMagicResist","抗性降低"},
-		//	{"Status_DecreaseDodge","闪避提升"},
-		//	{"Status_IncreaseAttack","攻击提升"},
-		//	{"Status_IncreaseMana","魔法提升"},
-		//	{"Status_IncreaseHit","命中提升"},
-		//	{"Status_IncreaseAttackSpeed","攻速提升"},
-		//	{"Status_IncreaseArmor","攻速提升"},
-		//	{"Status_IncreaseMagicResist","攻速提升"},
-		//	{"Status_IncreaseDodge","闪避提升"},
-		//	{"Status_IncreaseCrit","暴击提升"}
-		//};
+		public static string GetPropertyValueString(float value){
 
+			if(value > 0.999f){
+				return Mathf.RoundToInt(value).ToString();
+			}else{
+				return string.Format("{0}%", Mathf.RoundToInt(value * 100));
+			}
+
+		}
 
 	}
 }

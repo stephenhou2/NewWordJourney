@@ -8,7 +8,6 @@ using DG.Tweening;
 namespace WordJourney
 {
 
-
 	public class Player : Agent {
 
 		private static volatile Player mPlayerSingleton;
@@ -44,7 +43,9 @@ namespace WordJourney
 			}
 
 		}
-			
+
+
+
 
 		public AttackSpeed originalAttackSpeed;//基础攻速
 		public AttackSpeed attackSpeed;
@@ -135,6 +136,10 @@ namespace WordJourney
 
 		private int maxSkillCount = 6;
 
+
+		// 记录当前版本信息,用于版本比对【格式：x.xx  例如：1.01 代表1.01版，  版本更新时版本号需比上一版大】
+        public float currentVersion;
+
 		// 探索界面遮罩的状态  【0:黑暗状态，使用黑暗动画】 【1:明亮状态，使用明亮动画】
 		//public int exploreMaskStatus = 0;
 
@@ -172,6 +177,23 @@ namespace WordJourney
         // 称号达成情况
 		public bool[] titleQualifications;
 
+		public bool needChooseDifficulty;
+
+        // 一共击杀的怪物数量
+		public int totaldefeatMonsterCount;
+
+		public int learnedWordsCountInCurrentExplore;
+		public int correctWordsCountInCurrentExplore;
+
+		public string currentExploreStartDateString;
+
+		// 记录到的存档点位置
+		public Vector3 savePosition;
+
+        // 记录到的在存档点的额朝向
+		public MyTowards saveTowards;
+
+		//public CurrentMapEventsRecord currentMapEventsRecord;
 
 		public void SetUpPlayerWithPlayerData(PlayerData playerData){
 
@@ -180,6 +202,8 @@ namespace WordJourney
 			if (playerData == null) {
 				return;
 			}
+
+			this.currentVersion = playerData.currentVersion;
 
 			this.agentName = playerData.agentName;
 			this.agentLevel = playerData.agentLevel;
@@ -296,6 +320,7 @@ namespace WordJourney
 			this.experience = playerData.experience;
 
 			this.isNewPlayer = playerData.isNewPlayer;
+			this.needChooseDifficulty = playerData.needChooseDifficulty;
 
 			this.skillNumLeft = playerData.skillNumLeft;
 
@@ -313,6 +338,20 @@ namespace WordJourney
 			this.totalUngraspWordCount = playerData.totalUngraspWordCount;
 
 			this.titleQualifications = playerData.titleQualifications;
+
+			this.totaldefeatMonsterCount = playerData.totaldefeatMonsterCount;
+
+			this.learnedWordsCountInCurrentExplore = playerData.learnedWordsCountInCurrentExplore;
+
+			this.correctWordsCountInCurrentExplore = playerData.correctWordsCountInCurrentExplore;
+
+			this.currentExploreStartDateString = playerData.currentExploreStartDateString;
+
+			this.savePosition = playerData.savePosition;
+
+			this.saveTowards = playerData.saveTowards;
+
+			//this.currentMapEventsRecord = playerData.currentMapEventsRecord;
                      
 			this.allStatus.Clear ();
 
@@ -582,37 +621,66 @@ namespace WordJourney
                     continue;
                 }
 
-                maxHealth += eqp.maxHealthGain + eqp.attachedPropertyGemstone.maxHealthGain;
-                maxMana += eqp.maxManaGain + eqp.attachedPropertyGemstone.maxManaGain;
+                maxHealth += eqp.maxHealthGain;
+                maxMana += eqp.maxManaGain;
 
-                attack += eqp.attackGain + eqp.attachedPropertyGemstone.attackGain;
-                magicAttack += eqp.magicAttackGain + eqp.attachedPropertyGemstone.magicAttackGain;
+                attack += eqp.attackGain;
+                magicAttack += eqp.magicAttackGain;
 
-                armor += eqp.armorGain + eqp.attachedPropertyGemstone.armorGain;
-                magicResist += eqp.magicResistGain + eqp.attachedPropertyGemstone.magicResistGain;
+                armor += eqp.armorGain ;
+                magicResist += eqp.magicResistGain;
 
-                armorDecrease += eqp.armorDecreaseGain + eqp.attachedPropertyGemstone.armorDecreaseGain;
-                magicResistDecrease += eqp.magicResistDecreaseGain + eqp.attachedPropertyGemstone.magicResistDecreaseGain;
+                armorDecrease += eqp.armorDecreaseGain;
+                magicResistDecrease += eqp.magicResistDecreaseGain;
 
                 if (eqp.equipmentType == EquipmentType.Weapon)
                 {
                     attackSpeed = eqp.attackSpeed;
                 }
-                moveSpeed += eqp.moveSpeedGain + eqp.attachedPropertyGemstone.moveSpeedGain;
+                moveSpeed += eqp.moveSpeedGain;
 
-                crit += eqp.critGain + eqp.attachedPropertyGemstone.critGain / 100f;
-                dodge += eqp.dodgeGain + eqp.attachedPropertyGemstone.dodgeGain / 100f;
+                crit += eqp.critGain;
+                dodge += eqp.dodgeGain;
+                
+                critHurtScaler += eqp.critHurtScalerGain;
+                physicalHurtScaler += eqp.physicalHurtScalerGain;
+                magicalHurtScaler += eqp.magicalHurtScalerGain;
+                
+                extraGold += eqp.extraGoldGain;
+                extraExperience += eqp.extraExperienceGain;
+                
+                healthRecovery += eqp.healthRecoveryGain;
+                magicRecovery += eqp.magicRecoveryGain;
 
-                critHurtScaler += eqp.critHurtScalerGain + eqp.attachedPropertyGemstone.critHurtScalerGain / 100f;
-                physicalHurtScaler += eqp.physicalHurtScalerGain + eqp.attachedPropertyGemstone.physicalHurtScalerGain / 100f;
-                magicalHurtScaler += eqp.magicalHurtScalerGain + eqp.attachedPropertyGemstone.magicalHurtScalerGain / 100f;
+				for (int j = 0; j < eqp.attachedPropertyGemstones.Count;j++){
+					PropertyGemstone attachedPropertyGemstone = eqp.attachedPropertyGemstones[j];
+					maxHealth += attachedPropertyGemstone.maxHealthGain;
+                    maxMana += attachedPropertyGemstone.maxManaGain;
 
-                extraGold += eqp.extraGoldGain + eqp.attachedPropertyGemstone.extraGoldGain;
-                extraExperience += eqp.extraExperienceGain + eqp.attachedPropertyGemstone.extraExperienceGain;
+                    attack += attachedPropertyGemstone.attackGain;
+                    magicAttack += attachedPropertyGemstone.magicAttackGain;
 
-                healthRecovery += eqp.healthRecoveryGain + eqp.attachedPropertyGemstone.healthRecoveryGain;
-                magicRecovery += eqp.magicRecoveryGain + eqp.attachedPropertyGemstone.magicRecoveryGain;
+                    armor += attachedPropertyGemstone.armorGain;
+                    magicResist += attachedPropertyGemstone.magicResistGain;
 
+                    armorDecrease += attachedPropertyGemstone.armorDecreaseGain;
+                    magicResistDecrease += attachedPropertyGemstone.magicResistDecreaseGain;
+
+                    moveSpeed += attachedPropertyGemstone.moveSpeedGain;
+
+                    crit += attachedPropertyGemstone.critGain / 100f;
+                    dodge += attachedPropertyGemstone.dodgeGain / 100f;
+
+                    critHurtScaler += attachedPropertyGemstone.critHurtScalerGain / 100f;
+                    physicalHurtScaler += attachedPropertyGemstone.physicalHurtScalerGain / 100f;
+                    magicalHurtScaler += attachedPropertyGemstone.magicalHurtScalerGain / 100f;
+
+                    extraGold += attachedPropertyGemstone.extraGoldGain;
+                    extraExperience += attachedPropertyGemstone.extraExperienceGain;
+
+                    healthRecovery += attachedPropertyGemstone.healthRecoveryGain;
+                    magicRecovery += attachedPropertyGemstone.magicRecoveryGain;
+				}
 
             }
 
@@ -639,6 +707,9 @@ namespace WordJourney
 
             crit += critChangeFromSkill;
             dodge += dodgeChangeFromSkill;
+
+			crit += float.Epsilon;
+			dodge += float.Epsilon;
 
             critHurtScaler += critHurtScalerChangeFromSkill;
             physicalHurtScaler += physicalHurtScalerChangeFromSkill;
@@ -751,94 +822,7 @@ namespace WordJourney
 		}
         
 
-		public void PlayerPropertyChange(PropertyType type,int change){
-			switch (type) {
-			case PropertyType.MaxHealth:
-				int maxHealthRecord = maxHealth;
-				originalMaxHealth += change;
-				maxHealth += change;
-				health = (int)(health * (float) maxHealth / maxHealthRecord);
-				break;
-			//case PropertyType.Health:
-				//health += change;
-				//break;
-			case PropertyType.MaxMana:
-				int maxManaRecord = maxMana;
-				originalMaxMana += change;
-				maxMana += change;
-				mana = (int)(mana * (float)maxMana / maxManaRecord);
-				break;
-			case PropertyType.Attack:
-				originalAttack += change;
-				attack += change;
-				break;
-			case PropertyType.MagicAttack:
-				originalMagicAttack += change;
-				magicAttack += change;
-				break;
-			case PropertyType.Armor:
-				originalArmor += change;
-				armor += change;
-				break;
-			case PropertyType.MagicResist:
-				originalMagicResist += change;
-				magicResist += change;
-				break;
-			case PropertyType.ArmorDecrease:
-				originalArmorDecrease += change;
-				armorDecrease += change;
-				break;
-			case PropertyType.MagicResistDecrease:
-				originalMagicResistDecrease += change;
-				magicResistDecrease += change;
-				break;
-			case PropertyType.MoveSpeed:
-				originalMoveSpeed += change;
-				moveSpeed += change;
-				break;
-			case PropertyType.Dodge:
-				float changeInFloat = (float)change / 1000;
-				originalDodge += changeInFloat;
-				dodge += changeInFloat;
-				break;
-			case PropertyType.Crit:
-				changeInFloat = (float)change / 1000;
-				originalCrit += changeInFloat;
-				crit += changeInFloat;
-				break;
-			case PropertyType.CritHurtScaler:
-				changeInFloat = (float)change / 1000;
-				originalCritHurtScaler += changeInFloat;
-				critHurtScaler += changeInFloat;
-				break;
-			case PropertyType.PhysicalHurtScaler:
-				changeInFloat = (float)change / 1000;
-				originalPhysicalHurtScaler += changeInFloat;
-				physicalHurtScaler += changeInFloat;
-				break;
-			case PropertyType.MagicalHurtScaler:
-				changeInFloat = (float)change / 1000;
-				originalMagicalHurtScaler += changeInFloat;
-				magicalHurtScaler += changeInFloat;
-				break;
-			case PropertyType.ExtraGold:
-				originalExtraGold += change;
-				extraGold += change;
-				break;
-			case PropertyType.ExtraExperience:
-				originalExtraExperience += change;
-				extraExperience += change;
-				break;
-			case PropertyType.HealthRecovery:
-				originalHealthRecovery += change;
-				healthRecovery += change;
-				break;
-			case PropertyType.MagicRecovery:
-				originalMagicRecovery += change;
-				magicRecovery += change;
-				break;
-			}
-		}
+
 
 
 //		/// <summary>
@@ -979,6 +963,29 @@ namespace WordJourney
 				}
 			}
 			return equipedEquipment;
+		}
+
+
+		public bool CheckItemExistInBag(Item item){
+
+			bool exist = false;
+
+			for (int i = 0; i < allItemsInBag.Count; i++)
+            {
+				if (item is Equipment)
+                {
+					exist = item == allItemsInBag[i];
+				}else{
+					exist = item.itemId == allItemsInBag[i].itemId;
+				}
+
+				if(exist){
+					break;
+				}
+            }
+
+			return exist;
+
 		}
 
 		public int GetItemIndexInBag(Item item){
@@ -1649,6 +1656,9 @@ namespace WordJourney
 	[System.Serializable]
 	public class PlayerData{
 
+		// 记录当前版本信息,用于版本比对【格式：x.xx  例如：1.01 代表1.01版，  版本更新时版本号需比上一版大】
+        public float currentVersion;
+
 		public string agentName;
 
 		public string agentIconName;
@@ -1703,18 +1713,16 @@ namespace WordJourney
 		public int magicRecovery;//实际魔法回复系数
 		//*****实际信息********//
 
-		public int[] charactersCount = new int[26];//剩余的字母碎片信息
-
 		public List<Equipment> allEquipmentsInBag;//背包中所有装备信息
 		public List<Consumables> allConsumablesInBag;//背包中所有消耗品信息
 		public List<PropertyGemstone> allPropertyGemstonesInBag;//背包中所有的技能宝石
-		public List<SkillScroll> allSkillScrollsInBag = new List<SkillScroll>();//背包中所有的技能卷轴
-		public List<SpecialItem> allSpecialItemsInBag = new List<SpecialItem>();//背包中所有的特殊物品
-		public List<SkillModel> allLearnedSkillsRecord = new List<SkillModel>();
+		public List<SkillScroll> allSkillScrollsInBag;//背包中所有的技能卷轴
+		public List<SpecialItem> allSpecialItemsInBag;//背包中所有的特殊物品
+		public List<SkillModel> allLearnedSkillsRecord;
 
 		public int maxUnlockLevelIndex;//最大解锁关卡序号
 		public int currentLevelIndex;//当前所在关卡序号
-        public List<int> mapIndexRecord = new List<int>();
+        public List<int> mapIndexRecord = new List<int>();//关卡随机后的关卡序号记录
               
 		public int experience;//人物经验值
 		public int totalGold;//人物金币数量
@@ -1751,8 +1759,26 @@ namespace WordJourney
 		// 称号达成情况
         public bool[] titleQualifications;
 
+		public bool needChooseDifficulty;
+
+        // 本次探索共击败的怪物数量
+		public int totaldefeatMonsterCount;
+
+		public int learnedWordsCountInCurrentExplore;
+        public int correctWordsCountInCurrentExplore;
+
+		public string currentExploreStartDateString;
+
+        // 记录到的存档点位置
+		public Vector3 savePosition = -Vector3.one;
+
+		public MyTowards saveTowards;
+
+		//public CurrentMapEventsRecord currentMapEventsRecord;
 
 		public PlayerData(Player player){
+
+			this.currentVersion = player.currentVersion;
 
 			this.agentName = player.agentName;
 			this.agentLevel = player.agentLevel;
@@ -1835,6 +1861,7 @@ namespace WordJourney
 			this.experience = player.experience;
 
 			this.isNewPlayer = player.isNewPlayer;
+			this.needChooseDifficulty = player.needChooseDifficulty;
 
 			this.skillNumLeft = player.skillNumLeft;
 			//this.exploreMaskStatus = player.exploreMaskStatus;
@@ -1851,6 +1878,20 @@ namespace WordJourney
 			this.totalUngraspWordCount = player.totalUngraspWordCount;
 
 			this.titleQualifications = player.titleQualifications;
+
+			this.totaldefeatMonsterCount = player.totaldefeatMonsterCount;
+
+			this.learnedWordsCountInCurrentExplore = player.learnedWordsCountInCurrentExplore;
+
+			this.correctWordsCountInCurrentExplore = player.correctWordsCountInCurrentExplore;
+
+			this.currentExploreStartDateString = player.currentExploreStartDateString;
+
+			this.savePosition = player.savePosition;
+
+			this.saveTowards = player.saveTowards;
+
+			//this.currentMapEventsRecord = player.currentMapEventsRecord;
 
 		}
 			

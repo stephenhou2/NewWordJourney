@@ -11,10 +11,7 @@ namespace WordJourney
 
 		public Sprite normalTbSprite;
 		public Sprite specialTbSprite;
-
-		private int mapIndex;
-
-		//private int fixedDropItemId;
+        
 
 		/// <summary>
 		/// 地图物品被破坏或开启
@@ -128,13 +125,15 @@ namespace WordJourney
 		public override void MapEventTriggered(bool isSuccess, BattlePlayerController bp)
 		{
 
-			int posX = Mathf.RoundToInt(this.transform.position.x);
-            int posY = Mathf.RoundToInt(this.transform.position.y);
+			//int posX = Mathf.RoundToInt(this.transform.position.x);
+            //int posY = Mathf.RoundToInt(this.transform.position.y);
          
 			base.MapEventTriggered(isSuccess, bp);
          
 			if(isGoldTreasureBox){
-				MapEventsRecord.AddEventTriggeredRecord(mapIndex, new Vector2(posX,posY));
+				MapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
+			}else{
+				GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
 			}
 
 		}

@@ -5,6 +5,7 @@ using UnityEngine;
 namespace WordJourney
 {
 	using System.IO;
+	using System;
 
 	public class PersistDataManager{
 
@@ -21,7 +22,6 @@ namespace WordJourney
 		/// 保存游戏购买记录
 		/// </summary>
 		public void SaveBuyRecord(){
-
 			DataHandler.SaveInstanceDataToFile<BuyRecord> (BuyRecord.Instance, CommonData.buyRecordFilePath);
 
 		}
@@ -44,7 +44,7 @@ namespace WordJourney
 
             List<MapEventsRecord> mapEventsRecords = new List<MapEventsRecord>();
 
-            for (int i = 0; i <= CommonData.maxLevel;i++){
+            for (int i = 0; i <= CommonData.maxLevelIndex;i++){
 				mapEventsRecords.Add(new MapEventsRecord(i, new List<Vector2>(),false,false));
             }
 
@@ -78,12 +78,22 @@ namespace WordJourney
 		/// Saves the player data.
 		/// </summary>
 		public void SaveCompletePlayerData(){
-			
-			string playerDataPath = Path.Combine (CommonData.persistDataPath, "PlayerData.json");
+
+			string playerDataPath = CommonData.playerDataFilePath;
 
 			PlayerData playerData = new PlayerData (Player.mainPlayer);
          
 			DataHandler.SaveInstanceDataToFile<PlayerData> (playerData, playerDataPath);
+		}
+
+		public void SaveMiniMapRecords(){
+
+			DataHandler.SaveInstanceListToFile<MiniMapRecord>(GameManager.Instance.gameDataCenter.allMiniMapRecords, CommonData.miniMapRecordsFilePath);
+
+		}
+
+		public void SaveCurrentMapEventsRecords(){
+			DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(GameManager.Instance.gameDataCenter.currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
 		}
 
 
@@ -126,10 +136,10 @@ namespace WordJourney
 		}
 
 
-		public GameSettings LoadGameSettings(){
-			string settingsPath = string.Format ("{0}/{1}", CommonData.persistDataPath, "GameSettings.json");
-			return DataHandler.LoadDataToSingleModelWithPath<GameSettings> (settingsPath);
-		}
+		//public GameSettings LoadGameSettings(){
+		//	string settingsPath = string.Format ("{0}/{1}", CommonData.persistDataPath, "");
+		//	return DataHandler.LoadDataToSingleModelWithPath<GameSettings> (settingsPath);
+		//}
 
 //		public LearningInfo LoadLearnInfo(){
 //			string learnInfoPath = string.Format ("{0}/{1}", CommonData.persistDataPath, "LearningInfo.json");
@@ -139,9 +149,9 @@ namespace WordJourney
 
 		public void ResetPlayerDataToOriginal(){
 
-			string sourcePlayerDataPath = CommonData.persistDataPath + "/OriginalPlayerData.json";
+			string sourcePlayerDataPath = CommonData.oriPlayerDataFilePath;
 
-			string targetPlayerDataPath = CommonData.persistDataPath + "/PlayerData.json";
+			string targetPlayerDataPath = CommonData.playerDataFilePath;
 
 			PlayerData resetPd = DataHandler.LoadDataToSingleModelWithPath<PlayerData> (sourcePlayerDataPath);
                      
@@ -154,6 +164,14 @@ namespace WordJourney
 			resetPd.wordContinuousRightRecord = Player.mainPlayer.wordContinuousRightRecord;
 			resetPd.maxWordContinuousRightRecord = Player.mainPlayer.maxWordContinuousRightRecord;
 			resetPd.titleQualifications = Player.mainPlayer.titleQualifications;
+			resetPd.isNewPlayer = Player.mainPlayer.isNewPlayer;
+			resetPd.needChooseDifficulty = Player.mainPlayer.needChooseDifficulty;
+
+			resetPd.learnedWordsCountInCurrentExplore = 0;
+			resetPd.correctWordsCountInCurrentExplore = 0;
+
+			resetPd.currentExploreStartDateString = DateTime.Now.ToShortDateString();
+
 
 			Player.mainPlayer.SetUpPlayerWithPlayerData (resetPd);
 
@@ -187,6 +205,10 @@ namespace WordJourney
 
 		public void ResetChatRecords(){         
 			DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(new List<HLHNPCChatRecord>(), CommonData.chatRecordsFilePath);
+		}
+
+		public void SavePlayRecords(List<PlayRecord> playRecords){
+			DataHandler.SaveInstanceListToFile<PlayRecord>(playRecords, CommonData.playRecordsFilePath);
 		}
 
 	}

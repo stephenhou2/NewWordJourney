@@ -36,8 +36,10 @@ namespace WordJourney
 
 		public int skillLevel = 1;
 
+		public int wordCountToLearn;
+
         // 在npc处学习技能的价格
-		public int price;
+		//public int price;
 
 		[HideInInspector] public bool hasTriggered;
 

@@ -14,7 +14,7 @@
         
             List<MapEventsRecord> mapEventsRecords = new List<MapEventsRecord>();
 
-            for (int i = 0; i <= CommonData.maxLevel; i++)
+            for (int i = 0; i <= CommonData.maxLevelIndex; i++)
             {
 				mapEventsRecords.Add(new MapEventsRecord(i, new List<Vector2>(),false,false));
             }
@@ -168,11 +168,13 @@
 
 			PlayerData pd = new PlayerData (p);
 
-			string originalPlayerDataPath = Path.Combine (CommonData.originDataPath, "OriginalPlayerData.json");
+			string originalPlayerDataPath = CommonData.oriPlayerDataFilePath;
 
 			DataHandler.SaveInstanceDataToFile<PlayerData> (pd, originalPlayerDataPath);
 
+			string playerDataPath = CommonData.playerDataFilePath;
 
+			DataHandler.SaveInstanceDataToFile<PlayerData>(pd, playerDataPath);
 		}
 
 
