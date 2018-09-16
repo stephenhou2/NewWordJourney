@@ -149,7 +149,7 @@ namespace WordJourney
 		//分享的回调函数
 		void ShareResultHandler(int reqID, ResponseState state, PlatformType type, Hashtable result)
 		{
-
+                
 			shareButton.enabled = true;
 
 			if (state == ResponseState.Success)
@@ -234,7 +234,7 @@ namespace WordJourney
 
 			Resources.UnloadUnusedAssets();
 			GC.Collect();
-            
+
 #if UNITY_EDITOR
 			//DataHandler.DeleteFile(Application.persistentDataPath + "/tempPics/shareImage.jpg");
 			QuitShareView();

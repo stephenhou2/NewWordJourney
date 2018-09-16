@@ -9,11 +9,13 @@ namespace WordJourney
 	using Transform = UnityEngine.Transform;
 
 	public class SavePoint : MapEvent
-    {
-		public UnityArmatureComponent savePointAnim;
+	{
+		public UnityArmatureComponent baseAnim;
 
-		private string defaultAnimName = "default";
-		private string triggeredAnimName = "trigger";
+		public UnityArmatureComponent lightAnim;
+
+		//private string defaultAnimName = "default";
+		//private string triggeredAnimName = "trigger";
 
 		private IEnumerator waitAnimEndCoroutine;
 
@@ -22,13 +24,20 @@ namespace WordJourney
 		//public BoxCollider2D bigCollider;
 
 		public bool isInSavingData;
-          
+
+		public SavePointAutoDetect autoDetect;
+
 		public override void InitializeWithAttachedInfo(int mapIndex, MapAttachedInfoTile attachedInfo)
-        {
+		{
 			this.transform.position = attachedInfo.position;
 			isInSavingData = false;
-        }
-      
+			autoDetect.isInSavingData = false;
+			autoDetect.InitSavePointAutoDetect(delegate
+			{
+				MapEventTriggered(false, ExploreManager.Instance.battlePlayerCtr);            
+			});
+		}
+
 		public override void AddToPool(InstancePool pool)
 		{
 			pool.AddInstanceToPool(this.gameObject);
@@ -39,23 +48,26 @@ namespace WordJourney
 			//bigCollider.enabled = false;
 			MapEventTriggered(true, bp);
 
-			if(waitPlayerToTargetPosCoroutine != null){
+			if (waitPlayerToTargetPosCoroutine != null)
+			{
 				StopCoroutine(waitPlayerToTargetPosCoroutine);
 			}
 
 			waitPlayerToTargetPosCoroutine = WaitPlayerToTargetPos();
 
 			StartCoroutine(waitPlayerToTargetPosCoroutine);
-		}      
-        
-		private IEnumerator WaitPlayerToTargetPos(){
+		}
+
+		private IEnumerator WaitPlayerToTargetPos()
+		{
 
 			BattlePlayerController battlePlayer = ExploreManager.Instance.battlePlayerCtr;
 
-			yield return new WaitUntil(() => Mathf.Abs(battlePlayer.transform.position.x - transform.position.x) < 0.1f 
-			                           && Mathf.Abs(battlePlayer.transform.position.y - transform.position.y) < 0.1f);
+			yield return new WaitUntil(() => Mathf.Abs(battlePlayer.transform.position.x - transform.position.x) < 0.1f
+									   && Mathf.Abs(battlePlayer.transform.position.y - transform.position.y) < 0.1f);
 
 			isInSavingData = false;
+			autoDetect.isInSavingData = false;
 
 		}
 
@@ -74,28 +86,12 @@ namespace WordJourney
 
 			Debug.Log("save data at save point");
 
+
+
 			isInSavingData = true;
+			autoDetect.isInSavingData = true;
 
-			Player.mainPlayer.savePosition = this.transform.position;
-
-			Player.mainPlayer.saveTowards = bp.towards;
-                     
-
-			if (ExploreManager.Instance != null)
-            {
-                ExploreManager.Instance.UpdateWordDataBase();
-            }
-
-			GameManager.Instance.persistDataManager.SaveBuyRecord();
-			GameManager.Instance.persistDataManager.SaveGameSettings();
-			GameManager.Instance.persistDataManager.SaveMapEventsRecord();
-			GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-			GameManager.Instance.persistDataManager.SaveMiniMapRecords();
-			GameManager.Instance.persistDataManager.SaveCurrentMapEventsRecords();
-
-            MySQLiteHelper.Instance.CloseAllConnections();
-
-
+			ExploreManager.Instance.SaveDataInExplore();
 
 			IEnumerator saveHintCoroutine = SaveHint(longDealy ? 0.5f : 0.1f);
 
@@ -103,66 +99,52 @@ namespace WordJourney
 
 		}
 
-		private IEnumerator SaveHint(float delay){
+		private IEnumerator SaveHint(float delay)
+		{
 
 			yield return new WaitForSeconds(delay);
 
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
+
 			ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("数据已存档");
 
-			savePointAnim.animation.Play(triggeredAnimName, 1);
-
-			if(waitAnimEndCoroutine != null){
-				StopCoroutine(waitAnimEndCoroutine);
-			}
-
-			waitAnimEndCoroutine = ExcuteCallBackAtEndOfRoleAnim(delegate
-			{            
-				savePointAnim.animation.Play(defaultAnimName, 0);
-			});
-
-
-			StartCoroutine(waitAnimEndCoroutine);         
+			PlayTriggerAnim();
 		}
-        
+
 		/// <summary>
-        /// 等待动画完成后执行回调
-        /// </summary>
-        /// <returns>The call back at end of animation.</returns>
-        /// <param name="cb">Cb.</param>
-        protected IEnumerator ExcuteCallBackAtEndOfRoleAnim(CallBack cb)
-        {
-			yield return new WaitUntil(() => savePointAnim.animation.isCompleted);
-            cb();
-        }
-
-
-		private void OnTriggerEnter2D(Collider2D collision)
+		/// 等待动画完成后执行回调
+		/// </summary>
+		/// <returns>The call back at end of animation.</returns>
+		/// <param name="cb">Cb.</param>
+		protected IEnumerator ExcuteCallBackAtEndOfRoleAnim(CallBack cb)
 		{
-         
-			if(isInSavingData){
-				return;
-			}
-
-			if(collision == null){
-				return;
-			}
-
-			BattlePlayerController bp = collision.GetComponent<BattlePlayerController>();
-
-			if(bp == null){
-				return;
-			}
-
-
-			MapEventTriggered(false, bp);
-
-			isInSavingData = false;
-
+			yield return new WaitUntil(() => lightAnim.animation.isCompleted);
+			cb();
 		}
 
 
+		public void PlayTriggerAnim(){
+			
+			lightAnim.gameObject.SetActive(true);
+
+            lightAnim.animation.Play("default", 1);
+
+            if (waitAnimEndCoroutine != null)
+            {
+                StopCoroutine(waitAnimEndCoroutine);
+            }
+
+            waitAnimEndCoroutine = ExcuteCallBackAtEndOfRoleAnim(delegate
+            {
+                lightAnim.gameObject.SetActive(false);
+            });
+
+
+            StartCoroutine(waitAnimEndCoroutine);
+		}
 
 	}
+
 
 }
 

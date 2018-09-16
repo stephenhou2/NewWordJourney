@@ -25,6 +25,14 @@ namespace WordJourney
 			homeView.HideNoAvalableNetHintHUD();
 		}
 
+
+
+		public void OnConfirmBagToGoldButtonClick(){
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.buttonClickAudioName);
+			homeView.HideBagToGoldHintHUD();
+		}
+
+
 		public void OnExploreButtonClick(){
          
 			if (Player.mainPlayer.needChooseDifficulty) {
@@ -92,7 +100,7 @@ namespace WordJourney
 			});
 
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.exploreSceneBundleName, "ExploreCanvas", () => {
-				if(Player.mainPlayer.isNewPlayer){
+				if(Player.mainPlayer.mapIndexRecord.Count == 0){
 					Player.mainPlayer.InitializeMapIndex();
 				}            
 				ExploreManager.Instance.SetUpExploreView(MapSetUpFrom.Home);            
@@ -101,6 +109,7 @@ namespace WordJourney
 		}
 
 		public void OnRecordButtonClick(){
+
 			GameManager.Instance.soundManager.PlayAudioClip (CommonData.buttonClickAudioName);
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.recordCanvasBundleName, "RecordCanvas", () => {
 				TransformManager.FindTransform("RecordCanvas").GetComponent<RecordViewController> ().SetUpRecordView();

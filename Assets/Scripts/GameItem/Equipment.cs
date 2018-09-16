@@ -71,7 +71,7 @@ namespace WordJourney
 		public int oriHealthRecoveryGain;//生命回复效果增益
 		public int oriMagicRecoveryGain;//魔法回复效果增益
 
-		private int oriPrice; //原始价格 
+		public int oriPrice; //原始价格 
 
 		public int maxHealthGain;//最大生命增益
 		public int maxManaGain;//最大魔法增益
@@ -211,7 +211,12 @@ namespace WordJourney
 		/// 装备点金
 		/// </summary>
 		public void SetToGoldQuality(){
-			ResetPropertiesByQuality (EquipmentQuality.Gold);
+			if(quality == EquipmentQuality.Purple){
+				ResetPropertiesByQuality(EquipmentQuality.Purple);
+			}else{
+				ResetPropertiesByQuality(EquipmentQuality.Gold);
+			}
+
 		}
 
 
@@ -309,8 +314,6 @@ namespace WordJourney
     			case EquipmentQuality.Gray:
     				gainScaler = Random.Range (1.0f, 1.2f);
 
-    				//int randomSeed = Random.Range (0, 100);
-
 					this.price = oriPrice;
 
     				break;
@@ -318,12 +321,10 @@ namespace WordJourney
     				gainScaler = Random.Range (1.2f, 1.3f);
 
 					this.price = oriPrice * 2;
-
-    				//randomSeed = Random.Range (0, 100);
                                    
     				break;
     			case EquipmentQuality.Gold:
-               
+
                     // 特殊金色装备属性不浮动，普通金色装备属性浮动30%-40%
 					if(equipmentGrade >= 10){
 						gainScaler = 1.0f;
@@ -334,7 +335,7 @@ namespace WordJourney
 					}
     				break;
     			case EquipmentQuality.Purple:
-    					
+
     				gainScaler = 1.0f;
     				
 					this.price = oriPrice;

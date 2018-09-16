@@ -68,7 +68,7 @@ namespace WordJourney
 		private List<Sprite> mAllSkillScrollSprites = new List<Sprite>();
 		private List<Sprite> mAllSpecialItemSprites = new List<Sprite>();
 		private List<Sprite> mAllMapSprites = new List<Sprite>();
-		private List<Sprite> mAllMinimapNpcSprites = new List<Sprite>();
+		private List<Sprite> mAllMinimapSprites = new List<Sprite>();
 		private List<Sprite> mAllCharacterSprites = new List<Sprite>();
 		private List<Skill> mAllSkills = new List<Skill>();
 		private List<Sprite> mAllSkillSprites = new List<Sprite>();
@@ -680,19 +680,19 @@ namespace WordJourney
 			}
 		}
 
-		public List<Sprite> allMiniMapNpcSprites{
+		public List<Sprite> allMiniMapSprites{
 			get{
-				if(mAllMinimapNpcSprites.Count == 0){
-					Sprite[] spriteCache = MyResourceManager.Instance.LoadAssets<Sprite>(CommonData.allMinimapNpcSpritesBundleName);
+				if(mAllMinimapSprites.Count == 0){
+					Sprite[] spriteCache = MyResourceManager.Instance.LoadAssets<Sprite>(CommonData.allMinimapSpritesBundleName);
 					for (int i = 0; i < spriteCache.Length;i++){
-						mAllMinimapNpcSprites.Add(spriteCache[i]);
+						mAllMinimapSprites.Add(spriteCache[i]);
 					}
 				}
-				return mAllMinimapNpcSprites;
+				return mAllMinimapSprites;
 			}
 		}
 
-		public List<Sprite> allCHaracterSprites{
+		public List<Sprite> allCharacterSprites{
 			get{
 				if(mAllCharacterSprites.Count == 0){
 					Sprite[] spriteCache = MyResourceManager.Instance.LoadAssets<Sprite>(CommonData.allCharacterSpritesBundleName);
@@ -1035,12 +1035,11 @@ namespace WordJourney
 			}
 		}
 
-		public void ResetGameData(){
-			mChatRecords.Clear();
-			mMapEventsRecords.Clear();
-			mGameSettings = null;
-              
-		}
+		//public void ResetGameData(){
+		//	mChatRecords.Clear();
+		//	mMapEventsRecords.Clear();
+		//	//mGameSettings = null;
+		//}
 
 
 		public void ReleaseDataWithDataTypes(GameDataType[] dataTypes){
@@ -1123,8 +1122,8 @@ namespace WordJourney
     				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allSkillSpritesBundleName,true);
     				break;
 				case GameDataType.MiniMapNpcSprites:
-					mAllMinimapNpcSprites.Clear();
-					MyResourceManager.Instance.UnloadAssetBundle(CommonData.allMinimapNpcSpritesBundleName, true);
+					mAllMinimapSprites.Clear();
+					MyResourceManager.Instance.UnloadAssetBundle(CommonData.allMinimapSpritesBundleName, true);
 					break;
     			case GameDataType.Monsters:
     				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allMonstersBundleName,true);

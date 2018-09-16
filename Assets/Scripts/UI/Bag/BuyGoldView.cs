@@ -13,6 +13,7 @@ namespace WordJourney
 		public BuyGoldFinishView buyGoldFinishView;
 
 
+
 		public void SetUpBuyGoldView(){
 
 			gameObject.SetActive(true);

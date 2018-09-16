@@ -52,7 +52,7 @@ namespace WordJourney
 
 				string characterSpriteName = string.Format("character_{0}", character);
 
-				Sprite characterSprite = GameManager.Instance.gameDataCenter.allCHaracterSprites.Find(delegate (Sprite obj)
+				Sprite characterSprite = GameManager.Instance.gameDataCenter.allCharacterSprites.Find(delegate (Sprite obj)
 				{
 					return obj.name == characterSpriteName;
 				});

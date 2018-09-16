@@ -35,7 +35,8 @@ namespace WordJourney
 		public static string gold_3500_id = "com.yougan233.wordjourney.3500_gold";//3000金币
 		public static string gold_5000_id = "com.yougan233.wordjourney.5000_gold";//5000金币
 
-
+        // 已购买项目如果存在变动，则变动信息放在这个列表中
+		public List<string> buyedGoodsChange = new List<string>();
 
 		private CallBack purchaseSucceedCallback;
 		private CallBack purchaseFailCallback;

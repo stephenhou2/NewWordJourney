@@ -251,68 +251,12 @@ namespace WordJourney
                 ActiveSkillButton activeSkillButton = activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>();
 
 				ActiveSkill activeSkill = player.attachedActiveSkills[i];
-                float coolenPercentage = activeSkillButton.mask.fillAmount;
+				//float coolenPercentage = activeSkillButton.mask.fillAmount;
 
-				switch(activeSkill.skillStatus){
-					case ActiveSkillStatus.None:
-						bool isManaEnough = player.mana >= activeSkill.manaConsume;
-						activeSkillButton.button.interactable = isManaEnough;
-						activeSkillButton.mask.enabled = isManaEnough;
-						if(isManaEnough){
-
-							activeSkillButton.mask.fillAmount = 0;
-
-							if (!activeSkillButton.validTint.gameObject.activeInHierarchy)
-                            {
-								activeSkillButton.validTint.gameObject.SetActive(true);
-                            }
-							if (!activeSkillButton.validTint.animation.isPlaying)
-							{
-								activeSkillButton.validTint.animation.Play("default", 0);
-							}
-
-						}else{
-							activeSkillButton.validTint.gameObject.SetActive(false);
-							activeSkillButton.mask.fillAmount = 1f;
-						}
-						break;
-					case ActiveSkillStatus.Waiting:
-						isManaEnough = player.mana >= activeSkill.manaConsume;
-						activeSkill.skillStatus = ActiveSkillStatus.None;
-						activeSkillButton.button.interactable = isManaEnough;
-						activeSkillButton.mask.enabled = isManaEnough;
-                        activeSkill.coolenPercentage = 0;
-
-						if (isManaEnough)
-                        {
-
-							activeSkillButton.mask.fillAmount = 0;
-
-                            if (!activeSkillButton.validTint.gameObject.activeInHierarchy)
-                            {
-                                activeSkillButton.validTint.gameObject.SetActive(true);
-                            }
-
-							if(!activeSkillButton.validTint.animation.isPlaying){
-								activeSkillButton.validTint.animation.Play("default", 0);
-							}
+				activeSkillButton.UpdateActiveSkillButton(activeSkill);
 
 
-                        }
-                        else
-                        {
-							activeSkillButton.mask.fillAmount = 1f;
-                            activeSkillButton.validTint.gameObject.SetActive(false);
-                        }
-						break;
-					case ActiveSkillStatus.Cooling:
-						activeSkillButton.button.interactable = false;
-						activeSkillButton.mask.enabled = true;
-						activeSkillButton.validTint.gameObject.SetActive(false);
-						break;
 
-                               
-				}
                 
             }
 

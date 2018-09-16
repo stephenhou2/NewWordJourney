@@ -165,12 +165,12 @@ namespace WordJourney
                     break;
 				case SpecialItemType.SiYeCao:
 					Player.mainPlayer.luckInOpenTreasure = 1;
-					GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+					//GameManager.Instance.persistDataManager.SaveCompletePlayerData();
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.siYeCaoAudioName);
                     break;
 				case SpecialItemType.XingYunYuMao:
 					Player.mainPlayer.luckInMonsterTreasure = 1;
-                    GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+                    //GameManager.Instance.persistDataManager.SaveCompletePlayerData();
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.xingYunYuMaoAudioName);
                     break;
 

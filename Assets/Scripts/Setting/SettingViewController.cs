@@ -73,9 +73,7 @@ namespace WordJourney
 		{
 
             settingView.QuitAlertHUD();
-
-           
-
+         
             switch (currentSelectWordTypeIndex)
             {
                 case 0:
@@ -86,8 +84,7 @@ namespace WordJourney
                     break;
                 case 2:
                     GameManager.Instance.gameDataCenter.gameSettings.wordType = WordType.Master;
-                    break;
-
+                    break;               
             }
 
 			Player.mainPlayer.needChooseDifficulty = false;
@@ -103,6 +100,8 @@ namespace WordJourney
                 });
 
             }
+
+
 
 			settingView.UpdateDifficultySelectedIcons();
 

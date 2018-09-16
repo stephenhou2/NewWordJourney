@@ -109,7 +109,7 @@ namespace WordJourney
 		public int maxUnlockLevelIndex;
 
 		// 是否是新建的玩家
-		public bool isNewPlayer = true;
+		public bool isNewPlayer;
       
 		public int maxBagCount{ 
 			get{
@@ -335,9 +335,9 @@ namespace WordJourney
 
 			this.wordContinuousRightRecord = playerData.wordContinuousRightRecord;
 
-			this.totalLearnedWordCount = playerData.totalLearnedWordCount;
+			this.totalLearnedWordCount = LearningInfo.Instance.totalWordCount;
 
-			this.totalUngraspWordCount = playerData.totalUngraspWordCount;
+			this.totalUngraspWordCount = LearningInfo.Instance.ungraspedWordCount;
 
 			this.titleQualifications = playerData.titleQualifications;
 

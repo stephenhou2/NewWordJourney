@@ -9,7 +9,7 @@ namespace WordJourney
 
 	public delegate void LevelTransportSelectCallBack(int levelSelected);
    
-	public class LevelTransportView : MonoBehaviour
+	public class LevelTransportView : ZoomHUD
     {
 		public InstancePool levelChoicePool;
 		public Transform levelChoiceContainer;
@@ -42,6 +42,8 @@ namespace WordJourney
                  
 			this.levelSelectCallBack = levelSelectCallBack;
 			this.quitCallBack = quitCallBack;
+
+			this.gameObject.SetActive(true);
             
 			minLevelChoiceIndex = 0;
           
@@ -49,15 +51,10 @@ namespace WordJourney
 
 			levelChoicePool.AddChildInstancesToPool(levelChoiceContainer);
 
-			bool showUpAndDownButton = false;
+			//bool showUpAndDownButton = false;
 
-			if(npc.transportLevelList == null || npc.transportLevelList.Count == 0){
-				noValidLevelHint.enabled = true;
-				return;
-			}else{
-				noValidLevelHint.enabled = false;
-			}
 
+			bool hasValidTranportLevel = false;
 
 			for (int i = 0; i < npc.transportLevelList.Count; i++)
 			{            
@@ -65,11 +62,12 @@ namespace WordJourney
 
 				if (transportLevel <= Player.mainPlayer.maxUnlockLevelIndex && transportLevel != Player.mainPlayer.currentLevelIndex){
 					maxLevelChoiceIndex = i;
+					hasValidTranportLevel = true;
 				}else{
 					continue;
 				}
 
-				showUpAndDownButton = true;
+				//showUpAndDownButton = true;
 
 				Button levelChoice = levelChoicePool.GetInstance<Button>(levelChoiceModel.gameObject, levelChoiceContainer);
 
@@ -97,11 +95,19 @@ namespace WordJourney
             
 			}
 
-			upButton.gameObject.SetActive(showUpAndDownButton);
-			downButton.gameObject.SetActive(showUpAndDownButton);
-         
-			this.gameObject.SetActive(true);
 
+			noValidLevelHint.enabled = !hasValidTranportLevel;
+			upButton.gameObject.SetActive(hasValidTranportLevel);
+			downButton.gameObject.SetActive(hasValidTranportLevel);
+
+			if(zoomCoroutine != null){
+				StopCoroutine(zoomCoroutine);
+			}
+
+			zoomCoroutine = HUDZoomIn();
+
+			StartCoroutine(zoomCoroutine);
+         
 		}
 
 		public void OnUpButtonClick(){
@@ -141,11 +147,13 @@ namespace WordJourney
 
 		public void OnBackButtonClick(){
 
-			if(quitCallBack != null){
-				quitCallBack();
+			if(zoomCoroutine != null){
+				StopCoroutine(zoomCoroutine);
 			}
 
-			this.gameObject.SetActive(false);
+			zoomCoroutine = HUDZoomOut(quitCallBack);
+
+			StartCoroutine(zoomCoroutine);
 
 		}
         

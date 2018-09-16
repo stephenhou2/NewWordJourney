@@ -13,11 +13,14 @@ namespace WordJourney
 
 		void Awake(){
                  
-			//Player.mainPlayer.AddItem(Item.NewItemWith(604, 10));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(401, 10));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(334, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(525, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(534, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(542, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(535, 1));
+
+			//Player.mainPlayer.AddItem(Item.NewItemWith(59, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(603, 10));
+
 
 			//Player.mainPlayer.AddItem(Item.NewItemWith(512, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(514, 1));
@@ -70,6 +73,8 @@ namespace WordJourney
 
 			bagView.HideAllItemSelectedTintIcon ();
 			bagView.HideAllEquipedEquipmentsSelectIcon();
+
+			//Debug.Log("click " + currentSelectItem);
          
 		}
 
@@ -201,6 +206,8 @@ namespace WordJourney
 		/// 在物品详细信息页点击了使用按钮
 		/// </summary>
 		public void OnUseButtonClick(){
+
+			//Debug.Log("use " + currentSelectItem);
 
 			if (currentSelectItem == null) {
 				return;

@@ -112,6 +112,8 @@ namespace WordJourney
 
 			string purchaseResult = string.Empty;
 
+			bool needUpdatePlayerGold = false;
+
 			if (currentPurchasingItemId.Equals(PurchaseManager.extra_bag_2_id))
             {
                 purchaseResult = "解锁背包2";
@@ -127,6 +129,12 @@ namespace WordJourney
 			else if(currentPurchasingItemId.Equals(PurchaseManager.extra_equipmentSlot_id))
 			{
 				purchaseResult = "解锁装备槽7";
+			}else if(currentPurchasingItemId.Equals(PurchaseManager.gold_500_id)
+			         || currentPurchasingItemId.Equals(PurchaseManager.gold_1600_id)
+			         || currentPurchasingItemId.Equals(PurchaseManager.gold_3500_id)
+			         || currentPurchasingItemId.Equals(PurchaseManager.gold_5000_id))
+			{
+				needUpdatePlayerGold = true;
 			}
 
 			tintHUD.SetUpSingleTextTintHUD(purchaseResult);
@@ -136,6 +144,10 @@ namespace WordJourney
          
 			if(purchaseFinishCallBack != null){
 				purchaseFinishCallBack();
+			}
+
+			if(needUpdatePlayerGold){            
+                GameManager.Instance.persistDataManager.UpdateBuyGoldToPlayerDataFile();
 			}
 
 			QuitPurchasePendingHUD();

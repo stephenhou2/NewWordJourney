@@ -172,7 +172,7 @@ namespace WordJourney
 
             needPosFix = false;
 
-			Sprite miniMapNpcSprite = GameManager.Instance.gameDataCenter.allMiniMapNpcSprites.Find(delegate (Sprite obj)
+			Sprite miniMapNpcSprite = GameManager.Instance.gameDataCenter.allMiniMapSprites.Find(delegate (Sprite obj)
             {
 
 				return obj.name == string.Format("MiniMapNPC_{0}",npc.npcId);

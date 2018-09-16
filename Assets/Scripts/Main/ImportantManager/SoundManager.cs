@@ -44,8 +44,14 @@ namespace WordJourney
 				fullPath = "Audio/BGM/" + bgmName;
 			}
 
+			if(bgmAS.isPlaying && bgmAS.clip.name == bgmName){
+				return;
+			}
+
 
 			AudioClip bgm = GetAudioClip (fullPath);
+
+			Debug.Log(bgm.name);
 
 			bgmAS.clip = bgm;
 

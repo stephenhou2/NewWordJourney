@@ -224,6 +224,83 @@ namespace WordJourney
 			});
 		}
 
+
+		public void UpdateActiveSkillButton(ActiveSkill activeSkill){
+
+			bool isManaEnough = Player.mainPlayer.mana >= activeSkill.manaConsume;
+
+            manaConsume.color = isManaEnough ? Color.white : Color.red;
+
+            switch (activeSkill.skillStatus)
+            {
+                case ActiveSkillStatus.None:
+
+                    button.interactable = isManaEnough;
+
+                    mask.enabled = isManaEnough;
+                    if (isManaEnough)
+                    {
+
+                        mask.fillAmount = 0;
+
+                        if (!validTint.gameObject.activeInHierarchy)
+                        {
+                            validTint.gameObject.SetActive(true);
+                        }
+                        if (!validTint.animation.isPlaying)
+                        {
+                            validTint.animation.Play("default", 0);
+                        }
+
+                    }
+                    else
+                    {
+                        validTint.gameObject.SetActive(false);
+                        mask.fillAmount = 1f;
+                    }
+                    break;
+                case ActiveSkillStatus.Waiting:
+
+                    activeSkill.skillStatus = ActiveSkillStatus.None;
+                    button.interactable = isManaEnough;
+                    mask.enabled = isManaEnough;
+                    activeSkill.coolenPercentage = 0;
+
+                    if (isManaEnough)
+                    {
+
+                        mask.fillAmount = 0;
+
+                        if (!validTint.gameObject.activeInHierarchy)
+                        {
+                            validTint.gameObject.SetActive(true);
+                        }
+
+                        if (!validTint.animation.isPlaying)
+                        {
+                            validTint.animation.Play("default", 0);
+                        }
+
+
+                    }
+                    else
+                    {
+                        mask.fillAmount = 1f;
+                        validTint.gameObject.SetActive(false);
+                    }
+                    break;
+                case ActiveSkillStatus.Cooling:
+                    button.interactable = false;
+                    mask.enabled = true;
+                    validTint.gameObject.SetActive(false);
+                    break;
+
+
+            }
+
+		}
+
+
 		public void Reset()
 		{
 			if (maskTweener != null)

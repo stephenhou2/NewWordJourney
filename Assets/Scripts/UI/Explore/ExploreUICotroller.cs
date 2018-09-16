@@ -213,11 +213,11 @@ namespace WordJourney
 			bottomBarContainer.gameObject.SetActive(false); 
 		}
 
-		public void EnterLevelMaskShowAndHide(CallBack callBack){
+		public void EnterLevelMaskShowAndHide(CallBack callBack,MapSetUpFrom from){
 			if(enterLevelMaskShowAndHideCoroutine != null){
 				StopCoroutine(enterLevelMaskShowAndHideCoroutine);
 			}
-			enterLevelMaskShowAndHideCoroutine = MyEnterLevelMaskShowAndHide(callBack);
+			enterLevelMaskShowAndHideCoroutine = MyEnterLevelMaskShowAndHide(callBack,from);
 			StartCoroutine(enterLevelMaskShowAndHideCoroutine);
 		}
         
@@ -318,7 +318,7 @@ namespace WordJourney
 
 		}
         
-		private IEnumerator MyEnterLevelMaskShowAndHide(CallBack callBack){
+		private IEnumerator MyEnterLevelMaskShowAndHide(CallBack callBack,MapSetUpFrom from){
 			
 			float tempAlpha = 0;
             float fadeSpeed = 3f;
@@ -355,6 +355,18 @@ namespace WordJourney
             }
 
 			transitionMask.gameObject.SetActive(false);
+
+			switch(from){
+				case MapSetUpFrom.LastLevel:
+				case MapSetUpFrom.Home:
+					hintHUD.SetUpSingleTextTintHUD("数据已存档");
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
+					ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
+					break;
+				case MapSetUpFrom.NextLevel:               
+					break;
+
+			}
 		}
 
 
@@ -522,12 +534,18 @@ namespace WordJourney
 				return;
 			}
 			ShowExploreMask();
-			if (!GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished)
+
+			bool newPlayerGuideFinished = GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished;
+
+			if (!newPlayerGuideFinished)
 			{
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
 				{
 					TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(ExploreManager.Instance.MapWalkableEventsStartAction);
 					HideExploreMask();
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
+					hintHUD.SetUpSingleTextTintHUD("数据已存档");
+					ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
 				});
 			}
          
@@ -538,11 +556,11 @@ namespace WordJourney
 			if(myTransitionMaskHideCoroutine != null){
 				StopCoroutine(myTransitionMaskHideCoroutine);
 			}
-			myTransitionMaskHideCoroutine = MyTransitionMaskSlowlyHide(); 
+			myTransitionMaskHideCoroutine = MyTransitionMaskSlowlyHide(newPlayerGuideFinished); 
 			StartCoroutine(myTransitionMaskHideCoroutine);
 		}
 
-		private IEnumerator MyTransitionMaskSlowlyHide(){
+		private IEnumerator MyTransitionMaskSlowlyHide(bool showSaveHint){
 
             float tempAlpha = 1;
 
@@ -567,7 +585,7 @@ namespace WordJourney
                     if (GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished)
                     {
                         ExploreManager.Instance.MapWalkableEventsStartAction();
-                        //tintHUD.SetUpSingleTextTintHUD("一种神秘力量将你传送到了入口位置");
+                        
 						hasEnable = true;
                     }
                
@@ -579,7 +597,11 @@ namespace WordJourney
 			HideExploreMask();
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
             transitionMask.gameObject.SetActive(false);
-            
+			if(showSaveHint){
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
+				hintHUD.SetUpSingleTextTintHUD("数据已存档");
+				ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
+			}
 		}
 
 
@@ -744,13 +766,17 @@ namespace WordJourney
 			wordHUD.SetUpWordHUDAndShow (word);
 		}
 
-        public void SetUpWordDetailHUD(){
+        public void SetUpWordDetailHUD(bool titleQualified){
 
 			if (wordRecords.Count > 0)
             {
                 ExploreManager.Instance.MapWalkableEventsStopAction();
 				HLHWord word = wordRecords[wordRecords.Count - 1];
-				wordDetailHUD.SetUpWordDetailHUD(wordRecords,ExploreManager.Instance.MapWalkableEventsStartAction);
+				wordDetailHUD.SetUpWordDetailHUD(wordRecords,delegate{
+					if(!titleQualified){
+						ExploreManager.Instance.MapWalkableEventsStartAction();
+					}               
+				});
             }
         }
 
@@ -814,9 +840,7 @@ namespace WordJourney
 
 
 		private void ChooseAnswerInWordHUDCallBack(bool isChooseCorrect){
-
-			ExploreManager.Instance.ChooseAnswerInWordHUD (isChooseCorrect);
-
+                 
 #if UNITY_IOS || UNITY_EDITOR
 			bool pushRecommend = CheckPushCommentRecommend();
 
@@ -828,12 +852,15 @@ namespace WordJourney
 			int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
 
 			if(qualificationIndex == -1){
+				ExploreManager.Instance.ChooseAnswerInWordHUD(isChooseCorrect,false);
 				return;
 			}
-
+            
 			LearnTitleQualification qualification = CommonData.learnTitleQualifications[qualificationIndex];
 
 			achievementView.SetUpAchievementView(qualification);
+
+			ExploreManager.Instance.ChooseAnswerInWordHUD(isChooseCorrect, true);
 
 		}
 

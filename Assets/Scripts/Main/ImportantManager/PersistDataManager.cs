@@ -9,14 +9,7 @@ namespace WordJourney
 
 	public class PersistDataManager{
 
-		/// <summary>
-		/// 保存游戏设置，学习信息，玩家游戏数据到本地
-		/// </summary>
-		public void SavePersistDatas(){
-			SaveGameSettings ();
-//			SaveLearnInfo ();
-			SaveCompletePlayerData ();
-		}
+
 
 		/// <summary>
 		/// 保存游戏购买记录
@@ -52,6 +45,36 @@ namespace WordJourney
 
         }       
         
+		public void ResetMiniMapEventsRecord(){
+		         
+			bool hasRecord = DataHandler.FileExist(CommonData.miniMapRecordsFilePath);
+
+            if (hasRecord)
+            {
+
+				DataHandler.DeleteFile(CommonData.miniMapRecordsFilePath);
+            }
+
+			List<MiniMapRecord> miniMapRecords = null;
+
+			DataHandler.SaveInstanceListToFile<MiniMapRecord>(miniMapRecords, CommonData.miniMapRecordsFilePath);
+
+
+		}
+
+		public void ResetCurrentMapEventRecord(){
+			
+			bool hasRecord = DataHandler.FileExist(CommonData.currentMapEventsRecordFilePath);
+
+            if (hasRecord)
+            {            
+				DataHandler.DeleteFile(CommonData.currentMapEventsRecordFilePath);
+            }
+
+			CurrentMapEventsRecord currentMapEventsRecord = null;
+
+			DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
+		}
 
 
 		/// <summary>
@@ -63,16 +86,19 @@ namespace WordJourney
 
 			DataHandler.SaveInstanceDataToFile<GameSettings> (GameManager.Instance.gameDataCenter.gameSettings, gameSettingsPath);
 		}
+        
 
-		/// <summary>
-		/// Saves the learn info.
-		/// </summary>
-//		public void SaveLearnInfo(){
-//			
-//			string learnInfoPath = string.Format ("{0}/{1}", CommonData.persistDataPath, "LearningInfo.json");
-//
-//			DataHandler.SaveInstanceDataToFile<LearningInfo> (learnInfo, learnInfoPath);
-//		}
+		public void UpdateBuyGoldToPlayerDataFile(){
+
+			PlayerData playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.playerDataFilePath);
+
+			playerData.totalGold = Player.mainPlayer.totalGold;
+
+			DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
+
+		}
+
+
 
 		/// <summary>
 		/// Saves the player data.
@@ -166,13 +192,14 @@ namespace WordJourney
 			resetPd.titleQualifications = Player.mainPlayer.titleQualifications;
 			resetPd.isNewPlayer = Player.mainPlayer.isNewPlayer;
 			resetPd.needChooseDifficulty = Player.mainPlayer.needChooseDifficulty;
+			resetPd.mapIndexRecord.Clear();
 
 			resetPd.learnedWordsCountInCurrentExplore = 0;
 			resetPd.correctWordsCountInCurrentExplore = 0;
 
 			resetPd.currentExploreStartDateString = DateTime.Now.ToShortDateString();
-
-
+			resetPd.currentVersion = Player.mainPlayer.currentVersion;
+         
 			Player.mainPlayer.SetUpPlayerWithPlayerData (resetPd);
 
 			Player.mainPlayer.InitializeMapIndex();
@@ -183,11 +210,13 @@ namespace WordJourney
 
 			ResetMapEventsRecord();
 
-			ResetMapEventsRecord();
-
 			ResetSpellItemModels();
 
-			GameManager.Instance.gameDataCenter.ResetGameData();
+			ResetMiniMapEventsRecord();
+
+			ResetCurrentMapEventRecord();
+         
+			//GameManager.Instance.gameDataCenter.ResetGameData();
 
 		}
 

@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	
+
 	public class PronounceManager:MonoBehaviour {
 
 		private class Pronunciation
@@ -23,6 +25,24 @@ namespace WordJourney
 			}
 		}
 
+		private struct PronounceErrorRecord
+        {
+			public int wordId;
+			public PronounceManager.PronounceErrorCode errorCode;
+
+			public PronounceErrorRecord(int wordId,PronounceManager.PronounceErrorCode errorCode){
+				this.wordId = wordId;
+				this.errorCode = errorCode;
+			}
+
+        }
+
+		private enum PronounceErrorCode{
+			ErrorWithURL_1,
+            ErrorWithURL_2,         
+            Unknown
+		}
+
 		private WWW pronunciationWWW;
 
 		// 下载发音的超时时长
@@ -36,12 +56,13 @@ namespace WordJourney
 
 		private HLHWord wordToPronounce;
 
+		private List<PronounceErrorRecord> errorRecords = new List<PronounceErrorRecord>();
+
 
 		//private string pronunciationBaseURL;
 
 		void Awake(){
 			pronunciationCache = new List<Pronunciation> ();
-			//pronunciationBaseURL = "https://wordsound.b0.upaiyun.com/voice";
 		}
 
 		/// <summary>
@@ -57,15 +78,28 @@ namespace WordJourney
 		}
 
 
-		/// <summary>
-		/// 下载单词发音
-		/// </summary>
-		/// <returns>The pronunciation with WW.</returns>
-		/// <param name="word">Word.</param>
-		private WWW GetPronunciationWithWWW(HLHWord word){
-         
-            return new WWW (word.pronounciationURL);
 
+
+
+		private PronounceErrorRecord CheckPronounceErrorExist(HLHWord word){
+
+			PronounceErrorRecord errorRecord = new PronounceErrorRecord(-1,PronounceErrorCode.Unknown);
+            
+
+			for (int i = 0; i < errorRecords.Count; i++)
+            {
+
+                PronounceErrorRecord tempRecord = errorRecords[i];
+
+                if (word.wordId == errorRecord.wordId)
+                {
+					errorRecord = tempRecord;
+					break;
+                }
+
+            }
+
+			return errorRecord;
 		}
 
 		/// <summary>
@@ -78,20 +112,51 @@ namespace WordJourney
 
 			Pronunciation pro = GetPronunciationFromCache (word);
 
-			if (pro == null) {
-				pronunciationWWW = GetPronunciationWithWWW (word);
-				waitDownloadFinishCoroutine = PlayPronunciationWhenFinishDownloading (pronunciationWWW);
-				StartCoroutine (waitDownloadFinishCoroutine);
+			if (pro == null) {      
+
+
+				string pronounceUrl = string.Empty;
+
+                PronounceErrorRecord errorRecord = CheckPronounceErrorExist(word);
+
+                if (errorRecord.wordId == -1)
+                {
+                    pronounceUrl = word.pronounciationURL;
+                }
+                else if (errorRecord.wordId >= 0)
+                {
+                    switch (errorRecord.errorCode)
+                    {
+                        case PronounceErrorCode.ErrorWithURL_1:
+                            pronounceUrl = word.backupProuounciationURL;
+                            break;
+                        case PronounceErrorCode.ErrorWithURL_2:
+                            break;
+                        case PronounceErrorCode.Unknown:
+                            break;
+                    }
+                }
+
+				if(pronounceUrl != string.Empty){
+					pronunciationWWW = new WWW(pronounceUrl);
+                    waitDownloadFinishCoroutine = PlayPronunciationWhenFinishDownloading(pronunciationWWW);
+                    StartCoroutine(waitDownloadFinishCoroutine);
+				}
+
 			} else {
 				GameManager.Instance.soundManager.PlayPronuncitaion (pro.pronunciation,false);
 			}
 
 		}
 
+      
+
 		public void PronunceWordFromURL(string url){
 
 			pronunciationWWW = new WWW(url);
+
             waitDownloadFinishCoroutine = PlayPronunciationWhenFinishDownloading(pronunciationWWW);
+
             StartCoroutine(waitDownloadFinishCoroutine);
 
 		}
@@ -138,7 +203,9 @@ namespace WordJourney
 
 				try
 				{
-					AudioClip pronunciationClip = www.GetAudioClip(false, false, AudioType.MPEG);
+					//AudioClip pronunciationClip = www.GetAudioClip(false, false, AudioType.MPEG);
+
+					AudioClip pronunciationClip = www.GetAudioClip();
                                    
 					if (pronunciationClip == null)
 					{
@@ -156,7 +223,21 @@ namespace WordJourney
 						www.Dispose();
 					}
 				}catch (System.Exception e){
-    				Debug.Log(e);
+
+					Debug.Log(e);
+                    
+					if (www.url.Equals(wordToPronounce.pronounciationURL))
+					{
+						PronounceErrorRecord wdErr = new PronounceErrorRecord(wordToPronounce.wordId, PronounceErrorCode.ErrorWithURL_1);
+						errorRecords.Add(wdErr);
+					}
+					else if (www.url.Equals(wordToPronounce.backupProuounciationURL))
+					{
+						PronounceErrorRecord wdErr = new PronounceErrorRecord(wordToPronounce.wordId, PronounceErrorCode.ErrorWithURL_2);
+						errorRecords.Add(wdErr);
+					}
+    				
+					www.Dispose();
     			}
     		}else {
                 // 下载超时时不播放读音,并关闭下载任务

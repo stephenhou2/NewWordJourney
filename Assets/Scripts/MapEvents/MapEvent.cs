@@ -130,6 +130,10 @@ namespace WordJourney
 			return true;
 		}
 
+		public virtual bool IsFullWordNeedToShowWhenChooseWrong(){
+			return true;
+		}
+
 		/// <summary>
 		/// 遇到地图事件
 		/// </summary>

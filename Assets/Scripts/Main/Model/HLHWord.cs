@@ -63,8 +63,11 @@ namespace WordJourney
         // 是否熟悉
 		public bool isFamiliar;
 
+		public string backupProuounciationURL;
 
-        public HLHWord(int wordId, string spell, string phoneticSymbol, string explaination, string sentenceEN, string sentenceCH, string pronounciationURL, int wordLength, int learnedTimes, int ungraspTimes,bool isFamiliar)
+
+        public HLHWord(int wordId, string spell, string phoneticSymbol, string explaination, string sentenceEN, string sentenceCH, string pronounciationURL,
+		               int wordLength, int learnedTimes, int ungraspTimes,bool isFamiliar,string backupPronounciationURL)
         {
             this.wordId = wordId;
             this.spell = spell;
@@ -77,6 +80,7 @@ namespace WordJourney
             this.learnedTimes = learnedTimes;
             this.ungraspTimes = ungraspTimes;
 			this.isFamiliar = isFamiliar;
+			this.backupProuounciationURL = backupPronounciationURL;
         }
 
 

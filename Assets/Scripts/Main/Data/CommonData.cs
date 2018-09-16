@@ -92,6 +92,7 @@ namespace WordJourney{
 
 
 		public static string dataBaseName = "MyGameDB.db";
+		public static string dbPassword = "Wordcastle_eltsacdrow";
 
 
 		public static string simpleWordsTable = "SIMPLE";
@@ -130,7 +131,7 @@ namespace WordJourney{
 		public static string allSkillScrollSpritesBundleName = "item/skillscroll_icons";
 		public static string allSpecialItemSpritesBundleName = "item/specialitem_icons";
 		public static string allMapSpritesBundleName = "explore/mapicons";
-		public static string allMinimapNpcSpritesBundleName = "explore/minimap_npcs";
+		public static string allMinimapSpritesBundleName = "minimap/icons";
 		public static string allCharacterSpritesBundleName = "item/character_icons";
 		public static string allSkillsBundleName = "skills/skills";
 		public static string allSkillSpritesBundleName = "skills/icons";

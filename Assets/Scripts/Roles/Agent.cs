@@ -205,12 +205,34 @@ namespace WordJourney
 
 		public float crit{
 			get{ return mCrit; }
-			set{ mCrit = value > 0 ? value : 0; }
+			set{ 
+				if(value > 0 && value <= 0.9f + float.Epsilon){
+					mCrit = value;
+				}else if(value <= 0){
+					mCrit = 0;
+				}else if(value > 0.9f + float.Epsilon){
+					mCrit = 0.9f;
+				}
+			}
 		}
 
 		public float dodge {
 			get{ return mDodge; }
-			set{ mDodge = value > 0 ? value : 0; }
+			set
+			{
+				if (value > 0 && value <= 0.9f + float.Epsilon)
+				{
+					mDodge = value;
+				}
+				else if (value <= 0)
+				{
+					mDodge = 0;
+				}
+				else if (value > 0.9f + float.Epsilon)
+				{
+					mDodge = 0.9f;
+				}
+			}
 		}
 
 		public int extraGold{

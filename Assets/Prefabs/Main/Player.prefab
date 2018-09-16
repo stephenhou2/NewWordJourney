@@ -38,10 +38,10 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4681228375716834}
-  - component: {fileID: 114561540337667260}
-  - component: {fileID: 114550566960538874}
+  - component: {fileID: 114329794957373858}
+  - component: {fileID: 114560309138884128}
   m_Layer: 11
-  m_Name: player_back
+  m_Name: PlayerBackwards
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -86,10 +86,10 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4407016370841286}
-  - component: {fileID: 114727982900196970}
   - component: {fileID: 114481905474594704}
+  - component: {fileID: 114727982900196970}
   m_Layer: 11
-  m_Name: player_side
+  m_Name: PlayerSide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -103,10 +103,10 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4163674810584866}
-  - component: {fileID: 114356579132333650}
   - component: {fileID: 114445153202477406}
+  - component: {fileID: 114356579132333650}
   m_Layer: 11
-  m_Name: player_front
+  m_Name: PlayerFronwards
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -171,7 +171,7 @@ Transform:
   m_GameObject: {fileID: 1692192011387874}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.05, y: 1.05, z: 1}
   m_Children: []
   m_Father: {fileID: 224224595478585872}
   m_RootOrder: 2
@@ -184,7 +184,7 @@ Transform:
   m_GameObject: {fileID: 1677165428524594}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.05, y: 1.05, z: 1}
   m_Children: []
   m_Father: {fileID: 224224595478585872}
   m_RootOrder: 3
@@ -197,7 +197,7 @@ Transform:
   m_GameObject: {fileID: 1414918956362656}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.05, y: 1.05, z: 1}
   m_Children: []
   m_Father: {fileID: 224224595478585872}
   m_RootOrder: 1
@@ -312,6 +312,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64e7409c51d33492b9ca86398aac6455, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114329794957373858
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1414918956362656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f825bb5ce93d6ab429dfa508444119b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unityData: {fileID: 11400000, guid: daabf095de2a44a8096779547d6c9601, type: 2}
+  armatureName: player_back
+  isUGUI: 0
+  debugDraw: 0
+  animationName: 
+  _playTimes: 0
+  _timeScale: 1
+  _sortingMode: 0
+  _sortingLayerName: role
+  _sortingOrder: 0
+  _zSpace: 0
+  _flipX: 0
+  _flipY: 0
+  _closeCombineMeshs: 0
 --- !u!114 &114356579132333650
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -397,32 +422,7 @@ MonoBehaviour:
   _flipX: 0
   _flipY: 0
   _closeCombineMeshs: 0
---- !u!114 &114550566960538874
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1414918956362656}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f825bb5ce93d6ab429dfa508444119b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  unityData: {fileID: 11400000, guid: daabf095de2a44a8096779547d6c9601, type: 2}
-  armatureName: player_back
-  isUGUI: 0
-  debugDraw: 0
-  animationName: 
-  _playTimes: 0
-  _timeScale: 1
-  _sortingMode: 0
-  _sortingLayerName: role
-  _sortingOrder: 0
-  _zSpace: 0
-  _flipX: 0
-  _flipY: 0
-  _closeCombineMeshs: 0
---- !u!114 &114561540337667260
+--- !u!114 &114560309138884128
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -491,6 +491,7 @@ MonoBehaviour:
   escapeFromFight: 0
   isInEscaping: 0
   isInPosFixAfterFight: 0
+  isInSkillAttackAnimBeforeHit: 0
   stepCount: {fileID: 114910774419296030}
 --- !u!114 &114628218187340250
 MonoBehaviour:
@@ -594,6 +595,7 @@ MonoBehaviour:
     oriExtraExperienceGain: 0
     oriHealthRecoveryGain: 0
     oriMagicRecoveryGain: 0
+    oriPrice: 0
     maxHealthGain: 0
     maxManaGain: 0
     attackGain: 0
@@ -618,53 +620,7 @@ MonoBehaviour:
     quality: 0
     specProperties: []
     weaponType: 0
-    attachedPropertyGemstone:
-      itemName: 
-      itemDescription: 
-      spriteName: 
-      itemId: -1
-      itemType: 0
-      itemCount: 0
-      price: 0
-      isNewItem: 1
-      maxHealthGainBase: 0
-      maxManaGainBase: 0
-      attackGainBase: 0
-      magicAttackGainBase: 0
-      armorGainBase: 0
-      magicResistGainBase: 0
-      armorDecreaseGainBase: 0
-      magicResistDecreaseGainBase: 0
-      moveSpeedGainBase: 0
-      critGainBase: 0
-      dodgeGainBase: 0
-      critHurtScalerGainBase: 0
-      physicalHurtScalerGainBase: 0
-      magicalHurtScalerGainBase: 0
-      extraGoldGainBase: 0
-      extraExperienceGainBase: 0
-      healthRecoveryGainBase: 0
-      magicRecoveryGainBase: 0
-      maxHealthGain: 0
-      maxManaGain: 0
-      attackGain: 0
-      magicAttackGain: 0
-      armorGain: 0
-      magicResistGain: 0
-      armorDecreaseGain: 0
-      magicResistDecreaseGain: 0
-      moveSpeedGain: 0
-      critGain: 0
-      dodgeGain: 0
-      critHurtScalerGain: 0
-      physicalHurtScalerGain: 0
-      magicalHurtScalerGain: 0
-      extraGoldGain: 0
-      extraExperienceGain: 0
-      healthRecoveryGain: 0
-      magicRecoveryGain: 0
-      grade: 0
-      finalDescription: 
+    attachedPropertyGemstones: []
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -694,6 +650,7 @@ MonoBehaviour:
     oriExtraExperienceGain: 0
     oriHealthRecoveryGain: 0
     oriMagicRecoveryGain: 0
+    oriPrice: 0
     maxHealthGain: 0
     maxManaGain: 0
     attackGain: 0
@@ -718,53 +675,7 @@ MonoBehaviour:
     quality: 0
     specProperties: []
     weaponType: 0
-    attachedPropertyGemstone:
-      itemName: 
-      itemDescription: 
-      spriteName: 
-      itemId: -1
-      itemType: 0
-      itemCount: 0
-      price: 0
-      isNewItem: 1
-      maxHealthGainBase: 0
-      maxManaGainBase: 0
-      attackGainBase: 0
-      magicAttackGainBase: 0
-      armorGainBase: 0
-      magicResistGainBase: 0
-      armorDecreaseGainBase: 0
-      magicResistDecreaseGainBase: 0
-      moveSpeedGainBase: 0
-      critGainBase: 0
-      dodgeGainBase: 0
-      critHurtScalerGainBase: 0
-      physicalHurtScalerGainBase: 0
-      magicalHurtScalerGainBase: 0
-      extraGoldGainBase: 0
-      extraExperienceGainBase: 0
-      healthRecoveryGainBase: 0
-      magicRecoveryGainBase: 0
-      maxHealthGain: 0
-      maxManaGain: 0
-      attackGain: 0
-      magicAttackGain: 0
-      armorGain: 0
-      magicResistGain: 0
-      armorDecreaseGain: 0
-      magicResistDecreaseGain: 0
-      moveSpeedGain: 0
-      critGain: 0
-      dodgeGain: 0
-      critHurtScalerGain: 0
-      physicalHurtScalerGain: 0
-      magicalHurtScalerGain: 0
-      extraGoldGain: 0
-      extraExperienceGain: 0
-      healthRecoveryGain: 0
-      magicRecoveryGain: 0
-      grade: 0
-      finalDescription: 
+    attachedPropertyGemstones: []
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -794,6 +705,7 @@ MonoBehaviour:
     oriExtraExperienceGain: 0
     oriHealthRecoveryGain: 0
     oriMagicRecoveryGain: 0
+    oriPrice: 0
     maxHealthGain: 0
     maxManaGain: 0
     attackGain: 0
@@ -818,53 +730,7 @@ MonoBehaviour:
     quality: 0
     specProperties: []
     weaponType: 0
-    attachedPropertyGemstone:
-      itemName: 
-      itemDescription: 
-      spriteName: 
-      itemId: -1
-      itemType: 0
-      itemCount: 0
-      price: 0
-      isNewItem: 1
-      maxHealthGainBase: 0
-      maxManaGainBase: 0
-      attackGainBase: 0
-      magicAttackGainBase: 0
-      armorGainBase: 0
-      magicResistGainBase: 0
-      armorDecreaseGainBase: 0
-      magicResistDecreaseGainBase: 0
-      moveSpeedGainBase: 0
-      critGainBase: 0
-      dodgeGainBase: 0
-      critHurtScalerGainBase: 0
-      physicalHurtScalerGainBase: 0
-      magicalHurtScalerGainBase: 0
-      extraGoldGainBase: 0
-      extraExperienceGainBase: 0
-      healthRecoveryGainBase: 0
-      magicRecoveryGainBase: 0
-      maxHealthGain: 0
-      maxManaGain: 0
-      attackGain: 0
-      magicAttackGain: 0
-      armorGain: 0
-      magicResistGain: 0
-      armorDecreaseGain: 0
-      magicResistDecreaseGain: 0
-      moveSpeedGain: 0
-      critGain: 0
-      dodgeGain: 0
-      critHurtScalerGain: 0
-      physicalHurtScalerGain: 0
-      magicalHurtScalerGain: 0
-      extraGoldGain: 0
-      extraExperienceGain: 0
-      healthRecoveryGain: 0
-      magicRecoveryGain: 0
-      grade: 0
-      finalDescription: 
+    attachedPropertyGemstones: []
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -894,6 +760,7 @@ MonoBehaviour:
     oriExtraExperienceGain: 0
     oriHealthRecoveryGain: 0
     oriMagicRecoveryGain: 0
+    oriPrice: 0
     maxHealthGain: 0
     maxManaGain: 0
     attackGain: 0
@@ -918,53 +785,7 @@ MonoBehaviour:
     quality: 0
     specProperties: []
     weaponType: 0
-    attachedPropertyGemstone:
-      itemName: 
-      itemDescription: 
-      spriteName: 
-      itemId: -1
-      itemType: 0
-      itemCount: 0
-      price: 0
-      isNewItem: 1
-      maxHealthGainBase: 0
-      maxManaGainBase: 0
-      attackGainBase: 0
-      magicAttackGainBase: 0
-      armorGainBase: 0
-      magicResistGainBase: 0
-      armorDecreaseGainBase: 0
-      magicResistDecreaseGainBase: 0
-      moveSpeedGainBase: 0
-      critGainBase: 0
-      dodgeGainBase: 0
-      critHurtScalerGainBase: 0
-      physicalHurtScalerGainBase: 0
-      magicalHurtScalerGainBase: 0
-      extraGoldGainBase: 0
-      extraExperienceGainBase: 0
-      healthRecoveryGainBase: 0
-      magicRecoveryGainBase: 0
-      maxHealthGain: 0
-      maxManaGain: 0
-      attackGain: 0
-      magicAttackGain: 0
-      armorGain: 0
-      magicResistGain: 0
-      armorDecreaseGain: 0
-      magicResistDecreaseGain: 0
-      moveSpeedGain: 0
-      critGain: 0
-      dodgeGain: 0
-      critHurtScalerGain: 0
-      physicalHurtScalerGain: 0
-      magicalHurtScalerGain: 0
-      extraGoldGain: 0
-      extraExperienceGain: 0
-      healthRecoveryGain: 0
-      magicRecoveryGain: 0
-      grade: 0
-      finalDescription: 
+    attachedPropertyGemstones: []
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -994,6 +815,7 @@ MonoBehaviour:
     oriExtraExperienceGain: 0
     oriHealthRecoveryGain: 0
     oriMagicRecoveryGain: 0
+    oriPrice: 0
     maxHealthGain: 0
     maxManaGain: 0
     attackGain: 0
@@ -1018,53 +840,7 @@ MonoBehaviour:
     quality: 0
     specProperties: []
     weaponType: 0
-    attachedPropertyGemstone:
-      itemName: 
-      itemDescription: 
-      spriteName: 
-      itemId: -1
-      itemType: 0
-      itemCount: 0
-      price: 0
-      isNewItem: 1
-      maxHealthGainBase: 0
-      maxManaGainBase: 0
-      attackGainBase: 0
-      magicAttackGainBase: 0
-      armorGainBase: 0
-      magicResistGainBase: 0
-      armorDecreaseGainBase: 0
-      magicResistDecreaseGainBase: 0
-      moveSpeedGainBase: 0
-      critGainBase: 0
-      dodgeGainBase: 0
-      critHurtScalerGainBase: 0
-      physicalHurtScalerGainBase: 0
-      magicalHurtScalerGainBase: 0
-      extraGoldGainBase: 0
-      extraExperienceGainBase: 0
-      healthRecoveryGainBase: 0
-      magicRecoveryGainBase: 0
-      maxHealthGain: 0
-      maxManaGain: 0
-      attackGain: 0
-      magicAttackGain: 0
-      armorGain: 0
-      magicResistGain: 0
-      armorDecreaseGain: 0
-      magicResistDecreaseGain: 0
-      moveSpeedGain: 0
-      critGain: 0
-      dodgeGain: 0
-      critHurtScalerGain: 0
-      physicalHurtScalerGain: 0
-      magicalHurtScalerGain: 0
-      extraGoldGain: 0
-      extraExperienceGain: 0
-      healthRecoveryGain: 0
-      magicRecoveryGain: 0
-      grade: 0
-      finalDescription: 
+    attachedPropertyGemstones: []
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -1094,6 +870,7 @@ MonoBehaviour:
     oriExtraExperienceGain: 0
     oriHealthRecoveryGain: 0
     oriMagicRecoveryGain: 0
+    oriPrice: 0
     maxHealthGain: 0
     maxManaGain: 0
     attackGain: 0
@@ -1118,53 +895,7 @@ MonoBehaviour:
     quality: 0
     specProperties: []
     weaponType: 0
-    attachedPropertyGemstone:
-      itemName: 
-      itemDescription: 
-      spriteName: 
-      itemId: -1
-      itemType: 0
-      itemCount: 0
-      price: 0
-      isNewItem: 1
-      maxHealthGainBase: 0
-      maxManaGainBase: 0
-      attackGainBase: 0
-      magicAttackGainBase: 0
-      armorGainBase: 0
-      magicResistGainBase: 0
-      armorDecreaseGainBase: 0
-      magicResistDecreaseGainBase: 0
-      moveSpeedGainBase: 0
-      critGainBase: 0
-      dodgeGainBase: 0
-      critHurtScalerGainBase: 0
-      physicalHurtScalerGainBase: 0
-      magicalHurtScalerGainBase: 0
-      extraGoldGainBase: 0
-      extraExperienceGainBase: 0
-      healthRecoveryGainBase: 0
-      magicRecoveryGainBase: 0
-      maxHealthGain: 0
-      maxManaGain: 0
-      attackGain: 0
-      magicAttackGain: 0
-      armorGain: 0
-      magicResistGain: 0
-      armorDecreaseGain: 0
-      magicResistDecreaseGain: 0
-      moveSpeedGain: 0
-      critGain: 0
-      dodgeGain: 0
-      critHurtScalerGain: 0
-      physicalHurtScalerGain: 0
-      magicalHurtScalerGain: 0
-      extraGoldGain: 0
-      extraExperienceGain: 0
-      healthRecoveryGain: 0
-      magicRecoveryGain: 0
-      grade: 0
-      finalDescription: 
+    attachedPropertyGemstones: []
     equiped: 0
     equipmentType: 0
   - itemName: 
@@ -1194,6 +925,7 @@ MonoBehaviour:
     oriExtraExperienceGain: 0
     oriHealthRecoveryGain: 0
     oriMagicRecoveryGain: 0
+    oriPrice: 0
     maxHealthGain: 0
     maxManaGain: 0
     attackGain: 0
@@ -1218,53 +950,7 @@ MonoBehaviour:
     quality: 0
     specProperties: []
     weaponType: 0
-    attachedPropertyGemstone:
-      itemName: 
-      itemDescription: 
-      spriteName: 
-      itemId: -1
-      itemType: 0
-      itemCount: 0
-      price: 0
-      isNewItem: 1
-      maxHealthGainBase: 0
-      maxManaGainBase: 0
-      attackGainBase: 0
-      magicAttackGainBase: 0
-      armorGainBase: 0
-      magicResistGainBase: 0
-      armorDecreaseGainBase: 0
-      magicResistDecreaseGainBase: 0
-      moveSpeedGainBase: 0
-      critGainBase: 0
-      dodgeGainBase: 0
-      critHurtScalerGainBase: 0
-      physicalHurtScalerGainBase: 0
-      magicalHurtScalerGainBase: 0
-      extraGoldGainBase: 0
-      extraExperienceGainBase: 0
-      healthRecoveryGainBase: 0
-      magicRecoveryGainBase: 0
-      maxHealthGain: 0
-      maxManaGain: 0
-      attackGain: 0
-      magicAttackGain: 0
-      armorGain: 0
-      magicResistGain: 0
-      armorDecreaseGain: 0
-      magicResistDecreaseGain: 0
-      moveSpeedGain: 0
-      critGain: 0
-      dodgeGain: 0
-      critHurtScalerGain: 0
-      physicalHurtScalerGain: 0
-      magicalHurtScalerGain: 0
-      extraGoldGain: 0
-      extraExperienceGain: 0
-      healthRecoveryGain: 0
-      magicRecoveryGain: 0
-      grade: 0
-      finalDescription: 
+    attachedPropertyGemstones: []
     equiped: 0
     equipmentType: 0
   attachedActiveSkills: []
@@ -1281,12 +967,15 @@ MonoBehaviour:
   allSpecialItemsInBag: []
   allCollectedCharacters: 
   mapIndexRecord: 
-  currentLevelIndex: 0
-  maxUnlockLevelIndex: 0
+  currentLevelIndex: 30
+  maxUnlockLevelIndex: 30
   isNewPlayer: 1
   allLearnedSkills: []
-  allLearnedSkillsRecord: []
+  allLearnedSkillsRecord:
+  - skillId: 4
+    skillLevel: 1
   skillNumLeft: 0
+  currentVersion: 0
   luckInOpenTreasure: 0
   extraLuckInOpenTreasure: 0
   luckInMonsterTreasure: 0
@@ -1296,6 +985,14 @@ MonoBehaviour:
   totalLearnedWordCount: 0
   totalUngraspWordCount: 0
   titleQualifications: 000000000000
+  needChooseDifficulty: 1
+  totaldefeatMonsterCount: 0
+  learnedWordsCountInCurrentExplore: 0
+  correctWordsCountInCurrentExplore: 0
+  currentExploreStartDateString: 2018-1-1
+  canSave: 0
+  savePosition: {x: 0, y: 0, z: 0}
+  saveTowards: 0
 --- !u!114 &114727982900196970
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1351,11 +1048,12 @@ MonoBehaviour:
   enemyEffectAnimName: 
   skillType: 0
   skillLevel: 1
-  price: 0
+  wordCountToLearn: 0
   hasTriggered: 0
   selfRoleAnimName: attack
   skillCoolenTime: 0
   coolenPercentage: 0
+  skillStatus: 0
   manaConsume: 0
 --- !u!114 &114910774419296030
 MonoBehaviour:
@@ -1511,7 +1209,7 @@ SpriteRenderer:
   m_Size: {x: 5.12, y: 5.12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
 --- !u!222 &222048707714523440
 CanvasRenderer:

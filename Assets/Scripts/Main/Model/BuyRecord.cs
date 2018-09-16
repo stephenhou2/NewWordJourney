@@ -27,6 +27,7 @@ namespace WordJourney
 
 		public bool extraEquipmentSlotUnlocked;
 
+		//private bool bag_4_changeToGold = false;
         
 
 		public void PurchaseSuccess(string productId){

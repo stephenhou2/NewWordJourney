@@ -600,7 +600,7 @@ namespace WordJourney
 
 			StopAllCoroutines ();
 
-			CancelInvoke ();
+			//CancelInvoke ();
 
 		}
 

@@ -965,10 +965,12 @@ namespace WordJourney
 			playerSide.transform.localPosition = Vector3.zero;
 			playerForward.transform.localPosition = Vector3.zero;
 			playerBackWard.transform.localPosition = Vector3.zero;
-			Invoke ("RecheckPlayerPos",0.05f);
+			IEnumerator resetPlayerPosCoroutine = ResetPlayerPos();
+			StartCoroutine(resetPlayerPosCoroutine);
 		}
 
-		private void RecheckPlayerPos(){
+		private IEnumerator ResetPlayerPos(){
+			yield return new WaitForSeconds(0.05f);
 			playerSide.transform.localPosition = Vector3.zero;
 			playerForward.transform.localPosition = Vector3.zero;
 			playerBackWard.transform.localPosition = Vector3.zero;

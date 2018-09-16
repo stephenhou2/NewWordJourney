@@ -81,7 +81,7 @@ namespace WordJourney
 
 			QuitAchievementView(delegate
 			{
-				string hintStr = "未检测到客户端";
+				string hintStr = "分享失败，请稍后重试";
 
 				tintHUD.SetUpSingleTextTintHUD(hintStr);
 			});

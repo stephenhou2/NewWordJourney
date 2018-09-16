@@ -887,31 +887,8 @@ namespace WordJourney
 
             reader.Read();
 
-            int wordId = reader.GetInt32(0);
+			HLHWord word = MyTool.GetWordFromReader(reader);
 
-            string spell = reader.GetString(1);
-
-            string phoneticSymble = reader.GetString(2);
-
-            string explaination = reader.GetString(3);
-
-            string sentenceEN = reader.GetString(4);
-
-            string sentenceCH = reader.GetString(5);
-
-            string pronounciationURL = reader.GetString(6);
-
-            int wordLength = reader.GetInt16(7);
-
-            int learnedTimes = reader.GetInt16(8);
-
-            int ungraspTimes = reader.GetInt16(9);
-
-			bool isFamiliar = reader.GetInt16(10) == 1;
-
-            HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes, isFamiliar);
-
-            
             return word;
         }
 

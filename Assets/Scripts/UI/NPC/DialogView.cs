@@ -121,7 +121,7 @@ namespace WordJourney
 				if (!dialogGroup.isMultiTimes)
                 {
                     GameManager.Instance.persistDataManager.SaveChatRecords(npc.npcId, dialogGroup.dialogGroupId);
-                    GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+                    //GameManager.Instance.persistDataManager.SaveCompletePlayerData();
                 }
 
 				dialogHasFinished = true;

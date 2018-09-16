@@ -8,10 +8,11 @@ using System.IO;
 using System.Text;
 
 
+
 namespace WordJourney{
+	
 	public class MySQLiteHelper : Singleton<MySQLiteHelper> {
-
-
+        
 		private IDbCommand m_command;
 
 		private IDbConnection m_connection;
@@ -25,7 +26,7 @@ namespace WordJourney{
 
 
 		private MySQLiteHelper(){
-
+			
 
 		}
 
@@ -65,7 +66,7 @@ namespace WordJourney{
 			
 			// 根据运行平台获取数据库的存储路径
 			string dbBuildString = GetDbStrBuilder (dbName, directoryPath, password);
-
+                     
 
 			foreach (FileInfo fileInfo in folder.GetFiles("*.db"))
 			{

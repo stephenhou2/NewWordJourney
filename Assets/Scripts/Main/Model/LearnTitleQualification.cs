@@ -78,7 +78,7 @@ namespace WordJourney
                     {
                         Player.mainPlayer.totalLearnedWordCount = learnWordCountFromDB;
                         Player.mainPlayer.totalUngraspWordCount = ungraspWordCountFromDB;
-                        GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+                        
                         return CheckLearnTitleQualification();
 
                     }

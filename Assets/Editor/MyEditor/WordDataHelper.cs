@@ -63,7 +63,8 @@ namespace WordJourney
 					"wordLength",
 					"learnedTimes",
 					"ungraspTimes",
-                    "isFamiliar"
+                    "isFamiliar",
+                    "backupPronounciationURL"
 				},
 				new string[] {
 					"PRIMARY KEY NOT NULL",
@@ -76,6 +77,7 @@ namespace WordJourney
 					"NOT NULL",
 					"NOT NULL",
 					"NOT NULL",
+                    "NOT NULL",
                     "NOT NULL"
 				},
 				new string[] {
@@ -89,7 +91,8 @@ namespace WordJourney
 					"INTEGER DEFAULT 0",
 					"INTEGER DEFAULT 0",
 					"INTEGER DEFAULT 0",
-                    "INTEGER DEFAULT 0"
+                    "INTEGER DEFAULT 0",
+                    "TEXT"
 				});
 
 
@@ -116,10 +119,11 @@ namespace WordJourney
 				string sentenceEN = "'" + datas [3].Replace ("'", "''").Replace('+',',') + "'";
 				string sentenceCH = "'" + datas [4].Replace ("'", "''").Replace('+',',') + "'";
 				string pronounciationURL = "'" + datas [5] + "'";
+				string backupPronounciationURL = string.Format("'https://ssl.gstatic.com/dictionary/static/sounds/oxford/{0}--_gb_1.mp3'",datas[0]);
 
 				string wordLength = (spell.Length-2).ToString();
 
-				string[] wordInput = new string[] {wordId, spell, phoneticSymbol, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, "0", "0","0"};
+				string[] wordInput = new string[] {wordId, spell, phoneticSymbol, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, "0", "0","0",backupPronounciationURL};
 
 				sql.InsertValues (wordsTableName, wordInput);
 

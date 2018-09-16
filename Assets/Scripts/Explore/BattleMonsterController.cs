@@ -32,6 +32,8 @@ namespace WordJourney
 
         public MonsterActiveSkill[] activeSkills ;
 
+		private IEnumerator latelyEnterFightCouroutine;
+
 
 		protected override void Awake(){
 
@@ -115,8 +117,12 @@ namespace WordJourney
 
 			InitTriggeredPassiveSkillCallBacks (this,bpCtr);
 
-			// 怪物比玩家延迟0.3s进入战斗状态
-			Invoke ("Fight", 0.3f);
+			if(latelyEnterFightCouroutine != null){
+				StopCoroutine(latelyEnterFightCouroutine);
+			}
+
+			latelyEnterFightCouroutine = LatelyEnterFight();
+			StartCoroutine(latelyEnterFightCouroutine);
 
 		}
 
@@ -162,6 +168,10 @@ namespace WordJourney
 			UseSkill (currentUsingActiveSkill);
 		}
 
+		private IEnumerator LatelyEnterFight(){
+			yield return new WaitForSeconds(0.3f);
+			Fight();
+		}
 
 			
 		/// <summary>

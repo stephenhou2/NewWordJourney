@@ -93,6 +93,7 @@ namespace WordJourney
 			exploreSceneReady = false;
 
 			bool resetGameData = false;
+
 			if(Player.mainPlayer.health <= 0){
 				resetGameData = true;
 				GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
@@ -124,9 +125,11 @@ namespace WordJourney
 			}else{
 				EnableExploreInteractivity();   
 			}
-            
-			exploreSceneReady = true;
 
+			SaveDataInExplore(false);
+
+			exploreSceneReady = true;
+         
 			MapWalkableEventsStartAction();
          
 		}
@@ -341,7 +344,7 @@ namespace WordJourney
 			expUICtr.SetUpPuzzleView(answerRightCallBack,answerWrongCallBack);
         }
 
-		public void ChooseAnswerInWordHUD(bool isChooseCorret){
+		public void ChooseAnswerInWordHUD(bool isChooseCorrect,bool titleQualified){
 
 			MapEvent me = currentEnteredMapEvent.GetComponent<MapEvent> ();
 
@@ -353,8 +356,15 @@ namespace WordJourney
 			//	//	expUICtr.SetUpNPCWhenWordChooseWrong (mn.npc);
 			//	//}
 			//} else {
-				me.MapEventTriggered (isChooseCorret, battlePlayerCtr);
+			me.MapEventTriggered (isChooseCorrect, battlePlayerCtr);
 			//}
+
+			if (!isChooseCorrect)
+            {
+				if (me.IsFullWordNeedToShowWhenChooseWrong()){
+					expUICtr.SetUpWordDetailHUD(titleQualified);
+				}
+            }
 
 			MapWalkableEventsStartAction ();
 
@@ -744,11 +754,11 @@ namespace WordJourney
             
 				switch (exitType)
 				{
-					case ExitType.LastLevel:
-						SetUpExploreView(MapSetUpFrom.LastLevel);
-						break;
-					case ExitType.NextLevel:
+					case ExitType.ToLastLevel:
 						SetUpExploreView(MapSetUpFrom.NextLevel);
+						break;
+					case ExitType.ToNextLevel:
+						SetUpExploreView(MapSetUpFrom.LastLevel);
 						break;
 				}
 
@@ -771,10 +781,8 @@ namespace WordJourney
 
 			GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
 
-			EnterLevel(level, ExitType.NextLevel);
-
-
-
+			EnterLevel(level, ExitType.ToNextLevel);
+         
 		}
 
 		public void EnterLastLevel(){
@@ -792,6 +800,23 @@ namespace WordJourney
 			//Debug.LogFormat("finish loading time:{0}", Time.time);
 		}
 
+		public void SaveDataInExplore(bool updateDB = true){
+			
+			Player.mainPlayer.savePosition = this.transform.position;
+
+			Player.mainPlayer.saveTowards = battlePlayerCtr.towards;
+         
+            UpdateWordDataBase();
+         
+            GameManager.Instance.persistDataManager.SaveGameSettings();
+            GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+            GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+            GameManager.Instance.persistDataManager.SaveMiniMapRecords();
+            GameManager.Instance.persistDataManager.SaveCurrentMapEventsRecords();
+
+            //MySQLiteHelper.Instance.CloseAllConnections();
+		}
+
 
 		public void QuitExploreScene(){
 
@@ -801,8 +826,8 @@ namespace WordJourney
 
 			GameManager.Instance.soundManager.StopBgm ();
 
-			GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
-			GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+			//GameManager.Instance.persistDataManager.SaveCompletePlayerData ();
+			//GameManager.Instance.persistDataManager.SaveMapEventsRecord();
 			UpdateWordDataBase();
 
 			Camera.main.transform.SetParent (null);

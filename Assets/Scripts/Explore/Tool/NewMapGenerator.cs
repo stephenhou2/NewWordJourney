@@ -177,7 +177,7 @@ namespace WordJourney
 
 		public Transform miniMapReturnExitModel;
 
-		//public Transform miniMapPotModel;
+		public Transform miniMapSavePointModel;
 
 		//public Transform miniMapBucketModel;
 
@@ -260,7 +260,11 @@ namespace WordJourney
 				return mCurrentMiniMapRecord;
 			}
 		}
+        
+        // 记录所有存档点
+		private List<SavePoint> allSavePoints = new List<SavePoint>();
 
+		private SavePoint startSavePoint;
 
 		/// <summary>
 		/// 初始化地图
@@ -286,11 +290,14 @@ namespace WordJourney
 			// 初始化地图事件
 			InitializeMapEvents ();
 
-			InitializePlayerAndSetCamera(from);       
-
-			//DestroyUnusedMonsterAndNpc ();
+			InitializePlayerAndSetCamera(from);   
+            
 
 			int mapIndex = Player.mainPlayer.GetMapIndex();
+
+			ClearMiniMapMasksByRecord(mapIndex);
+
+            //ShowAllSavePointsInMiniMap();
 
 			if(!MapEventsRecord.IsSpellFinish(mapIndex) && Player.mainPlayer.currentLevelIndex < CommonData.maxLevelIndex){
 				GenerateCharacterFragments();
@@ -423,8 +430,8 @@ namespace WordJourney
 			rows = mapData.rowCount;
 			columns = mapData.columnCount;
 
-            // 绘制小地图上每个地图块上的遮罩
-			DrawMiniMapMasks(randomMapIndex);
+			// 绘制小地图上每个地图块上的遮罩
+            DrawMiniMapMasks(randomMapIndex);
 
 			mapWalkableInfoArray = new int[columns, rows];
 			mapWalkableEventInfoArray = new int[columns, rows];
@@ -432,6 +439,8 @@ namespace WordJourney
 			valableNpcIds = new List<int> { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
 			InitMapWalkableInfoAndMonsterPosInfo ();
+
+
 
 			savePosValid = false;
          
@@ -442,24 +451,14 @@ namespace WordJourney
         /// </summary>
 		private void DrawMiniMapMasks(int mapIndex){
 
-			MiniMapRecord miniMapRecord = GameManager.Instance.gameDataCenter.GetMiniMapRecordAt(mapIndex);
-
-			if(miniMapRecord == null){
-				miniMapRecord = new MiniMapRecord(mapIndex,columns,rows);
-               
-				GameManager.Instance.gameDataCenter.allMiniMapRecords.Add(miniMapRecord);
-
-			} 
-
-			if(miniMapRecord.recordArray == null 
-			   || miniMapRecord.mapWidth != columns 
-			   || miniMapRecord.mapHeight != rows)
-			{
-				miniMapRecord.recordArray = new int[columns*rows];
-			}
-
-
-
+			Transform minimapBackground = TransformManager.FindTransform("MiniMapCamera/MiniMapBackplane");
+         
+			if(!minimapBackground.gameObject.activeInHierarchy){
+				minimapBackground.gameObject.SetActive(true);
+			}else if(minimapBackground.GetComponent<Renderer>().sharedMaterial == null){
+				minimapBackground.GetComponent<Renderer>().sharedMaterial = Resources.Load("FloorMaterial") as Material;
+			}         
+                     
 			for (int i = 0; i < rows;i++){            
 
 				for (int j = 0; j < columns;j++){ 
@@ -477,23 +476,52 @@ namespace WordJourney
 					allMiniMapMasks.Add(miniMapMask);
 
 				}
-			}
+			}         
+
+		}
+
+		private void ClearMiniMapMasksByRecord(int mapIndex){
+
+			MiniMapRecord miniMapRecord = currentMiniMapRecord;
+
+            if (miniMapRecord == null)
+            {
+                miniMapRecord = new MiniMapRecord(mapIndex, columns, rows);
+
+                GameManager.Instance.gameDataCenter.allMiniMapRecords.Add(miniMapRecord);
+
+            }
+
+            if (miniMapRecord.recordArray == null
+               || miniMapRecord.mapWidth != columns
+               || miniMapRecord.mapHeight != rows)
+            {
+                miniMapRecord.recordArray = new int[columns * rows];
+            }
+
 
 			for (int i = 0; i < rows; i++)
             {
 
                 for (int j = 0; j < columns; j++)
                 {
-					Vector3 pos = new Vector3(j, i, 0);
-					int indexInArray = i * columns + j;
+                    Vector3 pos = new Vector3(j, i, 0);
+                    int indexInArray = i * columns + j;
 
-					if(miniMapRecord.recordArray[indexInArray] == 1){
-						ClearMiniMapMaskAround(pos,false);
-					}
+                    if (miniMapRecord.recordArray[indexInArray] == 1)
+                    {
+                        ClearMiniMapMaskAround(pos, false);
+                    }
                 }
             }
-
 		}
+
+		//private void ShowAllSavePointsInMiniMap(){
+		//	for (int i = 0; i < allSavePoints.Count;i++){
+		//		ClearMiniMapMaskAround(allSavePoints[i].transform.position);
+		//	}
+		//}
+
 
         /// <summary>
         /// 清除小地图上一个点附近的阴影遮罩
@@ -522,10 +550,7 @@ namespace WordJourney
 
 					int index = columns * j + i;
 
-					allMiniMapMasks[index].gameObject.SetActive(false);
-
-
-
+					allMiniMapMasks[index].gameObject.SetActive(false);               
 				}            
 			}         
 		}
@@ -565,6 +590,8 @@ namespace WordJourney
 			allNPCsInMap.Clear();
 			allTrapsInMap.Clear();
 			allValidCharacterFragmentPositions.Clear();
+			allSavePoints.Clear();
+			startSavePoint = null;
 			//allSavePointsInMap.Clear();
 		}
 
@@ -656,29 +683,7 @@ namespace WordJourney
 				{
 					reader.Read();
 
-					int wordId = reader.GetInt32(0);
-
-					string spell = reader.GetString(1);
-
-					string phoneticSymble = reader.GetString(2);
-
-					string explaination = reader.GetString(3);
-
-					string sentenceEN = reader.GetString(4);
-
-					string sentenceCH = reader.GetString(5);
-
-					string pronounciationURL = reader.GetString(6);
-
-					int wordLength = reader.GetInt16(7);
-
-					int learnedTimes = reader.GetInt16(8);
-
-					int ungraspTimes = reader.GetInt16(9);
-
-					bool isFamiliar = reader.GetInt16(10) == 1;
-
-					HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes,isFamiliar);
+					HLHWord word = MyTool.GetWordFromReader(reader);
 
 					words[index] = word;
 
@@ -722,29 +727,7 @@ namespace WordJourney
 				{
 					reader.Read();
 
-					int wordId = reader.GetInt32(0);
-
-					string spell = reader.GetString(1);
-
-					string phoneticSymble = reader.GetString(2);
-
-					string explaination = reader.GetString(3);
-
-					string sentenceEN = reader.GetString(4);
-
-					string sentenceCH = reader.GetString(5);
-
-					string pronounciationURL = reader.GetString(6);
-
-					int wordLength = reader.GetInt16(7);
-
-					int learnedTimes = reader.GetInt16(8);
-
-					int ungraspTimes = reader.GetInt16(9);
-
-					bool isFamiliar = reader.GetInt16(10) == 1;
-
-					HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes,isFamiliar);
+					HLHWord word = MyTool.GetWordFromReader(reader);
 
 					words[index] = word;
 
@@ -760,31 +743,8 @@ namespace WordJourney
 				reader = mySql.ReadSpecificRowsOfTable(currentWordsTableName, null, condition, true);
 
 				while (reader.Read())
-				{
-
-					int wordId = reader.GetInt32(0);
-
-					string spell = reader.GetString(1);
-
-					string phoneticSymble = reader.GetString(2);
-
-					string explaination = reader.GetString(3);
-
-					string sentenceEN = reader.GetString(4);
-
-					string sentenceCH = reader.GetString(5);
-
-					string pronounciationURL = reader.GetString(6);
-
-					int wordLength = reader.GetInt16(7);
-
-					int learnedTimes = reader.GetInt16(8);
-
-					int ungraspTimes = reader.GetInt16(9);
-
-					bool isFamiliar = reader.GetInt16(10) == 1;
-
-                    HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL, wordLength, learnedTimes, ungraspTimes, isFamiliar);
+				{               
+					HLHWord word = MyTool.GetWordFromReader(reader);
 
 					words[index] = word;
 
@@ -827,6 +787,18 @@ namespace WordJourney
 				{
 					case "playerStart":
 						playerStartPos = new Vector2(posX, posY);
+						mapEvent = mapEventsPool.GetInstanceWithName<SavePoint>(savePointModel.name, savePointModel.gameObject, mapEventsContainer);
+                        mapWalkableInfoArray[posX, posY] = 2;
+                        if (MyTool.ApproximatelySameIntPosition2D(Player.mainPlayer.savePosition, eventTile.position))
+                        {
+                            playerSavePos = eventTile.position;
+                            playerSaveTowards = Player.mainPlayer.saveTowards;
+                            savePosValid = true;
+							startSavePoint = mapEvent as SavePoint;
+                        }
+						Transform miniMapInstance = DrawMiniMapInstance(miniMapSavePointModel, eventTile.position, miniMapInstanceContainer);
+						mapEvent.miniMapInstance = miniMapInstance;
+						allSavePoints.Add(mapEvent as SavePoint);                  
 						break;
 					case "playerReturn":
 						playerReturnPos = new Vector2(posX, posY);
@@ -837,10 +809,10 @@ namespace WordJourney
 						exitPos = new Vector2(posX, posY);
 						allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
 						exit = mapEvent as Exit;
-						exit.SetUpExitType(ExitType.NextLevel);
+						exit.SetUpExitType(ExitType.ToNextLevel);
 						int towardsInt = int.Parse(KVPair.GetPropertyStringWithKey("direction", eventTile.properties));
 						MyTowards towards = (MyTowards)towardsInt;
-						Transform miniMapInstance = DrawMiniMapInstance(miniMapExitModel, eventTile.position, miniMapInstanceContainer);
+						miniMapInstance = DrawMiniMapInstance(miniMapExitModel, eventTile.position, miniMapInstanceContainer);
 						mapEvent.miniMapInstance = miniMapInstance;
 
 						switch (towards)
@@ -865,7 +837,7 @@ namespace WordJourney
 						returnExitPos = new Vector2(posX, posY);
 						allTriggeredMapEvents.Add(mapEvent as TriggeredGear);
 						returnExit = mapEvent as Exit;
-						returnExit.SetUpExitType(ExitType.LastLevel);
+						returnExit.SetUpExitType(ExitType.ToLastLevel);
 						miniMapInstance = DrawMiniMapInstance(miniMapReturnExitModel, eventTile.position, miniMapInstanceContainer);
 						mapEvent.miniMapInstance = miniMapInstance;
 						//miniMapInstance.localPosition = eventTile.position + new Vector2(0, -0.3f);
@@ -1041,8 +1013,7 @@ namespace WordJourney
 						break;
 					case "rebuildStone":
 						mapEvent = mapEventsPool.GetInstanceWithName<RebuildStone>(rebuildStoneModel.name, rebuildStoneModel.gameObject, mapEventsContainer);
-						mapWalkableInfoArray[posX, posY] = 0;
-
+						mapWalkableInfoArray[posX, posY] = 0;                  
 						break;
 					case "savePoint":
 						mapEvent = mapEventsPool.GetInstanceWithName<SavePoint>(savePointModel.name, savePointModel.gameObject, mapEventsContainer);
@@ -1052,8 +1023,11 @@ namespace WordJourney
 							playerSavePos = eventTile.position;
 							playerSaveTowards = Player.mainPlayer.saveTowards;
 							savePosValid = true;
+							startSavePoint = mapEvent as SavePoint;
 						}
-						//allSavePointsInMap.Add(mapEvent as SavePoint);
+						allSavePoints.Add(mapEvent as SavePoint);
+						miniMapInstance = DrawMiniMapInstance(miniMapSavePointModel,eventTile.position, miniMapInstanceContainer);
+                        mapEvent.miniMapInstance = miniMapInstance;
 						break;
 				}
 
@@ -1109,18 +1083,20 @@ namespace WordJourney
 					GameManager.Instance.gameDataCenter.currentMapEventsRecord.puzzleDoorPosArray[0] = door.transform.position;
 					GameManager.Instance.gameDataCenter.currentMapEventsRecord.puzzleDoorPosArray[1] = door.pairDoorPos;
 
-					if (exit != null && HLHGameLevelData.IsBossLevel() && !exitOpen)
-					{
-						exit.SealExit(SealType.Boss);
-					}
 
-					if (returnExit != null)
-					{
-						returnExit.SealExit(SealType.ReturnExit);
-					}
 				}
-
+            
 			}
+
+			if (exit != null && HLHGameLevelData.IsBossLevel() && !exitOpen)
+            {
+                exit.SealExit(SealType.Boss);
+            }
+
+            if (returnExit != null)
+            {
+                returnExit.SealExit(SealType.ReturnExit);
+            }
 		}
             
 
@@ -1441,6 +1417,7 @@ namespace WordJourney
                             towards = playerStartPos.x >= returnExitPos.x ? MyTowards.Right : MyTowards.Left;
                         }
                         position = playerStartPos;
+
     					break;
     				case MapSetUpFrom.NextLevel:
     					if (Mathf.RoundToInt(playerReturnPos.x) == Mathf.RoundToInt(exitPos.x))
@@ -1471,11 +1448,23 @@ namespace WordJourney
     					break;
     			}
 
-         
-
+                  
 				Transform player = Player.mainPlayer.transform.Find("BattlePlayer");
          
 				player.position = position;
+
+    			if (startSavePoint == null)
+    			{
+    				for (int i = 0; i < allSavePoints.Count; i++)
+    				{
+    					if (MyTool.ApproximatelySameIntPosition2D(allSavePoints[i].transform.position, position))
+    					{
+    						startSavePoint = allSavePoints[i];
+    						break;
+    					}
+    				}
+    			}
+
 
 				BattlePlayerController bp = player.GetComponent<BattlePlayerController>();
 				bp.singleMoveEndPos = position;
@@ -1700,6 +1689,10 @@ namespace WordJourney
 						break;
 				}
 			}
+
+    		public void ManuallyPlaySavePointAnim(){
+    			startSavePoint.PlayTriggerAnim();
+    		}
 
 
 			public void PlayDestinationAnim(Vector3 targetPos, bool arrivable)

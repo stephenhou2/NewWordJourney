@@ -129,12 +129,14 @@ namespace WordJourney
             //int posY = Mathf.RoundToInt(this.transform.position.y);
          
 			base.MapEventTriggered(isSuccess, bp);
-         
-			if(isGoldTreasureBox){
+
+			if (isGoldTreasureBox)
+			{
 				MapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
-			}else{
-				GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
 			}
+			//}else{
+			//	GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
+			//}
 
 		}
 	}

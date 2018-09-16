@@ -29,11 +29,18 @@ namespace WordJourney
 
 		public Transform noAvalableNetHintHUD;
 
+		public Transform bagToGoldHintHUD;
+
 		public void SetUpHomeView(){
 
 			GetComponent<Canvas> ().enabled = true;
 
 			LogoBandageStartFloat();
+
+			if(GameManager.Instance.purchaseManager.buyedGoodsChange.Contains("Bag_4")){
+				ShowBagToGoldHintHUD();
+				GameManager.Instance.purchaseManager.buyedGoodsChange.Remove("Bag_4");
+			}
 
 		}
 			
@@ -55,6 +62,15 @@ namespace WordJourney
 
 		public void HideNoAvalableNetHintHUD(){
 			noAvalableNetHintHUD.gameObject.SetActive(false);
+		}
+
+
+		public void ShowBagToGoldHintHUD(){
+			bagToGoldHintHUD.gameObject.SetActive(true);
+		}
+
+		public void HideBagToGoldHintHUD(){
+			bagToGoldHintHUD.gameObject.SetActive(false);
 		}
         
 		/// <summary>

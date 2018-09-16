@@ -123,9 +123,7 @@ namespace WordJourney
                 propertyChange.maxManaChange = maxManaGain;
             
             }
-
-           
-
+         
             if (healthGain > 0)
             {            
 				if (battleAgentController != null)
@@ -133,7 +131,7 @@ namespace WordJourney
 					battleAgentController.AddHealthGainAndShow(healthGain + player.healthRecovery);
 					battleAgentController.SetEffectAnim(CommonData.healthHealEffecttName);
 				}else{
-					player.health += healthGain;
+					player.health += healthGain + player.healthRecovery;
 				}
             }
 
@@ -144,7 +142,7 @@ namespace WordJourney
 					battleAgentController.AddManaGainAndShow(manaGain + player.magicRecovery);
 					battleAgentController.SetEffectAnim(CommonData.magicHealEffectName);
 				}else{
-					player.mana += manaGain;
+					player.mana += manaGain + player.magicRecovery;
 				}
 			}else if(manaGain < 0){
 				player.mana += manaGain;

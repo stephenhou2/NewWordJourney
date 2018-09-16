@@ -11,6 +11,18 @@ namespace WordJourney
 
 	public class GameLoader : MonoBehaviour
 	{
+		private class CheckDataModel{
+
+			public PlayerData playerData;
+			public BuyRecord buyRecord;
+			public List<HLHNPCChatRecord> chatRecords;
+			public List<MapEventsRecord> mapEventsRecords;
+			public GameSettings gameSettings;
+			public List<MiniMapRecord> miniMapRecords;
+			public CurrentMapEventsRecord currentMapEventsRecord;
+			public bool versionUpdate = false;
+
+		}
 
 		public bool alwaysPersistData;
 
@@ -44,9 +56,11 @@ namespace WordJourney
 
 			if (BuyRecord.Instance.bag_4_unlocked)
 			{
+				GameManager.Instance.purchaseManager.buyedGoodsChange.Add("Bag_4");
 				BuyRecord.Instance.bag_4_unlocked = false;
 				GameManager.Instance.persistDataManager.SaveBuyRecord();
 				Player.mainPlayer.totalGold += 500;
+				GameManager.Instance.persistDataManager.UpdateBuyGoldToPlayerDataFile();
 			}
 
 			dataReady = true;
@@ -102,6 +116,8 @@ namespace WordJourney
 
 			IEnumerator initDataCoroutine = null;
 
+			CheckDataModel checkData = new CheckDataModel();
+
 			PlayerData playerData = null;
 			BuyRecord buyRecord = null;
 			List<HLHNPCChatRecord> chatRecords = null;
@@ -120,7 +136,8 @@ namespace WordJourney
 			if (persistDi.Exists)
 			{
 				playerData = GameManager.Instance.persistDataManager.LoadPlayerData();
-				versionUpdate = playerData.currentVersion + 0.001f < GameManager.Instance.currentVersion;
+                playerData.needChooseDifficulty = playerData.isNewPlayer;
+                versionUpdate = playerData.currentVersion + 0.001f < GameManager.Instance.currentVersion;
 			}
 
 			if (versionUpdate)
@@ -137,8 +154,8 @@ namespace WordJourney
 				sql.CloseConnection(CommonData.dataBaseName);
 
 				playerData.currentVersion = GameManager.Instance.currentVersion;
-				playerData.isNewPlayer = true;
-				playerData.needChooseDifficulty = true;
+
+				playerData.isNewPlayer = true;            
 				buyRecord = BuyRecord.Instance;
 				chatRecords = GameManager.Instance.gameDataCenter.chatRecords;
 				mapEventsRecords = GameManager.Instance.gameDataCenter.mapEventsRecords;
@@ -186,6 +203,8 @@ namespace WordJourney
 
 					Player.mainPlayer.currentExploreStartDateString = dateString;
 
+					playerData.currentExploreStartDateString = dateString;
+
 					DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
 
 
@@ -203,7 +222,11 @@ namespace WordJourney
 
 					Player.mainPlayer.currentExploreStartDateString = dateString;
 
-					GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+					//GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+
+					playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
+
+					playerData.currentExploreStartDateString = dateString;
 
 					DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
 
@@ -246,6 +269,8 @@ namespace WordJourney
 
 					Player.mainPlayer.currentExploreStartDateString = dateString;
 
+					playerData.currentExploreStartDateString = dateString;
+
 					DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
 
 				}
@@ -262,8 +287,12 @@ namespace WordJourney
 
 					Player.mainPlayer.currentExploreStartDateString = dateString;
 
-					DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
+					playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
 
+                    playerData.currentExploreStartDateString = dateString;
+
+                    DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
+                
 				}
 			}
 
@@ -307,6 +336,8 @@ namespace WordJourney
 
 			            Player.mainPlayer.currentExploreStartDateString = dateString;
 
+			            playerData.currentExploreStartDateString = dateString;
+
 			            DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
 
     			    }else{
@@ -320,6 +351,10 @@ namespace WordJourney
                         GameManager.Instance.persistDataManager.SaveGameSettings();  
 
 			            Player.mainPlayer.currentExploreStartDateString = dateString;
+
+			            playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
+
+			            playerData.currentExploreStartDateString = dateString;
 
 			            DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
                     }                   
@@ -361,6 +396,8 @@ namespace WordJourney
 
                         Player.mainPlayer.currentExploreStartDateString = dateString;
 
+			            playerData.currentExploreStartDateString = dateString;
+
                         DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
 
                     }else{
@@ -374,6 +411,10 @@ namespace WordJourney
                         GameManager.Instance.persistDataManager.SaveGameSettings();
                            
                         Player.mainPlayer.currentExploreStartDateString = dateString;
+
+			            playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
+
+			            playerData.currentExploreStartDateString = dateString;
 
                         DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
                     }        
@@ -568,19 +609,32 @@ namespace WordJourney
 
 			while (reader.Read())
 			{
+
 				int wordId = reader.GetInt32(0);
-				string spell = reader.GetString(1);
-				string phoneticSymbol = reader.GetString(2);
-				string explaination = reader.GetString(3);
-				string sentenceEN = reader.GetString(4);
-				string sentenceCH = reader.GetString(5);
-				string pronounciationURL = reader.GetString(6);
-				int wordLength = reader.GetInt16(7);
-				int learnedTimes = reader.GetInt16(8);
-				int ungraspTimes = reader.GetInt16(9);
-				bool isFamiliar = reader.GetInt16(10) == 1;
-				HLHWord word = new HLHWord(wordId, spell, phoneticSymbol, explaination, sentenceEN, sentenceCH,
-										   pronounciationURL, wordLength, learnedTimes, ungraspTimes, isFamiliar);
+
+                string spell = reader.GetString(1);
+
+                string phoneticSymble = reader.GetString(2);
+
+                string explaination = reader.GetString(3);
+
+                string sentenceEN = reader.GetString(4);
+
+                string sentenceCH = reader.GetString(5);
+
+                string pronounciationURL = reader.GetString(6);
+
+                int wordLength = reader.GetInt16(7);
+
+                int learnedTimes = reader.GetInt16(8);
+
+                int ungraspTimes = reader.GetInt16(9);
+
+                bool isFamiliar = reader.GetInt16(10) == 1;
+
+				HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL,
+										  wordLength, learnedTimes, ungraspTimes, isFamiliar, "");
+
 				wordsList.Add(word);
 
 			}

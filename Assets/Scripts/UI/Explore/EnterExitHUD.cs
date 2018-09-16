@@ -19,10 +19,10 @@ namespace WordJourney
 			this.exitType = exitType;
 
 			switch(exitType){
-				case ExitType.LastLevel:
+				case ExitType.ToLastLevel:
 					//queryText.text = "是否确认返回上一层?";
 					break;
-				case ExitType.NextLevel:
+				case ExitType.ToNextLevel:
 					queryText.text = "是否确认进入下一层?";
 					break;
 			}
@@ -39,19 +39,23 @@ namespace WordJourney
 
 			ExploreManager.Instance.exploreSceneReady = false;
 
+			MapSetUpFrom from = MapSetUpFrom.LastLevel;
+
 			ExploreManager.Instance.expUICtr.EnterLevelMaskShowAndHide(delegate{
 				switch (exitType)
                 {
-                    case ExitType.LastLevel:
+                    case ExitType.ToLastLevel:
+						from = MapSetUpFrom.NextLevel;
                         //ExploreManager.Instance.EnterLastLevel();
                         break;
-                    case ExitType.NextLevel:
+                    case ExitType.ToNextLevel:
                         ExploreManager.Instance.EnterNextLevel();
+						from = MapSetUpFrom.LastLevel;
                         break;
                 }
 
                 ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-			});
+			},from);
         }
         
 

@@ -7,8 +7,8 @@ namespace WordJourney
 {
 
 	public enum ExitType{
-		NextLevel,
-        LastLevel
+		ToNextLevel,
+        ToLastLevel
 	}
 
 	public enum SealType{
@@ -38,10 +38,10 @@ namespace WordJourney
 		public void SetUpExitType(ExitType exitType){
 			this.exitType = exitType;
 			switch(exitType){
-				case ExitType.LastLevel:
+				case ExitType.ToLastLevel:
 					sealAnimReturn.gameObject.SetActive(true);
 					break;
-				case ExitType.NextLevel:
+				case ExitType.ToNextLevel:
 					sealAnimReturn.gameObject.SetActive(false);
 					break;
 			}
@@ -84,7 +84,7 @@ namespace WordJourney
 			sealAnimReturn.gameObject.SetActive(false);
 
 
-			if(exitType == ExitType.NextLevel){
+			if(exitType == ExitType.ToNextLevel){
 				direction = int.Parse(KVPair.GetPropertyStringWithKey("direction",attachedInfo.properties)); 
 				switch (direction)
                 {
@@ -128,7 +128,7 @@ namespace WordJourney
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
-			if (exitType == ExitType.LastLevel)
+			if (exitType == ExitType.ToLastLevel)
             {
 				ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("返回上一层的出口已经被封印了");
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.exitAudioName);

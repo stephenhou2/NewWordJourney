@@ -147,9 +147,9 @@ namespace WordJourney
 
 			ExploreManager.Instance.expUICtr.EnterLevelMaskShowAndHide(delegate
 			{
-				ExploreManager.Instance.EnterLevel(level, ExitType.NextLevel);
+				ExploreManager.Instance.EnterLevel(level, ExitType.ToNextLevel);
 				//ExploreManager.Instance.expUICtr.transitionMask.gameObject.SetActive(false);
-			});
+			},MapSetUpFrom.LastLevel);
 
 		}
 

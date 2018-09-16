@@ -208,7 +208,7 @@ namespace WordJourney{
 
 		public override string ToString ()
 		{
-			return string.Format ("[Item]:" + itemName + "[\nItemDesc]:" + itemDescription);
+			return string.Format ("[Item]:" + itemName);
 		}
 
 	}

@@ -69,6 +69,11 @@ namespace WordJourney
 			mapItemRenderer.sprite = exaustedSprite;
 		}
 
-    }
+		public override bool IsFullWordNeedToShowWhenChooseWrong()
+		{
+			return false;
+		}
+
+	}
 }
 

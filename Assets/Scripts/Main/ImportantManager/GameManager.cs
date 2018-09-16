@@ -50,12 +50,9 @@ namespace WordJourney
 		// 当前版本信息【格式：x.xx  例如：1.01 代表1.01版，  版本更新时版本号需比上一版大】
 		public float currentVersion;
 
-		private bool hasSavedDataOnQuit;
 
-		private void Awake()
-		{
-			hasSavedDataOnQuit = false;
-		}
+
+	
 
 #warning 如果决定使用scene来进行场景转换打开下面的代码
 		//		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -109,24 +106,24 @@ namespace WordJourney
         */
 		/// </summary>
 		public void SaveDataOnApplicationQuit(){
-			if (hasSavedDataOnQuit)
-            {
-                return;
-            }
+			//if (hasSavedDataOnQuit)
+   //         {
+   //             return;
+   //         }
             
-            if (ExploreManager.Instance != null)
-            {
-                ExploreManager.Instance.UpdateWordDataBase();
-            }
-            persistDataManager.SaveBuyRecord();
-            persistDataManager.SaveGameSettings();
-            persistDataManager.SaveMapEventsRecord();
-            persistDataManager.SaveCompletePlayerData();
-			persistDataManager.SaveMiniMapRecords();
+   //         if (ExploreManager.Instance != null)
+   //         {
+   //             ExploreManager.Instance.UpdateWordDataBase();
+   //         }
+   //         persistDataManager.SaveBuyRecord();
+   //         persistDataManager.SaveGameSettings();
+   //         persistDataManager.SaveMapEventsRecord();
+   //         persistDataManager.SaveCompletePlayerData();
+			//persistDataManager.SaveMiniMapRecords();
 
-            MySQLiteHelper.Instance.CloseAllConnections();
+            //MySQLiteHelper.Instance.CloseAllConnections();
 
-            hasSavedDataOnQuit = true;
+            //hasSavedDataOnQuit = true;
 		}
 
 		void OnLowMemory()
