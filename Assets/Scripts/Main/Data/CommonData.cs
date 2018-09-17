@@ -40,8 +40,9 @@ namespace WordJourney{
 			new KVPair("DiaryData","/Data/DiaryData.json"),
             new KVPair("PuzzleData","/Data/PuzzleDatas.json"),
 			new KVPair("PlayRecordData","/Data/PlayRecords.json"),
-            new KVPair("MiniMapRecordData","/Data/MiniMapRecords.json"),
-			new KVPair("CurrentMapEventsRecordData","/Data/CurrentMapEventsRecord.json")
+			new KVPair("MiniMapRecordData","/Data/CurrentMapMiniMapRecord.json"),
+			new KVPair("CurrentMapEventsRecordData","/Data/CurrentMapEventsRecord.json"),
+			new KVPair("CurrentMapWordsRecordData","/Data/CurrentMapWordsRecord.json")
 		};
 
 
@@ -66,9 +67,10 @@ namespace WordJourney{
 		public static string buyRecordFilePath = persistDataPath + "/BuyRecord.json";
 		public static string chatRecordsFilePath = persistDataPath + "/ChatRecords.json";
 		public static string mapEventsRecordFilePath = persistDataPath + "/MapEventsRecord.json";
+		public static string currentMapWordsRecordsFilePath = persistDataPath + "/CurrentMapWordsRecord.json";
 
 		public static string playRecordsFilePath = persistDataPath + "/PlayRecords.json";
-		public static string miniMapRecordsFilePath = persistDataPath + "/MiniMapRecords.json";
+		public static string miniMapRecordFilePath = persistDataPath + "/CurrentMapMiniMapRecord.json";
 		public static string currentMapEventsRecordFilePath = persistDataPath + "/CurrentMapEventsRecord.json";
 
 
@@ -100,7 +102,7 @@ namespace WordJourney{
 		public static string npcCanvasBundleName = "npc/canvas";
 		public static string shareCanvasBundleName = "share/canvas";
 		public static string allMonstersBundleName = "explore/monsters";
-		public static string allMonstersUIBundleNAme = "explore/monsters_ui";
+		public static string allMonstersUIBundleName = "explore/monsters_ui";
 		public static string allMapNpcBundleName = "explore/npcs";
 		public static string allEffectsBundleName = "skills/effects";
 		public static string finalChapterCanvasBundleName = "finalchapter/canvas";

@@ -40,8 +40,10 @@ namespace WordJourney
 			Diary,
 			Puzzle,
 			PlayRecord,
-			MiniMapRecord,
-            //CurrentMapEventsRecord,
+			CurrentMapMiniMapRecord,
+            MapEventsRecords,
+            CurrentMapEventsRecord,
+            CurrentMapWordsRecord,
 			ExploreScene,
 			BagCanvas,
 			NPCCanvas,
@@ -79,8 +81,8 @@ namespace WordJourney
 		private List<MapEventsRecord> mMapEventsRecords = new List<MapEventsRecord>();
 		private List<DiaryModel> mAllDiaryModels = new List<DiaryModel>();
 		private List<PlayRecord> mAllPlayRecords = new List<PlayRecord>();
-		private List<MiniMapRecord> mAllMiniMapRecords = new List<MiniMapRecord>();
-
+		private MiniMapRecord mCurrentMapMiniMapRecord;
+		private List<HLHWord> mCurrentMapWordRecords = new List<HLHWord>();
 		private List<MonsterData> mAllMonstersData = new List<MonsterData>();
 		private CurrentMapEventsRecord mCurrentMapEventsRecord;
 
@@ -464,41 +466,52 @@ namespace WordJourney
 			});
 			return diaryModel;
 		}
-
-		public List<MiniMapRecord> allMiniMapRecords
+        
+		public MiniMapRecord currentMapMiniMapRecord
 		{         
 			get
 			{
-				if (mAllMiniMapRecords.Count == 0)
+				if (mCurrentMapMiniMapRecord == null)
 				{
-					LoadAllMiniMapRecords();
+					mCurrentMapMiniMapRecord = DataHandler.LoadDataToSingleModelWithPath<MiniMapRecord>(CommonData.miniMapRecordFilePath);;
 				}            
-				return mAllMiniMapRecords;            
-			}         
+				return mCurrentMapMiniMapRecord;            
+			}  
+			set{
+				mCurrentMapMiniMapRecord = value;
+			}
 		}
 
-		private void LoadAllMiniMapRecords(){
 
-			MiniMapRecord[] miniMapRecordsArray = DataHandler.LoadDataToModelsWithPath<MiniMapRecord>(CommonData.miniMapRecordsFilePath);
-
-			for (int i = 0; i < miniMapRecordsArray.Length;i++){
-				mAllMiniMapRecords.Add(miniMapRecordsArray[i]);
-			}         
-		}
 	
 
-		public MiniMapRecord GetMiniMapRecordAt(int mapIndex){
+		//public MiniMapRecord GetMiniMapRecordAt(int mapIndex){
 
-			MiniMapRecord record = null;
+		//	MiniMapRecord record = null;
 
-			record = allMiniMapRecords.Find(delegate (MiniMapRecord obj)
+		//	record = allMiniMapRecords.Find(delegate (MiniMapRecord obj)
+		//	{
+		//		return obj.mapIndex == mapIndex;
+		//	});
+
+		//	return record;
+
+		//}
+
+		public List<HLHWord> currentMapWordRecords{
+			get
 			{
-				return obj.mapIndex == mapIndex;
-			});
-
-			return record;
-
+				if (mCurrentMapWordRecords.Count == 0){
+					HLHWord[] wordsArray = DataHandler.LoadDataToModelsWithPath<HLHWord>(CommonData.currentMapWordsRecordsFilePath);
+					for (int i = 0; i < wordsArray.Length;i++){
+						mCurrentMapWordRecords.Add(wordsArray[i]);
+					}
+				}
+				return mCurrentMapWordRecords;
+			}
 		}
+
+
 
 	
 		public List<Sprite> allEquipmentSprites{
@@ -977,7 +990,7 @@ namespace WordJourney
 
 		public GameObject LoadMonsterUI(string monsterUIName){
 			
-			GameObject[] assets = MyResourceManager.Instance.LoadAssets<GameObject>(CommonData.allMonstersUIBundleNAme, monsterUIName);
+			GameObject[] assets = MyResourceManager.Instance.LoadAssets<GameObject>(CommonData.allMonstersUIBundleName, monsterUIName);
 
             GameObject monsterUI = GameObject.Instantiate(assets[0]);
 
@@ -1128,6 +1141,12 @@ namespace WordJourney
     			case GameDataType.Monsters:
     				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allMonstersBundleName,true);
     				break;
+				case GameDataType.MonstersUI:
+					MyResourceManager.Instance.UnloadAssetBundle(CommonData.allMonstersUIBundleName, true);
+					break;
+				case GameDataType.MonstersData:
+					mAllMonstersData.Clear();
+					break;
     			case GameDataType.NPCs:
     				MyResourceManager.Instance.UnloadAssetBundle(CommonData.allMapNpcBundleName, true);
     				break;
@@ -1142,11 +1161,26 @@ namespace WordJourney
     			case GameDataType.Proverbs:
     				mAllProverbs.Clear();
     				break;
+				case GameDataType.Puzzle:
+					mAllPuzzles.Clear();
+					break;
 				case GameDataType.PlayRecord:
 					mAllPlayRecords.Clear();
 					break;
 				case GameDataType.ChatRecord:
 					mChatRecords.Clear();
+					break;
+				case GameDataType.CurrentMapMiniMapRecord:
+					mCurrentMapMiniMapRecord = null;
+					break;
+				case GameDataType.MapEventsRecords:
+					mMapEventsRecords.Clear();
+					break;
+				case GameDataType.CurrentMapEventsRecord:
+					mCurrentMapEventsRecord = null;
+                    break;
+				case GameDataType.CurrentMapWordsRecord:
+					mCurrentMapWordRecords.Clear();
 					break;
     			case GameDataType.BagCanvas:
     				GameManager.Instance.UIManager.RemoveCanvasCache("BagCanvas");
@@ -1154,6 +1188,9 @@ namespace WordJourney
     			case GameDataType.SettingCanvas:
     				GameManager.Instance.UIManager.RemoveCanvasCache("SettingCanvas");
     				break;
+				case GameDataType.ShareCanvas:
+					GameManager.Instance.UIManager.RemoveCanvasCache("ShareCanvas");
+					break;
     			case GameDataType.NPCCanvas:
     				GameManager.Instance.UIManager.RemoveCanvasCache("NPCCanvas");
     				break;
@@ -1180,6 +1217,14 @@ namespace WordJourney
 			}
 		}
 
+		public void ResetExploreData()
+        {
+            mMapEventsRecords.Clear();
+            mCurrentMapEventsRecord = null;
+            mCurrentMapWordRecords.Clear();
+			mCurrentMapMiniMapRecord = null;
+            mChatRecords.Clear();
+        }
 
 
 	}

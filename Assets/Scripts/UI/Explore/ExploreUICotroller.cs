@@ -88,7 +88,7 @@ namespace WordJourney
 		public CommentRecommendHUD commentRecommendHUD;// 评价引导弹框
 
 		// 记录本关所有背过的单词
-        public List<HLHWord> wordRecords = new List<HLHWord>();
+        public List<HLHWord> wordRecords;
 
 		private IEnumerator enterLevelMaskShowAndHideCoroutine;
 		private IEnumerator myTransitionMaskHideCoroutine;
@@ -107,6 +107,8 @@ namespace WordJourney
 
 
 		public void SetUpExploreCanvas(bool hasResetGame=false){
+
+			wordRecords = GameManager.Instance.gameDataCenter.currentMapWordRecords;
 
 			transitionMask.gameObject.SetActive (true);
 
@@ -130,12 +132,18 @@ namespace WordJourney
 			gameLevelLocationText.text = string.Format("第{0}层",Player.mainPlayer.currentLevelIndex + 1);
             wordRecordText.text = string.Empty;
 
+			if(wordRecords.Count > 0){
+				wordRecordText.text = wordRecords[wordRecords.Count - 1].spell;
+			}
+
+
 			bpUICtr.InitExploreAgentView ();
 			bpUICtr.SetUpExplorePlayerView (Player.mainPlayer);
 			bmUICtr.InitExploreAgentView ();
 
 			GetComponent<Canvas> ().enabled = true;
 			transitionMask.color = Color.black;
+            
 
 
 			if (!Player.mainPlayer.isNewPlayer) {
@@ -177,7 +185,7 @@ namespace WordJourney
 
 			creationView.InitCharacterFragmentsHUD(SetUpSpellItemView);
 
-			wordRecords.Clear();
+			//wordRecords.Clear();
 
 			miniCameraSize = TransformManager.FindTransform("MiniMapCamera").GetComponent<Camera>().orthographicSize;
 
@@ -295,26 +303,26 @@ namespace WordJourney
 				monstersInfoWithDisplayUI.Add(monsterDataWithUIDipslay);
 			}
 
-			if(HLHGameLevelData.IsBossLevel()){
+			//if(HLHGameLevelData.IsBossLevel()){
 					
-				int monsterId = levelData.bossId;
-				string monsterUIName = MyTool.GetMonsterUIName(monsterId);
-				Transform monsterUI = monsterUIPool.GetInstanceWithName<Transform>(monsterUIName);
-				if(monsterUI == null){
-					monsterUI = GameManager.Instance.gameDataCenter.LoadMonsterUI(monsterUIName).transform;
-				}
+			//	int monsterId = levelData.bossId;
+			//	string monsterUIName = MyTool.GetMonsterUIName(monsterId);
+			//	Transform monsterUI = monsterUIPool.GetInstanceWithName<Transform>(monsterUIName);
+			//	if(monsterUI == null){
+			//		monsterUI = GameManager.Instance.gameDataCenter.LoadMonsterUI(monsterUIName).transform;
+			//	}
 
-				MonsterData monsterData = monsterDatas.Find(delegate (MonsterData obj)
-                {
-                    return obj.monsterId == monsterId;
+			//	MonsterData monsterData = monsterDatas.Find(delegate (MonsterData obj)
+   //             {
+   //                 return obj.monsterId == monsterId;
 
-                });
+   //             });
 
-				MonsterUIInfo monsterUIInfo = monsterUI.GetComponent<MonsterUIInfo>();
-				MonsterDataWithUIDipslay monsterDataWithUIDipslay = new MonsterDataWithUIDipslay(monsterData, monsterUI,monsterUIInfo);
+			//	MonsterUIInfo monsterUIInfo = monsterUI.GetComponent<MonsterUIInfo>();
+			//	MonsterDataWithUIDipslay monsterDataWithUIDipslay = new MonsterDataWithUIDipslay(monsterData, monsterUI,monsterUIInfo);
 
-				monstersInfoWithDisplayUI.Add(monsterDataWithUIDipslay);
-			}
+			//	monstersInfoWithDisplayUI.Add(monsterDataWithUIDipslay);
+			//}
 
 		}
         
@@ -764,6 +772,10 @@ namespace WordJourney
 
 		public void SetUpWordHUD(HLHWord word){
 			wordHUD.SetUpWordHUDAndShow (word);
+		}
+
+		public void OnWordRecordDetailButtonClick(){
+			SetUpWordDetailHUD(true, null);
 		}
 
 		public void SetUpWordDetailHUD(bool controlMoveWhenQuit,CallBack quitCallBack){

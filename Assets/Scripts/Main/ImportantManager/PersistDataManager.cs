@@ -47,17 +47,17 @@ namespace WordJourney
         
 		public void ResetMiniMapEventsRecord(){
 		         
-			bool hasRecord = DataHandler.FileExist(CommonData.miniMapRecordsFilePath);
+			bool hasRecord = DataHandler.FileExist(CommonData.miniMapRecordFilePath);
 
             if (hasRecord)
             {
 
-				DataHandler.DeleteFile(CommonData.miniMapRecordsFilePath);
+				DataHandler.DeleteFile(CommonData.miniMapRecordFilePath);
             }
 
 			List<MiniMapRecord> miniMapRecords = null;
 
-			DataHandler.SaveInstanceListToFile<MiniMapRecord>(miniMapRecords, CommonData.miniMapRecordsFilePath);
+			DataHandler.SaveInstanceListToFile<MiniMapRecord>(miniMapRecords, CommonData.miniMapRecordFilePath);
 
 
 		}
@@ -112,14 +112,23 @@ namespace WordJourney
 			DataHandler.SaveInstanceDataToFile<PlayerData> (playerData, playerDataPath, true);
 		}
 
-		public void SaveMiniMapRecords(){
+		public void SaveCurrentMapMiniMapRecord(){
 
-			DataHandler.SaveInstanceListToFile<MiniMapRecord>(GameManager.Instance.gameDataCenter.allMiniMapRecords, CommonData.miniMapRecordsFilePath);
+			DataHandler.SaveInstanceDataToFile<MiniMapRecord>(GameManager.Instance.gameDataCenter.currentMapMiniMapRecord, CommonData.miniMapRecordFilePath);
 
 		}
 
 		public void SaveCurrentMapEventsRecords(){
 			DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(GameManager.Instance.gameDataCenter.currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
+		}
+
+		public void SaveCurrentMapWordsRecords(){
+			DataHandler.SaveInstanceListToFile<HLHWord>(GameManager.Instance.gameDataCenter.currentMapWordRecords, CommonData.currentMapWordsRecordsFilePath);
+		}
+
+		public void ClearCurrentMapWordsRecordAndSave(){
+			GameManager.Instance.gameDataCenter.currentMapWordRecords.Clear();
+			DataHandler.SaveInstanceListToFile<HLHWord>(new List<HLHWord>(), CommonData.currentMapWordsRecordsFilePath);
 		}
 
 

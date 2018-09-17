@@ -24,7 +24,7 @@ namespace WordJourney
 
 		public int bossId;
 
-        // 怪物id列表【这个列表中只存放本层除boss外所有怪物的id信息，不重复】
+		// 怪物id列表【这个列表中只存放本层所有怪物的id(包括boss)信息，不重复】
 		public List<int> monsterIdsOfCurrentLevel = new List<int>();
 
 		public Count goldAmountRange;
@@ -32,15 +32,25 @@ namespace WordJourney
         public static bool HasWiseMan(){
 
             return Player.mainPlayer.currentLevelIndex == 0 
+				         || Player.mainPlayer.currentLevelIndex == 2
 				         || Player.mainPlayer.currentLevelIndex == 4
+				         || Player.mainPlayer.currentLevelIndex == 6
                          || Player.mainPlayer.currentLevelIndex == 9
+				         || Player.mainPlayer.currentLevelIndex == 12
 				         || Player.mainPlayer.currentLevelIndex == 14
+				         || Player.mainPlayer.currentLevelIndex == 17
 				         || Player.mainPlayer.currentLevelIndex == 19
+				         || Player.mainPlayer.currentLevelIndex == 21
                          || Player.mainPlayer.currentLevelIndex == 24
+				         || Player.mainPlayer.currentLevelIndex == 26
                          || Player.mainPlayer.currentLevelIndex == 29
+				         || Player.mainPlayer.currentLevelIndex == 31
 				         || Player.mainPlayer.currentLevelIndex == 34
+				         || Player.mainPlayer.currentLevelIndex == 37
 				         || Player.mainPlayer.currentLevelIndex == 39
-				         || Player.mainPlayer.currentLevelIndex == 44 
+				         || Player.mainPlayer.currentLevelIndex == 42
+				         || Player.mainPlayer.currentLevelIndex == 44
+				         || Player.mainPlayer.currentLevelIndex == 47
                          || Player.mainPlayer.currentLevelIndex == 49
 				         || Player.mainPlayer.currentLevelIndex == 50;
 

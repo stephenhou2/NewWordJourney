@@ -14,6 +14,8 @@ namespace WordJourney
 
 		public Transform blinkAnim;
 
+		private int mapIndex;
+
 		public override void AddToPool(InstancePool pool)
 		{
 			bc2d.enabled = false;
@@ -22,12 +24,20 @@ namespace WordJourney
 
 		public override void InitializeWithAttachedInfo(int mapIndex, MapAttachedInfoTile attachedInfo)
 		{
+			this.mapIndex = mapIndex;         
 			transform.position = attachedInfo.position;
 			bc2d.enabled = true;
-			isExausted = false;
-			mapItemRenderer.sprite = normalSprite;
-			blinkAnim.gameObject.SetActive(true);
+
 			SetSortingOrder(-(int)(attachedInfo.position.y));
+			if(GameManager.Instance.gameDataCenter.currentMapEventsRecord.IsMapEventTriggered(mapIndex,attachedInfo.position)){
+				isExausted = true;
+				mapItemRenderer.sprite = exaustedSprite;
+				blinkAnim.gameObject.SetActive(false);
+			}else{
+				isExausted = false;
+                mapItemRenderer.sprite = normalSprite;
+                blinkAnim.gameObject.SetActive(true);
+			}
 		}
         
 		public override void EnterMapEvent(BattlePlayerController bp)
@@ -48,6 +58,7 @@ namespace WordJourney
 			isExausted = true;
 			mapItemRenderer.sprite = exaustedSprite;
             blinkAnim.gameObject.SetActive(false);
+			GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
 		}
         
 

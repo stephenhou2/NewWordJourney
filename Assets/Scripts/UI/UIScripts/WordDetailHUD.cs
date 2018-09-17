@@ -42,6 +42,7 @@ namespace WordJourney{
 
 			indexTint.text = string.Format("{0}/{1}", wordRecords.Count, wordRecords.Count);
 
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = true;
 
 			this.gameObject.SetActive(true);
             if (zoomCoroutine != null)
@@ -154,6 +155,8 @@ namespace WordJourney{
 			pronounceNotAvalableHintText.enabled = false;
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
+
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 
             if(quitCallBack != null){
                 quitCallBack();

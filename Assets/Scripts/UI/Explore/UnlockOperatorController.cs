@@ -155,7 +155,7 @@ namespace WordJourney
 
 			int lockHoleVisableWidth = 90 - difficulty * 7;
 
-			int lockHoleValidWidth = 68 - difficulty * 4;
+			int lockHoleValidWidth = 60 - difficulty * 4;
 
             lockHoleValidZoneEdgeLeft = lockHoleVisableTrans.rect.width/2;
             lockHoleValidZoneEdgeRight = lockMovePane.rect.width - lockHoleVisableTrans.rect.width/2;

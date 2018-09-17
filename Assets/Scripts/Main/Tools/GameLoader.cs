@@ -18,7 +18,7 @@ namespace WordJourney
 			public List<HLHNPCChatRecord> chatRecords;
 			public List<MapEventsRecord> mapEventsRecords;
 			public GameSettings gameSettings;
-			public List<MiniMapRecord> miniMapRecords;
+			public MiniMapRecord miniMapRecord;
 			public CurrentMapEventsRecord currentMapEventsRecord;
 			public bool versionUpdate = false;
 
@@ -117,7 +117,7 @@ namespace WordJourney
             DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(checkData.chatRecords, CommonData.chatRecordsFilePath);
             DataHandler.SaveInstanceListToFile<MapEventsRecord>(checkData.mapEventsRecords, CommonData.mapEventsRecordFilePath);
             DataHandler.SaveInstanceDataToFile<GameSettings>(checkData.gameSettings, CommonData.gameSettingsDataFilePath);
-            DataHandler.SaveInstanceListToFile<MiniMapRecord>(checkData.miniMapRecords, CommonData.miniMapRecordsFilePath);
+			DataHandler.SaveInstanceDataToFile<MiniMapRecord>(checkData.miniMapRecord, CommonData.miniMapRecordFilePath);
             DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(checkData.currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
 
             sql.GetConnectionWith(CommonData.dataBaseName);
@@ -140,6 +140,9 @@ namespace WordJourney
 
                 checkData.playerData.currentExploreStartDateString = dateString;
 			}
+
+			Player.mainPlayer.currentVersion = GameManager.Instance.currentVersion;
+			checkData.playerData.currentVersion = GameManager.Instance.currentVersion;
            
 			DataHandler.SaveInstanceDataToFile<PlayerData>(checkData.playerData, CommonData.playerDataFilePath,true);
 			DataHandler.SaveInstanceDataToFile<BuyRecord>(checkData.buyRecord, CommonData.buyRecordFilePath,true);
@@ -161,6 +164,9 @@ namespace WordJourney
 			PlayerData playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
 
             playerData.currentExploreStartDateString = dateString;
+
+			Player.mainPlayer.currentVersion = GameManager.Instance.currentVersion;
+			playerData.currentVersion = GameManager.Instance.currentVersion;
 
 			DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath,true);
 
@@ -204,8 +210,8 @@ namespace WordJourney
 				checkData.chatRecords = GameManager.Instance.gameDataCenter.chatRecords;
 				checkData.mapEventsRecords = GameManager.Instance.gameDataCenter.mapEventsRecords;
 				checkData.gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
-				if(File.Exists(CommonData.miniMapRecordsFilePath)){
-					checkData.miniMapRecords = GameManager.Instance.gameDataCenter.allMiniMapRecords;
+				if(File.Exists(CommonData.miniMapRecordFilePath)){
+					checkData.miniMapRecord = GameManager.Instance.gameDataCenter.currentMapMiniMapRecord;
 				}
 				if(File.Exists(CommonData.currentMapEventsRecordFilePath)){
 					checkData.currentMapEventsRecord = GameManager.Instance.gameDataCenter.currentMapEventsRecord;

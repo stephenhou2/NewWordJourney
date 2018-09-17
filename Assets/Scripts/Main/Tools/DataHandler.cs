@@ -14,7 +14,7 @@ namespace WordJourney
 
 			string jsonStr = LoadDataString (fileName);
 
-			bool decode = !StringEncryption.isEncryptionOn && !(jsonStr.StartsWith("{") && jsonStr.EndsWith("}"));
+			bool decode = StringEncryption.isEncryptionOn && !(jsonStr.StartsWith("{") && jsonStr.EndsWith("}"));
 
             if (decode)
             {
@@ -36,7 +36,7 @@ namespace WordJourney
          
 			string jsonStr = LoadDataString (fileName);
 
-			bool decode = !StringEncryption.isEncryptionOn && !(jsonStr.StartsWith("{") && jsonStr.EndsWith("}"));
+			bool decode = StringEncryption.isEncryptionOn && !(jsonStr.StartsWith("{") && jsonStr.EndsWith("}"));
 
 			if (decode)
             {

@@ -254,8 +254,7 @@ namespace WordJourney
 			{
 				if (mCurrentMiniMapRecord == null)
 				{
-					int currentMapIndex = Player.mainPlayer.GetMapIndex();
-					mCurrentMiniMapRecord = GameManager.Instance.gameDataCenter.GetMiniMapRecordAt(currentMapIndex);
+					mCurrentMiniMapRecord = GameManager.Instance.gameDataCenter.currentMapMiniMapRecord;
 				}
 				return mCurrentMiniMapRecord;
 			}
@@ -488,9 +487,7 @@ namespace WordJourney
             {
                 miniMapRecord = new MiniMapRecord(mapIndex, columns, rows);
 
-				//currentMiniMapRecord = miniMapRecord;
-                            
-                GameManager.Instance.gameDataCenter.allMiniMapRecords.Add(miniMapRecord);
+				GameManager.Instance.gameDataCenter.currentMapMiniMapRecord = miniMapRecord;
 
             }
 

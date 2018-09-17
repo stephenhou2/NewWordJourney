@@ -236,6 +236,7 @@ namespace WordJourney
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.lockOffAudioName);
 				IEnumerator delayCoroutine = DelayWhenCharactersAllFillCorrect();
 				StartCoroutine (delayCoroutine);
+				OnPronunceButtonClick();
 			}
 
 

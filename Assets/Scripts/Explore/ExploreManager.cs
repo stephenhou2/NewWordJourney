@@ -92,11 +92,9 @@ namespace WordJourney
 
 			bool resetGameData = false;
 
-			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData();
-
-
-
-			Player.mainPlayer.SetUpPlayerWithPlayerData(playerData);
+			//PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData();
+                     
+			//Player.mainPlayer.SetUpPlayerWithPlayerData(playerData);
 
 			if(Player.mainPlayer.health <= 0){
 				resetGameData = true;
@@ -112,8 +110,13 @@ namespace WordJourney
             DisableExploreInteractivity();
 
 			newMapGenerator.SetUpMap(from);
-
+         
             Player.mainPlayer.ClearCollectedCharacters();
+
+			Player.mainPlayer.savePosition = battlePlayerCtr.transform.position;
+            Player.mainPlayer.saveTowards = battlePlayerCtr.towards;
+
+            SaveDataInExplore(false);
 
 			expUICtr.SetUpExploreCanvas(resetGameData);
 
@@ -130,7 +133,7 @@ namespace WordJourney
 				EnableExploreInteractivity();   
 			}
 
-			SaveDataInExplore(false);
+
 
 			exploreSceneReady = true;
          
@@ -714,6 +717,7 @@ namespace WordJourney
 
 			correctWordList.Clear();
 			wrongWordList.Clear();
+			//GameManager.Instance.gameDataCenter.currentMapWordRecords.Clear();
 
 			IEnumerator enterLevelCoroutine = LatelyEnterLevel(level, exitType);
 
@@ -742,7 +746,7 @@ namespace WordJourney
             if (player.currentLevelIndex > player.maxUnlockLevelIndex)
             {
                 player.maxUnlockLevelIndex = player.currentLevelIndex;
-            }
+            }         
 
 			if (player.currentLevelIndex <= CommonData.maxLevelIndex)
 			{            
@@ -766,18 +770,23 @@ namespace WordJourney
 			UpdateWordDataBase();
 
 			int level = Player.mainPlayer.currentLevelIndex + 1;
-         
+			Player.mainPlayer.currentLevelIndex = level;
 
 			if(Player.mainPlayer.maxUnlockLevelIndex < level){
 				Player.mainPlayer.maxUnlockLevelIndex = level;
 			}
 
-			//GameManager.Instance.persistDataManager.SaveMapEventsRecord();
-
-			GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
+			ResetExploreData();
 
 			EnterLevel(level, ExitType.ToNextLevel);
          
+		}
+
+		private void ResetExploreData(){
+			GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
+            //GameManager.Instance.gameDataCenter.currentMapWordRecords.Clear();
+			GameManager.Instance.persistDataManager.ClearCurrentMapWordsRecordAndSave();
+            GameManager.Instance.gameDataCenter.currentMapMiniMapRecord = null;
 		}
 
 		public void EnterLastLevel(){
@@ -804,9 +813,10 @@ namespace WordJourney
             GameManager.Instance.persistDataManager.SaveGameSettings();
             GameManager.Instance.persistDataManager.SaveMapEventsRecord();
             GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-            GameManager.Instance.persistDataManager.SaveMiniMapRecords();
+			GameManager.Instance.persistDataManager.SaveCurrentMapMiniMapRecord();
             GameManager.Instance.persistDataManager.SaveCurrentMapEventsRecords();
 			GameManager.Instance.persistDataManager.SaveChatRecords();
+			GameManager.Instance.persistDataManager.SaveCurrentMapWordsRecords();
             //MySQLiteHelper.Instance.CloseAllConnections();
 		}
 
@@ -835,6 +845,8 @@ namespace WordJourney
 
 			TransformManager.FindTransform("ExploreCanvas").GetComponent<ExploreUICotroller>().QuitExplore();
 
+
+
 			GameManager.Instance.gameDataCenter.ReleaseDataWithDataTypes(new GameDataCenter.GameDataType[] {
 				GameDataCenter.GameDataType.GameLevelDatas,
 				GameDataCenter.GameDataType.EquipmentModels,
@@ -846,21 +858,29 @@ namespace WordJourney
 				GameDataCenter.GameDataType.SkillGemstoneModels,
 				GameDataCenter.GameDataType.SkillGemstoneSprites,
 				GameDataCenter.GameDataType.SpellItemModels,
+				GameDataCenter.GameDataType.SkillScrollModels,
+				GameDataCenter.GameDataType.SkillScrollSprites,
 				GameDataCenter.GameDataType.CharacterSprites,
 				GameDataCenter.GameDataType.ChatRecord,
 				GameDataCenter.GameDataType.Diary,
 				GameDataCenter.GameDataType.Monsters,
+				GameDataCenter.GameDataType.MonstersUI,
+				GameDataCenter.GameDataType.MonstersData,
 				GameDataCenter.GameDataType.NPCs,
 				GameDataCenter.GameDataType.Skills,
 				GameDataCenter.GameDataType.SkillSprites,
 				GameDataCenter.GameDataType.Effects,
-				GameDataCenter.GameDataType.GameLevelDatas,
 				GameDataCenter.GameDataType.MapSprites,
 				GameDataCenter.GameDataType.MapTileAtlas,
 				GameDataCenter.GameDataType.MiniMapSprites,
-				GameDataCenter.GameDataType.MiniMapRecord,
+				GameDataCenter.GameDataType.CurrentMapMiniMapRecord,
+				GameDataCenter.GameDataType.MapEventsRecords,
+				GameDataCenter.GameDataType.CurrentMapEventsRecord,
+				GameDataCenter.GameDataType.CurrentMapWordsRecord,            
 				GameDataCenter.GameDataType.Proverbs,
+				GameDataCenter.GameDataType.Puzzle,
 				GameDataCenter.GameDataType.BagCanvas,
+				GameDataCenter.GameDataType.ShareCanvas,
 				GameDataCenter.GameDataType.NPCCanvas,
 				GameDataCenter.GameDataType.ExploreScene,
 				GameDataCenter.GameDataType.SettingCanvas,
