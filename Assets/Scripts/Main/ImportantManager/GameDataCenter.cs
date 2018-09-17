@@ -25,7 +25,7 @@ namespace WordJourney
 			SpecialItemSprites,
 			SkillScrollSprites,
 			MapSprites,
-			MiniMapNpcSprites,
+			MiniMapSprites,
 			MapTileAtlas,
 			CharacterSprites,
 			Skills,
@@ -1121,7 +1121,7 @@ namespace WordJourney
     				mAllSkillSprites.Clear ();
     				MyResourceManager.Instance.UnloadAssetBundle (CommonData.allSkillSpritesBundleName,true);
     				break;
-				case GameDataType.MiniMapNpcSprites:
+				case GameDataType.MiniMapSprites:
 					mAllMinimapSprites.Clear();
 					MyResourceManager.Instance.UnloadAssetBundle(CommonData.allMinimapSpritesBundleName, true);
 					break;

@@ -14,6 +14,13 @@ namespace WordJourney
 
 			string jsonStr = LoadDataString (fileName);
 
+			bool decode = !StringEncryption.isEncryptionOn && !(jsonStr.StartsWith("{") && jsonStr.EndsWith("}"));
+
+            if (decode)
+            {
+                jsonStr = StringEncryption.Decode(jsonStr);
+            }
+
 			T[] dataArray = null;
 
 			//模型转换
@@ -26,9 +33,15 @@ namespace WordJourney
 		}
 
 		public static T LoadDataToSingleModelWithPath<T>(string fileName){
-        
-
+         
 			string jsonStr = LoadDataString (fileName);
+
+			bool decode = !StringEncryption.isEncryptionOn && !(jsonStr.StartsWith("{") && jsonStr.EndsWith("}"));
+
+			if (decode)
+            {
+                jsonStr = StringEncryption.Decode(jsonStr);
+            }
 
 			T instance = default(T);
 
@@ -70,29 +83,56 @@ namespace WordJourney
 			}
 
 		}
+
+		public static void SaveDataString(string data, string fileName){
+
+			StreamWriter sw = new StreamWriter(fileName, false);
+         
+            //写文件
+            try
+            {
+				sw.Write(data);
+                sw.Dispose();
+
+            }
+            catch (Exception e)
+            {
+				Debug.Log(e);
+				sw.Dispose();
+            }
+
+		}
 			
 
-		public static void SaveInstanceDataToFile<T>(T instance,string filePath){
-			
+		public static void SaveInstanceDataToFile<T>(T instance,string filePath,bool encrypt = false){
+
+			StreamWriter sw = new StreamWriter(filePath, false);
+
 			try{
 
 				string stringData = JsonUtility.ToJson(instance);
 
-				StreamWriter sw = new StreamWriter(filePath,false);
-
+				if(encrypt && StringEncryption.isEncryptionOn){
+					stringData = StringEncryption.Encode(stringData);
+				}
+            
 				sw.Write(stringData);
 
 				sw.Dispose();
 
-			}catch(System.Exception e){
-				
+			}catch(Exception e){
+
+				sw.Dispose();
+
 				Debug.Log (e);
 
 			}
 
 		}
 
-		public static void SaveInstanceListToFile<T>(List<T> instances,string filePath){
+		public static void SaveInstanceListToFile<T>(List<T> instances,string filePath, bool encrypt = false){
+
+			StreamWriter sw = new StreamWriter(filePath, false);
 
 			try{
 
@@ -100,15 +140,20 @@ namespace WordJourney
 
 				arrayJsonUtilityHelper.Items = instances;
 
-				string stringData = JsonUtility.ToJson(arrayJsonUtilityHelper);
+				string stringData = JsonUtility.ToJson(arrayJsonUtilityHelper);            
 
-				StreamWriter sw = new StreamWriter(filePath,false);
+				if (encrypt && StringEncryption.isEncryptionOn)
+                {
+                    stringData = StringEncryption.Encode(stringData);
+                }
 
 				sw.Write(stringData);
 
 				sw.Dispose();
 
-			}catch(System.Exception e){
+			}catch(Exception e){
+
+				sw.Dispose();
 
 				Debug.Log (e);
 
@@ -179,8 +224,8 @@ namespace WordJourney
 					File.Delete(destFileName);
 				}
 				File.Copy (sourceFileName, destFileName);
-			}catch(System.Exception e){
-				throw(e);
+			}catch(Exception e){
+				Debug.Log(e);
 			}
 
 		}

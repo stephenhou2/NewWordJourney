@@ -8,6 +8,32 @@
 
 	public class EditHelper {
           
+		//[MenuItem("EditHelper/EncodeTest")]
+		//public static void EncodeTest(){
+
+		//	string testFilePath = "/Users/houlianghong/Desktop/EncryptionTest/test.json";
+
+		//	string encodeFilePath = "/Users/houlianghong/Desktop/EncryptionTest/encode.json";
+            
+		//	string decodeFilePaht = "/Users/houlianghong/Desktop/EncryptionTest/decode.json";
+
+		//	string source = DataHandler.LoadDataString(testFilePath);
+
+		//	string encode = StringEncryption.Encode(source);
+
+		//	DataHandler.SaveDataString(encode, encodeFilePath);
+
+		//	encode = DataHandler.LoadDataString(encodeFilePath);
+
+		//	string decode = StringEncryption.Decode(encode);
+
+		//	DataHandler.SaveDataString(decode, decodeFilePaht);
+
+
+		//}
+
+
+
 		[MenuItem("EditHelper/GenerateMapEventsRecords")]
 		public static void GenerateMapEventsRecords()
 		{

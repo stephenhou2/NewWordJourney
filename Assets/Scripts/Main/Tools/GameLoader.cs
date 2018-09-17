@@ -22,6 +22,10 @@ namespace WordJourney
 			public CurrentMapEventsRecord currentMapEventsRecord;
 			public bool versionUpdate = false;
 
+			public List<HLHWord> learnedWordsInSimple = new List<HLHWord>();
+			public List<HLHWord> learnedWordsInMedium = new List<HLHWord>();
+			public List<HLHWord> learnedWordsInMaster = new List<HLHWord>();
+
 		}
 
 		public bool alwaysPersistData;
@@ -33,8 +37,10 @@ namespace WordJourney
 			Application.targetFrameRate = 30;
 #if UNITY_EDITOR
 			Debug.unityLogger.logEnabled = true;
+			StringEncryption.isEncryptionOn = false;
 #else
             Debug.unityLogger.logEnabled = false;
+			StringEncryption.isEncryptionOn = true;         
 #endif
 			Debug.Log(CommonData.persistDataPath);
 
@@ -106,65 +112,103 @@ namespace WordJourney
 		}
 
 
+		private void OnVersionUpdate(CheckDataModel checkData,MySQLiteHelper sql){
+
+            DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(checkData.chatRecords, CommonData.chatRecordsFilePath);
+            DataHandler.SaveInstanceListToFile<MapEventsRecord>(checkData.mapEventsRecords, CommonData.mapEventsRecordFilePath);
+            DataHandler.SaveInstanceDataToFile<GameSettings>(checkData.gameSettings, CommonData.gameSettingsDataFilePath);
+            DataHandler.SaveInstanceListToFile<MiniMapRecord>(checkData.miniMapRecords, CommonData.miniMapRecordsFilePath);
+            DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(checkData.currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
+
+            sql.GetConnectionWith(CommonData.dataBaseName);
+            sql.BeginTransaction();
+
+			UpdateWordsDataBase(sql, 0, checkData.learnedWordsInSimple);
+			UpdateWordsDataBase(sql, 1, checkData.learnedWordsInMedium);
+			UpdateWordsDataBase(sql, 2, checkData.learnedWordsInMaster);
+
+            sql.EndTransaction();
+
+            sql.CloseConnection(CommonData.dataBaseName);
+
+
+			if(checkData.playerData.currentExploreStartDateString == string.Empty){
+				
+				string dateString = DateTime.Now.ToShortDateString();
+
+                Player.mainPlayer.currentExploreStartDateString = dateString;
+
+                checkData.playerData.currentExploreStartDateString = dateString;
+			}
+           
+			DataHandler.SaveInstanceDataToFile<PlayerData>(checkData.playerData, CommonData.playerDataFilePath,true);
+			DataHandler.SaveInstanceDataToFile<BuyRecord>(checkData.buyRecord, CommonData.buyRecordFilePath,true);
+         
+		}
+
+		private void OnNewInstall(){
+
+			GameSettings gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
+
+            string dateString = DateTime.Now.ToShortDateString();
+
+            gameSettings.installDateString = dateString;
+
+            GameManager.Instance.persistDataManager.SaveGameSettings();
+
+            Player.mainPlayer.currentExploreStartDateString = dateString;
+
+			PlayerData playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
+
+            playerData.currentExploreStartDateString = dateString;
+
+			DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath,true);
+
+		}
 
 
 		public void PersistData()
-		{
-
-
+		{         
 			DirectoryInfo persistDi = new DirectoryInfo(CommonData.persistDataPath);
 
 			IEnumerator initDataCoroutine = null;
 
 			CheckDataModel checkData = new CheckDataModel();
-
-			PlayerData playerData = null;
-			BuyRecord buyRecord = null;
-			List<HLHNPCChatRecord> chatRecords = null;
-			List<MapEventsRecord> mapEventsRecords = null;
-			GameSettings gameSettings = null;
-			List<MiniMapRecord> miniMapRecords = null;
-			CurrentMapEventsRecord currentMapEventsRecord = null;
-			bool versionUpdate = false;
-
+         
 			MySQLiteHelper sql = MySQLiteHelper.Instance;
-
-			List<HLHWord> learnedWordsInSimple = new List<HLHWord>();
-			List<HLHWord> learnedWordsInMedium = new List<HLHWord>();
-			List<HLHWord> learnedWordsInMaster = new List<HLHWord>();
-
+         
 			if (persistDi.Exists)
 			{
-				playerData = GameManager.Instance.persistDataManager.LoadPlayerData();
-                playerData.needChooseDifficulty = playerData.isNewPlayer;
-                versionUpdate = playerData.currentVersion + 0.001f < GameManager.Instance.currentVersion;
+				checkData.playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.playerDataFilePath);
+				checkData.playerData.needChooseDifficulty = checkData.playerData.isNewPlayer;
+				checkData.versionUpdate = checkData.playerData.currentVersion + 0.001f < GameManager.Instance.currentVersion;
 			}
 
-			if (versionUpdate)
+			if (checkData.versionUpdate)
 			{
 				sql.GetConnectionWith(CommonData.dataBaseName);
 
 				sql.BeginTransaction();
 
-				learnedWordsInSimple = GetWordRecordsInDataBase(sql, 0);
-				learnedWordsInMedium = GetWordRecordsInDataBase(sql, 1);
-				learnedWordsInMaster = GetWordRecordsInDataBase(sql, 2);
+				checkData.learnedWordsInSimple = GetWordRecordsInDataBase(sql, 0);
+				checkData.learnedWordsInMedium = GetWordRecordsInDataBase(sql, 1);
+				checkData.learnedWordsInMaster = GetWordRecordsInDataBase(sql, 2);
 
 				sql.EndTransaction();
 				sql.CloseConnection(CommonData.dataBaseName);
 
-				playerData.currentVersion = GameManager.Instance.currentVersion;
+				checkData.playerData.currentVersion = GameManager.Instance.currentVersion;
 
-				playerData.isNewPlayer = true;            
-				buyRecord = BuyRecord.Instance;
-				chatRecords = GameManager.Instance.gameDataCenter.chatRecords;
-				mapEventsRecords = GameManager.Instance.gameDataCenter.mapEventsRecords;
-				gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
+				checkData.playerData.isNewPlayer = true;            
+				checkData.buyRecord = BuyRecord.Instance;
+				checkData.chatRecords = GameManager.Instance.gameDataCenter.chatRecords;
+				checkData.mapEventsRecords = GameManager.Instance.gameDataCenter.mapEventsRecords;
+				checkData.gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
 				if(File.Exists(CommonData.miniMapRecordsFilePath)){
-					miniMapRecords = GameManager.Instance.gameDataCenter.allMiniMapRecords;
+					checkData.miniMapRecords = GameManager.Instance.gameDataCenter.allMiniMapRecords;
 				}
 				if(File.Exists(CommonData.currentMapEventsRecordFilePath)){
-					currentMapEventsRecord = GameManager.Instance.gameDataCenter.currentMapEventsRecord;
+					checkData.currentMapEventsRecord = GameManager.Instance.gameDataCenter.currentMapEventsRecord;
 				}
 
 			}
@@ -172,64 +216,18 @@ namespace WordJourney
 
 #if UNITY_EDITOR || UNITY_IOS
 
-			if (!persistDi.Exists || versionUpdate)
+			if (!persistDi.Exists || checkData.versionUpdate)
 			{
 
 				DataHandler.CopyDirectory(CommonData.originDataPath, CommonData.persistDataPath, true);
 
-				if (versionUpdate)
-				{
-					DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
-					DataHandler.SaveInstanceDataToFile<BuyRecord>(buyRecord, CommonData.buyRecordFilePath);
-					DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(chatRecords, CommonData.chatRecordsFilePath);
-					DataHandler.SaveInstanceListToFile<MapEventsRecord>(mapEventsRecords, CommonData.mapEventsRecordFilePath);
-					DataHandler.SaveInstanceDataToFile<GameSettings>(gameSettings, CommonData.gameSettingsDataFilePath);
-
-					DataHandler.SaveInstanceListToFile<MiniMapRecord>(miniMapRecords, CommonData.miniMapRecordsFilePath);
-					DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
-                                   
-					sql.GetConnectionWith(CommonData.dataBaseName);
-					sql.BeginTransaction();
-
-					UpdateWordsDataBase(sql, 0, learnedWordsInSimple);
-					UpdateWordsDataBase(sql, 1, learnedWordsInMedium);
-					UpdateWordsDataBase(sql, 2, learnedWordsInMaster);
-
-					sql.EndTransaction();
-
-					sql.CloseConnection(CommonData.dataBaseName);
-
-					string dateString = DateTime.Now.ToShortDateString();
-
-					Player.mainPlayer.currentExploreStartDateString = dateString;
-
-					playerData.currentExploreStartDateString = dateString;
-
-					DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
-
-
+				if (checkData.versionUpdate)
+				{               
+					OnVersionUpdate(checkData, sql);               
 				}
 				else
-				{
-
-					gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
-
-					string dateString = DateTime.Now.ToShortDateString();
-
-					gameSettings.installDateString = dateString;
-
-					GameManager.Instance.persistDataManager.SaveGameSettings();
-
-					Player.mainPlayer.currentExploreStartDateString = dateString;
-
-					//GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-
-					playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
-
-					playerData.currentExploreStartDateString = dateString;
-
-					DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
-
+				{               
+					OnNewInstall();               
 				}
 
 				initDataCoroutine = InitData();
@@ -242,57 +240,13 @@ namespace WordJourney
 			{
 				DataHandler.CopyDirectory(CommonData.originDataPath, CommonData.persistDataPath, true);
 
-				if (versionUpdate)
-				{
-					DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
-					DataHandler.SaveInstanceDataToFile<BuyRecord>(buyRecord, CommonData.buyRecordFilePath);
-					DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(chatRecords, CommonData.chatRecordsFilePath);
-					DataHandler.SaveInstanceListToFile<MapEventsRecord>(mapEventsRecords, CommonData.mapEventsRecordFilePath);
-					DataHandler.SaveInstanceDataToFile<GameSettings>(gameSettings, CommonData.gameSettingsDataFilePath);
-
-					DataHandler.SaveInstanceListToFile<MiniMapRecord>(miniMapRecords, CommonData.miniMapRecordsFilePath);
-                    DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
-					//DataHandler.SaveInstanceDataToFile<>
-
-					sql.GetConnectionWith(CommonData.dataBaseName);
-					sql.BeginTransaction();
-
-					UpdateWordsDataBase(sql, 0, learnedWordsInSimple);
-					UpdateWordsDataBase(sql, 1, learnedWordsInMedium);
-					UpdateWordsDataBase(sql, 2, learnedWordsInMaster);
-
-					sql.EndTransaction();
-
-					sql.CloseConnection(CommonData.dataBaseName);
-
-					string dateString = DateTime.Now.ToShortDateString();
-
-					Player.mainPlayer.currentExploreStartDateString = dateString;
-
-					playerData.currentExploreStartDateString = dateString;
-
-					DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
-
+				if (checkData.versionUpdate)
+				{               
+					OnVersionUpdate(checkData,sql);               
 				}
 				else
-				{
-
-					gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
-
-					string dateString = DateTime.Now.ToShortDateString();
-
-					gameSettings.installDateString = dateString;
-
-					GameManager.Instance.persistDataManager.SaveGameSettings();
-
-					Player.mainPlayer.currentExploreStartDateString = dateString;
-
-					playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
-
-                    playerData.currentExploreStartDateString = dateString;
-
-                    DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
-                
+				{               
+					OnNewInstall();
 				}
 			}
 
@@ -308,55 +262,12 @@ namespace WordJourney
 			{
     			IEnumerator copyDataCoroutine = CopyDataForPersist(delegate{
                 
-    			    if (versionUpdate)
-                    {
+    			    if (checkData.versionUpdate)
+                    {         
+						OnVersionUpdate(checkData,sql);
 
-
-                        DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
-                        DataHandler.SaveInstanceDataToFile<BuyRecord>(buyRecord, CommonData.buyRecordFilePath);
-                        DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(chatRecords, CommonData.chatRecordsFilePath);
-                        DataHandler.SaveInstanceListToFile<MapEventsRecord>(mapEventsRecords, CommonData.mapEventsRecordFilePath);
-                        DataHandler.SaveInstanceDataToFile<GameSettings>(gameSettings, CommonData.gameSettingsDataFilePath);
-
-    			        DataHandler.SaveInstanceListToFile<MiniMapRecord>(miniMapRecords, CommonData.miniMapRecordsFilePath);
-                        DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
-
-    			        sql.GetConnectionWith(CommonData.dataBaseName);
-                        sql.BeginTransaction();
-
-    			        UpdateWordsDataBase(sql, 0, learnedWordsInSimple);
-                        UpdateWordsDataBase(sql, 1, learnedWordsInMedium);
-                        UpdateWordsDataBase(sql, 2, learnedWordsInMaster);
-
-                        sql.EndTransaction();
-
-                        sql.CloseConnection(CommonData.dataBaseName);
-
-			            string dateString = DateTime.Now.ToShortDateString();
-
-			            Player.mainPlayer.currentExploreStartDateString = dateString;
-
-			            playerData.currentExploreStartDateString = dateString;
-
-			            DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
-
-    			    }else{
-
-                        gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
-
-                        string dateString = DateTime.Now.ToShortDateString();
-
-                        gameSettings.installDateString = dateString;
-
-                        GameManager.Instance.persistDataManager.SaveGameSettings();  
-
-			            Player.mainPlayer.currentExploreStartDateString = dateString;
-
-			            playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
-
-			            playerData.currentExploreStartDateString = dateString;
-
-			            DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
+    			    }else{         
+						OnNewInstall();
                     }                   
 
     			});
@@ -371,52 +282,12 @@ namespace WordJourney
 
                     IEnumerator copyDataCoroutine = CopyDataForPersist(delegate{
                 
-                    if (versionUpdate)
+                    if (checkData.versionUpdate)
                     {
-                        DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
-                        DataHandler.SaveInstanceDataToFile<BuyRecord>(buyRecord, CommonData.buyRecordFilePath);
-                        DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(chatRecords, CommonData.chatRecordsFilePath);
-                        DataHandler.SaveInstanceListToFile<MapEventsRecord>(mapEventsRecords, CommonData.mapEventsRecordFilePath);
-                        DataHandler.SaveInstanceDataToFile<GameSettings>(gameSettings, CommonData.gameSettingsDataFilePath);
-			            DataHandler.SaveInstanceListToFile<MiniMapRecord>(miniMapRecords, CommonData.miniMapRecordsFilePath);
-                        DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
-
-                        sql.GetConnectionWith(CommonData.dataBaseName);
-                        sql.BeginTransaction();
-
-                        UpdateWordsDataBase(sql, 0, learnedWordsInSimple);
-                        UpdateWordsDataBase(sql, 1, learnedWordsInMedium);
-                        UpdateWordsDataBase(sql, 2, learnedWordsInMaster);
-
-                        sql.EndTransaction();
-
-                        sql.CloseConnection(CommonData.dataBaseName);
-
-                        string dateString = DateTime.Now.ToShortDateString();
-
-                        Player.mainPlayer.currentExploreStartDateString = dateString;
-
-			            playerData.currentExploreStartDateString = dateString;
-
-                        DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
+						OnVersionUpdate(checkData,sql);
 
                     }else{
-
-                        gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
-
-                        string dateString = DateTime.Now.ToShortDateString();
-
-                        gameSettings.installDateString = dateString;
-
-                        GameManager.Instance.persistDataManager.SaveGameSettings();
-                           
-                        Player.mainPlayer.currentExploreStartDateString = dateString;
-
-			            playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
-
-			            playerData.currentExploreStartDateString = dateString;
-
-                        DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
+						OnNewInstall();
                     }        
                   
                 });
@@ -574,7 +445,6 @@ namespace WordJourney
 
 			GameManager.Instance.persistDataManager.SaveGameSettings();
 
-			//DataHandler.DeleteFile(CommonData.persistDataPath + "/PlayerData.json");
 
 			//初始化数据
 			IEnumerator initDataCoroutine = InitData();

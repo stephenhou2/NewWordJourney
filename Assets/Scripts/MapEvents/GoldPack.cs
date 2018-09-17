@@ -83,9 +83,10 @@ namespace WordJourney
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.goldAudioName);
 				ExploreManager.Instance.UpdatePlayerStatusPlane();
 				ExploreManager.Instance.expUICtr.SetUpGoldGainTintHUD(goldGain);
-				GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
+
 			}
 
+			GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
 
 			AddToPool(ExploreManager.Instance.newMapGenerator.mapEventsPool);
 		}

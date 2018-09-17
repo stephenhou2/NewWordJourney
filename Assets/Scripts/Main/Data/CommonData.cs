@@ -9,8 +9,6 @@ namespace WordJourney{
 	public delegate void CallBack();
 	public delegate void ChooseCallBack(bool arg);
 
-//	public delegate void CallBack<T>(T[] parameters);
-
 	public delegate void ExploreEventHandler (Transform colliderTrans);
 
 
@@ -19,24 +17,7 @@ namespace WordJourney{
 		public static string originDataPath = Application.streamingAssetsPath + "/Data";
 		public static string persistDataPath = Application.persistentDataPath + "/Data";
 
-		//针对安卓客户端的初始化目录结构写法
-		//字典数组中诺列了所有的数据
-//		public static Dictionary<string, string>[] originDataArr = {
-//
-//			
-//
-//			new Dictionary<string, string>(){{"fileName","BuyRecord"},{"filePath","/Data/BuyRecord.json"}},
-//			new Dictionary<string, string>(){{"fileName","GameLevelDatas"},{"filePath","/Data/GameLevelDatas.json"}},
-//			new Dictionary<string, string>(){{"fileName","GameSettings"},{"filePath","/Data/GameSettings.json"}},
-//			new Dictionary<string, string>(){{"fileName","MyGameDB"},{"filePath","/Data/MyGameDB.db"}},
-//			new Dictionary<string, string>(){{"fileName","NewItemDatas"},{"filePath","/Data/EquipmentDatas.json"}},
-//			new Dictionary<string, string>(){{"fileName","OriginalPlayerData"},{"filePath","/Data/OriginalPlayerData.json"}},
-//
-//			//这里的level从0-29，应该循环
-//			new Dictionary<string, string>(){{"fileName","Level"},{"filePath","/Data/MapData/Level"}},
-//			new Dictionary<string, string>(){{"fileName","Trader_TraderMan"},{"filePath","/Data/NPCs/Trader_TraderMan.json"}}
-//
-//		};
+
 
 		public static KVPair[] originDataArr = {
 			new KVPair("BuyRecord","/Data/BuyRecord.json"),

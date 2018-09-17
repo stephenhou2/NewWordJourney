@@ -152,8 +152,10 @@ namespace WordJourney
                 
 			shareButton.enabled = true;
 
+			Debug.LogFormat("share result :{0}",state);
+
 			if (state == ResponseState.Success)
-			{            
+			{
 				shareResult = ShareResult.Succeed;
 			}
 			else if (state == ResponseState.Fail)

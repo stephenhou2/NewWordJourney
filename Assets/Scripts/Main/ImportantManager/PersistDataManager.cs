@@ -15,7 +15,7 @@ namespace WordJourney
 		/// 保存游戏购买记录
 		/// </summary>
 		public void SaveBuyRecord(){
-			DataHandler.SaveInstanceDataToFile<BuyRecord> (BuyRecord.Instance, CommonData.buyRecordFilePath);
+			DataHandler.SaveInstanceDataToFile<BuyRecord> (BuyRecord.Instance, CommonData.buyRecordFilePath, true);
 
 		}
 
@@ -94,7 +94,7 @@ namespace WordJourney
 
 			playerData.totalGold = Player.mainPlayer.totalGold;
 
-			DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
+			DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath, true);
 
 		}
 
@@ -109,7 +109,7 @@ namespace WordJourney
 
 			PlayerData playerData = new PlayerData (Player.mainPlayer);
          
-			DataHandler.SaveInstanceDataToFile<PlayerData> (playerData, playerDataPath);
+			DataHandler.SaveInstanceDataToFile<PlayerData> (playerData, playerDataPath, true);
 		}
 
 		public void SaveMiniMapRecords(){
@@ -143,10 +143,10 @@ namespace WordJourney
 		public PlayerData LoadPlayerData(){
 
 
-			string playerDataPath = Path.Combine (CommonData.persistDataPath, "PlayerData.json");
+			string playerDataPath = CommonData.playerDataFilePath;
 
 			if (!File.Exists (playerDataPath)) {
-				playerDataPath = Path.Combine (CommonData.persistDataPath, "OriginalPlayerData.json");
+				playerDataPath = CommonData.oriPlayerDataFilePath;
 			}
 
 			if (!File.Exists (playerDataPath)) {
@@ -220,13 +220,9 @@ namespace WordJourney
 
 		}
 
-		public void SaveChatRecords(int npcId,int npcDialogGroupId){
-			
+		public void SaveChatRecords(){
+
 			List<HLHNPCChatRecord> chatRecords = GameManager.Instance.gameDataCenter.chatRecords;
-
-			HLHNPCChatRecord chatRecord = new HLHNPCChatRecord(npcId, npcDialogGroupId);
-
-			chatRecords.Add(chatRecord);
 
 			DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(chatRecords, CommonData.chatRecordsFilePath);
 

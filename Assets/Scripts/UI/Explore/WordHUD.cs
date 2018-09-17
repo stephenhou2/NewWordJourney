@@ -159,9 +159,9 @@ namespace WordJourney
 
 			}
 
-			if(GameManager.Instance.gameDataCenter.gameSettings.isAutoPronounce){
-				OnPronunceButtonClick();
-			}         
+			//if(GameManager.Instance.gameDataCenter.gameSettings.isAutoPronounce){
+			//	OnPronunceButtonClick();
+			//}         
 		}
 
 

@@ -50,8 +50,6 @@ namespace WordJourney
 		private List<HLHWord> correctWordList = new List<HLHWord>();
 		private List<HLHWord> wrongWordList = new List<HLHWord>();
 
-
-
 		void Awake()
 		{
 
@@ -93,6 +91,12 @@ namespace WordJourney
 			exploreSceneReady = false;
 
 			bool resetGameData = false;
+
+			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData();
+
+
+
+			Player.mainPlayer.SetUpPlayerWithPlayerData(playerData);
 
 			if(Player.mainPlayer.health <= 0){
 				resetGameData = true;
@@ -344,32 +348,23 @@ namespace WordJourney
 			expUICtr.SetUpPuzzleView(answerRightCallBack,answerWrongCallBack);
         }
 
-		public void ChooseAnswerInWordHUD(bool isChooseCorrect,bool titleQualified){
+		public bool NeedShowFullWordDetailWhenChooseWrong(){
 
-			MapEvent me = currentEnteredMapEvent.GetComponent<MapEvent> ();
+			MapEvent me = currentEnteredMapEvent.GetComponent<MapEvent>();
 
-			//if (me is MapNPC) {
-			//	MapNPC mn = me as MapNPC;
-			//	//if (isChooseCorret) {
-			//	//	expUICtr.SetUpNPCWhenWordChooseRight (mn.npc);
-			//	//} else {
-			//	//	expUICtr.SetUpNPCWhenWordChooseWrong (mn.npc);
-			//	//}
-			//} else {
-			me.MapEventTriggered (isChooseCorrect, battlePlayerCtr);
-			//}
-
-			if (!isChooseCorrect)
-            {
-				if (me.IsFullWordNeedToShowWhenChooseWrong()){
-					expUICtr.SetUpWordDetailHUD(titleQualified);
-				}
-            }
-
-			MapWalkableEventsStartAction ();
+			return me.IsFullWordNeedToShowWhenChooseWrong();
 
 		}
 
+		public void ChooseAnswerInWordHUD(bool isChooseCorrect){
+			MapEvent me = currentEnteredMapEvent;
+			if(me == null){
+				battlePlayerCtr.isInEvent = false;
+				return;
+			}
+			me.MapEventTriggered(isChooseCorrect, battlePlayerCtr);
+		}
+        
 
 		public void ConfirmFillCharactersInWordHUD(bool isFillCorrect){
 
@@ -802,18 +797,16 @@ namespace WordJourney
 
 		public void SaveDataInExplore(bool updateDB = true){
 			
-			Player.mainPlayer.savePosition = this.transform.position;
-
-			Player.mainPlayer.saveTowards = battlePlayerCtr.towards;
-         
-            UpdateWordDataBase();
+			if(updateDB){
+				UpdateWordDataBase();
+            }
          
             GameManager.Instance.persistDataManager.SaveGameSettings();
             GameManager.Instance.persistDataManager.SaveMapEventsRecord();
             GameManager.Instance.persistDataManager.SaveCompletePlayerData();
             GameManager.Instance.persistDataManager.SaveMiniMapRecords();
             GameManager.Instance.persistDataManager.SaveCurrentMapEventsRecords();
-
+			GameManager.Instance.persistDataManager.SaveChatRecords();
             //MySQLiteHelper.Instance.CloseAllConnections();
 		}
 
@@ -864,7 +857,8 @@ namespace WordJourney
 				GameDataCenter.GameDataType.GameLevelDatas,
 				GameDataCenter.GameDataType.MapSprites,
 				GameDataCenter.GameDataType.MapTileAtlas,
-				GameDataCenter.GameDataType.MiniMapNpcSprites,
+				GameDataCenter.GameDataType.MiniMapSprites,
+				GameDataCenter.GameDataType.MiniMapRecord,
 				GameDataCenter.GameDataType.Proverbs,
 				GameDataCenter.GameDataType.BagCanvas,
 				GameDataCenter.GameDataType.NPCCanvas,
@@ -873,11 +867,6 @@ namespace WordJourney
 				GameDataCenter.GameDataType.ShareCanvas,
 				GameDataCenter.GameDataType.GuideCanvas
 			});
-
-
-			//MyResourceManager.Instance.UnloadAssetBundle(CommonData.bagCanvasBundleName, true);
-			//MyResourceManager.Instance.UnloadAssetBundle(CommonData.npcCanvasBundleName, true);
-			//MyResourceManager.Instance.UnloadAssetBundle(CommonData.exploreSceneBundleName, true);
 
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.homeCanvasBundleName, "HomeCanvas", () => {
 				TransformManager.FindTransform ("HomeCanvas").GetComponent<HomeViewController> ().SetUpHomeView ();

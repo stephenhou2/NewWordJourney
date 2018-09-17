@@ -766,14 +766,17 @@ namespace WordJourney
 			wordHUD.SetUpWordHUDAndShow (word);
 		}
 
-        public void SetUpWordDetailHUD(bool titleQualified){
+		public void SetUpWordDetailHUD(bool controlMoveWhenQuit,CallBack quitCallBack){
 
 			if (wordRecords.Count > 0)
             {
                 ExploreManager.Instance.MapWalkableEventsStopAction();
 				HLHWord word = wordRecords[wordRecords.Count - 1];
-				wordDetailHUD.SetUpWordDetailHUD(wordRecords,delegate{
-					if(!titleQualified){
+				wordDetailHUD.SetUpWordDetailHUD(wordRecords,delegate{ 
+					if(quitCallBack != null){
+						quitCallBack();
+					}
+					if(!controlMoveWhenQuit){
 						ExploreManager.Instance.MapWalkableEventsStartAction();
 					}               
 				});
@@ -841,27 +844,69 @@ namespace WordJourney
 
 		private void ChooseAnswerInWordHUDCallBack(bool isChooseCorrect){
                  
-#if UNITY_IOS || UNITY_EDITOR
-			bool pushRecommend = CheckPushCommentRecommend();
+			if(!isChooseCorrect){
 
-			if(pushRecommend){
-				commentRecommendHUD.SetUpCommentRecommendHUD();
-			}
+				bool showWordDetail = ExploreManager.Instance.NeedShowFullWordDetailWhenChooseWrong();
+
+				if(showWordDetail){
+
+					bool controlMoveWhenQuit = true;
+
+					bool pushRecommend = false;
+
+#if UNITY_IOS || UNITY_EDITOR
+					pushRecommend = CheckPushCommentRecommend();
+
+                    if (pushRecommend)
+                    {
+						controlMoveWhenQuit = false;
+                        
+                    }
 #endif
 
-			int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
+                    int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
 
-			if(qualificationIndex == -1){
-				ExploreManager.Instance.ChooseAnswerInWordHUD(isChooseCorrect,false);
-				return;
-			}
+                    if (qualificationIndex != -1)
+                    {
+						controlMoveWhenQuit = false;
+                    }
+                                   
+					SetUpWordDetailHUD(controlMoveWhenQuit,delegate {
+						if(pushRecommend){
+							commentRecommendHUD.SetUpCommentRecommendHUD();
+						}
+						if(qualificationIndex != -1){
+							LearnTitleQualification qualification = CommonData.learnTitleQualifications[qualificationIndex];
+
+                            achievementView.SetUpAchievementView(qualification);
+						}
+					});
+				}
+
+			}else{
+
+#if UNITY_IOS || UNITY_EDITOR
+                bool pushRecommend = CheckPushCommentRecommend();
+
+                if (pushRecommend)
+                {
+                    commentRecommendHUD.SetUpCommentRecommendHUD();
+                }
+#endif
+
+                int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
+
+                if (qualificationIndex != -1)
+                {
+					LearnTitleQualification qualification = CommonData.learnTitleQualifications[qualificationIndex];
+
+                    achievementView.SetUpAchievementView(qualification);
+                }
             
-			LearnTitleQualification qualification = CommonData.learnTitleQualifications[qualificationIndex];
+			}
 
-			achievementView.SetUpAchievementView(qualification);
-
-			ExploreManager.Instance.ChooseAnswerInWordHUD(isChooseCorrect, true);
-
+			ExploreManager.Instance.ChooseAnswerInWordHUD(isChooseCorrect);
+         
 		}
 
         /// <summary>

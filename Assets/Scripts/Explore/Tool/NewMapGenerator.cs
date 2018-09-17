@@ -259,6 +259,10 @@ namespace WordJourney
 				}
 				return mCurrentMiniMapRecord;
 			}
+
+			//set{
+			//	mCurrentMiniMapRecord = value;
+			//}
 		}
         
         // 记录所有存档点
@@ -287,17 +291,15 @@ namespace WordJourney
 			mySql = MySQLiteHelper.Instance;
 			mySql.GetConnectionWith (CommonData.dataBaseName);
 
-			// 初始化地图事件
-			InitializeMapEvents ();
-
-			InitializePlayerAndSetCamera(from);   
-            
-
 			int mapIndex = Player.mainPlayer.GetMapIndex();
 
 			ClearMiniMapMasksByRecord(mapIndex);
 
-            //ShowAllSavePointsInMiniMap();
+			// 初始化地图事件
+			InitializeMapEvents ();
+
+			InitializePlayerAndSetCamera(from);   
+
 
 			if(!MapEventsRecord.IsSpellFinish(mapIndex) && Player.mainPlayer.currentLevelIndex < CommonData.maxLevelIndex){
 				GenerateCharacterFragments();
@@ -439,9 +441,7 @@ namespace WordJourney
 			valableNpcIds = new List<int> { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
 			InitMapWalkableInfoAndMonsterPosInfo ();
-
-
-
+         
 			savePosValid = false;
          
 		}
@@ -488,6 +488,8 @@ namespace WordJourney
             {
                 miniMapRecord = new MiniMapRecord(mapIndex, columns, rows);
 
+				//currentMiniMapRecord = miniMapRecord;
+                            
                 GameManager.Instance.gameDataCenter.allMiniMapRecords.Add(miniMapRecord);
 
             }
@@ -1091,7 +1093,9 @@ namespace WordJourney
 			if (exit != null && HLHGameLevelData.IsBossLevel() && !exitOpen)
             {
                 exit.SealExit(SealType.Boss);
-            }
+			}else if (exit != null){
+				exit.OpenSeal();
+			}
 
             if (returnExit != null)
             {

@@ -67,10 +67,10 @@ namespace WordJourney
 		/// <param name="player">Player.</param>
 		public HLHDialogGroup FindQulifiedDialogGroup(Player player){
 
-			if (dialogGroupRecord != null && dialogGroupRecord.isMultiTimes)
-            {
-                return dialogGroupRecord;            
-            }
+			//if (dialogGroupRecord != null && dialogGroupRecord.isMultiTimes)
+            //{
+            //    return dialogGroupRecord;            
+            //}
 
 			HLHDialogGroup targetDg = null;
 

@@ -85,11 +85,13 @@ namespace WordJourney
 			}
 
 			Debug.Log("save data at save point");
-
-
-
+         
 			isInSavingData = true;
 			autoDetect.isInSavingData = true;
+
+			Player.mainPlayer.savePosition = this.transform.position;
+
+			Player.mainPlayer.saveTowards = bp.towards;
 
 			ExploreManager.Instance.SaveDataInExplore();
 

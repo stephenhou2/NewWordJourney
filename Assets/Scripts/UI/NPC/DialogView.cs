@@ -120,7 +120,13 @@ namespace WordJourney
 
 				if (!dialogGroup.isMultiTimes)
                 {
-                    GameManager.Instance.persistDataManager.SaveChatRecords(npc.npcId, dialogGroup.dialogGroupId);
+					List<HLHNPCChatRecord> chatRecords = GameManager.Instance.gameDataCenter.chatRecords;
+
+					HLHNPCChatRecord chatRecord = new HLHNPCChatRecord(npc.npcId, dialogGroup.dialogGroupId);
+
+                    chatRecords.Add(chatRecord);
+
+                    
                     //GameManager.Instance.persistDataManager.SaveCompletePlayerData();
                 }
 

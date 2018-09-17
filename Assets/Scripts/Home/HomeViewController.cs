@@ -68,6 +68,8 @@ namespace WordJourney
 
 			GameManager.Instance.soundManager.StopBgm();
 
+			GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+
 			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate {
 				TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.EnterExplore, LoadExplore,ShowExplore);
             });
