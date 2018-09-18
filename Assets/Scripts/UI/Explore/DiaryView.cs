@@ -15,6 +15,8 @@ namespace WordJourney
 
 		public void SetUpDiaryView(DiaryModel diaryModel,CallBack quitCallBack){
 
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
+
 			diaryTextEN.text = diaryModel.diaryEN;
 
 			diaryTextCH.text = diaryModel.diaryCH;

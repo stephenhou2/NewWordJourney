@@ -50,14 +50,13 @@ namespace WordJourney
 			bool hasRecord = DataHandler.FileExist(CommonData.miniMapRecordFilePath);
 
             if (hasRecord)
-            {
-
+            {            
 				DataHandler.DeleteFile(CommonData.miniMapRecordFilePath);
             }
 
-			List<MiniMapRecord> miniMapRecords = null;
+			MiniMapRecord currentMinimapRecord = null;
 
-			DataHandler.SaveInstanceListToFile<MiniMapRecord>(miniMapRecords, CommonData.miniMapRecordFilePath);
+			DataHandler.SaveInstanceDataToFile<MiniMapRecord>(currentMinimapRecord, CommonData.miniMapRecordFilePath);
 
 
 		}

@@ -95,6 +95,42 @@ namespace WordJourney
 			this.grade = pgModel.grade;
 		}
 
+		public PropertyGemstone(PropertyGemstone pgModel,int itemCount){
+
+			itemId = pgModel.itemId;
+			itemName = pgModel.itemName;
+			itemDescription = pgModel.itemDescription;
+			spriteName = pgModel.spriteName;
+			itemType = pgModel.itemType;
+			price = pgModel.price;
+
+			this.itemType = ItemType.PropertyGemstone;
+            this.itemCount = itemCount;
+
+			this.maxHealthGainBase = pgModel.maxHealthGainBase;
+			this.maxManaGainBase = pgModel.maxManaGainBase;
+			this.attackGainBase = pgModel.attackGainBase;
+			this.magicAttackGainBase = pgModel.magicAttackGainBase;
+			this.armorGainBase = pgModel.armorGainBase;
+			this.magicResistGainBase = pgModel.magicResistGainBase;
+            this.armorDecreaseGainBase = pgModel.armorDecreaseGainBase;
+            this.magicResistDecreaseGainBase = pgModel.magicResistDecreaseGainBase;
+            this.moveSpeedGainBase = pgModel.moveSpeedGainBase;
+            this.critGainBase = pgModel.critGainBase;
+            this.dodgeGainBase = pgModel.dodgeGainBase;
+            this.critHurtScalerGainBase = pgModel.critHurtScalerGainBase;
+            this.physicalHurtScalerGainBase = pgModel.physicalHurtScalerGainBase;
+            this.magicalHurtScalerGainBase = pgModel.magicalHurtScalerGainBase;
+            this.extraGoldGainBase = pgModel.extraGoldGainBase;
+            this.extraExperienceGainBase = pgModel.extraExperienceGainBase;
+            this.healthRecoveryGainBase = pgModel.healthRecoveryGainBase;
+            this.magicRecoveryGainBase = pgModel.magicRecoveryGainBase;
+
+            this.grade = pgModel.grade;
+
+		}
+
+
 		public void GemStonePropertyConfigure(){
 
 			//PropertyChange propertyChange = new PropertyChange();

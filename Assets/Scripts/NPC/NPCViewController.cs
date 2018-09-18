@@ -175,7 +175,8 @@ namespace WordJourney
 				mainNPCView.gameObject.SetActive(false);
 
                 skillsTradeView.SetUpSkillLearningView(npc, ShowMainNpcView);
-			}else{            
+			}else{
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.wrongTintAudioName);
 				dialogText.text = "我现在有点累了，暂时无法再教你任何技能，你可以先去其他地方探索一下。";            
 			}
          

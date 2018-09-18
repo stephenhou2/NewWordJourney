@@ -13,7 +13,8 @@ namespace WordJourney
 
 		void Awake(){
                  
-			//Player.mainPlayer.AddItem(Item.NewItemWith(334, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(400, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(400, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(525, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(534, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(542, 1));

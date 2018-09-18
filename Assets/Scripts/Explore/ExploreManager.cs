@@ -116,7 +116,7 @@ namespace WordJourney
 			Player.mainPlayer.savePosition = battlePlayerCtr.transform.position;
             Player.mainPlayer.saveTowards = battlePlayerCtr.towards;
 
-            SaveDataInExplore(false);
+			SaveDataInExplore(null,false);
 
 			expUICtr.SetUpExploreCanvas(resetGameData);
 
@@ -803,21 +803,43 @@ namespace WordJourney
          
 			//Debug.LogFormat("finish loading time:{0}", Time.time);
 		}
+        
+		public void SaveDataInExplore(CallBack saveFinishCallBack,bool updateDB = true){
 
-		public void SaveDataInExplore(bool updateDB = true){
-			
-			if(updateDB){
-				UpdateWordDataBase();
-            }
-         
-            GameManager.Instance.persistDataManager.SaveGameSettings();
-            GameManager.Instance.persistDataManager.SaveMapEventsRecord();
-            GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-			GameManager.Instance.persistDataManager.SaveCurrentMapMiniMapRecord();
-            GameManager.Instance.persistDataManager.SaveCurrentMapEventsRecords();
-			GameManager.Instance.persistDataManager.SaveChatRecords();
-			GameManager.Instance.persistDataManager.SaveCurrentMapWordsRecords();
-            //MySQLiteHelper.Instance.CloseAllConnections();
+			DisableAllInteractivity();
+
+			Time.timeScale = 0f;
+
+			expUICtr.SetUpSaveDataHintViewAndSave(delegate
+			{
+				if (updateDB)
+                {
+                    UpdateWordDataBase();
+                }
+
+                GameManager.Instance.persistDataManager.SaveGameSettings();
+                GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+                GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+                GameManager.Instance.persistDataManager.SaveCurrentMapMiniMapRecord();
+                GameManager.Instance.persistDataManager.SaveCurrentMapEventsRecords();
+                GameManager.Instance.persistDataManager.SaveChatRecords();
+                GameManager.Instance.persistDataManager.SaveCurrentMapWordsRecords();
+
+			}, delegate
+			{
+				Time.timeScale = 1f;
+
+				EnableExploreInteractivity();
+
+				battlePlayerCtr.isInEvent = false;
+
+				MapWalkableEventsStartAction();
+
+				if(saveFinishCallBack != null){
+					saveFinishCallBack();
+				}
+
+			});
 		}
 
 

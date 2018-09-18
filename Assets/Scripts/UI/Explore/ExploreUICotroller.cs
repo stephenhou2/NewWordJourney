@@ -87,6 +87,9 @@ namespace WordJourney
 
 		public CommentRecommendHUD commentRecommendHUD;// 评价引导弹框
 
+		public SaveDataHintView saveDataHintView;
+
+
 		// 记录本关所有背过的单词
         public List<HLHWord> wordRecords;
 
@@ -229,8 +232,12 @@ namespace WordJourney
 			StartCoroutine(enterLevelMaskShowAndHideCoroutine);
 		}
         
+        
+		public void SetUpSaveDataHintViewAndSave(CallBack saveCallBack,CallBack saveFinishCallBack){
 
+			saveDataHintView.SetUpSaveDataHintView(saveCallBack, saveFinishCallBack);
 
+		}
         
         /// <summary>
         /// 显示最终的通关询问界面

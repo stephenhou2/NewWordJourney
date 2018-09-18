@@ -90,7 +90,9 @@ namespace WordJourney
 				return;
 			}
 
-			equipment.AddPropertyGemstone(gemstone);
+			PropertyGemstone newGemstone = new PropertyGemstone(gemstone, 1);
+
+			equipment.AddPropertyGemstone(newGemstone);
 
 			Player.mainPlayer.ResetBattleAgentProperties(false);
          

@@ -137,7 +137,6 @@ namespace WordJourney{
 			itemId = itemModel.itemId;
 			itemName = itemModel.itemName;
 			itemDescription = itemModel.itemDescription;
-//			itemPropertyDescription = itemModel.itemPropertyDescription;
 			spriteName = itemModel.spriteName;
 			itemType = itemModel.itemType;
 			price = itemModel.price;

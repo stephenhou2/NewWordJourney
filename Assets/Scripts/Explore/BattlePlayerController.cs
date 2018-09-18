@@ -231,9 +231,7 @@ namespace WordJourney
 					Vector3 targetPos = transform.position;
 
 					exploreManager.newMapGenerator.miniMapPlayer.localPosition = targetPos;
-
-
-
+               
                     exploreManager.newMapGenerator.ClearMiniMapMaskAround(targetPos);
 
 					exploreManager.newMapGenerator.MiniMapCameraLatelySleep();
@@ -610,14 +608,58 @@ namespace WordJourney
             }
 
         }
+        
+		public void ForceMoveToAndStopWhenEnconterWithMapEvent(Vector3 pos,CallBack callBack){
+               
+			if (newMoveCoroutine != null)
+            {
+                StopCoroutine(newMoveCoroutine);
+            }
+
+			MoveToPosition(pos);         
+
+            if (moveTweener != null)
+            {            
+                moveTweener.OnComplete(() =>
+                {
+                    if (callBack != null)
+                    {
+                        callBack();
+                    }
+               
+                    if (fadeStepsLeft > 0)
+                    {
+                        fadeStepsLeft--;
+                    }
+
+                    // 动画结束时已经移动到指定节点位置，标记单步行动结束
+                    inSingleMoving = false;
+
+                    SetSortingOrder(-Mathf.RoundToInt(transform.position.y));
+
+                    if (pathPosList.Count > 0)
+                    {
+
+                        // 将当前节点从路径点中删除
+                        pathPosList.RemoveAt(0);
+
+                        // 移动到下一个节点位置
+                        MoveToNextPosition();
+
+                    }
+                });
+            }
+            else if (!isIdle)
+            {
+                PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+            }
 
 
+		}
 
-        public void StopMoveAtEndOfCurrentStep()
+		public void StopMoveAtEndOfCurrentStep(CallBack callBack = null)
         {
-
-            //			Debug.LogFormat ("{0}/{1}", transform.position, singleMoveEndPos);
-
+         
 			if (newMoveCoroutine != null)
             {
                 StopCoroutine(newMoveCoroutine);
@@ -629,11 +671,17 @@ namespace WordJourney
 
             pathPosList.Add(singleMoveEndPos);
 
+			//MoveToNextPosition();
+
             if (moveTweener != null)
             {
 
                 moveTweener.OnComplete(() =>
                 {
+					if(callBack != null){
+						callBack();
+					}
+
 
                     if (fadeStepsLeft > 0)
                     {

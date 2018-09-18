@@ -46,30 +46,65 @@ namespace WordJourney
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
 			//bigCollider.enabled = false;
-			MapEventTriggered(true, bp);
 
-			if (waitPlayerToTargetPosCoroutine != null)
-			{
-				StopCoroutine(waitPlayerToTargetPosCoroutine);
+			if(bp.fadeStepsLeft == 0){
+				return;
 			}
 
-			waitPlayerToTargetPosCoroutine = WaitPlayerToTargetPos();
+			bp.isInEvent = false;
 
-			StartCoroutine(waitPlayerToTargetPosCoroutine);
+            if (!Player.mainPlayer.canSave)
+            {
+                return;
+            }
+
+            Debug.Log("save data at save point");
+
+            ExploreManager.Instance.DisableAllInteractivity();
+
+            isInSavingData = true;
+            autoDetect.isInSavingData = true;
+
+            Player.mainPlayer.savePosition = this.transform.position;
+
+            Player.mainPlayer.saveTowards = bp.towards;
+
+			bp.ForceMoveToAndStopWhenEnconterWithMapEvent(new Vector3(transform.position.x,transform.position.y,0),delegate {
+
+                ExploreManager.Instance.SaveDataInExplore(delegate {
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
+
+                    ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("数据已存档");
+
+                    PlayTriggerAnim();
+
+				});
+
+               
+            });
+
+			//if (waitPlayerToTargetPosCoroutine != null)
+			//{
+			//	StopCoroutine(waitPlayerToTargetPosCoroutine);
+			//}
+
+			//waitPlayerToTargetPosCoroutine = WaitPlayerToTargetPos();
+
+			//StartCoroutine(waitPlayerToTargetPosCoroutine);
 		}
 
-		private IEnumerator WaitPlayerToTargetPos()
-		{
+		//private IEnumerator WaitPlayerToTargetPos()
+		//{
 
-			BattlePlayerController battlePlayer = ExploreManager.Instance.battlePlayerCtr;
+		//	BattlePlayerController battlePlayer = ExploreManager.Instance.battlePlayerCtr;
 
-			yield return new WaitUntil(() => Mathf.Abs(battlePlayer.transform.position.x - transform.position.x) < 0.1f
-									   && Mathf.Abs(battlePlayer.transform.position.y - transform.position.y) < 0.1f);
+		//	yield return new WaitUntil(() => Mathf.Abs(battlePlayer.transform.position.x - transform.position.x) < 0.1f
+		//							   && Mathf.Abs(battlePlayer.transform.position.y - transform.position.y) < 0.1f);
 
-			isInSavingData = false;
-			autoDetect.isInSavingData = false;
+		//	isInSavingData = false;
+		//	autoDetect.isInSavingData = false;
 
-		}
+		//}
 
 		public override bool IsPlayerNeedToStopWhenEntered()
 		{
@@ -83,8 +118,10 @@ namespace WordJourney
 			if(!Player.mainPlayer.canSave){
 				return;
 			}
-
+                     
 			Debug.Log("save data at save point");
+
+			ExploreManager.Instance.DisableAllInteractivity();
          
 			isInSavingData = true;
 			autoDetect.isInSavingData = true;
@@ -93,25 +130,35 @@ namespace WordJourney
 
 			Player.mainPlayer.saveTowards = bp.towards;
 
-			ExploreManager.Instance.SaveDataInExplore();
+			bp.StopMoveAtEndOfCurrentStep(delegate {
+			
+				ExploreManager.Instance.SaveDataInExplore(delegate {
+				
+					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
 
-			IEnumerator saveHintCoroutine = SaveHint(longDealy ? 0.5f : 0.1f);
+                    ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("数据已存档");
 
-			StartCoroutine(saveHintCoroutine);
+                    PlayTriggerAnim();
+				});
+
+
+			});
+
+
+
+			//IEnumerator saveHintCoroutine = SaveHint(longDealy ? 0.5f : 0.1f);
+
+			//StartCoroutine(saveHintCoroutine);
 
 		}
 
-		private IEnumerator SaveHint(float delay)
-		{
+		//private IEnumerator SaveHint(float delay)
+		//{
 
-			yield return new WaitForSeconds(delay);
+		//	yield return new WaitForSeconds(delay);
 
-			GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
 
-			ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("数据已存档");
-
-			PlayTriggerAnim();
-		}
+		//}
 
 		/// <summary>
 		/// 等待动画完成后执行回调

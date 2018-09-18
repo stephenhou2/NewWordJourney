@@ -125,19 +125,13 @@ namespace WordJourney
 		public override void MapEventTriggered(bool isSuccess, BattlePlayerController bp)
 		{
 
-			//int posX = Mathf.RoundToInt(this.transform.position.x);
-            //int posY = Mathf.RoundToInt(this.transform.position.y);
-         
-			base.MapEventTriggered(isSuccess, bp);
-
 			if (isGoldTreasureBox)
-			{
-				MapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
-			}
-			//}else{
-			//	GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
-			//}
+            {
+                MapEventsRecord.AddEventTriggeredRecord(mapIndex, transform.position);
+            }
 
+			base.MapEventTriggered(isSuccess, bp);
+         
 		}
 	}
 }

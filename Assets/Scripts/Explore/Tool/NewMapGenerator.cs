@@ -496,6 +496,8 @@ namespace WordJourney
                || miniMapRecord.mapHeight != rows)
             {
                 miniMapRecord.recordArray = new int[columns * rows];
+				miniMapRecord.mapWidth = columns;
+				miniMapRecord.mapHeight = rows;
             }
 
 

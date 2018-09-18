@@ -90,7 +90,7 @@ namespace WordJourney
 			Player.mainPlayer.needChooseDifficulty = false;
 
 			GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
-
+			GameManager.Instance.persistDataManager.ClearCurrentMapWordsRecordAndSave();
 
             if (ExploreManager.Instance != null)
             {
