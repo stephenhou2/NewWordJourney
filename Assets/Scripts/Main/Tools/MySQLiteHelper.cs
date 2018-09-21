@@ -259,11 +259,12 @@ namespace WordJourney{
 					m_command = null;
 				}
 
-				//if(m_transaction != null){
-				//	//m_transaction.Dispose();
-				//	m_transaction.Commit();
-				//	m_transaction = null;
-				//}
+				if(m_transaction != null){
+					m_transaction.Dispose();
+					m_transaction = null;
+				}
+
+
 					
 				connection.Dispose ();
 				connection.Close ();
@@ -322,7 +323,21 @@ namespace WordJourney{
 		public IDataReader ExecuteQuery(string queryString)
 		{
 			Debug.Log (queryString);
-			return ExecuteQuery (queryString, null);
+
+			try{            
+				IDataReader dataReader = ExecuteQuery(queryString, null);
+
+				return dataReader;
+
+			}catch(Exception e){
+
+				Debug.Log(e);
+
+				CloseAllConnections();
+
+				return null;
+			}
+
 		}
 
 		/// <summary>

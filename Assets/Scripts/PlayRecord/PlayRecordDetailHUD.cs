@@ -9,7 +9,7 @@ namespace WordJourney
    
 	public class PlayRecordDetailHUD : ZoomHUD
     {
-		public Text recordIndexText;
+		//public Text recordIndexText;
 
 		public Text exploreEndAt;
 
@@ -53,39 +53,42 @@ namespace WordJourney
 
 		public Text magicRecoveryRecordText;
 
-		public EquipmentCellInRecord equipmentCellModel;
+		public EquipmentCellInRecord[] equipmentCells;
 
-		public InstancePool equipmentCellPool;
+		public SkillCellInRecord[] skillCells;
 
-		public Transform equipmentCellContainer;
+		//public EquipmentCellInRecord equipmentCellModel;
 
-		public SkillCellInRecord skillCellModel;
+		//public InstancePool equipmentCellPool;
 
-		public InstancePool skillCellPool;
+		//public Transform equipmentCellContainer;
 
-		public Transform skillCellContainer;
+		//public SkillCellInRecord skillCellModel;
 
-		public void SetUpPlayRecordDetailHUD(PlayRecord playRecord,int recordIndex)
+		//public InstancePool skillCellPool;
+
+		//public Transform skillCellContainer;
+
+		public void SetUpPlayRecordDetailHUD(PlayRecord playRecord)
 		{         
-			recordIndexText.text = (recordIndex + 1).ToString();
          
 			if(playRecord.finishGame){
 				exploreEndAt.text = "获得艾尔文的宝藏";
 			}else{
-				exploreEndAt.text = string.Format("失败于:{0}", playRecord.dieFrom);
+				exploreEndAt.text = string.Format("失败于: {0}", playRecord.dieFrom);
 			}
 
-			exploreMaxLevelText.text = string.Format("最大探索层数:{0}", playRecord.maxExploreLevel);
+			exploreMaxLevelText.text = string.Format("最大探索层数: {0}", playRecord.maxExploreLevel);
 
-			totalExploreTimeText.text = string.Format("探索时间:{0}天", playRecord.totalExploreDays);
+			totalExploreTimeText.text = string.Format("探索时间: {0}天", playRecord.totalExploreDays);
 
-			totalLearnedWordCountText.text = string.Format("总计学习单词数:{0}", playRecord.totalLearnedWordCount);
+			totalLearnedWordCountText.text = string.Format("学习单词总数: {0}", playRecord.totalLearnedWordCount);
 
-			correctPercentageText.text = string.Format("正确率:{0}%", playRecord.learnCorrectPercentageX100);
+			correctPercentageText.text = string.Format("总正确率: {0}%", playRecord.learnCorrectPercentageX100);
 
-			totalDefeatMonsterCount.text = string.Format("总计击败怪物数:{0}", playRecord.totalDefeatMonsterCount);
+			totalDefeatMonsterCount.text = string.Format("总计击败怪物数: {0}", playRecord.totalDefeatMonsterCount);
                      
-			evaluateStringText.text = string.Format("评级:{0}", playRecord.evaluateString);
+			evaluateStringText.text = string.Format("综合评分: <color=orange>{0}</color>", playRecord.evaluateString);
 
 			maxHealtRecordText.text = playRecord.maxHealth.ToString();
 
@@ -115,7 +118,18 @@ namespace WordJourney
 
 			magicRecoveryRecordText.text = playRecord.magicRecovery.ToString();
 
-			equipmentCellPool.AddChildInstancesToPool(equipmentCellContainer);
+			//equipmentCellPool.AddChildInstancesToPool(equipmentCellContainer);
+
+			int equipmentCellIndex = 0;
+
+			for (int i = 0; i < equipmentCells.Length;i++){
+				
+				EquipmentCellInRecord cellInRecord = equipmentCells[i];
+
+				cellInRecord.Reset();
+
+			}
+
 
 			if(playRecord.equipedEquipments != null){
 
@@ -127,15 +141,19 @@ namespace WordJourney
 						continue;
 					}
 
-					EquipmentCellInRecord cellInRecord = equipmentCellPool.GetInstance<EquipmentCellInRecord>(equipmentCellModel.gameObject,
-																											  equipmentCellContainer);
+					EquipmentCellInRecord cellInRecord = equipmentCells[equipmentCellIndex];
 
 					cellInRecord.SetUpEquipmentCellInRecord(equipment);
+
+					equipmentCellIndex++;
                
                 }            
 			}
 
-			skillCellPool.AddChildInstancesToPool(skillCellContainer);
+			for (int i = 0; i < skillCells.Length;i++){
+				SkillCellInRecord cellInRecord = skillCells[i];
+				cellInRecord.Reset();
+			}
 
 			if(playRecord.learnedSkillRecords != null){
 
@@ -154,7 +172,7 @@ namespace WordJourney
 						continue;
 					}
 
-					SkillCellInRecord cellInRecord = skillCellPool.GetInstance<SkillCellInRecord>(skillCellModel.gameObject, skillCellContainer);
+					SkillCellInRecord cellInRecord = skillCells[i];
 
 					cellInRecord.SetUpSkillCellInRecord(skill,skillLevel);
 

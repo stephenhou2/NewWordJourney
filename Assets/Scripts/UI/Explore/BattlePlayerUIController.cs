@@ -105,7 +105,7 @@ namespace WordJourney
 
 		public void SetUpFightPlane(){
 			escapeBar.gameObject.SetActive (false);
-
+			InitActiveSkills();
 			InitAllActiveSkillButtons();
 			SetUpActiveSkillButtons ();         
 		}
@@ -127,15 +127,7 @@ namespace WordJourney
 		/// 退出战斗时重用物体进缓存池
 		/// </summary>
 		public override void QuitFightPlane(){
-
-			for (int i = 0; i < player.attachedActiveSkills.Count; i++)
-            {
-				ActiveSkill activeSkill = player.attachedActiveSkills[i];
-				activeSkill.coolenPercentage = 0;
-				activeSkill.skillStatus = ActiveSkillStatus.None;
-
-            }
-
+			
 			for (int i = 0; i < activeSkillButtonContainer.childCount;i++){
 				activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>().Reset();
 			}
@@ -152,6 +144,7 @@ namespace WordJourney
 			for (int i = 0; i < activeSkillButtonContainer.childCount; i++)
             {
                 ActiveSkillButton activeSkillButton = activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>();
+            
 				if(activeSkillButton.skill.skillId == skill.skillId){
 					activeSkillButton.Reset();
 					activeSkillButtonPool.AddInstanceToPool(activeSkillButton.gameObject);
@@ -161,28 +154,43 @@ namespace WordJourney
             // 移除技能按钮时要更新技能按钮的点击响应，因为响应方法中有一个序号参数需要更新
 			//（进入战斗初始化的时候按照技能顺序给按钮定了序号，点击时根据序号参数获得使用的是哪个技能，遗忘技能后该序号参数应该也更新一次）
 			for (int i = 0; i < player.attachedActiveSkills.Count; i++)
-            {
+            {          
+				
                 ActiveSkill activeSkill = player.attachedActiveSkills[i];
 				ActiveSkillButton activeSkillButton = activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>();
                 int index = i;
+
+				float coolenPercentage = activeSkillButton.mask.fillAmount;
+				activeSkill.coolenPercentage = (int)(coolenPercentage * 100);
+
+
 				activeSkillButton.SetUpActiveSkillButton(activeSkill, index, activeSkillButtonContainer);
                 activeSkillButton.AddListener(OnActiveSkillButtonClick);
             }
 
 		}
 
-		public void InitAllActiveSkillButtons(){
-			
+		public void InitActiveSkills(){
+
 			for (int i = 0; i < player.attachedActiveSkills.Count; i++)
             {
-                player.attachedActiveSkills[i].skillStatus = ActiveSkillStatus.None;
+                ActiveSkill activeSkill = player.attachedActiveSkills[i];
+                activeSkill.coolenPercentage = 0;
+                activeSkill.skillStatus = ActiveSkillStatus.None;
+
             }
 
+		}
+
+		public void InitAllActiveSkillButtons(){
+         
 			for (int i = 0; i < activeSkillButtonContainer.childCount; i++)
 			{
 				ActiveSkillButton activeSkillButton = activeSkillButtonContainer.GetChild(i).GetComponent<ActiveSkillButton>();
 
 				activeSkillButton.validTint.gameObject.SetActive(false);
+
+				activeSkillButton.Reset();
               
 			}
 
@@ -225,6 +233,7 @@ namespace WordJourney
     			}
 		    }
 		}
+
 
 		/// <summary>
 		/// 玩家点击主动技能的响应

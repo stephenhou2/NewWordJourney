@@ -12,8 +12,9 @@ namespace WordJourney
 		public Item currentSelectItem;
 
 		void Awake(){
-                 
-			//Player.mainPlayer.AddItem(Item.NewItemWith(400, 1));
+			//Equipment equipment = Item.NewItemWith(99, 1) as Equipment;
+			//equipment.SetToGoldQuality();
+			//Player.mainPlayer.AddItem(equipment);
 			//Player.mainPlayer.AddItem(Item.NewItemWith(400, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(525, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(534, 1));

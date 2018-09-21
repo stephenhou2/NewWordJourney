@@ -58,7 +58,27 @@ namespace WordJourney
 
 		public bool hasTeachedASkill = false;
         
+		public List<int> GetValidTravelLevelIds(){
 
+			List<int> validTravelLevelIds = new List<int>();
+
+			for (int i = 0; i < transportLevelList.Count;i++){
+
+				int levelId = transportLevelList[i];
+
+				if(levelId >= Player.mainPlayer.maxUnlockLevelIndex - 10 
+				   && levelId <= Player.mainPlayer.maxUnlockLevelIndex 
+				   && levelId != Player.mainPlayer.currentLevelIndex){
+					validTravelLevelIds.Add(levelId);
+				}
+
+
+			}
+
+			return validTravelLevelIds;
+
+            
+		}
 
 		/// <summary>
 		/// 查找人物当前触发的对话组

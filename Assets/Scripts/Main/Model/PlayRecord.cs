@@ -64,6 +64,8 @@ namespace WordJourney
 
 		public PlayRecord(bool finishGame,string dieFrom){
 
+			Debug.Log("generate play record");
+
 			Player player = Player.mainPlayer;
 
 			player.ResetBattleAgentProperties(false);
@@ -126,14 +128,20 @@ namespace WordJourney
 				this.equipedEquipments.Add(equipment);
 			}
 
-
-			this.learnedSkillRecords = player.allLearnedSkillsRecord;
+			for (int i = 0; i < player.allLearnedSkillsRecord.Count;i++){
+				SkillModel learnedSkill = player.allLearnedSkillsRecord[i];
+				if(learnedSkill.skillId <= 0){
+					continue;
+				}
+				this.learnedSkillRecords.Add(learnedSkill);
+			}
+			//this.learnedSkillRecords = player.allLearnedSkillsRecord;
 
 			this.finishGame = finishGame;
 
 			this.dieFrom = dieFrom;
             
-			this.evaluatePoint = totalDefeatMonsterCount + totalLearnedWordCount * learnCorrectPercentageX100 * learnCorrectPercentageX100 / 10000;
+			this.evaluatePoint = (int)(totalDefeatMonsterCount * 0.3f) + totalLearnedWordCount * learnCorrectPercentageX100 * learnCorrectPercentageX100 / 10000;
 
 
 			if(evaluatePoint < 100){
@@ -161,11 +169,11 @@ namespace WordJourney
             }
 			else if (evaluatePoint >= 1350 && evaluatePoint < 1750)
             {
-                evaluateString = "S";
+				evaluateString = "S";
             }
 			else if (evaluatePoint >= 1750 && evaluatePoint < 2200)
             {
-                evaluateString = "SS";
+				evaluateString = "SS";
             }
 			else if (evaluatePoint >= 2200)
             {

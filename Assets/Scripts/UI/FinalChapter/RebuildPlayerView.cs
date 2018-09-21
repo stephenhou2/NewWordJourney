@@ -317,7 +317,7 @@ namespace WordJourney
 			Player.mainPlayer.InitializeMapIndex();
 
 			PlayerData playerData = new PlayerData(Player.mainPlayer);
-
+         
 			playerData.agentLevel = 1;
 
 
@@ -388,13 +388,12 @@ namespace WordJourney
 			playerData.magicRecovery = 0;
 
 
-			playerData.allEquipmentsInBag.Clear();
-            playerData.allConsumablesInBag.Clear();
-            playerData.allSkillScrollsInBag.Clear();
-            playerData.allSpecialItemsInBag.Clear();
-            playerData.allLearnedSkillsRecord.Clear();
-            playerData.allPropertyGemstonesInBag.Clear();
-            
+			playerData.allEquipmentsInBag = new List<Equipment>();
+			playerData.allConsumablesInBag = new List<Consumables>();
+			playerData.allSkillScrollsInBag = new List<SkillScroll>();
+			playerData.allSpecialItemsInBag = new List<SpecialItem>();
+			playerData.allLearnedSkillsRecord = new List<SkillModel>();
+			playerData.allPropertyGemstonesInBag = new List<PropertyGemstone>();
 
 			playerData.maxUnlockLevelIndex = 0;
 			playerData.currentLevelIndex = 0;
@@ -410,11 +409,8 @@ namespace WordJourney
 
 			playerData.luckInOpenTreasure = 0;
 			playerData.luckInMonsterTreasure = 0;
-
-			DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.oriPlayerDataFilePath);
-
-
-
+         
+			DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.oriPlayerDataFilePath);  
 		}
 
 	}

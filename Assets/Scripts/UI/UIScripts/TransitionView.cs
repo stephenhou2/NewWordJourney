@@ -287,9 +287,7 @@ namespace WordJourney
             }
 
 
-			this.gameObject.SetActive (false);
-
-
+			this.gameObject.SetActive (false);         
 
 			for (int i = 0; i < transitionTextContainer.childCount; i++) {
 				Destroy (transitionTextContainer.GetChild (i).gameObject,0.3f);

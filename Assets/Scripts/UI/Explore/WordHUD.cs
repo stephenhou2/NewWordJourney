@@ -403,18 +403,14 @@ namespace WordJourney
                 }
 
                 Player.mainPlayer.wordContinuousRightRecord++;
-
-
+            
 				questionWord.learnedTimes++;
 
                 choiceTexts[index].color = Color.green;
 				IEnumerator delayCoroutine = ShowChooseResultForAWhile(true);
 				StartCoroutine(delayCoroutine);
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.correctTintAudioName);
-            
-                // 如果当前单词不是从错误列表中抽出来重新背的，那么背诵正确时更新玩家学习单词的总数
-
-				//Debug.Log(Player.mainPlayer.totalLearnedWordCount);
+           
 
 				ExploreManager.Instance.RecordWord(questionWord, true);            
             }

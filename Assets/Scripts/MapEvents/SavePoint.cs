@@ -19,7 +19,7 @@ namespace WordJourney
 
 		private IEnumerator waitAnimEndCoroutine;
 
-		private IEnumerator waitPlayerToTargetPosCoroutine;
+		//private IEnumerator waitPlayerToTargetPosCoroutine;
 
 		//public BoxCollider2D bigCollider;
 
@@ -45,7 +45,6 @@ namespace WordJourney
 
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
-			//bigCollider.enabled = false;
 
 			if(bp.fadeStepsLeft == 0){
 				return;

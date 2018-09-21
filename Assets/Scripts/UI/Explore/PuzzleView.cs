@@ -27,6 +27,8 @@ namespace WordJourney
 
 		private CallBack answerWrongCallBack;
 
+		public Image puzzleMask;
+
         
 		public void SetUpMonsterPuzzleView(CallBack answerRightCallBack,CallBack answerWrongCallBack){
 
@@ -38,7 +40,11 @@ namespace WordJourney
 
 			lockIcon.sprite = lockSprite;
 
-			Puzzle puzzle = GameManager.Instance.gameDataCenter.GetARandomPuzzle();
+			puzzleMask.enabled = false;
+
+			int puzzleId = Player.mainPlayer.GetAnUnusedPuzzleId();
+
+			Puzzle puzzle = GameManager.Instance.gameDataCenter.GetPuzzle(puzzleId);
 
 			puzzleText.text = puzzle.question;
 
@@ -76,6 +82,8 @@ namespace WordJourney
 
 		public void OnChoiceMake(int index){
 
+			puzzleMask.enabled = true;
+
 			bool answerRight = index == answerIndex;
 
 			if(answerRight){
@@ -83,6 +91,7 @@ namespace WordJourney
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.lockOffAudioName);
 				lockIcon.sprite = unlockSprite;
 			}else{
+				GameManager.Instance.soundManager.PlayAudioClip(CommonData.wrongTintAudioName);
 				choicesText[index].color = Color.red;
 			}
                      

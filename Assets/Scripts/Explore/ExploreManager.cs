@@ -92,9 +92,7 @@ namespace WordJourney
 
 			bool resetGameData = false;
 
-			//PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData();
-                     
-			//Player.mainPlayer.SetUpPlayerWithPlayerData(playerData);
+
 
 			if(Player.mainPlayer.health <= 0){
 				resetGameData = true;
@@ -123,14 +121,11 @@ namespace WordJourney
             battlePlayerCtr.InitBattlePlayer();
 
 			if(isFinalChapter){
-				DisableAllInteractivity();
 				expUICtr.HideUpAndBottomUIs();
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.finalChapterCanvasBundleName, "FinalChapterCanvas", delegate
 				{
 					TransformManager.FindTransform("FinalChapterCanvas").GetComponent<FinalChapterViewControlller>().SetUpFinalChapterView();
 				});
-			}else{
-				EnableExploreInteractivity();   
 			}
 
 
@@ -301,6 +296,8 @@ namespace WordJourney
 
             sql.GetConnectionWith(CommonData.dataBaseName);
 
+			sql.BeginTransaction();
+
             string currentWordsTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
 
 			string[] colFields = { "learnedTimes", "ungraspTimes","isFamiliar" };
@@ -329,7 +326,9 @@ namespace WordJourney
 
 			correctWordList.Clear();
 			wrongWordList.Clear();
-            
+
+			sql.EndTransaction();
+
 			sql.CloseConnection(CommonData.dataBaseName);    
 
 		}
@@ -784,9 +783,8 @@ namespace WordJourney
 
 		private void ResetExploreData(){
 			GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
-            //GameManager.Instance.gameDataCenter.currentMapWordRecords.Clear();
 			GameManager.Instance.persistDataManager.ClearCurrentMapWordsRecordAndSave();
-            GameManager.Instance.gameDataCenter.currentMapMiniMapRecord = null;
+			GameManager.Instance.persistDataManager.ResetCurrentMapMiniMapRecordAndSave();
 		}
 
 		public void EnterLastLevel(){
@@ -806,7 +804,7 @@ namespace WordJourney
         
 		public void SaveDataInExplore(CallBack saveFinishCallBack,bool updateDB = true){
 
-			DisableAllInteractivity();
+			//DisableAllInteractivity();
 
 			Time.timeScale = 0f;
 
@@ -867,7 +865,9 @@ namespace WordJourney
 
 			TransformManager.FindTransform("ExploreCanvas").GetComponent<ExploreUICotroller>().QuitExplore();
 
+			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData();
 
+            Player.mainPlayer.SetUpPlayerWithPlayerData(playerData);
 
 			GameManager.Instance.gameDataCenter.ReleaseDataWithDataTypes(new GameDataCenter.GameDataType[] {
 				GameDataCenter.GameDataType.GameLevelDatas,

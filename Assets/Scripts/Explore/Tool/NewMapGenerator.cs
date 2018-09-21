@@ -246,23 +246,23 @@ namespace WordJourney
 		//private object currentMiniMapRecord;
 
 
-		private MiniMapRecord mCurrentMiniMapRecord;
+		//private MiniMapRecord mCurrentMiniMapRecord;
 
-        public MiniMapRecord currentMiniMapRecord
-		{
-			get
-			{
-				if (mCurrentMiniMapRecord == null)
-				{
-					mCurrentMiniMapRecord = GameManager.Instance.gameDataCenter.currentMapMiniMapRecord;
-				}
-				return mCurrentMiniMapRecord;
-			}
+  //      public MiniMapRecord currentMiniMapRecord
+		//{
+		//	get
+		//	{
+		//		if (mCurrentMiniMapRecord == null)
+		//		{
+		//			mCurrentMiniMapRecord = GameManager.Instance.gameDataCenter.currentMapMiniMapRecord;
+		//		}
+		//		return mCurrentMiniMapRecord;
+		//	}
 
-			//set{
-			//	mCurrentMiniMapRecord = value;
-			//}
-		}
+		//	set{
+		//		mCurrentMiniMapRecord = value;
+		//	}
+		//}
         
         // 记录所有存档点
 		private List<SavePoint> allSavePoints = new List<SavePoint>();
@@ -344,22 +344,9 @@ namespace WordJourney
 		}
 
 		private void GenerateCharacterFragments(){
+   
 
-			List<SpellItemModel> allUnusedSpellItemModels = new List<SpellItemModel>();
-
-			List<SpellItemModel> allSpellItemModels = GameManager.Instance.gameDataCenter.allSpellItemModels;
-
-			for (int i = 0; i < allSpellItemModels.Count;i++){
-
-				if(!allSpellItemModels[i].hasUsed){
-					allUnusedSpellItemModels.Add(allSpellItemModels[i]);
-				}            
-			}
-
-
-			int randomSeed = Random.Range(0, allUnusedSpellItemModels.Count);
-
-			SpellItemModel spellItemModel = allUnusedSpellItemModels[randomSeed];
+			SpellItemModel spellItemModel = SpellItemModel.GetAUnusedSpellItemModel();
 
 			spellItemOfCurrentLevel = new SpellItem(spellItemModel,1);
 
@@ -375,7 +362,7 @@ namespace WordJourney
 
 				characterFragment.SetPool(characterFragmentPool);
 
-				randomSeed = Random.Range(0, allValidCharacterFragmentPositions.Count);
+				int randomSeed = Random.Range(0, allValidCharacterFragmentPositions.Count);
 
 				Vector3 characterFragmentPosition = allValidCharacterFragmentPositions[randomSeed];
 
@@ -481,14 +468,11 @@ namespace WordJourney
 
 		private void ClearMiniMapMasksByRecord(int mapIndex){
 
-			MiniMapRecord miniMapRecord = currentMiniMapRecord;
+			MiniMapRecord miniMapRecord = GameManager.Instance.gameDataCenter.currentMapMiniMapRecord;
 
             if (miniMapRecord == null)
             {
-                miniMapRecord = new MiniMapRecord(mapIndex, columns, rows);
-
-				GameManager.Instance.gameDataCenter.currentMapMiniMapRecord = miniMapRecord;
-
+                miniMapRecord = new MiniMapRecord(mapIndex, columns, rows);            
             }
 
             if (miniMapRecord.recordArray == null
@@ -500,6 +484,8 @@ namespace WordJourney
 				miniMapRecord.mapHeight = rows;
             }
 
+			GameManager.Instance.gameDataCenter.currentMapMiniMapRecord = miniMapRecord;
+            
 
 			for (int i = 0; i < rows; i++)
             {
@@ -538,7 +524,7 @@ namespace WordJourney
 				
 				int indexInRecord = basePosY * columns + basePosX;
 				
-				currentMiniMapRecord.recordArray[indexInRecord] = 1;
+				GameManager.Instance.gameDataCenter.currentMapMiniMapRecord.recordArray[indexInRecord] = 1;
             }
 
 			for (int i = basePosX - 3; i < basePosX + 4; i++)
@@ -1059,7 +1045,6 @@ namespace WordJourney
 							|| MyTool.ApproximatelySameIntPosition2D(tempDoor.transform.position, puzzleDoorPos_1))
 						{
 							tempDoor.hasPuzzle = true;
-							break;
 						}
 					}
 

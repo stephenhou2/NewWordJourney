@@ -796,7 +796,7 @@ namespace WordJourney
 				
 				baCtr.PlayRoleAnim(CommonData.roleIdleAnimName,0,null);
 
-				bool saySomething = Random.Range(0,5) <= 1 && !(baCtr.agent as Monster).isBoss;
+				bool saySomething = Random.Range(0,10) <= 1 && !(baCtr.agent as Monster).isBoss;
 
 				if(saySomething){
 					string say = GetMonsterSay();

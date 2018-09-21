@@ -42,6 +42,11 @@ namespace WordJourney
                 return;
             }
 
+			if(!MyTool.ApproximatelySameIntPosition2D(bp.singleMoveEndPos,this.transform.position)){
+				return;
+			}
+
+
 			if(Mathf.Abs(bp.transform.position.x - transform.position.x) < 0.1f && Mathf.Abs(bp.transform.position.y - transform.position.y) < 0.1f){
 				return;
 			}

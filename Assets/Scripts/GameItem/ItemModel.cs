@@ -220,8 +220,37 @@ namespace WordJourney
         public int attachInfo_2;
 
         // 是否已经使用过
-		public bool hasUsed;
+		public static bool CheckHasUsed(string spell){
 
+			return Player.mainPlayer.spellRecord.Contains(spell);
+
+		}
+
+		public static SpellItemModel GetAUnusedSpellItemModel(){
+         
+            List<SpellItemModel> allUnusedSpellItemModels = new List<SpellItemModel>();
+
+            List<SpellItemModel> allSpellItemModels = GameManager.Instance.gameDataCenter.allSpellItemModels;
+
+            for (int i = 0; i < allSpellItemModels.Count; i++)
+            {
+
+				if (!CheckHasUsed(allSpellItemModels[i].spell))
+                {
+                    allUnusedSpellItemModels.Add(allSpellItemModels[i]);
+                }
+            }
+
+            // 如果所有拼写物品全都已经使用过了，就清空拼写记录，再重新随机拼写物品
+			if(allUnusedSpellItemModels.Count == 0){
+				Player.mainPlayer.spellRecord.Clear();
+				return GetAUnusedSpellItemModel();
+			}
+
+            int randomSeed = Random.Range(0, allUnusedSpellItemModels.Count);
+         
+			return allUnusedSpellItemModels[randomSeed];         
+		}
 
 	}
 

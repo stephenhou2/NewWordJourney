@@ -19,6 +19,8 @@ namespace WordJourney
         public Text exampleSentenceText;
 
         public Text[] choiceTexts;
+
+		public Text learnTintText;
       
         public Text pronounceNotAvalableHintTextInExplain;
 
@@ -104,6 +106,8 @@ namespace WordJourney
 			if(waitAndShowNextCoroutine != null){
 				StopCoroutine(waitAndShowNextCoroutine);
 			}
+
+			learnTintText.text = string.Format("连续完成测试后可以掌握<color=orange>{0}</color>",skill.skillName);
 
 			gameObject.SetActive(true);
 

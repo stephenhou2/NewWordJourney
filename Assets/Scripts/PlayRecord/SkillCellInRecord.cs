@@ -16,6 +16,13 @@ namespace WordJourney
 
 		public Text skillLevelText;
 
+		public void Reset()
+		{
+			skillIcon.enabled = false;
+			skillNameText.text = string.Empty;
+			skillLevelText.text = string.Empty;
+		}
+
 		public void SetUpSkillCellInRecord(Skill skill,int skillLevel){
 
 			Sprite skillSprite = GameManager.Instance.gameDataCenter.allSkillSprites.Find(delegate (Sprite obj)
@@ -31,9 +38,10 @@ namespace WordJourney
 			}
 
 			skillNameText.text = skill.skillName;
+			skillNameText.enabled = true;
 
-			skillLevelText.text = skillLevel.ToString();
-
+			skillLevelText.text = string.Format("Lv.{0}", skillLevel);
+			skillLevelText.enabled = true;
 		}
         
     }

@@ -66,7 +66,7 @@ namespace WordJourney
 
 				playRecordSimpleCell.SetUpPlayRecordSimpleCell(playRecord,recordIndex, delegate
 				{               
-					playRecordDetailHUD.SetUpPlayRecordDetailHUD(playRecord,recordIndex);
+					playRecordDetailHUD.SetUpPlayRecordDetailHUD(playRecord);
 				});
                                    
 			}

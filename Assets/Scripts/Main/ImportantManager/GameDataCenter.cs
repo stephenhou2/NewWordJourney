@@ -78,7 +78,7 @@ namespace WordJourney
 		private List<HLHSentenceAndPoem> mAllProverbs = new List<HLHSentenceAndPoem>();
 		private List<Puzzle> mAllPuzzles = new List<Puzzle>();
 		private List<HLHNPCChatRecord> mChatRecords = new List<HLHNPCChatRecord>();
-		private List<MapEventsRecord> mMapEventsRecords = new List<MapEventsRecord>();
+		private List<MapEventsRecord> mMapEventsRecords = new List<MapEventsRecord>();//  特殊地图事件记录，重新进入关卡时不刷新
 		private List<DiaryModel> mAllDiaryModels = new List<DiaryModel>();
 		private List<PlayRecord> mAllPlayRecords = new List<PlayRecord>();
 		private MiniMapRecord mCurrentMapMiniMapRecord;
@@ -140,29 +140,8 @@ namespace WordJourney
 
 		}
 
+      
 
-
-		//		public LearningInfo learnInfo{
-		//			get{
-		//				if (mLearnInfo == null) {
-		//					LoadLearnInfo ();
-		//				}
-		//				return mLearnInfo;
-		//			}
-		//		}
-		//
-		//		private void LoadLearnInfo(){
-		//			if(inLoadingDataTypes.Contains(GameDataType.LearnInfo)){
-		//				return;
-		//			}
-		//			inLoadingDataTypes.Add (GameDataType.LearnInfo);
-		//			mLearnInfo = GameManager.Instance.persistDataManager.LoadLearnInfo ();
-		//			if (mLearnInfo == null) {
-		//				mLearnInfo = new LearningInfo ();
-		//			}
-		//			dataReadyDic [GameDataType.LearnInfo] = true;
-		//			inLoadingDataTypes.Remove (GameDataType.LearnInfo);
-		//		}
 
 
 		public List<HLHGameLevelData> gameLevelDatas
@@ -419,12 +398,15 @@ namespace WordJourney
 
 		}
 
-		public Puzzle GetARandomPuzzle()
+		public Puzzle GetPuzzle(int puzzleId)
 		{
 
-			int randomIndex = Random.Range(0, allPuzzles.Count);
+			Puzzle puzzle = allPuzzles.Find(delegate (Puzzle obj)
+			{            
+				return obj.puzzleId == puzzleId;
+			});
 
-			return allPuzzles[randomIndex];
+			return puzzle;
 
 		}
 
@@ -473,7 +455,7 @@ namespace WordJourney
 			{
 				if (mCurrentMapMiniMapRecord == null)
 				{
-					mCurrentMapMiniMapRecord = DataHandler.LoadDataToSingleModelWithPath<MiniMapRecord>(CommonData.miniMapRecordFilePath);;
+					mCurrentMapMiniMapRecord = DataHandler.LoadDataToSingleModelWithPath<MiniMapRecord>(CommonData.miniMapRecordFilePath);
 				}            
 				return mCurrentMapMiniMapRecord;            
 			}  

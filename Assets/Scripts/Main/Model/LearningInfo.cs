@@ -106,8 +106,7 @@ namespace WordJourney
 
 			// 连接数据库
 			sql.GetConnectionWith (CommonData.dataBaseName);
-
-			// 检查存放指定单词类型的表是否存在（目前只做了测试用的CET4这一个表，添加表使用参考editor文件夹下的DataBaseManager）
+            
 			if (!sql.CheckTableExist (tableName)) {
 				sql.CloseConnection(CommonData.dataBaseName);
 				return 0;

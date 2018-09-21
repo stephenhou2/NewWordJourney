@@ -59,82 +59,90 @@ namespace WordJourney
 			mask.fillAmount = isManaEnough ? 0 : 1;
 			mask.enabled = !isManaEnough;
 
+
 			float coolenPercentage = skill.coolenPercentage / 100f;
 
-			mask.fillAmount = coolenPercentage;
+            mask.fillAmount = coolenPercentage;
 
-			mask.enabled = !isManaEnough || skill.coolenPercentage > 0;
+            mask.enabled = !isManaEnough || skill.coolenPercentage > 0.01f;
 
-			button.interactable = isManaEnough && skill.coolenPercentage == 0 && !ExploreManager.Instance.battlePlayerCtr.isInEscaping;
+            button.interactable = isManaEnough && skill.coolenPercentage <= 0.01f && !ExploreManager.Instance.battlePlayerCtr.isInEscaping;
 
-			switch(skill.skillStatus){
-				case ActiveSkillStatus.None:
-					mask.enabled = false;
-					mask.fillAmount = 0;
-					if (isManaEnough)
+            switch (skill.skillStatus)
+            {
+                case ActiveSkillStatus.None:
+                    mask.enabled = false;
+                    mask.fillAmount = 0;
+                    if (isManaEnough)
                     {
-						if(!validTint.gameObject.activeInHierarchy){
-							validTint.gameObject.SetActive(true);
-						}
-
-						if(!validTint.animation.isPlaying){
-							validTint.animation.Play("default", 0);
+                        if (!validTint.gameObject.activeInHierarchy)
+                        {
+                            validTint.gameObject.SetActive(true);
                         }
-                       
-					}else{
-						validTint.gameObject.SetActive(false);
-					}
-					break;
-				case ActiveSkillStatus.Waiting:
-					mask.enabled = true;
-					mask.fillAmount = 1;
-					validTint.gameObject.SetActive(false);
-					break;
-				case ActiveSkillStatus.Cooling:
-					mask.DOFillAmount(0, skill.skillCoolenTime * coolenPercentage).OnComplete(delegate {
-						
-						isManaEnough = Player.mainPlayer.mana >= skill.manaConsume;
 
-						if (ExploreManager.Instance.battlePlayerCtr.isInSkillAttackAnimBeforeHit)
-						{
-							mask.enabled = true;
-							mask.fillAmount = 1;
-							skill.coolenPercentage = 0;
-							button.interactable = false;
-							skill.skillStatus = ActiveSkillStatus.Waiting;
-							validTint.gameObject.SetActive(false);
-						}
-						else
-						{
-							mask.enabled = !isManaEnough;
-							mask.fillAmount = 0;
-							skill.coolenPercentage = 0;
-							button.interactable = isManaEnough;
-							skill.skillStatus = ActiveSkillStatus.None;
-							if (isManaEnough)
-							{
-								if (!validTint.gameObject.activeInHierarchy)
-								{
-									validTint.gameObject.SetActive(true);
-								}
-								if (!validTint.animation.isPlaying)
-								{
-									validTint.animation.Play("default", 0);
-								}
+                        if (!validTint.animation.isPlaying)
+                        {
+                            validTint.animation.Play("default", 0);
+                        }
 
-							}
-							else
-							{
-								validTint.gameObject.SetActive(false);
-							}
+                    }
+                    else
+                    {
+                        validTint.gameObject.SetActive(false);
+                    }
+                    break;
+                case ActiveSkillStatus.Waiting:
+                    mask.enabled = true;
+                    mask.fillAmount = 1;
+                    validTint.gameObject.SetActive(false);
+                    break;
+                case ActiveSkillStatus.Cooling:
+                    mask.DOFillAmount(0, skill.skillCoolenTime * coolenPercentage).OnComplete(delegate {
 
-							manaConsume.color = isManaEnough ? Color.white : Color.red;
-						}
-                    });                  
-					break;
-			}
+                        isManaEnough = Player.mainPlayer.mana >= skill.manaConsume;
+
+                        if (ExploreManager.Instance.battlePlayerCtr.isInSkillAttackAnimBeforeHit)
+                        {
+                            mask.enabled = true;
+                            mask.fillAmount = 1;
+                            skill.coolenPercentage = 0;
+                            button.interactable = false;
+                            skill.skillStatus = ActiveSkillStatus.Waiting;
+                            validTint.gameObject.SetActive(false);
+                        }
+                        else
+                        {
+                            mask.enabled = !isManaEnough;
+                            mask.fillAmount = 0;
+                            skill.coolenPercentage = 0;
+                            button.interactable = isManaEnough;
+                            skill.skillStatus = ActiveSkillStatus.None;
+                            if (isManaEnough)
+                            {
+                                if (!validTint.gameObject.activeInHierarchy)
+                                {
+                                    validTint.gameObject.SetActive(true);
+                                }
+                                if (!validTint.animation.isPlaying)
+                                {
+                                    validTint.animation.Play("default", 0);
+                                }
+
+                            }
+                            else
+                            {
+                                validTint.gameObject.SetActive(false);
+                            }
+
+                            manaConsume.color = isManaEnough ? Color.white : Color.red;
+                        }
+                    });
+                    break;
+            }
 
 		}
+        
+
       
 		public void AddListener(SkillButtonClickCallBack cb){
 			

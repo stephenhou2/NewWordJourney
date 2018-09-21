@@ -15,8 +15,8 @@ namespace WordJourney
 		public Transform levelChoiceContainer;
 		public Button levelChoiceModel;
 
-		public Button upButton;
-		public Button downButton;
+		//public Button upButton;
+		//public Button downButton;
 
 		public TintHUD tintHUD;
 
@@ -44,30 +44,18 @@ namespace WordJourney
 			this.quitCallBack = quitCallBack;
 
 			this.gameObject.SetActive(true);
-            
-			minLevelChoiceIndex = 0;
+
+			List<int> validTravelLevelIds = npc.GetValidTravelLevelIds();
           
 			levelChoiceContainer.localPosition = Vector3.zero;
 
 			levelChoicePool.AddChildInstancesToPool(levelChoiceContainer);
+                     
+			bool hasValidTranportLevel = validTravelLevelIds.Count > 0;
 
-			//bool showUpAndDownButton = false;
-
-
-			bool hasValidTranportLevel = false;
-
-			for (int i = 0; i < npc.transportLevelList.Count; i++)
+			for (int i = 0; i < validTravelLevelIds.Count; i++)
 			{            
-				int transportLevel = npc.transportLevelList[i];
-
-				if (transportLevel <= Player.mainPlayer.maxUnlockLevelIndex && transportLevel != Player.mainPlayer.currentLevelIndex){
-					maxLevelChoiceIndex = i;
-					hasValidTranportLevel = true;
-				}else{
-					continue;
-				}
-
-				//showUpAndDownButton = true;
+				int transportLevel = validTravelLevelIds[i];
 
 				Button levelChoice = levelChoicePool.GetInstance<Button>(levelChoiceModel.gameObject, levelChoiceContainer);
 
@@ -85,6 +73,7 @@ namespace WordJourney
 					Player.mainPlayer.totalGold -= transportCost;
 
 					GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
+					GameManager.Instance.gameDataCenter.currentMapWordRecords.Clear();
                     
 					if(levelSelectCallBack != null){
 						levelSelectCallBack(transportLevel);
@@ -97,8 +86,8 @@ namespace WordJourney
 
 
 			noValidLevelHint.enabled = !hasValidTranportLevel;
-			upButton.gameObject.SetActive(hasValidTranportLevel);
-			downButton.gameObject.SetActive(hasValidTranportLevel);
+			//upButton.gameObject.SetActive(hasValidTranportLevel);
+			//downButton.gameObject.SetActive(hasValidTranportLevel);
 
 			if(zoomCoroutine != null){
 				StopCoroutine(zoomCoroutine);
@@ -110,39 +99,39 @@ namespace WordJourney
          
 		}
 
-		public void OnUpButtonClick(){
+		//public void OnUpButtonClick(){
 
-			if (minLevelChoiceIndex == 0)
-            {
-                return;
-            }
+		//	if (minLevelChoiceIndex == 0)
+  //          {
+  //              return;
+  //          }
 
-			minLevelChoiceIndex--;         
+		//	minLevelChoiceIndex--;         
          
 
-			float choiceContainerPosY = levelChoiceContainer.localPosition.y;
+		//	float choiceContainerPosY = levelChoiceContainer.localPosition.y;
 
-			float newChoiceContainerPosY = choiceContainerPosY - cellHeight - cellSpacing;
+		//	float newChoiceContainerPosY = choiceContainerPosY - cellHeight - cellSpacing;
 
-			levelChoiceContainer.localPosition = new Vector3(0, newChoiceContainerPosY, 0);
+		//	levelChoiceContainer.localPosition = new Vector3(0, newChoiceContainerPosY, 0);
 
-		}
+		//}
 
-		public void OnDownButtonClick(){
+		//public void OnDownButtonClick(){
 
-			if(maxLevelChoiceIndex - minLevelChoiceIndex < choiceCountInOnePage){
-				return;
-			}
+		//	if(maxLevelChoiceIndex - minLevelChoiceIndex < choiceCountInOnePage){
+		//		return;
+		//	}
 			
-			minLevelChoiceIndex++;
+		//	minLevelChoiceIndex++;
 
-			float choiceContainerPosY = levelChoiceContainer.localPosition.y;
+		//	float choiceContainerPosY = levelChoiceContainer.localPosition.y;
 
-            float newChoiceContainerPosY = choiceContainerPosY + cellHeight + cellSpacing;
+  //          float newChoiceContainerPosY = choiceContainerPosY + cellHeight + cellSpacing;
 
-            levelChoiceContainer.localPosition = new Vector3(0, newChoiceContainerPosY, 0);
+  //          levelChoiceContainer.localPosition = new Vector3(0, newChoiceContainerPosY, 0);
          
-		}
+		//}
 
 
 		public void OnBackButtonClick(){

@@ -26,6 +26,8 @@ namespace WordJourney
 
 		private CallBack rebuildFinishCallBack;
 
+		public Image mask;
+
               
 		public string[] finalDialogs = {
 			"恭喜你，我的朋友，你完成了最终的试。",
@@ -35,7 +37,8 @@ namespace WordJourney
 			"真正的宝藏，其实是你在探索中所散发出的智慧和勇气。当然了，还有坚持不懈的毅力。",
 			"我曾经拥有过这些东西，不过在很早之前就弄丢了。而我最大的心愿就是再看一眼这个宝藏。",
 			"很感谢，你让我有机会见证这一切。请收下这由你自己所创造的宝藏吧！",
-            "再见了，朋友，接下来出去拥抱无限光明的未来吧！"
+            "我的身后有一块永恒之石，它可以重新塑造你的灵魂。",
+            "再见了，我的朋友，接下来去开始新的冒险吧！"
 		};
 
 		private int dialogIndex;
@@ -43,9 +46,11 @@ namespace WordJourney
 		private Transform npcTrans;
 
 		public void SetUpFinalChapterView(){
-
+                 
 			if(ExploreManager.Instance.newMapGenerator.allNPCsInMap.Count > 0){
-				
+
+				mask.enabled = true;
+
 				npcTrans = ExploreManager.Instance.newMapGenerator.allNPCsInMap[0].transform;
 
 				dialogIndex = 0;
@@ -55,6 +60,9 @@ namespace WordJourney
                 StartCoroutine(waitCoroutine);
 
 			}else{
+
+				mask.enabled = false;
+
 				ExploreManager.Instance.EnableExploreInteractivity();
 			}
          
@@ -66,21 +74,27 @@ namespace WordJourney
 
 			ExploreManager.Instance.battlePlayerCtr.boxCollider.enabled = false;
 
-			//yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(1f);
 
 			ExploreManager.Instance.battlePlayerCtr.PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
 
 			ExploreManager.Instance.battlePlayerCtr.MoveToPosition(playerMoveDestination, ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray);
 
-			yield return null;
+			//yield return null;
 
-			yield return new WaitUntil(() => ExploreManager.Instance.battlePlayerCtr.isIdle);
+			//Debug.LogFormat("[{0},{1}]..........[{2},{3}]", ExploreManager.Instance.battlePlayerCtr.transform.position.x, ExploreManager.Instance.battlePlayerCtr.transform.position.y,
+							//playerMoveDestination.x, playerMoveDestination.y);
+
+			yield return new WaitUntil(() => (Mathf.Abs(ExploreManager.Instance.battlePlayerCtr.transform.position.x - playerMoveDestination.x) <= 0.01f
+			                                  && Mathf.Abs(ExploreManager.Instance.battlePlayerCtr.transform.position.y - playerMoveDestination.y) <= 0.01f));
 
 			ExploreManager.Instance.battlePlayerCtr.TowardsLeft();
          
 			dialogHUD.gameObject.SetActive(true);
 
 			dialogText.text = finalDialogs[dialogIndex];
+
+			//mask.enabled = false;
 		}
 
 		public void OnNextDialogButtonClick()
@@ -88,11 +102,11 @@ namespace WordJourney
 
 			dialogIndex++;
 
-			if (dialogIndex < finalDialogs.Length - 1)
+			if (dialogIndex < finalDialogs.Length - 2)
 			{
 				dialogText.text = finalDialogs[dialogIndex];
 			}
-			else if (dialogIndex == finalDialogs.Length - 1)
+			else if (dialogIndex == finalDialogs.Length - 2)
 			{
 				dialogHUD.gameObject.SetActive(false);
             
@@ -136,7 +150,7 @@ namespace WordJourney
 
 			dialogHUD.gameObject.SetActive(false);
 
-
+			mask.enabled = false;
 
 			//GameManager.Instance.UIManager.RemoveCanvasCache("FinalChapterCanvas");
 

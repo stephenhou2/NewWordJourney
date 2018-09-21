@@ -39,7 +39,7 @@ namespace WordJourney
 
 			skillNameText.text = skill.skillName;
 
-			learnNeedText.text = string.Format("学习要求:{0}个单词", skill.wordCountToLearn);
+			learnNeedText.text = string.Format("要求: {0}个单词", skill.wordCountToLearn);
                      
 			//bool skillLearned = Player.mainPlayer.CheckSkillHasLearned(skill);
          

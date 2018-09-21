@@ -101,13 +101,13 @@ namespace WordJourney
 
 			switch(keyType){
 				case KeyType.Iron:
-					keyMoveSpeedLevel = 4f;
+					keyMoveSpeedLevel = 4.5f;
 					break;
 				case KeyType.Brass:
-					keyMoveSpeedLevel = 3f;
+					keyMoveSpeedLevel = 3.75f;
 					break;
 				case KeyType.Gold:
-					keyMoveSpeedLevel = 2.5f;
+					keyMoveSpeedLevel = 3f;
 					break;
 			}
 
@@ -155,7 +155,7 @@ namespace WordJourney
 
 			int lockHoleVisableWidth = 90 - difficulty * 7;
 
-			int lockHoleValidWidth = 60 - difficulty * 4;
+			int lockHoleValidWidth = 45 - difficulty * 3;
 
             lockHoleValidZoneEdgeLeft = lockHoleVisableTrans.rect.width/2;
             lockHoleValidZoneEdgeRight = lockMovePane.rect.width - lockHoleVisableTrans.rect.width/2;

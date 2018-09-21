@@ -117,6 +117,14 @@ namespace WordJourney
 
 		}
 
+		public void ResetCurrentMapMiniMapRecordAndSave(){
+
+			GameManager.Instance.gameDataCenter.currentMapMiniMapRecord = null;
+
+			DataHandler.SaveInstanceDataToFile<MiniMapRecord>(null, CommonData.miniMapRecordFilePath);
+
+		}
+
 		public void SaveCurrentMapEventsRecords(){
 			DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(GameManager.Instance.gameDataCenter.currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
 		}
@@ -129,21 +137,7 @@ namespace WordJourney
 			GameManager.Instance.gameDataCenter.currentMapWordRecords.Clear();
 			DataHandler.SaveInstanceListToFile<HLHWord>(new List<HLHWord>(), CommonData.currentMapWordsRecordsFilePath);
 		}
-
-
-		public void RefreshSpellItem(){
-			List<SpellItemModel> spellItemModels = GameManager.Instance.gameDataCenter.allSpellItemModels;
-			DataHandler.SaveInstanceListToFile<SpellItemModel>(spellItemModels, CommonData.spellItemDataFilePath);
-		}
-
-		public void ResetSpellItemModels(){
-			List<SpellItemModel> spellItemModels = GameManager.Instance.gameDataCenter.allSpellItemModels;
-            for (int i = 0; i < spellItemModels.Count; i++)
-            {
-                spellItemModels[i].hasUsed = false;
-            }
-            DataHandler.SaveInstanceListToFile<SpellItemModel>(spellItemModels, CommonData.spellItemDataFilePath);
-		}
+      
 
 		/// <summary>
 		/// 从本地加载玩家游戏数据
@@ -168,18 +162,7 @@ namespace WordJourney
 			return pd;
 
 		}
-
-
-		//public GameSettings LoadGameSettings(){
-		//	string settingsPath = string.Format ("{0}/{1}", CommonData.persistDataPath, "");
-		//	return DataHandler.LoadDataToSingleModelWithPath<GameSettings> (settingsPath);
-		//}
-
-//		public LearningInfo LoadLearnInfo(){
-//			string learnInfoPath = string.Format ("{0}/{1}", CommonData.persistDataPath, "LearningInfo.json");
-//			return DataHandler.LoadDataToSingleModelWithPath<LearningInfo> (learnInfoPath);
-//		}
-
+      
 
 		public void ResetPlayerDataToOriginal(){
 
@@ -204,27 +187,25 @@ namespace WordJourney
 
 			resetPd.learnedWordsCountInCurrentExplore = 0;
 			resetPd.correctWordsCountInCurrentExplore = 0;
+			resetPd.totaldefeatMonsterCount = 0;
 
 			resetPd.currentExploreStartDateString = DateTime.Now.ToShortDateString();
 			resetPd.currentVersion = Player.mainPlayer.currentVersion;
+			resetPd.spellRecord.Clear();
          
 			Player.mainPlayer.SetUpPlayerWithPlayerData (resetPd);
 
 			Player.mainPlayer.InitializeMapIndex();
-
-			SaveCompletePlayerData ();
-
+                     
 			ResetChatRecords();
 
 			ResetMapEventsRecord();
 
-			ResetSpellItemModels();
-
 			ResetMiniMapEventsRecord();
 
 			ResetCurrentMapEventRecord();
-         
-			//GameManager.Instance.gameDataCenter.ResetGameData();
+
+			SaveCompletePlayerData();
 
 		}
 

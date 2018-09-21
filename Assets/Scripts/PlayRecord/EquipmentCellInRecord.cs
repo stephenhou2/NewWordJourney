@@ -17,6 +17,8 @@ namespace WordJourney
 
 		public Text equipmentName;
 
+		public Sprite emptySlotSprite;
+
 		public Sprite graySlotSprite;
 
 		public Sprite blueSlotSprite;
@@ -25,7 +27,12 @@ namespace WordJourney
 
 		public Sprite purpleSlotSprite;
 
-
+		public void Reset()
+		{
+			equipmentBackground.sprite = emptySlotSprite;
+			equipmentIcon.enabled = false;
+			equipmentName.text = string.Empty;
+		}
 
 		public void SetUpEquipmentCellInRecord(Equipment equipment){
 
@@ -45,7 +52,7 @@ namespace WordJourney
 			}
 
 			Sprite equipmentSprite = GameManager.Instance.gameDataCenter.GetGameItemSprite(equipment);
-
+                     
 			if(equipmentSprite != null){
 				equipmentIcon.enabled = true;
 				equipmentIcon.sprite = equipmentSprite;
@@ -54,6 +61,7 @@ namespace WordJourney
 			}
 
 			equipmentName.text = equipment.itemName;
+			equipmentName.enabled = true;
 
 
 		}

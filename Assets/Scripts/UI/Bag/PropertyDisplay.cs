@@ -100,7 +100,7 @@ namespace WordJourney
 				changeTintFromEqSequences [indexInPanel].Complete ();
 			}
 
-			if (changeResult == 0) {
+			if (Mathf.Abs(changeResult) <= 0.00001f) {
 				return;
 			}
 

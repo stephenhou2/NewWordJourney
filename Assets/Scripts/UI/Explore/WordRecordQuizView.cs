@@ -35,6 +35,8 @@ namespace WordJourney
 		}
 
 		public Transform wordQuizContainer;
+      
+		public Button pronounceButton;
 
 		public Text spellQuesiton;
 
@@ -47,11 +49,7 @@ namespace WordJourney
 		public Text[] choiceTexts;
 
 		public Text pronounceNotAvalableHintTextInExplain;
-
-		//public Text generalRewardText;
-
-		//public Text extraRewardText;
-
+      
 		public Transform rewardHintContainer;
 
 		public Text continousCorrectRequireText;
@@ -141,7 +139,7 @@ namespace WordJourney
 
 			wordsNotEnoughHUD.gameObject.SetActive(false);
 			queryEnterHUD.gameObject.SetActive(true);
-			queryEnterText.text = string.Format("本关共学习过<color=orange>{0}</color>个单词\n是否开始冥想", sourceWords.Count);
+			queryEnterText.text = string.Format("本层共学习过<color=orange>{0}</color>个单词\n是否开始冥想？", sourceWords.Count);
 			wordQuizContainer.gameObject.SetActive(false);
 
 			this.sourceWords = sourceWords;
@@ -224,6 +222,7 @@ namespace WordJourney
 
 			switch(currentQuizType){
 				case QuizType.EnToCh:
+					pronounceButton.gameObject.SetActive(true);
 					spellQuesiton.text = questionWord.spell;
 					explainationQuestion.text = string.Empty;
 					phoneticSymbolForExplainSelect.text = questionWord.phoneticSymbol;
@@ -237,6 +236,7 @@ namespace WordJourney
 					}
 					break;               
 				case QuizType.ChToEn:
+					pronounceButton.gameObject.SetActive(false);
 					spellQuesiton.text = string.Empty;
 					explainationQuestion.text = questionWord.explaination;
 					phoneticSymbolForExplainSelect.text = string.Empty;
@@ -299,10 +299,7 @@ namespace WordJourney
                      
 
 			if (choiceCorrect)
-			{
-				Player.mainPlayer.learnedWordsCountInCurrentExplore++;
-                Player.mainPlayer.correctWordsCountInCurrentExplore++;
-
+			{            
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.correctTintAudioName);
 				choiceTexts[index].color = Color.green;
 				continousCorrectCount++;
@@ -310,11 +307,7 @@ namespace WordJourney
 				if(continousCorrectCount > maxContinousHitCount){
 					maxContinousHitCount = continousCorrectCount;
 				}
-				//if (continousCorrectHintZoomCoroutine != null)
-				//{
-				//	StopCoroutine(continousCorrectHintZoomCoroutine);
-				//}
-               
+
 				continousHitText.text = string.Format("连击 x {0}", continousCorrectCount);
 				if (CheckIsExtraRewardNum(continousCorrectCount))
 				{
@@ -340,7 +333,7 @@ namespace WordJourney
 			
 			}else{
 
-				Player.mainPlayer.learnedWordsCountInCurrentExplore++;
+				//Player.mainPlayer.learnedWordsCountInCurrentExplore++;
 
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.wrongTintAudioName);
 				wrongWordsCount++;
@@ -504,7 +497,7 @@ namespace WordJourney
 		private IEnumerator RewardHintShow(){
 			int rewardHintMoveSpeed = 3000;
 			int localPosX = 0;
-			int moveDesPosX = 560;
+			int moveDesPosX = 540;
 			int localPosY = 125;
 
 			rewardHintContainer.localPosition = new Vector3(localPosX, localPosY, 0);
@@ -535,7 +528,6 @@ namespace WordJourney
 			PropertyType pt = PropertyType.Attack;
 			float value = 0;
 
-
 			if(randomSeed >=0 && randomSeed < 25){
 				pt = PropertyType.Attack;
                 value = (levelSeed - 1) / 10 + 1;
@@ -551,7 +543,7 @@ namespace WordJourney
 			}else if(randomSeed >= 90 && randomSeed < 95){
 				pt = PropertyType.Dodge;
                 value = (float)((levelSeed - 1) / 10 + 1) / 200;
-			}else if(randomSeed >=95 && randomSeed < 100){
+			}else if(randomSeed >= 95 && randomSeed < 100){
 				pt = PropertyType.Crit;
                 value = (float)((levelSeed - 1) / 10 + 1) / 200;
 			}

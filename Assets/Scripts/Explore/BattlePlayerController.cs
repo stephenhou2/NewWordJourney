@@ -667,9 +667,7 @@ namespace WordJourney
 
             this.moveDestination = singleMoveEndPos;
 
-            pathPosList.Clear();
-
-            pathPosList.Add(singleMoveEndPos);
+			MoveToPosition(singleMoveEndPos);
 
 			//MoveToNextPosition();
 

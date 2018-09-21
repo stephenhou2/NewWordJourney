@@ -17,6 +17,8 @@ namespace WordJourney
 
 		public Text manaConsumeText;
 
+		public Text passiveHintText;
+
 		public Text skillDescriptionText;
 
 		private CallBack quitCallBack;
@@ -41,11 +43,13 @@ namespace WordJourney
                 ActiveSkill activeSkill = skill as ActiveSkill;
                 manaConsumeText.text = string.Format("魔法消耗: {0}", activeSkill.manaConsume);
                 coolenTimeText.text = string.Format("冷却时间: {0}s", activeSkill.skillCoolenTime);
+				passiveHintText.text = string.Empty;
             }
             else
             {
-                manaConsumeText.text = "被动";
+                manaConsumeText.text = "";
                 coolenTimeText.text = "";
+				passiveHintText.text = "被动技能";
             }
 
 			skillDescriptionText.text = skill.skillDescription;

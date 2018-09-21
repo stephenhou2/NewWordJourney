@@ -16,7 +16,7 @@ namespace WordJourney
 
 		public Text exploreMaxLevelText;
 
-		public Text totalLearnedWordCountText;
+		public Text evaluateText;
 
 		public Button detailInfoButton;
 
@@ -30,13 +30,13 @@ namespace WordJourney
             }
             else
             {
-                exploreEndAt.text = string.Format("失败于:{0}", playRecord.dieFrom);
+                exploreEndAt.text = string.Format("失败于: {0}", playRecord.dieFrom);
             }
 
-			exploreMaxLevelText.text = string.Format("最大探索层数:{0}", playRecord.maxExploreLevel);
+			exploreMaxLevelText.text = string.Format("最大探索层数: {0}", playRecord.maxExploreLevel);
 
 
-			totalLearnedWordCountText.text = string.Format("总计学习单词数:{0}", playRecord.totalLearnedWordCount);
+			evaluateText.text = string.Format("综合评级: {0}", playRecord.evaluateString);
 
 			detailInfoButton.onClick.RemoveAllListeners();
 

@@ -88,7 +88,7 @@ namespace WordJourney
             bc2d.enabled = true;
 			mapItemRenderer.enabled = true;
 
-			Debug.Log(attachedInfo.type);
+			//Debug.Log(attachedInfo.type);
 
 			switch(attachedInfo.type){
 				case "thornTrap":

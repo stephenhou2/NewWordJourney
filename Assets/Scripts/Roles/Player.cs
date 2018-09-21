@@ -102,11 +102,15 @@ namespace WordJourney
 		public List<char> allCollectedCharacters = new List<char>();//所有收集到的字母碎片
 
         // 地图初始化记录
-        public List<int> mapIndexRecord = new List<int>();      
+        public List<int> mapIndexRecord = new List<int>();
+
+		public List<string> spellRecord = new List<string>();
 
 		public int currentLevelIndex;
 
 		public int maxUnlockLevelIndex;
+
+		public List<int> unusedPuzzleIds = new List<int>();
 
 		// 是否是新建的玩家
 		public bool isNewPlayer;
@@ -335,7 +339,7 @@ namespace WordJourney
 
 			this.wordContinuousRightRecord = playerData.wordContinuousRightRecord;
 
-			this.totalLearnedWordCount = LearningInfo.Instance.totalWordCount;
+			this.totalLearnedWordCount = LearningInfo.Instance.learnedWordCount;
 
 			this.totalUngraspWordCount = LearningInfo.Instance.ungraspedWordCount;
 
@@ -352,6 +356,10 @@ namespace WordJourney
 			this.savePosition = playerData.savePosition;
 
 			this.saveTowards = playerData.saveTowards;
+
+			this.spellRecord = playerData.spellRecord;
+
+			this.unusedPuzzleIds = playerData.unusedPuzzleIds;
 
 			//this.currentMapEventsRecord = playerData.currentMapEventsRecord;
                      
@@ -415,6 +423,25 @@ namespace WordJourney
 		public void ClearCollectedCharacters(){
 
 			allCollectedCharacters.Clear();
+
+		}
+
+		public int GetAnUnusedPuzzleId(){
+			
+			if(unusedPuzzleIds.Count == 0){
+				for (int i = 0; i < GameManager.Instance.gameDataCenter.allPuzzles.Count;i++){
+					unusedPuzzleIds.Add(i);
+				}
+			}
+
+			if(unusedPuzzleIds.Count > 0){
+				int randomSeed = Random.Range(0, unusedPuzzleIds.Count);
+				int puzzleId = unusedPuzzleIds[randomSeed];
+				unusedPuzzleIds.RemoveAt(randomSeed);
+				return puzzleId;
+			}
+
+			return -1;
 
 		}
 
@@ -1771,6 +1798,9 @@ namespace WordJourney
 
 		public string currentExploreStartDateString;
 
+		public List<string> spellRecord = new List<string>();
+
+		public List<int> unusedPuzzleIds = new List<int>();
 
         // 记录到的存档点位置
 		public Vector3 savePosition = -Vector3.one;
@@ -1893,6 +1923,10 @@ namespace WordJourney
 			this.savePosition = player.savePosition;
 
 			this.saveTowards = player.saveTowards;
+
+			this.spellRecord = player.spellRecord;
+
+			this.unusedPuzzleIds = player.unusedPuzzleIds;
 
 			//this.currentMapEventsRecord = player.currentMapEventsRecord;
 

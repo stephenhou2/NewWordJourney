@@ -508,12 +508,7 @@ namespace WordJourney
 
 		public void SetUpSpellItemView(){         
 			spellItemView.SetUpSpellView(ExploreManager.Instance.newMapGenerator.spellItemOfCurrentLevel,delegate{
-				SpellItemModel spellItemModel = GameManager.Instance.gameDataCenter.allSpellItemModels.Find(delegate(SpellItemModel obj)
-				{
-					return obj.itemId == ExploreManager.Instance.newMapGenerator.spellItemOfCurrentLevel.itemId;               
-				});
-				spellItemModel.hasUsed = true;
-				GameManager.Instance.persistDataManager.RefreshSpellItem();
+				Player.mainPlayer.spellRecord.Add(ExploreManager.Instance.newMapGenerator.spellItemOfCurrentLevel.spell);
 				creationView.HideCreateButton();
 			});
 		}
@@ -821,16 +816,17 @@ namespace WordJourney
 
             wordRecordText.text = word.spell;
 
-			bool update = true;
+			//bool update = true;
             for (int j = 0; j < wordRecords.Count; j++){
                 if(wordRecords[j].wordId == word.wordId){
-                    update = false;
+					//update = false;
+					wordRecords.RemoveAt(j);
                     break;
                 }
             }
-            if(update){
+            //if(update){
 				wordRecords.Add(word);
-            }            
+            //}            
 
 		}
 
