@@ -73,7 +73,7 @@ namespace WordJourney
 					Player.mainPlayer.totalGold -= transportCost;
 
 					GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
-					GameManager.Instance.gameDataCenter.currentMapWordRecords.Clear();
+					GameManager.Instance.persistDataManager.ClearCurrentMapWordsRecordAndSave();
                     
 					if(levelSelectCallBack != null){
 						levelSelectCallBack(transportLevel);
@@ -81,7 +81,6 @@ namespace WordJourney
 
 					this.gameObject.SetActive(false);
 				});
-            
 			}
 
 

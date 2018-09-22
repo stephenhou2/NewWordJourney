@@ -26,13 +26,15 @@ namespace WordJourney
 	public class ShareViewController : ZoomHUD
 	{
 
+		//public RectTransform sharePlane;
+
 		public Text learnedDaysText;
 
 		public Text learnedWordCountText;
 
-		public Text correctPercentageText;
+		//public Text correctPercentageText;
 
-		public Text exploredLevelCountText;
+		//public Text exploredLevelCountText;
 
 		public Button shareButton;
 		public Text shareTo;
@@ -77,9 +79,7 @@ namespace WordJourney
 			if(ExploreManager.Instance != null){
 				ExploreManager.Instance.UpdateWordDataBase();
 			}
-
-
-         
+            
 			this.shareType = shareType;
 
 			shareResult = ShareResult.Canceled;
@@ -108,9 +108,9 @@ namespace WordJourney
 
 			int correctPercentageMultiply100 = learnedWordCountOfCurrentType == 0 ? 0 : (learnedWordCountOfCurrentType - wrongWordCountOfCurrentType) * 100 / learnedWordCountOfCurrentType;
 
-			correctPercentageText.text = string.Format("<size=60>{0}</size>  %", correctPercentageMultiply100);
+			//correctPercentageText.text = string.Format("<size=60>{0}</size>  %", correctPercentageMultiply100);
 
-			exploredLevelCountText.text = string.Format("<size=60>{0}</size>  层", Player.mainPlayer.maxUnlockLevelIndex + 1 > 50 ? 50 : Player.mainPlayer.maxUnlockLevelIndex + 1);
+			//exploredLevelCountText.text = string.Format("<size=60>{0}</size>  层", Player.mainPlayer.maxUnlockLevelIndex + 1 > 50 ? 50 : Player.mainPlayer.maxUnlockLevelIndex + 1);
 
 			switch (shareType)
 			{
@@ -185,7 +185,12 @@ namespace WordJourney
 			float transferScaler = 1f;
 
 			if(Camera.main.pixelWidth < 1080f){
-				transferScaler = CommonData.scalerToPresetW;
+				if(CommonData.HWScalerOfCurrentScreen < 1.7f){
+					transferScaler = CommonData.scalerToPresetH;
+				}else{
+					transferScaler = CommonData.scalerToPresetW;
+				}
+
 			}
 
 			int shareHUDWidth = (int)((shareShotcutRect.transform as RectTransform).rect.width * transferScaler);

@@ -37,11 +37,25 @@ namespace WordJourney
 
 			float correctPercentage = learnedWordCountOfCurrentType == 0 ? 0 : (float)(learnedWordCountOfCurrentType - wrongWordCountOfCurrentType) / learnedWordCountOfCurrentType;
 
-			bool correctPercentageQualified = correctPercentage >= qualifiedCorrectPercentage;         
+			bool correctPercentageQualified = correctPercentage >= qualifiedCorrectPercentage;
 
-			bool continuousCorrectCountQualified = Player.mainPlayer.wordContinuousRightRecord >= qualifiedContinuousCorrectCount
-			                                             || Player.mainPlayer.maxWordContinuousRightRecord >= qualifiedContinuousCorrectCount;
-         
+			bool continuousCorrectCountQualified = false;
+
+			switch(LearningInfo.Instance.currentWordType){
+				case WordType.Simple:
+					continuousCorrectCountQualified = Player.mainPlayer.simpleWordContinuousRightRecord >= qualifiedContinuousCorrectCount
+						|| Player.mainPlayer.maxSimpleWordContinuousRightRecord >= qualifiedContinuousCorrectCount;
+					break;
+				case WordType.Medium:
+					continuousCorrectCountQualified = Player.mainPlayer.mediumWordContinuousRightRecord >= qualifiedContinuousCorrectCount
+						|| Player.mainPlayer.maxMediumWordContinuousRightRecord >= qualifiedContinuousCorrectCount;
+					break;
+				case WordType.Master:
+					continuousCorrectCountQualified = Player.mainPlayer.masterWordContinuousRightRecord >= qualifiedContinuousCorrectCount
+						|| Player.mainPlayer.maxMasterWordContinuousRightRecord >= qualifiedContinuousCorrectCount;
+					break;
+			}
+
 			bool titleQualified = learnedWordCountQualified && correctPercentageQualified && continuousCorrectCountQualified;
 
 			if(titleQualifiedIcon != null)

@@ -402,7 +402,30 @@ namespace WordJourney
                     Player.mainPlayer.totalLearnedWordCount++;
                 }
 
-                Player.mainPlayer.wordContinuousRightRecord++;
+				switch (LearningInfo.Instance.currentWordType)
+                {
+                    case WordType.Simple:
+                        Player.mainPlayer.simpleWordContinuousRightRecord++;
+                        if (Player.mainPlayer.simpleWordContinuousRightRecord > Player.mainPlayer.maxSimpleWordContinuousRightRecord)
+                        {
+                            Player.mainPlayer.maxSimpleWordContinuousRightRecord = Player.mainPlayer.simpleWordContinuousRightRecord;
+                        }
+                        break;
+                    case WordType.Medium:
+                        Player.mainPlayer.mediumWordContinuousRightRecord++;
+                        if (Player.mainPlayer.mediumWordContinuousRightRecord > Player.mainPlayer.maxMediumWordContinuousRightRecord)
+                        {
+                            Player.mainPlayer.maxMediumWordContinuousRightRecord = Player.mainPlayer.mediumWordContinuousRightRecord;
+                        }
+                        break;
+                    case WordType.Master:
+                        Player.mainPlayer.masterWordContinuousRightRecord++;
+                        if (Player.mainPlayer.masterWordContinuousRightRecord > Player.mainPlayer.maxMasterWordContinuousRightRecord)
+                        {
+                            Player.mainPlayer.maxMasterWordContinuousRightRecord = Player.mainPlayer.masterWordContinuousRightRecord;
+                        }
+                        break;
+                }
             
 				questionWord.learnedTimes++;
 
@@ -426,12 +449,19 @@ namespace WordJourney
                     Player.mainPlayer.totalUngraspWordCount++;
                 }         
 
-				if (Player.mainPlayer.wordContinuousRightRecord > Player.mainPlayer.maxWordContinuousRightRecord)
-                {
-                    Player.mainPlayer.maxWordContinuousRightRecord = Player.mainPlayer.wordContinuousRightRecord;
-                }
 
-                Player.mainPlayer.wordContinuousRightRecord = 0;
+				switch(LearningInfo.Instance.currentWordType){
+                    case WordType.Simple:
+                        Player.mainPlayer.simpleWordContinuousRightRecord = 0;
+                        break;
+                    case WordType.Medium:
+                        Player.mainPlayer.mediumWordContinuousRightRecord = 0;
+                        break;
+                    case WordType.Master:
+                        Player.mainPlayer.masterWordContinuousRightRecord = 0;
+                        break;
+                }            
+
 
 
 				questionWord.learnedTimes++;

@@ -167,20 +167,28 @@ namespace WordJourney
 		public int extraLuckInMonsterTreasure;
 
         // 记录最大连续正确背诵单词的数量
-		public int maxWordContinuousRightRecord;
-        
-        // 单词连续正确数量记录
-		public int wordContinuousRightRecord;
+		// 单词连续正确数量记录
+		// 称号达成情况
+		public int maxSimpleWordContinuousRightRecord;
+		public int simpleWordContinuousRightRecord;      
+        public bool[] titleQualificationsOfSimple;
+
+
+        public int maxMediumWordContinuousRightRecord;
+        public int mediumWordContinuousRightRecord;
+        public bool[] titleQualificationsOfMedium;
+
+
+        public int maxMasterWordContinuousRightRecord;
+        public int masterWordContinuousRightRecord;
+        public bool[] titleQualificationsOfMaster;
 
         // 所有已学习过的单词数量记录
 		public int totalLearnedWordCount;
 
 		// 所有未掌握单词数量记录
 		public int totalUngraspWordCount;
-
-        // 称号达成情况
-		public bool[] titleQualifications;
-
+              
 		public bool needChooseDifficulty;
 
         // 一共击杀的怪物数量
@@ -335,15 +343,27 @@ namespace WordJourney
 			this.extraLuckInOpenTreasure = 0;
 			this.extraLuckInMonsterTreasure = 0;
 
-			this.maxWordContinuousRightRecord = playerData.maxWordContinuousRightRecord;
+			this.maxSimpleWordContinuousRightRecord = playerData.maxSimpleWordContinuousRightRecord;
 
-			this.wordContinuousRightRecord = playerData.wordContinuousRightRecord;
+			this.simpleWordContinuousRightRecord = playerData.simpleWordContinuousRightRecord;
+
+			this.titleQualificationsOfSimple = playerData.titleQualificationsOfSimple;
+
+			this.maxMediumWordContinuousRightRecord = playerData.maxMediumWordContinuousRightRecord;
+
+			this.mediumWordContinuousRightRecord = playerData.mediumWordContinuousRightRecord;
+
+			this.titleQualificationsOfMedium = playerData.titleQualificationsOfMedium;
+
+			this.maxMasterWordContinuousRightRecord = playerData.maxMasterWordContinuousRightRecord;
+
+			this.masterWordContinuousRightRecord = playerData.masterWordContinuousRightRecord;
+
+			this.titleQualificationsOfMaster = playerData.titleQualificationsOfMaster;
 
 			this.totalLearnedWordCount = LearningInfo.Instance.learnedWordCount;
 
 			this.totalUngraspWordCount = LearningInfo.Instance.ungraspedWordCount;
-
-			this.titleQualifications = playerData.titleQualifications;
 
 			this.totaldefeatMonsterCount = playerData.totaldefeatMonsterCount;
 
@@ -1774,19 +1794,34 @@ namespace WordJourney
         public int luckInMonsterTreasure;
 
 		// 记录最大连续正确背诵单词的数量
-        public int maxWordContinuousRightRecord;
+        // 单词连续正确数量记录
+        // 称号达成情况
+        public int maxSimpleWordContinuousRightRecord;
+        public int simpleWordContinuousRightRecord;
+        public bool[] titleQualificationsOfSimple;
 
-        // 单词连续背诵正确数量记录
-		public int wordContinuousRightRecord;
+
+        public int maxMediumWordContinuousRightRecord;
+        public int mediumWordContinuousRightRecord;
+        public bool[] titleQualificationsOfMedium;
+
+
+        public int maxMasterWordContinuousRightRecord;
+        public int masterWordContinuousRightRecord;
+        public bool[] titleQualificationsOfMaster;
+
+
+# warning 下面这三个属性用于verision1.0->verison1.1更新时使用，后续版本更新时将下面这三个属性删除      
+		public int maxWordContinuousRightRecord = 0;
+		public int wordContinuousRightRecord = 0;
+		public bool[] titleQualifications = {false,false,false,false,false,false};
+
 
 		// 所有已学习过的单词数量记录
         public int totalLearnedWordCount;
 
         // 所有未掌握单词数量记录
         public int totalUngraspWordCount;
-
-		// 称号达成情况
-        public bool[] titleQualifications;
 
 		public bool needChooseDifficulty;
 
@@ -1902,15 +1937,29 @@ namespace WordJourney
 			this.luckInOpenTreasure = player.luckInOpenTreasure;
 			this.luckInMonsterTreasure = player.luckInMonsterTreasure;
 
-			this.maxWordContinuousRightRecord = player.maxWordContinuousRightRecord;
+			this.maxSimpleWordContinuousRightRecord = player.maxSimpleWordContinuousRightRecord;
 
-			this.wordContinuousRightRecord = player.wordContinuousRightRecord;
+			this.simpleWordContinuousRightRecord = player.simpleWordContinuousRightRecord;
+
+			this.titleQualificationsOfSimple = player.titleQualificationsOfSimple;
+
+			this.maxMediumWordContinuousRightRecord = player.maxMediumWordContinuousRightRecord;
+
+			this.mediumWordContinuousRightRecord = player.mediumWordContinuousRightRecord;
+
+			this.titleQualificationsOfMedium = player.titleQualificationsOfMedium;
+
+			this.maxMasterWordContinuousRightRecord = player.maxMasterWordContinuousRightRecord;
+
+			this.masterWordContinuousRightRecord = player.masterWordContinuousRightRecord;
+
+			this.titleQualificationsOfMaster = player.titleQualificationsOfMaster;
 
 			this.totalLearnedWordCount = player.totalLearnedWordCount;
 
 			this.totalUngraspWordCount = player.totalUngraspWordCount;
 
-			this.titleQualifications = player.titleQualifications;
+
 
 			this.totaldefeatMonsterCount = player.totaldefeatMonsterCount;
 

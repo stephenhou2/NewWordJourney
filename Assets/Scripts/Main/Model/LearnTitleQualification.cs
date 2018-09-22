@@ -37,15 +37,39 @@ namespace WordJourney
 
             int totalUngraspWordCount = Player.mainPlayer.totalUngraspWordCount;
 
-            int continuousCorrectWordCount = Player.mainPlayer.maxWordContinuousRightRecord;
+			int continuousCorrectWordCount = 0;
+
+			switch(LearningInfo.Instance.currentWordType){
+				case WordType.Simple:
+					continuousCorrectWordCount = Player.mainPlayer.maxSimpleWordContinuousRightRecord;
+					break;
+				case WordType.Medium:
+					continuousCorrectWordCount = Player.mainPlayer.maxMediumWordContinuousRightRecord;
+					break;
+				case WordType.Master:
+					continuousCorrectWordCount = Player.mainPlayer.maxMasterWordContinuousRightRecord;
+					break;
+			}
+            
 
             float correctPercentage = totalLearnedWordCount == 0 ? 0 : (float)(totalLearnedWordCount - totalUngraspWordCount) / totalLearnedWordCount;
 
             for (int i = 0; i < CommonData.learnTitleQualifications.Length; i++)
             {
 
-                bool titleQualified = Player.mainPlayer.titleQualifications[i];
-
+				bool titleQualified = false;
+				switch(LearningInfo.Instance.currentWordType){
+					case WordType.Simple:
+						titleQualified = Player.mainPlayer.titleQualificationsOfSimple[i];
+						break;
+					case WordType.Medium:
+						titleQualified = Player.mainPlayer.titleQualificationsOfMedium[i];
+						break;
+					case WordType.Master:
+						titleQualified = Player.mainPlayer.titleQualificationsOfMaster[i];
+						break;
+				}
+            
                 if (titleQualified)
                 {
                     continue;
@@ -70,7 +94,18 @@ namespace WordJourney
 
                     if (dataCorrect)
                     {
-                        Player.mainPlayer.titleQualifications[i] = true;
+						switch(LearningInfo.Instance.currentWordType){
+							case WordType.Simple:
+								Player.mainPlayer.titleQualificationsOfSimple[i] = true;
+								break;
+							case WordType.Medium:
+								Player.mainPlayer.titleQualificationsOfMedium[i] = true;
+								break;
+							case WordType.Master:
+								Player.mainPlayer.titleQualificationsOfMaster[i] = true;
+								break;
+						}
+                        
                         qualificationIndex = i;
                         break;
                     }

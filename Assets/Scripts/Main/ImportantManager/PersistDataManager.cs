@@ -176,11 +176,22 @@ namespace WordJourney
 
 			resetPd.isNewPlayer = oriPd.isNewPlayer;
 
-			resetPd.totalLearnedWordCount = Player.mainPlayer.totalLearnedWordCount;
-			resetPd.totalUngraspWordCount = Player.mainPlayer.totalUngraspWordCount;
-			resetPd.wordContinuousRightRecord = Player.mainPlayer.wordContinuousRightRecord;
-			resetPd.maxWordContinuousRightRecord = Player.mainPlayer.maxWordContinuousRightRecord;
-			resetPd.titleQualifications = Player.mainPlayer.titleQualifications;
+			resetPd.totalLearnedWordCount = LearningInfo.Instance.learnedWordCount;
+            resetPd.totalUngraspWordCount = LearningInfo.Instance.ungraspedWordCount;
+
+			resetPd.simpleWordContinuousRightRecord = Player.mainPlayer.simpleWordContinuousRightRecord;
+			resetPd.maxSimpleWordContinuousRightRecord = Player.mainPlayer.maxSimpleWordContinuousRightRecord;
+			resetPd.titleQualificationsOfSimple = Player.mainPlayer.titleQualificationsOfSimple;
+
+			resetPd.mediumWordContinuousRightRecord = Player.mainPlayer.mediumWordContinuousRightRecord;
+			resetPd.maxMediumWordContinuousRightRecord = Player.mainPlayer.maxMediumWordContinuousRightRecord;
+			resetPd.titleQualificationsOfMedium = Player.mainPlayer.titleQualificationsOfMedium;
+
+			resetPd.masterWordContinuousRightRecord = Player.mainPlayer.masterWordContinuousRightRecord;
+			resetPd.maxMasterWordContinuousRightRecord = Player.mainPlayer.maxMasterWordContinuousRightRecord;
+			resetPd.titleQualificationsOfMaster = Player.mainPlayer.titleQualificationsOfMaster;
+         
+
 			resetPd.isNewPlayer = Player.mainPlayer.isNewPlayer;
 			resetPd.needChooseDifficulty = Player.mainPlayer.needChooseDifficulty;
 			resetPd.mapIndexRecord.Clear();

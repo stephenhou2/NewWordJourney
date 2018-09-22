@@ -20,6 +20,7 @@ namespace WordJourney
 			public GameSettings gameSettings;
 			public MiniMapRecord miniMapRecord;
 			public CurrentMapEventsRecord currentMapEventsRecord;
+			public List<PlayRecord> playRecords;
 			public bool versionUpdate = false;
 
 			public List<HLHWord> learnedWordsInSimple = new List<HLHWord>();
@@ -119,6 +120,8 @@ namespace WordJourney
             DataHandler.SaveInstanceDataToFile<GameSettings>(checkData.gameSettings, CommonData.gameSettingsDataFilePath);
 			DataHandler.SaveInstanceDataToFile<MiniMapRecord>(checkData.miniMapRecord, CommonData.miniMapRecordFilePath);
             DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(checkData.currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
+			DataHandler.SaveInstanceListToFile<PlayRecord>(checkData.playRecords, CommonData.playRecordsFilePath);
+
 
             sql.GetConnectionWith(CommonData.dataBaseName);
             sql.BeginTransaction();
@@ -131,8 +134,10 @@ namespace WordJourney
 
             sql.CloseConnection(CommonData.dataBaseName);
 
+			WordType wordType = checkData.gameSettings.wordType;
 
-			if(checkData.playerData.currentExploreStartDateString == string.Empty){
+			if(checkData.playerData.currentExploreStartDateString == null 
+			   || checkData.playerData.currentExploreStartDateString == string.Empty){
 				
 				string dateString = DateTime.Now.ToShortDateString();
 
@@ -140,6 +145,62 @@ namespace WordJourney
 
                 checkData.playerData.currentExploreStartDateString = dateString;
 			}
+
+			if(checkData.playerData.maxWordContinuousRightRecord > 0){
+				switch(wordType){
+					case WordType.Simple:
+						Player.mainPlayer.maxSimpleWordContinuousRightRecord = checkData.playerData.maxWordContinuousRightRecord;
+						checkData.playerData.maxSimpleWordContinuousRightRecord = checkData.playerData.maxWordContinuousRightRecord;
+						break;
+					case WordType.Medium:
+						Player.mainPlayer.maxMediumWordContinuousRightRecord = checkData.playerData.maxWordContinuousRightRecord;
+						checkData.playerData.maxMediumWordContinuousRightRecord = checkData.playerData.maxWordContinuousRightRecord;
+						break;
+					case WordType.Master:
+						Player.mainPlayer.maxMasterWordContinuousRightRecord = checkData.playerData.maxWordContinuousRightRecord;
+						checkData.playerData.maxMasterWordContinuousRightRecord = checkData.playerData.maxWordContinuousRightRecord;
+						break;
+				}
+			}
+
+			if(checkData.playerData.wordContinuousRightRecord > 0){
+				switch (wordType)
+                {
+                    case WordType.Simple:
+						Player.mainPlayer.simpleWordContinuousRightRecord = checkData.playerData.wordContinuousRightRecord;
+						checkData.playerData.simpleWordContinuousRightRecord = checkData.playerData.wordContinuousRightRecord;
+                        break;
+                    case WordType.Medium:
+						Player.mainPlayer.mediumWordContinuousRightRecord = checkData.playerData.wordContinuousRightRecord;
+						checkData.playerData.mediumWordContinuousRightRecord = checkData.playerData.wordContinuousRightRecord;
+                        break;
+                    case WordType.Master:
+						Player.mainPlayer.masterWordContinuousRightRecord = checkData.playerData.wordContinuousRightRecord;
+						checkData.playerData.masterWordContinuousRightRecord = checkData.playerData.wordContinuousRightRecord;
+                        break;
+                }
+			}
+
+			if(checkData.playerData.titleQualifications != null){
+				switch (wordType)
+                {
+                    case WordType.Simple:
+						Player.mainPlayer.titleQualificationsOfSimple = checkData.playerData.titleQualifications;
+						checkData.playerData.titleQualificationsOfSimple = checkData.playerData.titleQualifications;
+                        break;
+                    case WordType.Medium:
+						Player.mainPlayer.titleQualificationsOfMedium = checkData.playerData.titleQualifications;
+						checkData.playerData.titleQualificationsOfMedium = checkData.playerData.titleQualifications;
+                        break;
+                    case WordType.Master:
+						Player.mainPlayer.titleQualificationsOfMaster = checkData.playerData.titleQualifications;
+						checkData.playerData.titleQualificationsOfMaster = checkData.playerData.titleQualifications;
+                        break;
+                }
+			}
+
+
+
 
 			Player.mainPlayer.currentVersion = GameManager.Instance.currentVersion;
 			checkData.playerData.currentVersion = GameManager.Instance.currentVersion;
@@ -210,11 +271,15 @@ namespace WordJourney
 				checkData.chatRecords = GameManager.Instance.gameDataCenter.chatRecords;
 				checkData.mapEventsRecords = GameManager.Instance.gameDataCenter.mapEventsRecords;
 				checkData.gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
+
 				if(File.Exists(CommonData.miniMapRecordFilePath)){
 					checkData.miniMapRecord = GameManager.Instance.gameDataCenter.currentMapMiniMapRecord;
 				}
 				if(File.Exists(CommonData.currentMapEventsRecordFilePath)){
 					checkData.currentMapEventsRecord = GameManager.Instance.gameDataCenter.currentMapEventsRecord;
+				}
+				if(File.Exists(CommonData.playRecordsFilePath)){
+					checkData.playRecords = GameManager.Instance.gameDataCenter.allPlayRecords;
 				}
 
 			}

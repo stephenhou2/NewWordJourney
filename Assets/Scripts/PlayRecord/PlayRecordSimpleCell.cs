@@ -33,7 +33,7 @@ namespace WordJourney
                 exploreEndAt.text = string.Format("失败于: {0}", playRecord.dieFrom);
             }
 
-			exploreMaxLevelText.text = string.Format("最大探索层数: {0}", playRecord.maxExploreLevel);
+			exploreMaxLevelText.text = string.Format("探索至: {0}层", playRecord.maxExploreLevel);
 
 
 			evaluateText.text = string.Format("综合评级: {0}", playRecord.evaluateString);

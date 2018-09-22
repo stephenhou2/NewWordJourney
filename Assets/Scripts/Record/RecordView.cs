@@ -281,7 +281,7 @@ namespace WordJourney
 					recordTitle.color = CommonData.selectedColor;
 					graspedWordsTitle.color = CommonData.deselectedColor;
 					ungraspedWordsTitle.color = CommonData.deselectedColor;
-					currentTabTitleText.text = "学习记录";
+					currentTabTitleText.text = "词库学习记录";
 					generalInfoPlane.gameObject.SetActive(true);
 					wordsPlane.gameObject.SetActive(false);
 					break;
