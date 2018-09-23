@@ -198,9 +198,7 @@ namespace WordJourney
                         break;
                 }
 			}
-
-
-
+                    
 
 			Player.mainPlayer.currentVersion = GameManager.Instance.currentVersion;
 			checkData.playerData.currentVersion = GameManager.Instance.currentVersion;

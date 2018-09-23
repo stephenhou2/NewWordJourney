@@ -64,7 +64,7 @@ namespace WordJourney
 				//			this.sprites = GameManager.Instance.gameDataCenter.allItemSprites;
 				this.player = Player.mainPlayer;
 
-				PropertyChange propertyChange = player.ResetBattleAgentProperties (false);
+				PropertyChange propertyChange = new PropertyChange();
 
 				SetUpPlayerStatusPlane (propertyChange);
 

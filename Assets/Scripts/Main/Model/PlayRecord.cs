@@ -147,35 +147,35 @@ namespace WordJourney
 			if(evaluatePoint < 100){
 				evaluateString = "F";
 			}
-			else if(evaluatePoint>=100 && evaluatePoint<250)
+			else if(evaluatePoint>=100 && evaluatePoint<300)
 			{
 				evaluateString = "E";            
 			}
-			else if(evaluatePoint >= 250 && evaluatePoint < 450)
+			else if(evaluatePoint >= 300 && evaluatePoint < 550)
 			{
 				evaluateString = "D";  
 			}
-			else if (evaluatePoint >= 450 && evaluatePoint < 700)
+			else if (evaluatePoint >= 550 && evaluatePoint < 850)
             {
                 evaluateString = "C";
 			}
-			else if (evaluatePoint >= 700 && evaluatePoint < 1000)
+			else if (evaluatePoint >= 850 && evaluatePoint < 1250)
             {
                 evaluateString = "B";
             }
-			else if (evaluatePoint >= 1000 && evaluatePoint < 1350)
+			else if (evaluatePoint >= 1250 && evaluatePoint < 1700)
             {
                 evaluateString = "A";
             }
-			else if (evaluatePoint >= 1350 && evaluatePoint < 1750)
+			else if (evaluatePoint >= 1700 && evaluatePoint < 2200)
             {
 				evaluateString = "S";
             }
-			else if (evaluatePoint >= 1750 && evaluatePoint < 2200)
+			else if (evaluatePoint >= 2200 && evaluatePoint < 2750)
             {
 				evaluateString = "SS";
             }
-			else if (evaluatePoint >= 2200)
+			else if (evaluatePoint >= 2750)
             {
                 evaluateString = "SSS";
             }

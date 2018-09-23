@@ -495,26 +495,32 @@ namespace WordJourney
 		}
 
 		private IEnumerator RewardHintShow(){
-			int rewardHintMoveSpeed = 3000;
-			int localPosX = 0;
+			//int rewardHintMoveSpeed = 3000;
+			int moveOriPosX = 0;
 			int moveDesPosX = 540;
 			int localPosY = 125;
+			int localPosX = moveOriPosX;
+            
 
-			rewardHintContainer.localPosition = new Vector3(localPosX, localPosY, 0);
-
+			rewardHintContainer.localPosition = new Vector3(moveOriPosX, localPosY, 0);
+         
 			while (localPosX < moveDesPosX){
-				localPosX += (int)(Time.deltaTime * rewardHintMoveSpeed);
+				localPosX += 90;
 				rewardHintContainer.localPosition = new Vector3(localPosX, localPosY, 0);
 				yield return null;
 			}
 
+			rewardHintContainer.localPosition = new Vector3(moveDesPosX, localPosY, 0);
+
 			yield return new WaitForSeconds(1f);
 
 			while(localPosX > 0){
-				localPosX -= (int)(Time.deltaTime * rewardHintMoveSpeed);
+				localPosX -= 90;
                 rewardHintContainer.localPosition = new Vector3(localPosX, localPosY, 0);
                 yield return null;
 			}
+
+			rewardHintContainer.localPosition = new Vector3(moveOriPosX, localPosY, 0);
 		}
 
         /// <summary>

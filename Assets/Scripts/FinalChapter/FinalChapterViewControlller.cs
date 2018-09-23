@@ -29,8 +29,8 @@ namespace WordJourney
 		public Image mask;
 
               
-		public string[] finalDialogs = {
-			"恭喜你，我的朋友，你完成了最终的试。",
+		private string[] finalDialogs = {
+			"恭喜你，我的朋友，你完成了最终的试炼。",
 			"你是如此的不同，在漫漫岁月里，只有你最后来到了这里。",
 			"其实我的名字叫埃克托·文斯，也就是这座城堡的主人，很抱歉之前骗了你。",
 			"我只是不想因为我的身份干扰你在城堡里的探险，希望你在冒险的过程中确实收获到了一些东西。",
@@ -99,15 +99,38 @@ namespace WordJourney
 
 		public void OnNextDialogButtonClick()
 		{
-
 			dialogIndex++;
 
-			if (dialogIndex < finalDialogs.Length - 2)
+			if (dialogIndex == finalDialogs.Length){
+
+                int posX = Mathf.RoundToInt(npcTrans.position.x);
+                int posY = Mathf.RoundToInt(npcTrans.position.y);
+
+                ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray[posX, posY] = 1;
+
+                MapEventsRecord.AddEventTriggeredRecord(50, npcTrans.position);
+
+                npcTrans.gameObject.SetActive(false);
+
+                ExploreManager.Instance.newMapGenerator.allNPCsInMap.Clear();
+
+                Destroy(npcTrans.gameObject, 0.3f);
+
+                ExploreManager.Instance.EnableExploreInteractivity();
+
+                QuitFinalDialogHUD();
+
+                ExploreManager.Instance.battlePlayerCtr.boxCollider.enabled = true;
+
+				return;
+            }      
+
+
+
+			if (dialogIndex != finalDialogs.Length - 2)
 			{
 				dialogText.text = finalDialogs[dialogIndex];
-			}
-			else if (dialogIndex == finalDialogs.Length - 2)
-			{
+			}else{
 				dialogHUD.gameObject.SetActive(false);
             
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
@@ -121,29 +144,7 @@ namespace WordJourney
 					});
 				});
 			}
-			else if (dialogIndex == finalDialogs.Length){
 
-				int posX = Mathf.RoundToInt(npcTrans.position.x);
-				int posY = Mathf.RoundToInt(npcTrans.position.y);
-
-				ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray[posX, posY] = 1;
-
-				MapEventsRecord.AddEventTriggeredRecord(50, npcTrans.position);
-
-				npcTrans.gameObject.SetActive(false);
-
-				ExploreManager.Instance.newMapGenerator.allNPCsInMap.Clear();
-
-				Destroy(npcTrans.gameObject, 0.3f);
-
-				ExploreManager.Instance.EnableExploreInteractivity();
-
-				QuitFinalDialogHUD();
-
-				ExploreManager.Instance.battlePlayerCtr.boxCollider.enabled = true;
-                  
-
-			}      
 		}
 
 		private void QuitFinalDialogHUD(){

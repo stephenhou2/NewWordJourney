@@ -228,7 +228,7 @@ namespace WordJourney
 			int randomSeed = Random.Range (0, 100);
 
 			// 非暗金装备重铸时装备品质重新随机，暗金装备重铸后仍是暗金装备
-			if (quality != EquipmentQuality.Purple) {
+			if (quality != EquipmentQuality.Purple && quality != EquipmentQuality.Gold) {
 				if (randomSeed < 65) {
 					quality = EquipmentQuality.Gray;
 				} else if (randomSeed < 95) {

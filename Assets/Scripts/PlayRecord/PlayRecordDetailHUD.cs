@@ -86,7 +86,7 @@ namespace WordJourney
 
 			correctPercentageText.text = string.Format("总正确率: {0}%", playRecord.learnCorrectPercentageX100);
 
-			totalDefeatMonsterCount.text = string.Format("总计击败怪物数: {0}", playRecord.totalDefeatMonsterCount);
+			totalDefeatMonsterCount.text = string.Format("总计击败怪物: {0}", playRecord.totalDefeatMonsterCount);
                      
 			evaluateStringText.text = string.Format("综合评分: <color=orange>{0}</color>", playRecord.evaluateString);
 
