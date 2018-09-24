@@ -138,9 +138,13 @@ namespace WordJourney
                 }
 
 				if(pronounceUrl != string.Empty){
-					pronunciationWWW = new WWW(pronounceUrl);
-                    waitDownloadFinishCoroutine = PlayPronunciationWhenFinishDownloading(pronunciationWWW);
-                    StartCoroutine(waitDownloadFinishCoroutine);
+					try{
+						waitDownloadFinishCoroutine = PlayPronunciationWhenFinishDownloading(pronounceUrl);
+                        StartCoroutine(waitDownloadFinishCoroutine);
+					}catch(System.Exception e){
+						Debug.Log(e);
+					}
+
 				}
 
 			} else {
@@ -153,11 +157,16 @@ namespace WordJourney
 
 		public void PronunceWordFromURL(string url){
 
-			pronunciationWWW = new WWW(url);
+			try{
+				//pronunciationWWW = new WWW(url);
 
-            waitDownloadFinishCoroutine = PlayPronunciationWhenFinishDownloading(pronunciationWWW);
+                waitDownloadFinishCoroutine = PlayPronunciationWhenFinishDownloading(url);
 
-            StartCoroutine(waitDownloadFinishCoroutine);
+                StartCoroutine(waitDownloadFinishCoroutine);
+			}catch(System.Exception e){
+				Debug.Log(e);
+			}
+
 
 		}
 
@@ -185,79 +194,86 @@ namespace WordJourney
 		/// </summary>
 		/// <returns>The pronunciation when finish downloading.</returns>
 		/// <param name="www">Www.</param>
-		private IEnumerator PlayPronunciationWhenFinishDownloading(WWW www)
+		private IEnumerator PlayPronunciationWhenFinishDownloading(string url)
 		{
 
 			float timer = 0;
 
-			while (!www.isDone && timer < wwwTimeOutInterval)
-			{
+			using(pronunciationWWW = new WWW(url)){
+				
+				yield return pronunciationWWW;
+
 				timer += Time.deltaTime;
-				yield return null;
+
+                // 下载超时退出下载
+				if(timer >= wwwTimeOutInterval){
+					yield break;
+				}
+                // 出现异常退出下载
+				if (!string.IsNullOrEmpty(pronunciationWWW.error)){
+					Debug.Log(pronunciationWWW.error);
+					pronunciationWWW.Dispose();
+					yield break;
+				}   
+
+				if (pronunciationWWW != null && pronunciationWWW.isDone)
+                {
+
+                    try
+                    {
+                        AudioClip pronunciationClip = pronunciationWWW.GetAudioClip(false, false, AudioType.MPEG);
+
+                        if (pronunciationClip == null)
+                        {
+                            pronunciationWWW.Dispose();
+                        }
+                        else
+                        {
+
+                            Pronunciation pro = new Pronunciation(wordToPronounce, pronunciationClip);
+
+                            pronunciationCache.Add(pro);
+
+                            GameManager.Instance.soundManager.PlayPronuncitaion(pronunciationClip, false);
+
+                            pronunciationWWW.Dispose();
+                        }
+                    }
+                    catch (System.Exception e)
+                    {
+
+                        Debug.Log(e);
+
+                        if (pronunciationWWW.url.Equals(wordToPronounce.pronounciationURL))
+                        {
+                            PronounceErrorRecord wdErr = new PronounceErrorRecord(wordToPronounce.wordId, PronounceErrorCode.ErrorWithURL_1);
+                            errorRecords.Add(wdErr);
+                        }
+                        else if (pronunciationWWW.url.Equals(wordToPronounce.backupProuounciationURL))
+                        {
+                            PronounceErrorRecord wdErr = new PronounceErrorRecord(wordToPronounce.wordId, PronounceErrorCode.ErrorWithURL_2);
+                            errorRecords.Add(wdErr);
+                        }
+
+                        pronunciationWWW.Dispose();
+
+
+                    }
+                }
+                else
+                {
+                    // 下载超时时不播放读音,并关闭下载任务
+                    pronunciationWWW.Dispose();
+                }
+
 			}
 
-			if (www.isDone)
-			{
 
-				//bool downloadSucceed = true;
 
-				try
-				{
-					//AudioClip pronunciationClip = www.GetAudioClip(false, false, AudioType.MPEG);
-
-					AudioClip pronunciationClip = www.GetAudioClip();
-                                   
-					if (pronunciationClip == null)
-					{
-						www.Dispose();
-					}
-					else
-					{
-
-						Pronunciation pro = new Pronunciation(wordToPronounce, pronunciationClip);
-
-						pronunciationCache.Add(pro);
-
-						GameManager.Instance.soundManager.PlayPronuncitaion(pronunciationClip, false);
-
-						www.Dispose();
-					}
-				}catch (System.Exception e){
-
-					Debug.Log(e);
-                    
-					if (www.url.Equals(wordToPronounce.pronounciationURL))
-					{
-						PronounceErrorRecord wdErr = new PronounceErrorRecord(wordToPronounce.wordId, PronounceErrorCode.ErrorWithURL_1);
-						errorRecords.Add(wdErr);
-					}
-					else if (www.url.Equals(wordToPronounce.backupProuounciationURL))
-					{
-						PronounceErrorRecord wdErr = new PronounceErrorRecord(wordToPronounce.wordId, PronounceErrorCode.ErrorWithURL_2);
-						errorRecords.Add(wdErr);
-					}
-    				
-					www.Dispose();
-    			}
-    		}else {
-                // 下载超时时不播放读音,并关闭下载任务
-                www.Dispose();
-            }
 		}
 
 
-		void OnDestroy(){
-			
-//			StopAllCoroutines ();
-//
-//			pronunciationWWW = null;
-//
-//			pronunciationOfCurrentWord = null;
-//
-//			pronunciationCache = null;
-//
-//			wordToPronounce = null;
-		}
+
 
 
 	}

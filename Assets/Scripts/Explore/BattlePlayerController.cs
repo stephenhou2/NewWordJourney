@@ -568,11 +568,11 @@ namespace WordJourney
                         PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
                     }
                 }
-                else
-                {
-                    Debug.Log(string.Format("actual pos:{0}/ntarget pos:{1},predicat pos{2}", transform.position, moveDestination, singleMoveEndPos));
-                    throw new System.Exception("路径走完但是未到终点");
-                }
+                //else
+                //{
+                //    Debug.Log(string.Format("actual pos:{0}/ntarget pos:{1},predicat pos{2}", transform.position, moveDestination, singleMoveEndPos));
+                //    throw new System.Exception("路径走完但是未到终点");
+                //}
                 return;
             }
 
@@ -615,6 +615,8 @@ namespace WordJourney
             {
                 StopCoroutine(newMoveCoroutine);
             }
+
+			//pathPosList.Clear();
 
 			MoveToPosition(pos);         
 
@@ -665,6 +667,9 @@ namespace WordJourney
                 StopCoroutine(newMoveCoroutine);
             }
 
+			pathPosList.Clear();
+			//pathPosList.Add(singleMoveEndPos);
+
             this.moveDestination = singleMoveEndPos;
 
 			MoveToPosition(singleMoveEndPos);
@@ -691,16 +696,18 @@ namespace WordJourney
 
 					SetSortingOrder(-Mathf.RoundToInt(transform.position.y));
 
-                    if (pathPosList.Count > 0)
-                    {
+					PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
 
-                        // 将当前节点从路径点中删除
-                        pathPosList.RemoveAt(0);
+                    //if (pathPosList.Count > 0)
+                    //{
 
-                        // 移动到下一个节点位置
-                        MoveToNextPosition();
+                    //    // 将当前节点从路径点中删除
+                    //    pathPosList.RemoveAt(0);
 
-                    }
+                    //    // 移动到下一个节点位置
+                    //    MoveToNextPosition();
+
+                    //}
                 });
             }
             else if(!isIdle)
@@ -918,8 +925,10 @@ namespace WordJourney
 				
 			enemy.UpdateStatusPlane ();
 
+			bool fightEnd = CheckFightEnd();
+
 			// 如果战斗没有结束，则默认在攻击间隔时间之后按照默认攻击方式进行攻击
-			if (isInFight && !CheckFightEnd ()) {
+			if (isInFight && !isDead && !fightEnd) {
 				currentUsingActiveSkill = normalAttack;
 				attackCoroutine = InvokeAttack (currentUsingActiveSkill);
 				StartCoroutine (attackCoroutine);
@@ -1309,7 +1318,10 @@ namespace WordJourney
 
 			isDead = true;
 
-			BattleAgentController enemyRecord = enemy;
+			if(isInEscaping){
+				isInEscaping = false;
+				bpUICtr.StopEscapeDisplay();
+			}
                      
 			ExploreManager.Instance.DisableAllInteractivity ();
 
@@ -1322,6 +1334,8 @@ namespace WordJourney
 			enemy.QuitFight();
             QuitFight();
 
+			exploreManager.expUICtr.QuitFight();
+
 			isInEvent = true;
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.playerDieAudioName);
@@ -1329,7 +1343,7 @@ namespace WordJourney
 			enemy.AllEffectAnimsIntoPool();
 
 			PlayRoleAnim (CommonData.roleDieAnimName, 1, ()=>{
-				IEnumerator queryBuyLifeCoroutine = QueryBuyLife(fromFight, enemyRecord);
+				IEnumerator queryBuyLifeCoroutine = QueryBuyLife(fromFight);
 				StartCoroutine(queryBuyLifeCoroutine);
 				AllEffectAnimsIntoPool();
 				enemy.AllEffectAnimsIntoPool();
@@ -1338,18 +1352,14 @@ namespace WordJourney
 
 		}
 			
-		private IEnumerator QueryBuyLife(bool fromFight,BattleAgentController enemyRecord){
+		private IEnumerator QueryBuyLife(bool fromFight){
 
 			yield return new WaitForSeconds (0.5f);
 
 			if(fromFight){
-				exploreManager.BattlePlayerLose (enemyRecord);
+				exploreManager.BattlePlayerLose ();
 			}else{
 				exploreManager.expUICtr.ShowBuyLifeQueryHUD();
-				PlayRecord playRecord = new PlayRecord(false, "陷阱");
-				List<PlayRecord> playRecords = GameManager.Instance.gameDataCenter.allPlayRecords;            
-				playRecords.Add(playRecord);
-				GameManager.Instance.persistDataManager.SavePlayRecords(playRecords);
 			}
 		}
 

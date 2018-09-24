@@ -123,6 +123,11 @@ namespace WordJourney
 			});
 		}
 
+		public void StopEscapeDisplay(){
+			escapeBarFill.DOKill(false);
+			escapeBar.gameObject.SetActive(false);
+		}
+
 		/// <summary>
 		/// 退出战斗时重用物体进缓存池
 		/// </summary>

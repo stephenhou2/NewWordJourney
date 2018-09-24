@@ -21,9 +21,8 @@ namespace WordJourney
 		}
 
 		protected override void ExcuteActiveSkillLogic (BattleAgentController self, BattleAgentController enemy)
-		{
-			
-                              
+		{          
+
 			self.QuitFight ();
 
 			BattlePlayerController battlePlayer = self as BattlePlayerController;
@@ -33,16 +32,18 @@ namespace WordJourney
 			ExploreManager.Instance.expUICtr.ShowEscapeBar (escapeTime, delegate {
 				EscapeCallBack(self,enemy);
 			});
-
-
+         
 		}
 
 		private void EscapeCallBack(BattleAgentController self, BattleAgentController enemy)
-		{
-
+		{            
 			int fadeStep = fixFadeStep + fadeStepGainBase * skillLevel;
 
 			BattlePlayerController battlePlayer = self as BattlePlayerController;
+
+			if(battlePlayer.agent.health <= 0){
+				return;
+			}
 
 			int oriFadeStepsLeft = battlePlayer.fadeStepsLeft;
 

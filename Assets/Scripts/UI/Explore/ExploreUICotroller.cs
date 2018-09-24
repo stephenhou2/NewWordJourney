@@ -986,12 +986,18 @@ namespace WordJourney
 			Player.mainPlayer.needChooseDifficulty = true;
 
 			transitionView.PlayTransition (TransitionType.Death, delegate {
+				
 				transitionMask.gameObject.SetActive(true);
+
 				transitionMask.color = Color.black;
-				GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal ();
+
+				GameManager.Instance.persistDataManager.ResetDataWhenPlayerDie();
+                            
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
 				{
-					TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, ExploreManager.Instance.QuitExploreScene, null);
+					TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.EnterExplore, delegate {
+						ExploreManager.Instance.SetUpExploreView(MapSetUpFrom.Home);                  
+					}, null);
 				});
 
 			});

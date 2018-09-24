@@ -27,8 +27,10 @@ namespace WordJourney
 			"你的故事将从这里开始…"
 		};
 		private string[] deadStrings = {
-			"渐渐的人们忘记了你的名字",
-			"只是流传着曾经有一个勇者来过这里"
+			"你渐渐倒在了黑暗之中",
+            "耳畔不断传来阵阵呼唤",
+            "隐约间一道微光闪过",
+            "你的身体又恢复了知觉..."         
 		};
 
 		private string[] endStrings = {

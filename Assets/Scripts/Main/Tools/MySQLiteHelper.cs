@@ -395,7 +395,8 @@ namespace WordJourney{
 		public bool CreateTable(string tableName,string[] colNames,string[] constraints,string[] colTypes){
 
 			if (colNames.Length != colTypes.Length || colNames.Length != constraints.Length || constraints.Length != colTypes.Length) {
-				throw new SqliteException ("类型数量错误");
+				Debug.Log ("类型数量错误");
+				return false;
 			}
 
 			if(CheckTableExist(tableName)){
@@ -617,7 +618,8 @@ namespace WordJourney{
 		public IDataReader UpdateValues(string tableName,string[] cols,string[] values,string[] conditions,bool isLinkStrAND){
 
 			if (cols.Length != values.Length) {
-				throw new SqliteException ("字段数量和赋值数量不匹配");
+				Debug.Log ("字段数量和赋值数量不匹配");
+				return null;
 			}
 
 			StringBuilder queryString = new StringBuilder ();
@@ -712,14 +714,15 @@ namespace WordJourney{
 			}
 
 			if (fieldNamesInTable.Count != fieldNameStrs.Length) {
-				throw new SqliteException ("字段数量不一致" + "table:" + fieldNamesInTable.Count.ToString() + "data:" + fieldNameStrs.Length.ToString());
-
+				Debug.Log ("字段数量不一致" + "table:" + fieldNamesInTable.Count.ToString() + "data:" + fieldNameStrs.Length.ToString());
+				return;
 			}
 
 
 			for (int i = 0; i < fieldNameStrs.Length; i++) {
 				if (!fieldNamesInTable [i].Equals(fieldNameStrs [i])) {
-					throw new SqliteException ("字段名称不一致" + "/" + fieldNamesInTable[i] + "/" + fieldNameStrs [i] + "/");
+					Debug.Log ("字段名称不一致" + "/" + fieldNamesInTable[i] + "/" + fieldNameStrs [i] + "/");
+					return;
 				}
 
 			}

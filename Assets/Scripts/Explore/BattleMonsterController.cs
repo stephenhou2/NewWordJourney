@@ -235,8 +235,10 @@ namespace WordJourney
 				enemy.UpdateStatusPlane ();
 			}
 
+			bool fightEnd = CheckFightEnd();
+
 			// 如果战斗没有结束，则默认在攻击间隔时间之后按照默认攻击方式进行攻击
-			if((enemy as BattlePlayerController).isInFight && !CheckFightEnd()){
+			if((enemy as BattlePlayerController).isInFight && !enemy.isDead && !fightEnd){
 				// 播放等待动画            
 				currentUsingActiveSkill = AutoRandomActiveSkill();
 				attackCoroutine = InvokeAttack (currentUsingActiveSkill);

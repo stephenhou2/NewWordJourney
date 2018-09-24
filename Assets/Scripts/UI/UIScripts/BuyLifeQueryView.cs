@@ -18,7 +18,7 @@ namespace WordJourney
 		private CallBack cancelBuyCallBack;
 
         // 是否在取消购买的警告界面
-		private bool isInCancelWarning;
+		//private bool isInCancelWarning;
 
 		private IEnumerator queryCoroutine;// 询问购买的协程
 
@@ -26,7 +26,7 @@ namespace WordJourney
 
 			warningContainer.gameObject.SetActive(false);
 
-			isInCancelWarning = false;
+			//isInCancelWarning = false;
 
 			this.confirmBuyCallBack = confirmBuyCallBack;
 
@@ -69,7 +69,7 @@ namespace WordJourney
 		}
 
 		public void CancelBuyLife(){
-			isInCancelWarning = true;
+			//isInCancelWarning = true;
 			cancelBuyCallBack ();
 			QuitBuyLifeView ();
 		}

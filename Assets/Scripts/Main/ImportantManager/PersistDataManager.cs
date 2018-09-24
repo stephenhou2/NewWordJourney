@@ -220,6 +220,26 @@ namespace WordJourney
 
 		}
 
+		public void ResetDataWhenPlayerDie(){
+
+			PlayerData playerData = LoadPlayerData();
+
+			Player.mainPlayer.SetUpPlayerWithPlayerData(playerData);
+
+			Player.mainPlayer.LoseEquipmentsAndExperienceWhenDie();
+
+			SaveCompletePlayerData(); 
+
+			SaveMapEventsRecord();
+
+
+                       
+		}
+
+
+
+
+
 		public void SaveChatRecords(){
 
 			List<HLHNPCChatRecord> chatRecords = GameManager.Instance.gameDataCenter.chatRecords;

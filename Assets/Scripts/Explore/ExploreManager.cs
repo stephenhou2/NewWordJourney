@@ -661,7 +661,7 @@ namespace WordJourney
         /// <summary>
         /// 战斗中失败
         /// </summary>
-		public void BattlePlayerLose(BattleAgentController enemy){
+		public void BattlePlayerLose(){
          
             battlePlayerCtr.agent.ClearPropertyChangesFromSkill();
             battleMonsterCtr.agent.ClearPropertyChangesFromSkill();
@@ -677,15 +677,15 @@ namespace WordJourney
 
 			expUICtr.QuitFight ();
          
-			GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+			//GameManager.Instance.persistDataManager.SaveCompletePlayerData();
 
-			PlayRecord playRecord = new PlayRecord(false, enemy.agent.agentName);
+			//PlayRecord playRecord = new PlayRecord(false, enemy.agent.agentName);
 
-			List<PlayRecord> playRecords = GameManager.Instance.gameDataCenter.allPlayRecords;
+			//List<PlayRecord> playRecords = GameManager.Instance.gameDataCenter.allPlayRecords;
          
-			playRecords.Add(playRecord);
+			//playRecords.Add(playRecord);
 
-			GameManager.Instance.persistDataManager.SavePlayRecords(playRecords);
+			//GameManager.Instance.persistDataManager.SavePlayRecords(playRecords);
          
 			expUICtr.ShowBuyLifeQueryHUD ();
          

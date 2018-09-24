@@ -207,6 +207,9 @@ namespace WordJourney
         // 记录到的在存档点的额朝向
 		public MyTowards saveTowards;
 
+
+
+
 		//public CurrentMapEventsRecord currentMapEventsRecord;
 
 		public void SetUpPlayerWithPlayerData(PlayerData playerData){
@@ -428,6 +431,53 @@ namespace WordJourney
 		}
 
 
+		public void LoseEquipmentsAndExperienceWhenDie(){
+
+			int loseCount = 0;
+			List<Equipment> equipedEquipmentsExceptWeaponAndArmor = new List<Equipment>();
+
+            // 玩家身上的武器和护甲都移除
+			for (int i = 0; i < allEquipedEquipments.Length;i++){
+
+				Equipment equipment = allEquipedEquipments[i];
+
+				if(equipment.itemId < 0){
+					continue;
+				}
+
+				if(equipment.equipmentType == EquipmentType.Weapon){
+					RemoveItem(equipment, 1);
+					loseCount++;
+				}else if(equipment.equipmentType == EquipmentType.Armor){
+					RemoveItem(equipment, 1);
+					loseCount++;
+				}else {
+					equipedEquipmentsExceptWeaponAndArmor.Add(equipment);
+				}            
+			}
+
+			for (int i = 0; i < (2 - loseCount); i++)
+            {
+                if (equipedEquipmentsExceptWeaponAndArmor.Count > 0)
+                {
+                    int index = Random.Range(0, equipedEquipmentsExceptWeaponAndArmor.Count);
+                    Equipment tempEquipment = equipedEquipmentsExceptWeaponAndArmor[index];
+                    RemoveItem(tempEquipment, 1);
+					equipedEquipmentsExceptWeaponAndArmor.RemoveAt(index);
+                }
+
+            }
+
+
+
+            // 玩家本级的经验值归零
+			experience = 0;
+         
+		}
+
+
+
+
 		public void ClearAttachedSkills()
         {
             for (int i = 0; i < allLearnedSkills.Count; i++)
@@ -447,7 +497,11 @@ namespace WordJourney
 		}
 
 		public int GetAnUnusedPuzzleId(){
-			
+
+			if(unusedPuzzleIds == null){
+				unusedPuzzleIds = new List<int>();
+			}
+
 			if(unusedPuzzleIds.Count == 0){
 				for (int i = 0; i < GameManager.Instance.gameDataCenter.allPuzzles.Count;i++){
 					unusedPuzzleIds.Add(i);
@@ -461,7 +515,7 @@ namespace WordJourney
 				return puzzleId;
 			}
 
-			return -1;
+			return 0;
 
 		}
 
