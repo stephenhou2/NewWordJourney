@@ -95,6 +95,8 @@ namespace WordJourney{
 
 			SetUpMonsterUIAndInfo(currentDisplayIndex);
 
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
+
 			if(zoomCoroutine != null){
 				StopCoroutine(zoomCoroutine);
 			}
@@ -195,7 +197,9 @@ namespace WordJourney{
             {
                 return;
             }
-                 
+
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
+
 			currentDisplayIndex++;
          
 			monstersWithUI[currentDisplayIndex - 1].monsterUI.gameObject.SetActive(false);
@@ -212,6 +216,8 @@ namespace WordJourney{
             {
                 return;
             }
+
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
 
 			currentDisplayIndex--;
 
@@ -243,6 +249,8 @@ namespace WordJourney{
 			});
 
 			StartCoroutine(zoomCoroutine);
+
+			GameManager.Instance.soundManager.PlayAudioClip(CommonData.paperAudioName);
 
 		}
 

@@ -50,8 +50,6 @@ namespace WordJourney
 		// 当前版本信息【格式：x.xx  例如：1.01 代表1.01版，  版本更新时版本号需比上一版大】
 		public float currentVersion;
 
-		//public bool isEncryptionOn;
-
 
 	
 

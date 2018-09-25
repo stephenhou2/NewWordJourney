@@ -51,7 +51,7 @@ namespace WordJourney
 
 		void Start()
 		{
-			PersistData();
+			PersistData();         
 		}
 
 		private IEnumerator InitData()
@@ -114,7 +114,7 @@ namespace WordJourney
 
 
 		private void OnVersionUpdate(CheckDataModel checkData,MySQLiteHelper sql){
-
+         
             DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(checkData.chatRecords, CommonData.chatRecordsFilePath);
             DataHandler.SaveInstanceListToFile<MapEventsRecord>(checkData.mapEventsRecords, CommonData.mapEventsRecordFilePath);
             DataHandler.SaveInstanceDataToFile<GameSettings>(checkData.gameSettings, CommonData.gameSettingsDataFilePath);
@@ -161,6 +161,7 @@ namespace WordJourney
 						checkData.playerData.maxMasterWordContinuousRightRecord = checkData.playerData.maxWordContinuousRightRecord;
 						break;
 				}
+				checkData.playerData.maxWordContinuousRightRecord = 0;
 			}
 
 			if(checkData.playerData.wordContinuousRightRecord > 0){
@@ -179,9 +180,19 @@ namespace WordJourney
 						checkData.playerData.masterWordContinuousRightRecord = checkData.playerData.wordContinuousRightRecord;
                         break;
                 }
+				checkData.playerData.wordContinuousRightRecord = 0;
 			}
 
-			if(checkData.playerData.titleQualifications != null){
+			bool hasOldVersionTitle = false;
+
+			for (int i = 0; i < checkData.playerData.titleQualifications.Length;i++){
+				if(checkData.playerData.titleQualifications[i]){
+					hasOldVersionTitle = true;
+					break;
+				}
+			}
+
+			if(hasOldVersionTitle){
 				switch (wordType)
                 {
                     case WordType.Simple:
@@ -197,6 +208,7 @@ namespace WordJourney
 						checkData.playerData.titleQualificationsOfMaster = checkData.playerData.titleQualifications;
                         break;
                 }
+				checkData.playerData.titleQualifications = new bool[]{false,false,false,false,false,false};
 			}
                     
 
@@ -291,7 +303,9 @@ namespace WordJourney
 				DataHandler.CopyDirectory(CommonData.originDataPath, CommonData.persistDataPath, true);
 
 				if (checkData.versionUpdate)
-				{               
+				{
+					GameManager.Instance.persistDataManager.versionUpdateWhenLoad = true;
+
 					OnVersionUpdate(checkData, sql);               
 				}
 				else
@@ -310,7 +324,9 @@ namespace WordJourney
 				DataHandler.CopyDirectory(CommonData.originDataPath, CommonData.persistDataPath, true);
 
 				if (checkData.versionUpdate)
-				{               
+				{      
+					GameManager.Instance.persistDataManager.versionUpdateWhenLoad = true;
+
 					OnVersionUpdate(checkData,sql);               
 				}
 				else

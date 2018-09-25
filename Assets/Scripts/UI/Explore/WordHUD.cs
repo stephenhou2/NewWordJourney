@@ -490,12 +490,12 @@ namespace WordJourney
 
 		private IEnumerator ShowChooseResultForAWhile(bool isChooseCorrect){
 
-			yield return new WaitForSeconds (1.0f);
+			yield return new WaitForSeconds (1.0f);         
 
-			QuitWordHUD ();
+			QuitWordHUD();
 
-			explainationChooseCallBack (isChooseCorrect);
-
+			explainationChooseCallBack(isChooseCorrect);
+         
 		}
 
 

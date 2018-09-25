@@ -9,7 +9,7 @@ namespace WordJourney
 
 	public class PersistDataManager{
 
-
+		public bool versionUpdateWhenLoad = false;
 
 		/// <summary>
 		/// 保存游戏购买记录
@@ -203,7 +203,11 @@ namespace WordJourney
 			resetPd.currentExploreStartDateString = DateTime.Now.ToShortDateString();
 			resetPd.currentVersion = Player.mainPlayer.currentVersion;
 			resetPd.spellRecord.Clear();
-         
+
+			if(ExploreManager.Instance != null){
+				ExploreManager.Instance.battlePlayerCtr.fadeStepsLeft = 0;
+			}
+            
 			Player.mainPlayer.SetUpPlayerWithPlayerData (resetPd);
 
 			Player.mainPlayer.InitializeMapIndex();
@@ -226,7 +230,9 @@ namespace WordJourney
 
 			Player.mainPlayer.SetUpPlayerWithPlayerData(playerData);
 
-			Player.mainPlayer.LoseEquipmentsAndExperienceWhenDie();
+			Player.mainPlayer.LoseEquipmentsAndExperienceAndGoldWhenDie();
+
+			Player.mainPlayer.ResetBattleAgentProperties(false);
 
 			SaveCompletePlayerData(); 
 

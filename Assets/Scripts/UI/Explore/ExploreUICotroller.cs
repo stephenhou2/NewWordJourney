@@ -147,8 +147,7 @@ namespace WordJourney
 			GetComponent<Canvas> ().enabled = true;
 			transitionMask.color = Color.black;
             
-
-
+         
 			if (!Player.mainPlayer.isNewPlayer) {
 
 				bool playerDataExist = DataHandler.FileExist(CommonData.playerDataFilePath);
@@ -173,7 +172,9 @@ namespace WordJourney
 
 				transitionMask.gameObject.SetActive(true);
 
-				transitionView.PlayTransition(TransitionType.Introduce, delegate
+				TransitionType transitionType = GameManager.Instance.persistDataManager.versionUpdateWhenLoad ? TransitionType.VersionUpdate : TransitionType.Introduce;
+
+				transitionView.PlayTransition(transitionType, delegate
                 {
                     GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
                     {
@@ -801,13 +802,14 @@ namespace WordJourney
 
 			ExploreManager.Instance.ConfirmFillCharactersInWordHUD (isFillCorrect);
 
+			ExploreManager.Instance.MapWalkableEventsStartAction();
+
 		}
 
 
 
         private void QuitWordHUDCallBack(HLHWord word)
 		{
-            ExploreManager.Instance.MapWalkableEventsStartAction();
 
             if (word == null)
             {
@@ -921,6 +923,8 @@ namespace WordJourney
 			}
 
 			ExploreManager.Instance.ChooseAnswerInWordHUD(isChooseCorrect);
+
+			ExploreManager.Instance.MapWalkableEventsStartAction();
          
 		}
 

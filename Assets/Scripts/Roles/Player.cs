@@ -430,11 +430,12 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 死亡时损失装备，金钱，经验
+        /// </summary>
+		public void LoseEquipmentsAndExperienceAndGoldWhenDie(){
 
-		public void LoseEquipmentsAndExperienceWhenDie(){
-
-			int loseCount = 0;
-			List<Equipment> equipedEquipmentsExceptWeaponAndArmor = new List<Equipment>();
+			List<Equipment> allValidEquipedEquipments = new List<Equipment>();
 
             // 玩家身上的武器和护甲都移除
 			for (int i = 0; i < allEquipedEquipments.Length;i++){
@@ -445,31 +446,19 @@ namespace WordJourney
 					continue;
 				}
 
-				if(equipment.equipmentType == EquipmentType.Weapon){
-					RemoveItem(equipment, 1);
-					loseCount++;
-				}else if(equipment.equipmentType == EquipmentType.Armor){
-					RemoveItem(equipment, 1);
-					loseCount++;
-				}else {
-					equipedEquipmentsExceptWeaponAndArmor.Add(equipment);
+				allValidEquipedEquipments.Add(equipment);
+
+			}
+
+			if(allValidEquipedEquipments.Count > 0){
+				int randomSeed = Random.Range(0, allValidEquipedEquipments.Count);
+				if(randomSeed < allValidEquipedEquipments.Count){
+					RemoveItem(allValidEquipedEquipments[randomSeed],1);
 				}            
 			}
 
-			for (int i = 0; i < (2 - loseCount); i++)
-            {
-                if (equipedEquipmentsExceptWeaponAndArmor.Count > 0)
-                {
-                    int index = Random.Range(0, equipedEquipmentsExceptWeaponAndArmor.Count);
-                    Equipment tempEquipment = equipedEquipmentsExceptWeaponAndArmor[index];
-                    RemoveItem(tempEquipment, 1);
-					equipedEquipmentsExceptWeaponAndArmor.RemoveAt(index);
-                }
-
-            }
-
-
-
+			totalGold = Mathf.RoundToInt(totalGold * 0.5f);
+         
             // 玩家本级的经验值归零
 			experience = 0;
          

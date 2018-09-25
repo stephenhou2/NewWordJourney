@@ -77,6 +77,8 @@ namespace WordJourney
 
                     PlayTriggerAnim();
 
+					autoDetect.isInSavingData = false;
+
 				});
 
                
@@ -138,6 +140,9 @@ namespace WordJourney
                     ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("数据已存档");
 
                     PlayTriggerAnim();
+
+					autoDetect.isInSavingData = false;
+                             
 				});
 
 

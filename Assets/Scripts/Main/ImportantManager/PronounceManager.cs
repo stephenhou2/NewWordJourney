@@ -45,6 +45,8 @@ namespace WordJourney
 
 		private WWW pronunciationWWW;
 
+		private string currentConnectingUrl;
+
 		// 下载发音的超时时长
 		public float wwwTimeOutInterval = 2f;
 
@@ -63,6 +65,7 @@ namespace WordJourney
 
 		void Awake(){
 			pronunciationCache = new List<Pronunciation> ();
+			currentConnectingUrl = string.Empty;
 		}
 
 		/// <summary>
@@ -118,6 +121,7 @@ namespace WordJourney
 				string pronounceUrl = string.Empty;
 
                 PronounceErrorRecord errorRecord = CheckPronounceErrorExist(word);
+				//PronounceErrorRecord errorRecord = new PronounceErrorRecord(wordToPronounce.wordId, PronounceErrorCode.ErrorWithURL_1);
 
                 if (errorRecord.wordId == -1)
                 {
@@ -139,6 +143,14 @@ namespace WordJourney
 
 				if(pronounceUrl != string.Empty){
 					try{
+						
+						if (string.Equals(pronounceUrl, currentConnectingUrl))
+                        {
+                            return;
+                        }
+
+						CancelInProgressPronounce();
+
 						waitDownloadFinishCoroutine = PlayPronunciationWhenFinishDownloading(pronounceUrl);
                         StartCoroutine(waitDownloadFinishCoroutine);
 					}catch(System.Exception e){
@@ -158,7 +170,11 @@ namespace WordJourney
 		public void PronunceWordFromURL(string url){
 
 			try{
-				//pronunciationWWW = new WWW(url);
+				if(string.Equals(url,currentConnectingUrl)){
+					return;
+				}
+
+				CancelInProgressPronounce();
 
                 waitDownloadFinishCoroutine = PlayPronunciationWhenFinishDownloading(url);
 
@@ -170,22 +186,22 @@ namespace WordJourney
 
 		}
 
-		public void CancelPronounce(){
+		public void CancelInProgressPronounce(){
 
 			if (waitDownloadFinishCoroutine != null) {
 				StopCoroutine (waitDownloadFinishCoroutine);
 			}
 			
-			if (pronunciationWWW != null && !pronunciationWWW.isDone) {
+			if (pronunciationWWW != null) {
 				pronunciationWWW.Dispose ();
 			}
 
 		}
 
 		public void ClearPronunciationCache(){
-			for (int i = 0; i < pronunciationCache.Count; i++) {
-				pronunciationCache [i].Clear ();
-			}
+			//for (int i = 0; i < pronunciationCache.Count; i++) {
+			//	pronunciationCache [i].Clear ();
+			//}
 			pronunciationCache.Clear ();
 		}
 
@@ -200,13 +216,16 @@ namespace WordJourney
 			float timer = 0;
 
 			using(pronunciationWWW = new WWW(url)){
-				
+
+				currentConnectingUrl = url;
+
 				yield return pronunciationWWW;
 
 				timer += Time.deltaTime;
 
                 // 下载超时退出下载
 				if(timer >= wwwTimeOutInterval){
+					pronunciationWWW.Dispose();
 					yield break;
 				}
                 // 出现异常退出下载
@@ -254,17 +273,13 @@ namespace WordJourney
                             PronounceErrorRecord wdErr = new PronounceErrorRecord(wordToPronounce.wordId, PronounceErrorCode.ErrorWithURL_2);
                             errorRecords.Add(wdErr);
                         }
-
+                  
                         pronunciationWWW.Dispose();
-
-
+                  
                     }
                 }
-                else
-                {
-                    // 下载超时时不播放读音,并关闭下载任务
-                    pronunciationWWW.Dispose();
-                }
+
+				currentConnectingUrl = string.Empty;
 
 			}
 

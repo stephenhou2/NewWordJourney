@@ -26,7 +26,7 @@ namespace WordJourney
 	public class ShareViewController : ZoomHUD
 	{
 
-		//public RectTransform sharePlane;
+		public RectTransform sharePlane;
 
 		public Text learnedDaysText;
 
@@ -196,10 +196,23 @@ namespace WordJourney
 			int shareHUDWidth = (int)((shareShotcutRect.transform as RectTransform).rect.width * transferScaler);
 			int shareHUDHeight = (int)((shareShotcutRect.transform as RectTransform).rect.height * transferScaler);
 
+
+			Debug.LogFormat("实际图片大小：[{0},{1}]", shareHUDWidth, shareHUDHeight);
+
+
+			int sharePlaneFixY = (int)(sharePlane.localPosition.y * transferScaler);
+
 			int offsetYFix = (int)(shareShotcutRect.localPosition.y * transferScaler);         
 			int offsetX = (texture.width - shareHUDWidth) / 2;
-			int offsetYMin = (texture.height - shareHUDHeight) / 2 + offsetYFix;
-			int offsetYMax = (texture.height + shareHUDHeight) / 2 + offsetYFix;
+
+			int offsetYMin = (texture.height - shareHUDHeight) / 2 + offsetYFix + sharePlaneFixY;
+			int offsetYMax = (texture.height + shareHUDHeight) / 2 + offsetYFix + sharePlaneFixY;
+
+
+			//int offsetYMin = offsetYFix;
+			//int offsetYMax = offsetYFix + shareHUDHeight;
+
+			Debug.LogFormat("实际最小y{0},最大y{1}", offsetYMin, offsetYMax);
 
 			Texture2D newT2d = new Texture2D(shareHUDWidth, shareHUDHeight);
 

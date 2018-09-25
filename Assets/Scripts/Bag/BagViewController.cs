@@ -24,9 +24,9 @@ namespace WordJourney
 			//Player.mainPlayer.AddItem(Item.NewItemWith(603, 10));
 
 
-			//Player.mainPlayer.AddItem(Item.NewItemWith(512, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(514, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(520, 1));
+			Player.mainPlayer.AddItem(Item.NewItemWith(602, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(601, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(603, 1));
 
 			//Player.mainPlayer.AddItem(Item.NewItemWith(304, 10));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(307, 10));
@@ -395,11 +395,11 @@ namespace WordJourney
 
 			Player.mainPlayer.RemoveItem (currentSelectItem,currentSelectItem.itemCount);
 
-			Item itemInSoCell = bagView.itemDetail.soCell.soDragControl.item;
+			//Item itemInSoCell = bagView.itemDetail.soCell.soDragControl.item;
 
-			if (itemInSoCell != null) {
-				Player.mainPlayer.AddItem (itemInSoCell);
-			}
+			//if (itemInSoCell != null) {
+			//	Player.mainPlayer.AddItem (itemInSoCell);
+			//}
 
 			bagView.SetUpCurrentBagItemsPlane ();
 			ExploreManager.Instance.expUICtr.UpdateBottomBar();

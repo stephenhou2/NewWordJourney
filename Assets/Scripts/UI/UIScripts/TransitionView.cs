@@ -11,6 +11,7 @@ namespace WordJourney
 	public enum TransitionType{
 		None,
 		Introduce,
+        VersionUpdate,
 		Death,
         End,
         ResetGameHint
@@ -96,6 +97,9 @@ namespace WordJourney
 			case TransitionType.ResetGameHint:
 				transitionStrings = resetGameHintStrings;
 				break;
+			case TransitionType.None: 
+			case TransitionType.VersionUpdate:
+				break;
     		}
 
 			IEnumerator transitionCoroutine = PlayTransition (transitionStrings,finishTransitionCallBack);
@@ -110,7 +114,7 @@ namespace WordJourney
 
 		private IEnumerator PlayTransition(string[] transitionStrings,CallBack finishTransitionCallBack){
 
-			if(transitionType != TransitionType.None){
+			if(transitionType != TransitionType.None && transitionType != TransitionType.VersionUpdate){
 				transitionPlaneMask.enabled = true;
 				yield return new WaitForSeconds(1.0f);
 				transitionPlaneMask.enabled = false;
@@ -183,7 +187,7 @@ namespace WordJourney
 						clickContinue = true;                  
                         break;
 					case TransitionType.None:
-                        break;
+					case TransitionType.VersionUpdate:
                     case TransitionType.Death:
                         break;
                     case TransitionType.End:
@@ -265,13 +269,13 @@ namespace WordJourney
 			switch (transitionType)
             {
                 case TransitionType.Introduce:
-                    GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.exploreBgmName);
-					Player.mainPlayer.isNewPlayer = false;
-                    GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-                    break;
+				case TransitionType.VersionUpdate:
+					GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.exploreBgmName);
+                    Player.mainPlayer.isNewPlayer = false;
+					GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+					break;
 				case TransitionType.None:
-                case TransitionType.Death:
-
+                case TransitionType.Death:               
 					break;
                 case TransitionType.End: 
 					PlayRecord playRecord = new PlayRecord(true, "");
