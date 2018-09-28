@@ -326,6 +326,14 @@ namespace WordJourney{
 	}
 
 
+	public enum AdRewardType{
+		BagSlot_2,
+        BagSlot_3,
+        EquipmentSlot,
+        Gold,
+        Life,
+        SkillPoint
+	}
 
 
 	public enum WordType{

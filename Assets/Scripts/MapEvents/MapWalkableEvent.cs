@@ -23,6 +23,8 @@ namespace WordJourney
 
 		private IEnumerator autoWalkCoroutine;
 
+		protected IEnumerator delayMoveCoroutine;
+
 		public Vector3 moveOrigin;
 		public Vector3 moveDestination;
         
@@ -88,6 +90,11 @@ namespace WordJourney
 			if(autoWalkCoroutine != null){
 				StopCoroutine(autoWalkCoroutine);
 			}
+
+			if (delayMoveCoroutine != null)
+            {
+                StopCoroutine(delayMoveCoroutine);
+            }
 			isInAutoWalk = false;
             isInMoving = false;
 			if (!baCtr.isIdle) {
@@ -99,6 +106,10 @@ namespace WordJourney
 
 			if(autoWalkCoroutine != null){
 				StopCoroutine(autoWalkCoroutine);
+			}
+         
+			if(delayMoveCoroutine != null){
+				StopCoroutine(delayMoveCoroutine);
 			}
 
 			isInAutoWalk = false;

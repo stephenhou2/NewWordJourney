@@ -8,6 +8,15 @@ using System.Collections.Generic;
 
 namespace WordJourney
 {
+	[System.Serializable]
+	public class QualifiedUserInfo
+    {
+		public string nickName;
+		public string identifier;
+		public string uniqueDeviceId;
+		public string deviceType;
+
+    }
 
 	public class GameLoader : MonoBehaviour
 	{
@@ -33,6 +42,8 @@ namespace WordJourney
 
 		public bool dataReady;
 
+		public bool indentifyAndroidDevice;
+
 		void Awake()
 		{
 			Application.targetFrameRate = 30;
@@ -40,7 +51,7 @@ namespace WordJourney
 			Debug.unityLogger.logEnabled = true;
 			StringEncryption.isEncryptionOn = false;
 #else
-            Debug.unityLogger.logEnabled = false;
+            Debug.unityLogger.logEnabled = true;
 			StringEncryption.isEncryptionOn = true;         
 #endif
 			Debug.Log(CommonData.persistDataPath);
@@ -51,6 +62,11 @@ namespace WordJourney
 
 		void Start()
 		{
+#if UNITY_ANDROID
+			if(indentifyAndroidDevice && !MyTool.DistinguishTestDevice()){
+				Application.Quit();
+			}
+#endif
 			PersistData();         
 		}
 
@@ -295,7 +311,7 @@ namespace WordJourney
 			}
 
 
-#if UNITY_EDITOR || UNITY_IOS
+#if UNITY_IOS
 
 			if (!persistDi.Exists || checkData.versionUpdate)
 			{
@@ -343,8 +359,8 @@ namespace WordJourney
 #elif UNITY_ANDROID
 
 
-			if (!persistDi.Exists)
-			{
+			if (!persistDi.Exists || checkData.versionUpdate)
+            {
     			IEnumerator copyDataCoroutine = CopyDataForPersist(delegate{
                 
     			    if (checkData.versionUpdate)

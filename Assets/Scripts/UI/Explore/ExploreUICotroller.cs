@@ -13,7 +13,7 @@ namespace WordJourney
 		public MonsterData monsterData;
 		public Transform monsterUI;
 		public MonsterUIInfo monsterUIInfo;
-		public MonsterDataWithUIDipslay(MonsterData monsterData, Transform monsterUI,MonsterUIInfo monsterUIInfo)
+		public MonsterDataWithUIDipslay(MonsterData monsterData, Transform monsterUI, MonsterUIInfo monsterUIInfo)
 		{
 			this.monsterData = monsterData;
 			this.monsterUI = monsterUI;
@@ -21,16 +21,17 @@ namespace WordJourney
 		}
 	}
 
-	public class ExploreUICotroller : MonoBehaviour {
+	public class ExploreUICotroller : MonoBehaviour
+	{
 
 		public TintHUD hintHUD;
 		public PauseHUD pauseHUD;
 		public WordHUD wordHUD;
 		public WordDetailHUD wordDetailHUD;
-        public BillboardHUD billboardHUD;
+		public BillboardHUD billboardHUD;
 
 		public Transform wordRecordContainer;
-        public Text wordRecordText;
+		public Text wordRecordText;
 		public Transform exploreMask;// 小遮罩，不遮盖底部消耗品栏和背包按钮
 		public Transform topBarMask;// 探索顶部栏地遮罩，只有进入npc界面时开启
 
@@ -43,7 +44,7 @@ namespace WordJourney
 
 		public Text gameLevelLocationText;
 
-		public Image transitionMask;      
+		public Image transitionMask;
 
 		public BattlePlayerUIController bpUICtr;
 		public BattleMonsterUIController bmUICtr;
@@ -53,15 +54,15 @@ namespace WordJourney
 
 		public Transform miniMapContainer;
 		public RawImage miniMap;
-        private int miniMapWidth;
-        private int miniMapHeight;
+		private int miniMapWidth;
+		private int miniMapHeight;
 
 		private float miniCameraSize;
 
 		public Transform bigMapView;
 		public RawImage bigMap;
 
-      
+
 		public TransitionView transitionView;
 
 		public SimpleItemDetail simpleItemDetail;
@@ -91,7 +92,7 @@ namespace WordJourney
 
 
 		// 记录本关所有背过的单词
-        public List<HLHWord> wordRecords;
+		public List<HLHWord> wordRecords;
 
 		private IEnumerator enterLevelMaskShowAndHideCoroutine;
 		private IEnumerator myTransitionMaskHideCoroutine;
@@ -99,7 +100,7 @@ namespace WordJourney
 		public MonstersDisplayView monstersDisplayView;
 
 		public InstancePool monsterUIPool;
-            
+
 		private List<MonsterDataWithUIDipslay> monstersInfoWithDisplayUI = new List<MonsterDataWithUIDipslay>();
 
 		public WordRecordQuizView wordRecordQuizView;
@@ -109,53 +110,57 @@ namespace WordJourney
 		public Transform finishGameQueryHUD;
 
 
-		public void SetUpExploreCanvas(bool hasResetGame=false){
+		public void SetUpExploreCanvas(bool hasResetGame = false)
+		{
 
 			wordRecords = GameManager.Instance.gameDataCenter.currentMapWordRecords;
 
-			transitionMask.gameObject.SetActive (true);
+			transitionMask.gameObject.SetActive(true);
 
-			pauseHUD.InitPauseHUD (true, ConfirmQuitToHomeView, null, null);
+			pauseHUD.InitPauseHUD(true, ConfirmQuitToHomeView, null, null);
 
-            wordHUD.InitWordHUD (true, QuitWordHUDCallBack,ChooseAnswerInWordHUDCallBack,ConfirmCharacterFillInWordHUDCallBack);
+			wordHUD.InitWordHUD(true, QuitWordHUDCallBack, ChooseAnswerInWordHUDCallBack, ConfirmCharacterFillInWordHUDCallBack);
 
 			creationView.ClearCharacterFragments();
 
-			if (!GameManager.Instance.UIManager.UIDic.ContainsKey ("BagCanvas")) {
+			if (!GameManager.Instance.UIManager.UIDic.ContainsKey("BagCanvas"))
+			{
 
-				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.bagCanvasBundleName, "BagCanvas",null, false, true,false);
-					
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.bagCanvasBundleName, "BagCanvas", null, false, true, false);
+
 			}
 
 			if (!GameManager.Instance.UIManager.UIDic.ContainsKey("NPCCanvas"))
-            {            
-				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.npcCanvasBundleName, "NPCCanvas", null, false, true,false);            
-            }
+			{
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.npcCanvasBundleName, "NPCCanvas", null, false, true, false);
+			}
 
-			gameLevelLocationText.text = string.Format("第{0}层",Player.mainPlayer.currentLevelIndex + 1);
-            wordRecordText.text = string.Empty;
+			gameLevelLocationText.text = string.Format("第{0}层", Player.mainPlayer.currentLevelIndex + 1);
+			wordRecordText.text = string.Empty;
 
-			if(wordRecords.Count > 0){
+			if (wordRecords.Count > 0)
+			{
 				wordRecordText.text = wordRecords[wordRecords.Count - 1].spell;
 			}
 
 
-			bpUICtr.InitExploreAgentView ();
-			bpUICtr.SetUpExplorePlayerView (Player.mainPlayer);
-			bmUICtr.InitExploreAgentView ();
+			bpUICtr.InitExploreAgentView();
+			bpUICtr.SetUpExplorePlayerView(Player.mainPlayer);
+			bmUICtr.InitExploreAgentView();
 
-			GetComponent<Canvas> ().enabled = true;
+			GetComponent<Canvas>().enabled = true;
 			transitionMask.color = Color.black;
-            
-         
-			if (!Player.mainPlayer.isNewPlayer) {
+
+
+			if (!Player.mainPlayer.isNewPlayer)
+			{
 
 				bool playerDataExist = DataHandler.FileExist(CommonData.playerDataFilePath);
-                if (!playerDataExist)
-                {
-                    GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-                }
-                transitionMask.gameObject.SetActive(false);
+				if (!playerDataExist)
+				{
+					GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+				}
+				transitionMask.gameObject.SetActive(false);
 
 				if (hasResetGame)
 				{
@@ -164,10 +169,12 @@ namespace WordJourney
 					transitionView.PlayTransition(TransitionType.ResetGameHint, delegate
 					{
 						transitionMask.gameObject.SetActive(false);
-					});               
-				}          
-			} else {
-				
+					});
+				}
+			}
+			else
+			{
+
 				ExploreManager.Instance.MapWalkableEventsStopAction();
 
 				transitionMask.gameObject.SetActive(true);
@@ -175,16 +182,17 @@ namespace WordJourney
 				TransitionType transitionType = GameManager.Instance.persistDataManager.versionUpdateWhenLoad ? TransitionType.VersionUpdate : TransitionType.Introduce;
 
 				transitionView.PlayTransition(transitionType, delegate
-                {
-                    GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
-                    {
-                        TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(null);                  
-                    });
-                    transitionMask.gameObject.SetActive(false);
+				{
+					GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
+					{
+						TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(null);
+						ExploreManager.Instance.MapWalkableEventsStartAction();
+					});
+					transitionMask.gameObject.SetActive(false);
 
-                });  
+				});
 
-            
+
 			}
 
 			creationView.InitCharacterFragmentsHUD(SetUpSpellItemView);
@@ -196,93 +204,103 @@ namespace WordJourney
 			LoadMiniMapTexture();
 
 			UpdateMiniMapDisplay(ExploreManager.Instance.battlePlayerCtr.transform.position);
-                     
-			if(Player.mainPlayer.currentLevelIndex < CommonData.maxLevelIndex){
+
+			if (Player.mainPlayer.currentLevelIndex < CommonData.maxLevelIndex)
+			{
 
 				for (int i = 0; i < monstersInfoWithDisplayUI.Count; i++)
-                {
+				{
 
-                    Transform monsterUI = monstersInfoWithDisplayUI[i].monsterUI;
+					Transform monsterUI = monstersInfoWithDisplayUI[i].monsterUI;
 
-                    monsterUIPool.AddInstanceToPool(monsterUI.gameObject);
-                }
+					monsterUIPool.AddInstanceToPool(monsterUI.gameObject);
+				}
 
-                monstersInfoWithDisplayUI.Clear();
+				monstersInfoWithDisplayUI.Clear();
 
-                GetMonstersDataAndUI();
+				GetMonstersDataAndUI();
 
-                monstersDisplayView.InitMonsterDisplayView(monstersInfoWithDisplayUI);
+				monstersDisplayView.InitMonsterDisplayView(monstersInfoWithDisplayUI);
 
-                monsterUIPool.ClearInstancePool();
+				monsterUIPool.ClearInstancePool();
 
-			}         
+			}
 		}
 
-		public void HideUpAndBottomUIs(){
+		public void HideUpAndBottomUIs()
+		{
 			topBarContainer.gameObject.SetActive(false);
 			miniMapContainer.gameObject.SetActive(false);
 			wordRecordContainer.gameObject.SetActive(false);
-			bottomBarContainer.gameObject.SetActive(false); 
+			bottomBarContainer.gameObject.SetActive(false);
 		}
 
-		public void EnterLevelMaskShowAndHide(CallBack callBack,MapSetUpFrom from){
-			if(enterLevelMaskShowAndHideCoroutine != null){
+		public void EnterLevelMaskShowAndHide(CallBack callBack, MapSetUpFrom from)
+		{
+			if (enterLevelMaskShowAndHideCoroutine != null)
+			{
 				StopCoroutine(enterLevelMaskShowAndHideCoroutine);
 			}
-			enterLevelMaskShowAndHideCoroutine = MyEnterLevelMaskShowAndHide(callBack,from);
+			enterLevelMaskShowAndHideCoroutine = MyEnterLevelMaskShowAndHide(callBack, from);
 			StartCoroutine(enterLevelMaskShowAndHideCoroutine);
 		}
-        
-        
-		public void SetUpSaveDataHintViewAndSave(CallBack saveCallBack,CallBack saveFinishCallBack){
+
+
+		public void SetUpSaveDataHintViewAndSave(CallBack saveCallBack, CallBack saveFinishCallBack)
+		{
 
 			saveDataHintView.SetUpSaveDataHintView(saveCallBack, saveFinishCallBack);
 
 		}
-        
-        /// <summary>
-        /// 显示最终的通关询问界面
-        /// </summary>
-		public void ShowFinalQuitQueryHUD(){
+
+		/// <summary>
+		/// 显示最终的通关询问界面
+		/// </summary>
+		public void ShowFinalQuitQueryHUD()
+		{
 			finishGameQueryHUD.gameObject.SetActive(true);
 		}
 
-		public void OnConfirmFinishGame(){
+		public void OnConfirmFinishGame()
+		{
 			finishGameQueryHUD.gameObject.SetActive(false);
 			transitionMask.gameObject.SetActive(true);
-            transitionMask.color = new Color(0, 0, 0, 1);
+			transitionMask.color = new Color(0, 0, 0, 1);
 
-            GameManager.Instance.soundManager.StopBgm();
+			GameManager.Instance.soundManager.StopBgm();
 
-            transitionView.PlayTransition(TransitionType.End, delegate
-            {
+			transitionView.PlayTransition(TransitionType.End, delegate
+			{
 				Player.mainPlayer.needChooseDifficulty = true;
 
-                GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
+				GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
 
-                GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
-                {
-                    ExploreManager.Instance.QuitExploreScene();
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
+				{
+					ExploreManager.Instance.QuitExploreScene();
 
-                    TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, null, delegate {
-                        GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.homeCanvasBundleName, "HomeCanvas", null);
-                    });
+					TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, null, delegate
+					{
+						GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.homeCanvasBundleName, "HomeCanvas", null);
+					});
 
-                });
+				});
 
-            });
+			});
 		}
 
-		public void OnCancelFinishGame(){
+		public void OnCancelFinishGame()
+		{
 			finishGameQueryHUD.gameObject.SetActive(false);
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 		}
 
-        /// <summary>
-        /// 获取本层怪物UI龙骨
-        /// </summary>
-		private void GetMonstersDataAndUI(){
-				
+		/// <summary>
+		/// 获取本层怪物UI龙骨
+		/// </summary>
+		private void GetMonstersDataAndUI()
+		{
+
 			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas[Player.mainPlayer.currentLevelIndex];
 			List<MonsterData> monsterDatas = GameManager.Instance.gameDataCenter.monsterDatas;
 
@@ -306,13 +324,13 @@ namespace WordJourney
 
 				MonsterUIInfo monsterUIInfo = monsterUI.GetComponent<MonsterUIInfo>();
 
-				MonsterDataWithUIDipslay monsterDataWithUIDipslay = new MonsterDataWithUIDipslay(monsterData, monsterUI,monsterUIInfo);
+				MonsterDataWithUIDipslay monsterDataWithUIDipslay = new MonsterDataWithUIDipslay(monsterData, monsterUI, monsterUIInfo);
 
 				monstersInfoWithDisplayUI.Add(monsterDataWithUIDipslay);
 			}
 
 			//if(HLHGameLevelData.IsBossLevel()){
-					
+
 			//	int monsterId = levelData.bossId;
 			//	string monsterUIName = MyTool.GetMonsterUIName(monsterId);
 			//	Transform monsterUI = monsterUIPool.GetInstanceWithName<Transform>(monsterUIName);
@@ -321,10 +339,10 @@ namespace WordJourney
 			//	}
 
 			//	MonsterData monsterData = monsterDatas.Find(delegate (MonsterData obj)
-   //             {
-   //                 return obj.monsterId == monsterId;
+			//             {
+			//                 return obj.monsterId == monsterId;
 
-   //             });
+			//             });
 
 			//	MonsterUIInfo monsterUIInfo = monsterUI.GetComponent<MonsterUIInfo>();
 			//	MonsterDataWithUIDipslay monsterDataWithUIDipslay = new MonsterDataWithUIDipslay(monsterData, monsterUI,monsterUIInfo);
@@ -333,11 +351,12 @@ namespace WordJourney
 			//}
 
 		}
-        
-		private IEnumerator MyEnterLevelMaskShowAndHide(CallBack callBack,MapSetUpFrom from){
-			
+
+		private IEnumerator MyEnterLevelMaskShowAndHide(CallBack callBack, MapSetUpFrom from)
+		{
+
 			float tempAlpha = 0;
-            float fadeSpeed = 3f;
+			float fadeSpeed = 3f;
 
 
 			transitionMask.color = new Color(0, 0, 0, tempAlpha);
@@ -346,55 +365,59 @@ namespace WordJourney
 
 
 			while (tempAlpha < 1)
-            {
+			{
 				tempAlpha += fadeSpeed * Time.deltaTime;
-                transitionMask.color = new Color(0, 0, 0, tempAlpha);
-                yield return null;
-            }
+				transitionMask.color = new Color(0, 0, 0, tempAlpha);
+				yield return null;
+			}
 
 			tempAlpha = 1;
 
 			if (callBack != null)
-            {
-                callBack();
-            }
+			{
+				callBack();
+			}
 
-            yield return new WaitUntil(() => ExploreManager.Instance.exploreSceneReady);
+			yield return new WaitUntil(() => ExploreManager.Instance.exploreSceneReady);
 
 			//Debug.Break();
 
 			while (tempAlpha > 0)
-            {
+			{
 				tempAlpha -= fadeSpeed * Time.deltaTime;
-                transitionMask.color = new Color(0, 0, 0, tempAlpha);
-                yield return null;
-            }
+				transitionMask.color = new Color(0, 0, 0, tempAlpha);
+				yield return null;
+			}
 
 			transitionMask.gameObject.SetActive(false);
 
-			switch(from){
+			switch (from)
+			{
 				case MapSetUpFrom.LastLevel:
 				case MapSetUpFrom.Home:
 					hintHUD.SetUpSingleTextTintHUD("数据已存档");
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
 					ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
 					break;
-				case MapSetUpFrom.NextLevel:               
+				case MapSetUpFrom.NextLevel:
 					break;
 
 			}
 		}
 
 
-		public void DisplayTransitionMaskAnim(CallBack cb){
-			ExploreManager.Instance.MapWalkableEventsStopAction ();
-			transitionMask.gameObject.SetActive (true);
+		public void DisplayTransitionMaskAnim(CallBack cb)
+		{
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+			transitionMask.gameObject.SetActive(true);
 			IEnumerator transitionMaskDisplayCoroutine = TransitionMaskShowAndHide(cb);
-			StartCoroutine (transitionMaskDisplayCoroutine);
+			StartCoroutine(transitionMaskDisplayCoroutine);
 		}
 
-		public void SetUpUnlockDoorView(List<SpecialItem> keys, int doorDifficulty, CallBack unlockSuccessCallBack, CallBack unlockFailCallBack){
-			keyDoorOperatorView.SetUpKeyDoorOperatorView(keys,doorDifficulty, unlockSuccessCallBack, unlockFailCallBack);
+		public void SetUpUnlockDoorView(List<SpecialItem> keys, int doorDifficulty, CallBack unlockSuccessCallBack, CallBack unlockFailCallBack)
+		{
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+			keyDoorOperatorView.SetUpKeyDoorOperatorView(keys, doorDifficulty, unlockSuccessCallBack, unlockFailCallBack);
 		}
 
 		public void UpdateMiniMapDisplay(Vector3 playerPos)
@@ -402,45 +425,45 @@ namespace WordJourney
 			int offsetBaseX = Mathf.RoundToInt(playerPos.x);
 			int offsetBaseY = Mathf.RoundToInt(playerPos.y);
 
-			if(offsetBaseX < 5){
+			if (offsetBaseX < 5)
+			{
 				offsetBaseX = 5;
 			}
 
-			if(offsetBaseX > ExploreManager.Instance.newMapGenerator.columns - 5){
+			if (offsetBaseX > ExploreManager.Instance.newMapGenerator.columns - 5)
+			{
 				offsetBaseX = ExploreManager.Instance.newMapGenerator.columns - 5;
 			}
 
 			if (offsetBaseY < 5)
-            {
-                offsetBaseY = 5;
-            }
+			{
+				offsetBaseY = 5;
+			}
 
 			if (offsetBaseY > ExploreManager.Instance.newMapGenerator.rows - 5)
-            {
+			{
 				offsetBaseY = ExploreManager.Instance.newMapGenerator.rows - 5;
-            }
-            
+			}
+
 			float offsetX = (miniCameraSize - offsetBaseX) / (miniCameraSize * 2) * miniMapWidth;
 			float offsetY = (miniCameraSize - offsetBaseY) / (miniCameraSize * 2) * miniMapHeight;
-            
 
-            miniMap.transform.localPosition = new Vector3(offsetX, offsetY, 0);
+
+			miniMap.transform.localPosition = new Vector3(offsetX, offsetY, 0);
 
 		}
 
 
 		private void LoadMiniMapTexture()
-        {
-            miniMap.texture = Resources.Load("MiniMapTexture") as Texture;
-            miniMapWidth = Mathf.RoundToInt(miniMap.rectTransform.rect.width);
-            miniMapHeight = Mathf.RoundToInt(miniMap.rectTransform.rect.height);
-        }
-        
+		{
+			miniMap.texture = Resources.Load("MiniMapTexture") as Texture;
+			miniMapWidth = Mathf.RoundToInt(miniMap.rectTransform.rect.width);
+			miniMapHeight = Mathf.RoundToInt(miniMap.rectTransform.rect.height);
+		}
 
-		public void ShowBigMap(){
-			if(ExploreManager.Instance.battlePlayerCtr.isInEvent){
-				return;
-			}
+
+		public void ShowBigMap()
+		{
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = true;
 			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
 			ExploreManager.Instance.MapWalkableEventsStopAction();
@@ -453,62 +476,74 @@ namespace WordJourney
 			bigMap.transform.localPosition = new Vector3(offsetX, offsetY, 0);
 		}
 
-		public void QuitBigMap(){
+		public void QuitBigMap()
+		{
 			bigMapView.gameObject.SetActive(false);
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 			ExploreManager.Instance.MapWalkableEventsStartAction();
 		}
 
 
-		public void UpdatePlayerGold(){
+		public void UpdatePlayerGold()
+		{
 			bpUICtr.RefreshGold();
 		}
 
-		public void ShowTopBarMask(){
+		public void ShowTopBarMask()
+		{
 			topBarMask.gameObject.SetActive(true);
 		}
 
-		public void HideTopBarMask(){
+		public void HideTopBarMask()
+		{
 			topBarMask.gameObject.SetActive(false);
 		}
 
-		private IEnumerator TransitionMaskShowAndHide(CallBack cb){
+		private IEnumerator TransitionMaskShowAndHide(CallBack cb)
+		{
 
 			float tempAlpha = 0;
 			float fadeSpeed = 3f;
 
-			while(tempAlpha < 1){
+			while (tempAlpha < 1)
+			{
 				tempAlpha += fadeSpeed * Time.deltaTime;
-				transitionMask.color = new Color (0, 0, 0, tempAlpha);
+				transitionMask.color = new Color(0, 0, 0, tempAlpha);
 				yield return null;
 			}
-            
+
 			tempAlpha = 1;
 
 			if (cb != null)
-            {
-                cb();
-            }
+			{
+				cb();
+			}
 
 			transitionMask.gameObject.SetActive(false);
 
-			while (tempAlpha > 0) {
+			while (tempAlpha > 0)
+			{
 				tempAlpha -= fadeSpeed * Time.deltaTime;
-				transitionMask.color = new Color (0, 0, 0, tempAlpha);
+				transitionMask.color = new Color(0, 0, 0, tempAlpha);
 				yield return null;
 			}
 
-			ExploreManager.Instance.MapWalkableEventsStartAction ();
-         
+			ExploreManager.Instance.MapWalkableEventsStartAction();
+
 		}
 
-		public void ClearCharacterFragments(){
+		public void ClearCharacterFragments()
+		{
 			Player.mainPlayer.allCollectedCharacters.Clear();
 			creationView.ClearCharacterFragments();
 		}
 
-		public void SetUpSpellItemView(){         
-			spellItemView.SetUpSpellView(ExploreManager.Instance.newMapGenerator.spellItemOfCurrentLevel,delegate{
+		public void SetUpSpellItemView()
+		{
+			//Debug.Break();
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+			spellItemView.SetUpSpellView(ExploreManager.Instance.newMapGenerator.spellItemOfCurrentLevel, delegate
+			{
 				Player.mainPlayer.spellRecord.Add(ExploreManager.Instance.newMapGenerator.spellItemOfCurrentLevel.spell);
 				creationView.HideCreateButton();
 			});
@@ -516,30 +551,36 @@ namespace WordJourney
 
 
 
-		public void UpdateCharacterFragmentsHUD(){
+		public void UpdateCharacterFragmentsHUD()
+		{
 			creationView.UpdateCharactersCollected();
 		}
 
-		public void ShowExploreMask(){
-			exploreMask.gameObject.SetActive (true);
+		public void ShowExploreMask()
+		{
+			exploreMask.gameObject.SetActive(true);
 		}
 
-		public void HideExploreMask(){
-			exploreMask.gameObject.SetActive (false);
+		public void HideExploreMask()
+		{
+			exploreMask.gameObject.SetActive(false);
 		}
 
 
-		public void ShowFullMask(){
-			fullMask.gameObject.SetActive (true);
+		public void ShowFullMask()
+		{
+			fullMask.gameObject.SetActive(true);
 		}
 
-		public void HideFullMask(){
-			fullMask.gameObject.SetActive (false);
+		public void HideFullMask()
+		{
+			fullMask.gameObject.SetActive(false);
 		}
 
-       
 
-		public void ShowExploreSceneSlowly(){
+
+		public void ShowExploreSceneSlowly()
+		{
 			if (Player.mainPlayer.isNewPlayer)
 			{
 				return;
@@ -559,56 +600,60 @@ namespace WordJourney
 					ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
 				});
 			}
-         
+
 			transitionMask.gameObject.SetActive(true);
-            transitionMask.color = Color.black;
+			transitionMask.color = Color.black;
 
 
-			if(myTransitionMaskHideCoroutine != null){
+			if (myTransitionMaskHideCoroutine != null)
+			{
 				StopCoroutine(myTransitionMaskHideCoroutine);
 			}
-			myTransitionMaskHideCoroutine = MyTransitionMaskSlowlyHide(newPlayerGuideFinished); 
+			myTransitionMaskHideCoroutine = MyTransitionMaskSlowlyHide(newPlayerGuideFinished);
 			StartCoroutine(myTransitionMaskHideCoroutine);
 		}
 
-		private IEnumerator MyTransitionMaskSlowlyHide(bool showSaveHint){
+		private IEnumerator MyTransitionMaskSlowlyHide(bool showSaveHint)
+		{
 
-            float tempAlpha = 1;
+			float tempAlpha = 1;
 
 			float fadeSpeed = 3f;
 
 			bool hasEnable = GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished;
 
 			if (hasEnable)
-            {
-                HideExploreMask();
+			{
+				HideExploreMask();
 				transitionMask.gameObject.SetActive(false);
-            }
+			}
 
 			while (tempAlpha > 0)
-            {
-                tempAlpha -= fadeSpeed * Time.deltaTime;
-                transitionMask.color = new Color(0, 0, 0, tempAlpha);
-                
-				if(tempAlpha < 0.5f && !hasEnable){
-					
-                    transitionMask.gameObject.SetActive(false);
-                    if (GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished)
-                    {
-                        ExploreManager.Instance.MapWalkableEventsStartAction();
-                        
+			{
+				tempAlpha -= fadeSpeed * Time.deltaTime;
+				transitionMask.color = new Color(0, 0, 0, tempAlpha);
+
+				if (tempAlpha < 0.5f && !hasEnable)
+				{
+
+					transitionMask.gameObject.SetActive(false);
+					if (GameManager.Instance.gameDataCenter.gameSettings.newPlayerGuideFinished)
+					{
+						ExploreManager.Instance.MapWalkableEventsStartAction();
+
 						hasEnable = true;
-                    }
-               
+					}
+
 				}
 
-                yield return null;
-            }
+				yield return null;
+			}
 
 			HideExploreMask();
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-            transitionMask.gameObject.SetActive(false);
-			if(showSaveHint){
+			transitionMask.gameObject.SetActive(false);
+			if (showSaveHint)
+			{
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
 				hintHUD.SetUpSingleTextTintHUD("数据已存档");
 				ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
@@ -616,85 +661,107 @@ namespace WordJourney
 		}
 
 
-		public void ShowFightPlane(){
+		public void ShowFightPlane()
+		{
 
-			if (battlePlane.gameObject.activeInHierarchy) {
+			if (battlePlane.gameObject.activeInHierarchy)
+			{
 				return;
 			}
 
-			battlePlane.gameObject.SetActive (true);
+			battlePlane.gameObject.SetActive(true);
 
-			bpUICtr.SetUpFightPlane ();
+			bpUICtr.SetUpFightPlane();
+
+			ExploreManager.Instance.EnableExploreInteractivity();
 
 		}
 
-		public void UpdateActiveSkillButtons(){
-			if(battlePlane.gameObject.activeInHierarchy){
+		public void UpdateActiveSkillButtons()
+		{
+			if (battlePlane.gameObject.activeInHierarchy)
+			{
 				bpUICtr.SetUpActiveSkillButtons();
 			}
 
 		}
 
-		public void RemoveActiveSkillButton(Skill skill){
+		public void RemoveActiveSkillButton(Skill skill)
+		{
 			bpUICtr.RemoveActiveSkillButton(skill);
 		}
 
-		public void OnMonsterDisplayButtonClick(){
+		public void OnMonsterDisplayButtonClick()
+		{
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = true;
 			ExploreManager.Instance.MapWalkableEventsStopAction();
 			monstersDisplayView.SetUpmonstersDisplayView(CallBackOnQuitMonsterDisplay);
 		}
 
-		private void CallBackOnQuitMonsterDisplay(Transform trans){
+		private void CallBackOnQuitMonsterDisplay(Transform trans)
+		{
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-            ExploreManager.Instance.MapWalkableEventsStartAction();
-            monsterUIPool.AddChildInstancesToPool(trans);
+			ExploreManager.Instance.MapWalkableEventsStartAction();
+			monsterUIPool.AddChildInstancesToPool(trans);
 		}
 
 
-		public void ShowLevelUpPlane(){
-			bpUICtr.ShowLevelUpPlane ();
+		public void ShowLevelUpPlane()
+		{
+			bpUICtr.ShowLevelUpPlane();
 		}
 
-		public void SetUpSingleTextTintHUD(string tint){
-			hintHUD.SetUpSingleTextTintHUD (tint);
+		public void SetUpSingleTextTintHUD(string tint)
+		{
+			hintHUD.SetUpSingleTextTintHUD(tint);
 		}
 
-		public void SetUpGoldGainTintHUD(int goldGain){
-			hintHUD.SetUpGoldTintHUD (goldGain);
+		public void SetUpGoldGainTintHUD(int goldGain)
+		{
+			hintHUD.SetUpGoldTintHUD(goldGain);
 		}
 
 		/// <summary>
 		/// 更新底部消耗品栏
 		/// </summary>
-		public void UpdateBottomBar(){
-			bpUICtr.SetUpConsumablesButtons ();
+		public void UpdateBottomBar()
+		{
+			bpUICtr.SetUpConsumablesButtons();
 		}
 
 
-		public void ShowEscapeBar(float escapeTime,CallBack escapeCallBack){
-			bpUICtr.EscapeDisplay (escapeTime, escapeCallBack);
+		public void ShowEscapeBar(float escapeTime, CallBack escapeCallBack)
+		{
+			bpUICtr.EscapeDisplay(escapeTime, escapeCallBack);
 		}
 
-		public void UpdatePlayerStatusBar(){
-			bpUICtr.UpdateAgentStatusPlane ();
+		public void UpdatePlayerStatusBar()
+		{
+			bpUICtr.UpdateAgentStatusPlane();
 		}
 
 
 		public void UpdateMonsterStatusPlane(Monster monster)
-        {
-            // 初始化怪物状态栏
-            bmUICtr.SetUpMonsterStatusPlane(monster);
-        }
-        
-		public void SetUpPuzzleView(CallBack answerRightCallBack,CallBack answerWrongCallBack){
-            
-			puzzleView.SetUpMonsterPuzzleView(answerRightCallBack,answerWrongCallBack);
+		{
+			// 初始化怪物状态栏
+			bmUICtr.SetUpMonsterStatusPlane(monster);
+		}
+
+		public void SetUpPuzzleView(CallBack answerRightCallBack, CallBack answerWrongCallBack)
+		{
+
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+
+			puzzleView.SetUpMonsterPuzzleView(answerRightCallBack, answerWrongCallBack);
 
 		}
 
 
-		public void EnterNPC(HLHNPC npc){
+		public void EnterNPC(HLHNPC npc)
+		{
+
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+
 			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.npcCanvasBundleName, "NPCCanvas", delegate
 			{
 				TransformManager.FindTransform("NPCCanvas").GetComponent<NPCViewController>().SetUpNPCView(npc);
@@ -702,105 +769,121 @@ namespace WordJourney
 
 		}
 
-        
 
-		public void QueryEnterWordRecordQuizView(CallBack enterQuizCallBack){
+
+		public void QueryEnterWordRecordQuizView(CallBack enterQuizCallBack)
+		{
 			ExploreManager.Instance.MapWalkableEventsStopAction();
-			wordRecordQuizView.SetUpwordRecordQuizView(wordRecords,enterQuizCallBack);
+			wordRecordQuizView.SetUpwordRecordQuizView(wordRecords, enterQuizCallBack);
 		}
 
 		/// <summary>
 		/// 初始化公告牌
 		/// </summary>
-		public void SetUpBillboard(Billboard bb){
-			
-			ExploreManager.Instance.MapWalkableEventsStopAction ();
+		public void SetUpBillboard(Billboard bb)
+		{
 
-            billboardHUD.SetUpBillboard(bb, QuitBillboard);
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+
+			billboardHUD.SetUpBillboard(bb, QuitBillboard);
 		}
 
 		/// <summary>
 		/// 退出公告牌
 		/// </summary>
-        private void QuitBillboard(){
+		private void QuitBillboard()
+		{
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-			ExploreManager.Instance.MapWalkableEventsStartAction ();
+			ExploreManager.Instance.MapWalkableEventsStartAction();
 		}
 
 
-        /// <summary>
-        /// 显示日记显示界面
-        /// </summary>
-		public void SetUpDiaryView(DiaryModel diaryModel){
-
-			if(ExploreManager.Instance.battlePlayerCtr.isInEvent){
-				return;
-			}
+		/// <summary>
+		/// 显示日记显示界面
+		/// </summary>
+		public void SetUpDiaryView(DiaryModel diaryModel)
+		{
 
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = true;
 
 			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
-            
+
 			ExploreManager.Instance.MapWalkableEventsStopAction();
-         
-			if(diaryModel != null){
-				diaryView.SetUpDiaryView(diaryModel,QuitDiaryViewCallBack);          
+
+			if (diaryModel != null)
+			{
+				diaryView.SetUpDiaryView(diaryModel, QuitDiaryViewCallBack);
 			}
-			  
+
 		}
 
-		private void QuitDiaryViewCallBack(){
+		private void QuitDiaryViewCallBack()
+		{
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-            ExploreManager.Instance.MapWalkableEventsStartAction();
+			ExploreManager.Instance.MapWalkableEventsStartAction();
 		}
 
 
 
-		public void OnPauseButtonClick(){
-			ShowPauseHUD ();
+		public void OnPauseButtonClick()
+		{
+			ShowPauseHUD();
 		}
 
-		public void ShowPauseHUD(){
-			pauseHUD.SetUpPauseHUD ();
+		public void ShowPauseHUD()
+		{
+			pauseHUD.SetUpPauseHUD();
 		}
 
-		public void QuitPauseHUD(){
-			pauseHUD.QuitPauseHUD ();
-		}
-      
-
-		public void SetUpWordHUD(HLHWord[] words,string extraInfo = null){
-			wordHUD.SetUpWordHUDAndShow (words,extraInfo);
+		public void QuitPauseHUD()
+		{
+			pauseHUD.QuitPauseHUD();
 		}
 
-		public void SetUpWordHUD(HLHWord word){
-			wordHUD.SetUpWordHUDAndShow (word);
+
+		public void SetUpWordHUD(HLHWord[] words, string extraInfo = null)
+		{
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+			wordHUD.SetUpWordHUDAndShow(words, extraInfo);
 		}
 
-		public void OnWordRecordDetailButtonClick(){
+		public void SetUpWordHUD(HLHWord word)
+		{
+			ExploreManager.Instance.MapWalkableEventsStopAction();
+			wordHUD.SetUpWordHUDAndShow(word);
+		}
+
+		public void OnWordRecordDetailButtonClick()
+		{
+			ExploreManager.Instance.MapWalkableEventsStopAction();
 			SetUpWordDetailHUD(true, null);
 		}
 
-		public void SetUpWordDetailHUD(bool controlMoveWhenQuit,CallBack quitCallBack){
+		public void SetUpWordDetailHUD(bool controlMoveWhenQuit, CallBack quitCallBack)
+		{
 
 			if (wordRecords.Count > 0)
-            {
-                ExploreManager.Instance.MapWalkableEventsStopAction();
+			{
+				ExploreManager.Instance.MapWalkableEventsStopAction();
 				HLHWord word = wordRecords[wordRecords.Count - 1];
-				wordDetailHUD.SetUpWordDetailHUD(wordRecords,delegate{ 
-					if(quitCallBack != null){
+				wordDetailHUD.SetUpWordDetailHUD(wordRecords, delegate
+				{
+					if (quitCallBack != null)
+					{
 						quitCallBack();
 					}
-					if(!controlMoveWhenQuit){
+					if (!controlMoveWhenQuit)
+					{
 						ExploreManager.Instance.MapWalkableEventsStartAction();
-					}               
+					}
 				});
-            }
-        }
+			}
+		}
 
-        private void ConfirmCharacterFillInWordHUDCallBack(bool isFillCorrect){
+		private void ConfirmCharacterFillInWordHUDCallBack(bool isFillCorrect)
+		{
 
-			ExploreManager.Instance.ConfirmFillCharactersInWordHUD (isFillCorrect);
+			ExploreManager.Instance.ConfirmFillCharactersInWordHUD(isFillCorrect);
 
 			ExploreManager.Instance.MapWalkableEventsStartAction();
 
@@ -808,64 +891,75 @@ namespace WordJourney
 
 
 
-        private void QuitWordHUDCallBack(HLHWord word)
+		private void QuitWordHUDCallBack(HLHWord word)
 		{
 
-            if (word == null)
-            {
-                return;
-            }
+			if (word == null)
+			{
+				return;
+			}
 
-            wordRecordText.text = word.spell;
+			wordRecordText.text = word.spell;
 
 			//bool update = true;
-            for (int j = 0; j < wordRecords.Count; j++){
-                if(wordRecords[j].wordId == word.wordId){
+			for (int j = 0; j < wordRecords.Count; j++)
+			{
+				if (wordRecords[j].wordId == word.wordId)
+				{
 					//update = false;
 					wordRecords.RemoveAt(j);
-                    break;
-                }
-            }
-            //if(update){
-				wordRecords.Add(word);
-            //}            
+					break;
+				}
+			}
+			//if(update){
+			wordRecords.Add(word);
+			//}            
 
 		}
 
-		public void UpdateWordRecords(List<HLHWord> words){
-			
+		public void UpdateWordRecords(List<HLHWord> words)
+		{
+
 			for (int i = 0; i < words.Count; i++)
 			{
 				HLHWord word = words[i];
 
-				if(word == null){
+				if (word == null)
+				{
 					continue;
 				}
 
 				bool update = true;
-				for (int j = 0; j < wordRecords.Count; j++){
-					if(wordRecords[j].wordId == word.wordId){
+				for (int j = 0; j < wordRecords.Count; j++)
+				{
+					if (wordRecords[j].wordId == word.wordId)
+					{
 						update = false;
 						break;
 					}
 				}
-				if(update){
+				if (update)
+				{
 					wordRecords.Add(words[i]);
-				}            
+				}
 			}
-			if(words.Count>0 && words[words.Count - 1] != null){
-				wordRecordText.text = words[words.Count - 1].spell;            
+			if (words.Count > 0 && words[words.Count - 1] != null)
+			{
+				wordRecordText.text = words[words.Count - 1].spell;
 			}
 		}
 
 
-		private void ChooseAnswerInWordHUDCallBack(bool isChooseCorrect){
-                 
-			if(!isChooseCorrect){
+		private void ChooseAnswerInWordHUDCallBack(bool isChooseCorrect)
+		{
+
+			if (!isChooseCorrect)
+			{
 
 				bool showWordDetail = ExploreManager.Instance.NeedShowFullWordDetailWhenChooseWrong();
 
-				if(showWordDetail){
+				if (showWordDetail)
+				{
 
 					bool controlMoveWhenQuit = true;
 
@@ -874,93 +968,128 @@ namespace WordJourney
 #if UNITY_IOS || UNITY_EDITOR
 					pushRecommend = CheckPushCommentRecommend();
 
-                    if (pushRecommend)
-                    {
+					if (pushRecommend)
+					{
 						controlMoveWhenQuit = false;
-                        
-                    }
+
+					}
 #endif
 
-                    int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
+					int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
 
-                    if (qualificationIndex != -1)
-                    {
+					if (qualificationIndex != -1)
+					{
 						controlMoveWhenQuit = false;
-                    }
-                                   
-					SetUpWordDetailHUD(controlMoveWhenQuit,delegate {
-						if(pushRecommend){
+					}
+
+					SetUpWordDetailHUD(controlMoveWhenQuit, delegate
+					{
+						if (pushRecommend)
+						{
 							commentRecommendHUD.SetUpCommentRecommendHUD();
 						}
-						if(qualificationIndex != -1){
+						if (qualificationIndex != -1)
+						{
 							LearnTitleQualification qualification = CommonData.learnTitleQualifications[qualificationIndex];
 
-                            achievementView.SetUpAchievementView(qualification);
+							achievementView.SetUpAchievementView(qualification);
 						}
 					});
 				}
 
-			}else{
+			}
+			else
+			{
 
 #if UNITY_IOS || UNITY_EDITOR
-                bool pushRecommend = CheckPushCommentRecommend();
+				bool pushRecommend = CheckPushCommentRecommend();
 
-                if (pushRecommend)
-                {
-                    commentRecommendHUD.SetUpCommentRecommendHUD();
-                }
+				if (pushRecommend)
+				{
+					commentRecommendHUD.SetUpCommentRecommendHUD();
+				}
 #endif
 
-                int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
+				int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
 
-                if (qualificationIndex != -1)
-                {
+				if (qualificationIndex != -1)
+				{
 					LearnTitleQualification qualification = CommonData.learnTitleQualifications[qualificationIndex];
 
-                    achievementView.SetUpAchievementView(qualification);
-                }
-            
+					achievementView.SetUpAchievementView(qualification);
+				}
+
 			}
 
 			ExploreManager.Instance.ChooseAnswerInWordHUD(isChooseCorrect);
 
 			ExploreManager.Instance.MapWalkableEventsStartAction();
-         
+
 		}
 
-        /// <summary>
-        /// 检测是否到了推送
-        /// </summary>
-        /// <returns><c>true</c>, if push comment recommend was checked, <c>false</c> otherwise.</returns>
-		private bool CheckPushCommentRecommend(){
+		/// <summary>
+		/// 检测是否到了推送
+		/// </summary>
+		/// <returns><c>true</c>, if push comment recommend was checked, <c>false</c> otherwise.</returns>
+		private bool CheckPushCommentRecommend()
+		{
 			bool push = false;
 			int totalLearnedWordCount = Player.mainPlayer.totalLearnedWordCount;
-			if(totalLearnedWordCount == 300){
+			if (totalLearnedWordCount == 300)
+			{
 				push = true;
-			}         
+			}
 			return push;
-				
+
 		}
 
-        
 
 
-		public void SetUpSimpleItemDetail(Item item){
-			simpleItemDetail.SetupSimpleItemDetail (item);
+
+		public void SetUpSimpleItemDetail(Item item)
+		{
+			simpleItemDetail.SetupSimpleItemDetail(item);
 		}
 
-		public void ShowEnterExitQueryHUD(ExitType exitType){
-			
+		public void ShowEnterExitQueryHUD(ExitType exitType)
+		{
+			ExploreManager.Instance.MapWalkableEventsStopAction();
 			enterExitHUD.SetUpEnterExitHUD(exitType);
 		}
-      
 
-		public void ShowBuyLifeQueryHUD(){
-			buyLifeQueryHUD.SetUpBuyLifeQueryView (ConfirmBuyLife, CancelBuyLife);
+
+		public void ShowBuyLifeQueryHUD()
+		{         
+#if UNITY_IOS
+			buyLifeQueryHUD.SetUpBuyLifeQueryView(delegate {
+                SetUpPurchasePlaneOnIPhone(PurchaseManager.new_life_id);
+            }, CancelBuyLife);
+#elif UNITY_ANDROID
+			buyLifeQueryHUD.SetUpBuyLifeQueryView(delegate {
+				SetUpPurchasePlaneOnAndroid(PurchaseManager.new_life_id);
+            }, CancelBuyLife);
+#elif UNITY_EDITOR
+			UnityEditor.BuildTarget buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
+
+            switch (buildTarget) {
+            case UnityEditor.BuildTarget.Android:
+    			buyLifeQueryHUD.SetUpBuyLifeQueryView(delegate {
+                    SetUpPurchasePlaneOnAndroid(PurchaseManager.new_life_id);
+                }, CancelBuyLife);
+                break;
+            case UnityEditor.BuildTarget.iOS:
+    			buyLifeQueryHUD.SetUpBuyLifeQueryView(delegate {
+                    SetUpPurchasePlaneOnIPhone(PurchaseManager.new_life_id);
+                }, CancelBuyLife);
+                break;
+            }
+#endif
 		}
+        
 			
 
-		private void ConfirmBuyLife(){
+		private void SetUpPurchasePlaneOnIPhone(string productID)
+        {
 
 			switch (Application.internetReachability)
             {
@@ -969,20 +1098,71 @@ namespace WordJourney
                     break;
                 case NetworkReachability.ReachableViaCarrierDataNetwork:
                 case NetworkReachability.ReachableViaLocalAreaNetwork:
-					QuitFight();
-                    purchaseHUD.SetUpPurchasePendingHUD(PurchaseManager.new_life_id, PlayerRecomeToLifeCallBack);
-                    HideFullMask();
+						QuitFight();
+                        purchaseHUD.SetUpPurchasePendingHUDOnIPhone(PurchaseManager.new_life_id, PlayerFullyRecomeToLifeCallBack);
+                        HideFullMask();            
                     break;
-            }
-
-
+            }         
 		}
 
-		private void PlayerRecomeToLifeCallBack(){
+		public void SetUpPurchasePlaneOnAndroid(string productID)
+        {
+            
+			AdRewardType rewardType = AdRewardType.Life;
+
+			MyAdType adType = MyAdType.RewardedVideoAd;
+
+			if(productID.Equals(PurchaseManager.skill_point_id)){
+				rewardType = AdRewardType.SkillPoint;
+				adType = MyAdType.CPAd;
+			}else if(productID.Equals(PurchaseManager.new_life_id)){
+				rewardType = AdRewardType.Life;
+				adType = MyAdType.RewardedVideoAd;
+			}
+
+            switch (Application.internetReachability)
+            {
+                case NetworkReachability.NotReachable:
+                    hintHUD.SetUpSingleTextTintHUD("无网络连接");
+                    break;
+                case NetworkReachability.ReachableViaCarrierDataNetwork:
+                case NetworkReachability.ReachableViaLocalAreaNetwork:
+					if(productID.Equals(PurchaseManager.new_life_id)){
+						QuitFight();
+                        HideFullMask();
+						purchaseHUD.SetUpPurchasePendingHUDOnAndroid(productID, adType, rewardType, delegate (MyAdType myAdType) {
+							PlayerPartlyRecomeToLifeCallBack();
+                        }, null);
+					}else if(productID.Equals(PurchaseManager.skill_point_id)){
+						enterExitHUD.QuitEnterExitHUD();
+						purchaseHUD.SetUpPurchasePendingHUDOnAndroid(productID, adType, rewardType, delegate (MyAdType myAdType) {
+							PlayerGetASkillPointReward();
+                        }, null);
+
+					}
+                    break;
+            }
+        }
+
+        private void PlayerFullyRecomeToLifeCallBack(){
 			buyLifeQueryHUD.QuitBuyLifeView();
 			ExploreManager.Instance.battlePlayerCtr.RecomeToLife();
 			bpUICtr.UpdateAgentStatusPlane();
             ExploreManager.Instance.MapWalkableEventsStartAction();
+		}
+
+		private void PlayerPartlyRecomeToLifeCallBack(){
+			buyLifeQueryHUD.QuitBuyLifeView();
+		    ExploreManager.Instance.battlePlayerCtr.PartlyRecomeToLife();
+            bpUICtr.UpdateAgentStatusPlane();
+            ExploreManager.Instance.MapWalkableEventsStartAction();
+		}
+
+		private void PlayerGetASkillPointReward(){
+         
+			Player.mainPlayer.skillNumLeft++;
+
+			GameManager.Instance.persistDataManager.AddOneSkillPointToPlayerDataFile();
 		}
 
 		private void CancelBuyLife(){
@@ -1001,7 +1181,7 @@ namespace WordJourney
 				{
 					TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.EnterExplore, delegate {
 						ExploreManager.Instance.SetUpExploreView(MapSetUpFrom.Home);                  
-					}, null);
+			        }, ExploreManager.Instance.MapWalkableEventsStartAction);
 				});
 
 			});

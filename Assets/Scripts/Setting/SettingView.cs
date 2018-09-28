@@ -48,13 +48,15 @@ namespace WordJourney
 
 			volumeControl.InitHLHSlider(volumeChangeCallBack);
 
-#if UNITY_IPHONE || UNITY_EDITOR
+#if UNITY_IOS
 			restoreItemsButton.gameObject.SetActive(true);
-#else
+#elif UNITY_ANDROID
+			restoreItemsButton.gameObject.SetActive(false);
+#elif UNITY_EDITOR
 			restoreItemsButton.gameObject.SetActive(false);
 #endif
 
-            GetComponent<Canvas> ().enabled = true;
+			GetComponent<Canvas> ().enabled = true;
 
 		}
 

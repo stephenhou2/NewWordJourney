@@ -22,9 +22,8 @@ namespace WordJourney
 
 			//Player.mainPlayer.AddItem(Item.NewItemWith(59, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(603, 10));
-
-
-			Player.mainPlayer.AddItem(Item.NewItemWith(602, 1));
+                     
+			//Player.mainPlayer.AddItem(Item.NewItemWith(602, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(601, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(603, 1));
 
@@ -45,24 +44,7 @@ namespace WordJourney
 			}         
 		}
 
-		public void OnItemInEquipmentPlaneClick(Item item,int equipmentIndexInPanel){
 
-			if (equipmentIndexInPanel == 6 && !BuyRecord.Instance.extraEquipmentSlotUnlocked) {
-				bagView.SetUpPurchasePlane (PurchaseManager.extra_equipmentSlot_id);
-			}
-
-			if (item == null || item.itemId<0) {
-				return;
-			}
-
-			currentSelectItem = item;
-
-            bagView.SetUpItemDetail(item);
-         
-			bagView.HideAllEquipedEquipmentsSelectIcon();
-			bagView.HideAllItemSelectedTintIcon();
-         
-		}
 
 
 
@@ -135,39 +117,6 @@ namespace WordJourney
 		}
 
 
-//		public void AddItemInWait(){
-
-//			if (itemToAddWhenBagFull == null) {
-//				return;
-//			}
-			
-//			Player.mainPlayer.AddItem (itemToAddWhenBagFull);
-
-//			bagView.AddBagItem (itemToAddWhenBagFull);
-
-//			itemToAddWhenBagFull = null;
-
-////			string tint = "";
-////
-////			switch (itemToAddWhenBagFull.itemType) {
-////			case ItemType.UnlockScroll:
-////				tint = string.Format ("获得 解锁卷轴{0}{1}{2}", CommonData.diamond, itemToAddWhenBagFull.itemName, CommonData.diamond);
-////				break;
-////			case ItemType.CraftingRecipes:
-////				tint = string.Format ("获得 合成卷轴{0}{1}{2}", CommonData.diamond, itemToAddWhenBagFull.itemName, CommonData.diamond);
-////				break;
-////			default:
-////				tint = string.Format ("获得 {0} x1", itemToAddWhenBagFull.itemName);
-////				break;
-////			}
-////
-////			Sprite goodsSprite = GameManager.Instance.gameDataCenter.allItemSprites.Find (delegate(Sprite obj) {
-////				return obj.name == itemToAddWhenBagFull.spriteName;
-////			});
-////
-////			bagView.SetUpTintHUD (tint,goodsSprite);
-
-		//}
 
 		/// <summary>
 		/// 在物品详细信息页点击了卸下按钮（装备）

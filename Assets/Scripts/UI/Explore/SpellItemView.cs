@@ -165,7 +165,7 @@ namespace WordJourney
 				createSuccessCallBack();
 			}
 
-			QuitSpellItemView(false);
+			QuitSpellItemView();
 
 		}
 
@@ -209,7 +209,7 @@ namespace WordJourney
 
 		}
 
-		public void QuitSpellItemView(bool outEvent)
+		public void QuitSpellItemView()
 		{
 
             if (inZoomingOut)
@@ -224,14 +224,14 @@ namespace WordJourney
 
 			pronounceNotAvalableHintText.enabled = false;
 
-			zoomCoroutine = HUDZoomOut();
+			zoomCoroutine = HUDZoomOut(delegate {
+				ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
+				ExploreManager.Instance.MapWalkableEventsStartAction();
+			});
 
 			StartCoroutine(zoomCoroutine);
 
-			if(outEvent){
-				ExploreManager.Instance.MapWalkableEventsStartAction();
-				ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-            }
+				
 		}
     }
 

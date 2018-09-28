@@ -97,6 +97,15 @@ namespace WordJourney
 
 		}
 
+		public void AddOneSkillPointToPlayerDataFile(){
+			
+			PlayerData playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.playerDataFilePath);
+
+			playerData.skillNumLeft++;
+
+            DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath, true);
+		}
+
 
 
 		/// <summary>

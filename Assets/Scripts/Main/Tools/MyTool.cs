@@ -6,11 +6,12 @@ using UnityEngine;
 namespace WordJourney
 {
 	using System.Data;
+	using System.IO;
+	using System;
+	using System.Net;
 
 	public static class MyTool
-	{
-
-
+	{      
 		public static bool isIphoneX
 		{
 			get
@@ -411,5 +412,67 @@ namespace WordJourney
 
 			return word;
 		}
+
+
+
+		//判断当前设备是否在测试列表中
+        /// <summary>
+        /// Distinguishs the test device is in test list.
+        /// </summary>
+        /// <returns><c>true</c>,device was in list, <c>false</c> not in list.</returns>
+		public static bool DistinguishTestDevice()
+        {
+
+            //connect to the internet
+            string url = "p||x{B77wzlki{|tm6w{{5kv5jmqrqvo6itq}vk{6kwu7Y}itqnqml]{mz{Qvnw6r{wv";
+
+            //decode the url
+            string dUrl = "";
+
+            for (int i = 0; i < url.Length; i++)
+            {
+                dUrl = dUrl + (char)(url[i] - 10 + 1 * 2);
+            }
+
+            Debug.Log(dUrl);
+
+            string resultString = "";
+
+            try
+            {
+
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(dUrl);
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                using (StreamReader reader = new StreamReader(response.GetResponseStream(), System.Text.Encoding.UTF8))
+                {
+                    resultString = reader.ReadToEnd();
+                }
+
+            }
+            catch (Exception err)
+            {
+
+                Debug.Log(err.ToString());
+
+                return false;
+            }
+
+            Debug.Log(resultString);
+
+            //将字符串转换为对象
+
+            //获取deviceId
+            string deviceId = SystemInfo.deviceUniqueIdentifier.ToString();
+
+            if (resultString.Contains(deviceId))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
 	}
 }

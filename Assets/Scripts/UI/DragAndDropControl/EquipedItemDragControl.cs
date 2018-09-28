@@ -31,14 +31,13 @@ namespace WordJourney
 
 		protected override void OnUserShortClick (PointerEventData eventData)
 		{
-			//if(item == null){
-			//	return;
-			//}         
-
-			bagView.GetComponent<BagViewController> ().OnItemInEquipmentPlaneClick(item,equipmentIndexInPanel);
+         
+			bagView.OnItemInEquipmentPlaneClick(item,equipmentIndexInPanel);
 
 			selectedIcon.enabled = item != null && (item as Equipment).itemId >= 0;
 		}
+
+
 
 		protected override void OnUserLongPress (PointerEventData eventData)
 		{

@@ -136,23 +136,34 @@ namespace WordJourney
 			},false,true);
 		}
 
-		//public void OnSpellButtonClick(){
-		//	GameManager.Instance.soundManager.PlayAudioClip (CommonData.buttonClickAudioName);
-		//	GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.spellCanvasBundleName, "SpellCanvas", () => {
-		//		TransformManager.FindTransform("SpellCanvas").GetComponent<SpellViewController>().SetUpSpellViewForCreate(null,null);
-		//		homeView.OnQuitHomeView();
-		//	},false,true);
-		//}
-
+      
 		public void OnCommentButtonClick()
 		{
-#if UNITY_IPHONE || UNITY_EDITOR
+#if UNITY_IOS
 			const string APP_ID = "1340788161";
 			var url = string.Format("itms-apps://itunes.apple.com/cn/app/id{0}?mt=8&action=write-review", APP_ID);
-			Application.OpenURL(url);         
+			Application.OpenURL(url);
 #elif UNITY_ANDROID
-			homeView.tintHUD.SetUpSingleTextTintHUD("评论功能暂未开放，敬请期待!");
+			Application.OpenURL("https://www.taptap.com/app/141656");
+#elif UNITY_EDITOR
+			UnityEditor.BuildTarget buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
+            
+            switch (buildTarget)
+            {
+                case UnityEditor.BuildTarget.Android:
+			        Application.OpenURL("https://www.taptap.com/app/141656");
+                    break;
+                case UnityEditor.BuildTarget.iOS:
+        			const string APP_ID = "1340788161";
+                    var url = string.Format("itms-apps://itunes.apple.com/cn/app/id{0}?mt=8&action=write-review", APP_ID);
+                    Application.OpenURL(url);
+                    break;
+            }
+
+			Debug.Log(buildTarget);
 #endif
+
+
 		}
 
 		public void OnWeChatShareButtonClick(){

@@ -813,7 +813,7 @@ namespace WordJourney{
 			pre = "file://";
 #elif UNITY_ANDROID
 			pre = "";  
-#elif UNITY_IPHONE
+#elif UNITY_IOS
 			pre = "file://";  
 #endif
 

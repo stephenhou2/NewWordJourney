@@ -30,12 +30,17 @@ namespace WordJourney
 		public static string new_life_id = "com.yougan233.wordjourney.lifeCard";
 
 		//version1.1新增商品
+
 		public static string gold_500_id = "com.yougan233.wordjourney.500_gold";//500金币
 		public static string gold_1600_id = "com.yougan233.wordjourney.1600_gold";//1600金币
 		public static string gold_3500_id = "com.yougan233.wordjourney.3500_gold";//3000金币
 		public static string gold_5000_id = "com.yougan233.wordjourney.5000_gold";//5000金币
 
-        // 已购买项目如果存在变动，则变动信息放在这个列表中
+        // 以下为安卓平台特有
+		public static string gold_100_id = "com.yougan233.wordjourney.100_gold";//奖励100金币【安卓平台】
+		public static string skill_point_id = "com.yougan233.wordjourney.skill_point";//奖励一个技能点【安卓平台】
+
+		// 已购买项目如果存在变动，则变动信息放在这个列表中
 		public List<string> buyedGoodsChange = new List<string>();
 
 		private CallBack purchaseSucceedCallback;
@@ -44,8 +49,8 @@ namespace WordJourney
 		private CallBackWithInt restoreCallBack;
 
 		void Start()
-		{         
-                 
+		{
+
 			builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
 			builder.AddProduct(PurchaseManager.extra_equipmentSlot_id, ProductType.NonConsumable);
@@ -57,25 +62,15 @@ namespace WordJourney
 			builder.AddProduct(PurchaseManager.gold_500_id, ProductType.Consumable);
 			builder.AddProduct(PurchaseManager.gold_1600_id, ProductType.Consumable);
 			builder.AddProduct(PurchaseManager.gold_3500_id, ProductType.Consumable);
-			builder.AddProduct(PurchaseManager.gold_5000_id, ProductType.Consumable);	
+			builder.AddProduct(PurchaseManager.gold_5000_id, ProductType.Consumable);	         
 
 		    if (Application.internetReachability != NetworkReachability.NotReachable)
             {
 			    UnityPurchasing.Initialize(this, builder);
 		    }
-			//receipt = builder.Configure<IAppleConfiguration>().appReceipt;
-			//Debug.Log(receipt);
+
 		}
 
-		//private void InitializePurchaseManager(){
-			
-
-
-  //          UnityPurchasing.Initialize(this, builder);
-
-
-		//}
-			
 
 		/// <summary>
 		/// Called when Unity IAP is ready to make purchases.
@@ -90,22 +85,7 @@ namespace WordJourney
 			this.controller = controller;
 
 			this.m_appleExtension = extensions.GetExtension<IAppleExtensions>();
-
-
-			//Debug.Log("准备获取苹果商店扩展类");
-
-			//Debug.Log("获取finish, is going to refresh reciept");
-			//m_appleExtension.RefreshAppReceipt(receipt => {
-    //            // This handler is invoked if the request is successful.
-    //            // Receipt will be the latest app receipt.
-				//Debug.Log(receipt);
-    //        },
-    //        () => {
-    //            // This handler will be invoked if the request fails,
-    //            // such as if the network is unavailable or the user
-    //            // enters the wrong password.
-				//Debug.Log("refresh receipt failed!");
-            //});
+         
 		}
 
 		private bool IsInitialized()
@@ -115,7 +95,6 @@ namespace WordJourney
 		}
         
       
-
         /// <summary>
         /// 恢复非消耗类商品的购买状态
         /// </summary>
@@ -140,7 +119,6 @@ namespace WordJourney
 				restoreCallBack(success ? 1 : 0);
 				restoreCallBack = null;
 			}
-			//Debug.Log("restore result:" + success.ToString());
 		}
         
 
@@ -212,7 +190,6 @@ namespace WordJourney
 
 		void OnDestroy(){
 			controller = null;
-			//extensions = null;
 			purchaseSucceedCallback = null;
 			purchaseFailCallback = null;
 		}

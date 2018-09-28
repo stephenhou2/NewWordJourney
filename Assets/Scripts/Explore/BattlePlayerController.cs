@@ -98,6 +98,10 @@ namespace WordJourney
                 }
             }
         }
+
+		private bool refuseNewPath = false;
+
+		private CallBack moveEndCallBack;
         
 
         protected override void Awake()
@@ -138,6 +142,10 @@ namespace WordJourney
 
         }
 
+		public void SetMoveEndCallBack(CallBack moveEndCallBack){
+			this.moveEndCallBack = moveEndCallBack;
+		}
+
 
         public override void SetSortingOrder(int order)
         {
@@ -163,6 +171,10 @@ namespace WordJourney
         /// <param name="moveDestination">End position.</param>
         public bool MoveToPosition(Vector3 moveDestination, int[,] mapWalkableInfoArray)
         {
+
+			if(refuseNewPath){
+				return false;
+			}
 
             boxCollider.enabled = true;
 
@@ -332,7 +344,7 @@ namespace WordJourney
 
             if (MyTool.ApproximatelySamePosition2D(moveDestination, transform.position))
             {
-            //			Debug.Log ("到达终点");
+				refuseNewPath = false;
                 return true;
             }
             //			Debug.Log ("继续移动");
@@ -405,9 +417,18 @@ namespace WordJourney
 
                 nextPos = pathPosList[0];
 
-                if (ArriveEndPoint() && armatureCom.animation.lastAnimationName != CommonData.roleIdleAnimName)
+                if (ArriveEndPoint())
                 {
-                    PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+					if(moveEndCallBack != null){
+						moveEndCallBack();
+						moveEndCallBack = null;
+						refuseNewPath = false;
+					}
+
+					if(armatureCom.animation.lastAnimationName != CommonData.roleIdleAnimName){
+						PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+					}
+                   
                     return;
                 }
 
@@ -548,6 +569,13 @@ namespace WordJourney
 
                     if (needToStopMove)
                     {
+						if (moveEndCallBack != null)
+                        {
+                            moveEndCallBack();
+                            moveEndCallBack = null;
+							refuseNewPath = false;
+                        }
+
                         return;
                     }
 
@@ -558,21 +586,25 @@ namespace WordJourney
             if (pathPosList.Count == 0)
             {
 
-                // 走到了终点
-                if (ArriveEndPoint())
-                {
+                //// 走到了终点
+                //if (ArriveEndPoint())
+                //{
                     moveTweener.Kill(true);
 
                     if (!isIdle)
                     {
                         PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
                     }
-                }
-                //else
-                //{
-                //    Debug.Log(string.Format("actual pos:{0}/ntarget pos:{1},predicat pos{2}", transform.position, moveDestination, singleMoveEndPos));
-                //    throw new System.Exception("路径走完但是未到终点");
                 //}
+
+				if (moveEndCallBack != null)
+                {
+                    moveEndCallBack();
+                    moveEndCallBack = null;
+					refuseNewPath = false;
+                }
+
+
                 return;
             }
 
@@ -604,58 +636,32 @@ namespace WordJourney
                 if(!isIdle){
                     PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
                 }
+
+				if (moveEndCallBack != null)
+                {
+                    moveEndCallBack();
+                    moveEndCallBack = null;
+					refuseNewPath = false;
+                }
+
                
             }
 
         }
         
 		public void ForceMoveToAndStopWhenEnconterWithMapEvent(Vector3 pos,CallBack callBack){
-               
+         
 			if (newMoveCoroutine != null)
             {
                 StopCoroutine(newMoveCoroutine);
             }
 
-			//pathPosList.Clear();
+			MoveToPosition(pos, exploreManager.newMapGenerator.mapWalkableInfoArray);   
 
-			MoveToPosition(pos);         
+			refuseNewPath = true;
 
-            if (moveTweener != null)
-            {            
-                moveTweener.OnComplete(() =>
-                {
-                    if (callBack != null)
-                    {
-                        callBack();
-                    }
-               
-                    if (fadeStepsLeft > 0)
-                    {
-                        fadeStepsLeft--;
-                    }
-
-                    // 动画结束时已经移动到指定节点位置，标记单步行动结束
-                    inSingleMoving = false;
-
-                    SetSortingOrder(-Mathf.RoundToInt(transform.position.y));
-
-                    if (pathPosList.Count > 0)
-                    {
-
-                        // 将当前节点从路径点中删除
-                        pathPosList.RemoveAt(0);
-
-                        // 移动到下一个节点位置
-                        MoveToNextPosition();
-
-                    }
-                });
-            }
-            else if (!isIdle)
-            {
-                PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
-            }
-
+			SetMoveEndCallBack(callBack);
+         
 
 		}
 
@@ -668,14 +674,13 @@ namespace WordJourney
             }
 
 			pathPosList.Clear();
-			//pathPosList.Add(singleMoveEndPos);
 
             this.moveDestination = singleMoveEndPos;
 
 			MoveToPosition(singleMoveEndPos);
 
-			//MoveToNextPosition();
-
+			refuseNewPath = true;
+         
             if (moveTweener != null)
             {
 
@@ -698,21 +703,13 @@ namespace WordJourney
 
 					PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
 
-                    //if (pathPosList.Count > 0)
-                    //{
-
-                    //    // 将当前节点从路径点中删除
-                    //    pathPosList.RemoveAt(0);
-
-                    //    // 移动到下一个节点位置
-                    //    MoveToNextPosition();
-
-                    //}
+					refuseNewPath = false; 
                 });
             }
             else if(!isIdle)
             {
                 PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+				refuseNewPath = false;
             }
 
         }
@@ -1382,6 +1379,29 @@ namespace WordJourney
 			}
 			fadeStepsLeft = Mathf.Max(fadeStepsLeft, 5);
 			GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+		}
+
+		public void PartlyRecomeToLife(){
+			FixPositionToStandard();
+			agent.ResetBattleAgentProperties(false);
+			agent.health += (int)(0.3f * agent.maxHealth);
+			agent.mana += (int)(0.3f * agent.maxMana);
+            isInFight = false;
+            inSingleMoving = false;
+            isInEvent = false;
+            needPosFix = false;
+            isDead = false;
+            PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
+            moveDestination = transform.position;
+            singleMoveEndPos = transform.position;
+            pathPosList.Clear();
+            boxCollider.enabled = false;
+            if (fadeStepsLeft == 0)
+            {
+                SetEffectAnim(CommonData.yinShenEffectName, null, 0, 0);
+            }
+            fadeStepsLeft = Mathf.Max(fadeStepsLeft, 5);
+            GameManager.Instance.persistDataManager.SaveCompletePlayerData();
 		}
 
 		void OnDestroy(){

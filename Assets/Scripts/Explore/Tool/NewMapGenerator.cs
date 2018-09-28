@@ -1328,6 +1328,8 @@ namespace WordJourney
 
 				int npcId = int.Parse(KVPair.GetPropertyStringWithKey("npcID", info.properties));
 
+			//Debug.LogFormat("mapIndex:{0},npcId:{1}",Player.mainPlayer.GetMapIndex(),npcId);
+
     			CurrentMapEventsRecord currentMapEventsRecord = GameManager.Instance.gameDataCenter.currentMapEventsRecord;
 
     			for (int i = 0; i < currentMapEventsRecord.npcPosArray.Length;i++){				
@@ -1354,6 +1356,7 @@ namespace WordJourney
 				}
 
 				string npcName = MyTool.GetNpcName(npcId);
+			//Debug.Log(npcName);
 
 				Transform mapNpcTrans = null;
 
@@ -1811,7 +1814,19 @@ namespace WordJourney
 			public void SomeMonstersToPool(float percentage)
 			{
 
+    			if(allMonstersInMap.Count == 0){
+    				return;
+    			}
+
 				int monsterToPoolCount = (int)(allMonstersInMap.Count * percentage);
+
+    			if(monsterToPoolCount == 0){
+    				monsterToPoolCount = 1;
+    			}
+
+    			if(monsterToPoolCount > allMonstersInMap.Count){
+    				return;
+    			}
 
 				for (int i = 0; i < monsterToPoolCount; i++)
 				{
@@ -1819,6 +1834,12 @@ namespace WordJourney
 					int randomSeed = Random.Range(0, allMonstersInMap.Count);
 
 				    MapMonster mapMonster = allMonstersInMap[randomSeed];
+
+    				Monster monster = mapMonster.GetComponent<Monster>();
+
+    				if(monster.isBoss){
+    					continue;
+    				}
 
 					mapMonster.AddToPool(monstersPool);
 

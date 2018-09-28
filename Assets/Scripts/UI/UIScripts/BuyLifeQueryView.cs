@@ -7,7 +7,10 @@ namespace WordJourney
 {
 	using UnityEngine.UI;
 
-	public class BuyLifeQueryView : MonoBehaviour {
+	public class BuyLifeQueryView : MonoBehaviour
+	{
+
+		public Text queryText;
 
 		public Text countDownText;
 
@@ -17,16 +20,29 @@ namespace WordJourney
 
 		private CallBack cancelBuyCallBack;
 
-        // 是否在取消购买的警告界面
-		//private bool isInCancelWarning;
-
 		private IEnumerator queryCoroutine;// 询问购买的协程
 
-		public void SetUpBuyLifeQueryView(CallBack confirmBuyCallBack,CallBack cancelBuyCallBack){
+		public void SetUpBuyLifeQueryView(CallBack confirmBuyCallBack, CallBack cancelBuyCallBack)
+		{
 
 			warningContainer.gameObject.SetActive(false);
 
-			//isInCancelWarning = false;
+#if UNITY_IOS
+			queryText.text = "使用复活卡可以\n<color=orange>复活并恢复全部生命和魔法</color>\n是否前往购买？";
+#elif UNITY_ANDROID
+			queryText.text = "观看广告后可以\n<color=orange>复活并恢复30%的生命和魔法</color>\n是否前往观看？";
+#elif UNITY_EDITOR
+			UnityEditor.BuildTarget buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
+
+            switch (buildTarget) {
+            case UnityEditor.BuildTarget.Android:
+			    queryText.text = "观看广告后可以\n<color=orange>复活并恢复30%的生命和魔法</color>\n是否前往观看？";
+                break;
+            case UnityEditor.BuildTarget.iOS:
+			    queryText.text = "使用复活卡可以\n<color=orange>复活并恢复全部生命和魔法</color>\n是否前往购买？";
+                break;
+            }
+#endif
 
 			this.confirmBuyCallBack = confirmBuyCallBack;
 

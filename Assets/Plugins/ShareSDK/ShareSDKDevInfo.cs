@@ -149,7 +149,7 @@ namespace cn.sharesdk.unity3d
 		public string AppSecret = "4543a03dc02975cf8861c4804e9724b5";
 		public string UserName = "gh_afb25ac019c9@app";
 		public string Path = "/page/API/pages/share/share";
-		public bool BypassApproval = true;
+		public bool BypassApproval = false;
 		#elif UNITY_IPHONE
 		public const int type = (int) PlatformType.WeChat;
 		public string app_id = "wx90291970b846cf26";
@@ -165,7 +165,7 @@ namespace cn.sharesdk.unity3d
 		public const int type = (int) PlatformType.WeChatMoments;
 		public string AppId = "wx90291970b846cf26";
 		public string AppSecret = "4543a03dc02975cf8861c4804e9724b5";
-		public bool BypassApproval = true;
+		public bool BypassApproval = false;
 		#elif UNITY_IPHONE
 		public const int type = (int) PlatformType.WeChatMoments;
 		public string app_id = "wx90291970b846cf26";
@@ -523,7 +523,7 @@ namespace cn.sharesdk.unity3d
 		public string SortId = "27";
 		public const int type = (int) PlatformType.YiXinSession;
 		public string AppId = "yx0d9a9f9088ea44d78680f3274da1765f";
-		public bool BypassApproval = true;
+		public bool BypassApproval = false;
 		#elif UNITY_IPHONE
 		public const int type = (int) PlatformType.YiXinSession;
 		public string app_id = "yx0d9a9f9088ea44d78680f3274da1765f";
@@ -540,7 +540,7 @@ namespace cn.sharesdk.unity3d
 		public string SortId = "28";
 		public const int type = (int) PlatformType.YiXinTimeline;
 		public string AppId = "yx0d9a9f9088ea44d78680f3274da1765f";
-		public bool BypassApproval = true;
+		public bool BypassApproval = false;
 		#elif UNITY_IPHONE
 		public const int type = (int) PlatformType.YiXinTimeline;
 		public string app_id = "yx0d9a9f9088ea44d78680f3274da1765f";

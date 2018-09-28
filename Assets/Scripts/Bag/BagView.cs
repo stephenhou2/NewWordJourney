@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace WordJourney
 {
-
 	using UnityEngine.UI;
 	using DG.Tweening;
 	using System.Text;
-    
 
-	public class BagView : MonoBehaviour {
+
+	public class BagView : MonoBehaviour
+	{
 
 		public PropertyDisplay propertyDisplay;
 
@@ -37,7 +37,7 @@ namespace WordJourney
 
 		public SkillsView skillsView;
 
-        // 0代表背包 1代表技能列表
+		// 0代表背包 1代表技能列表
 		private int panelIndex;
 
 		public Text bagButtonTitle;
@@ -54,11 +54,13 @@ namespace WordJourney
 		/// <summary>
 		/// 初始化背包界面
 		/// </summary>
-		public void SetUpBagView(bool setVisible){
+		public void SetUpBagView(bool setVisible)
+		{
 
 			panelIndex = 0;
 
-			if (setVisible) {
+			if (setVisible)
+			{
 
 				//获取所有item的图片
 				//			this.sprites = GameManager.Instance.gameDataCenter.allItemSprites;
@@ -66,25 +68,39 @@ namespace WordJourney
 
 				PropertyChange propertyChange = new PropertyChange();
 
-				SetUpPlayerStatusPlane (propertyChange);
+				SetUpPlayerStatusPlane(propertyChange);
 
-				SetUpEquipedEquipmentsPlane ();
+				SetUpEquipedEquipmentsPlane();
 
-				itemDetail.ClearItemDetails ();
+				itemDetail.ClearItemDetails();
 
-				CallBackWithItem shortClickCallback = GetComponent<BagViewController> ().OnItemInBagClick;
+				CallBackWithItem shortClickCallback = GetComponent<BagViewController>().OnItemInBagClick;
+#if UNITY_IOS
+				bagItemsDisplay.InitBagItemsDisplayPlane(shortClickCallback, PurchaseBagCallBack, buyGoldView.SetUpBuyGoldView);
+#elif UNITY_ANDROID
+				bagItemsDisplay.InitBagItemsDisplayPlane(shortClickCallback, PurchaseBagCallBack, EnterGoldWatchAdOnAndroid);
+#elif UNITY_EDITOR
+				UnityEditor.BuildTarget buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
 
-				bagItemsDisplay.InitBagItemsDisplayPlane (shortClickCallback, PurchaseBagCallBack,buyGoldView.SetUpBuyGoldView);
+                switch (buildTarget) {
+				case UnityEditor.BuildTarget.Android:
+    				bagItemsDisplay.InitBagItemsDisplayPlane(shortClickCallback, PurchaseBagCallBack, EnterGoldWatchAdOnAndroid);
+                    break;
+				case UnityEditor.BuildTarget.iOS:
+    				bagItemsDisplay.InitBagItemsDisplayPlane(shortClickCallback, PurchaseBagCallBack, buyGoldView.SetUpBuyGoldView);
+                    break;
+                }
+#endif
 
 				skillsView.InitSkillsView(SetUpPlayerStatusPlane);
 
 				// 默认初始化 背包一
-				SetUpBagItemsPlane (0);
+				SetUpBagItemsPlane(0);
 
 				bagButtonTitle.color = CommonData.tabBarTitleSelectedColor;
-                skillButtonTitle.color = CommonData.tabBarTitleNormalColor;
+				skillButtonTitle.color = CommonData.tabBarTitleNormalColor;
 
-				this.GetComponent<Canvas> ().enabled = setVisible;
+				this.GetComponent<Canvas>().enabled = setVisible;
 
 			}
 
@@ -94,47 +110,155 @@ namespace WordJourney
 
 		}
 
-		private void PurchaseBagCallBack(int bagIndex){
+		private void PurchaseBagCallBack(int bagIndex)
+		{
 
+#if UNITY_IOS
 			switch(bagIndex){
 				case 1:
-					SetUpPurchasePlane(PurchaseManager.extra_bag_2_id);
+			        SetUpPurchasePlaneOnIPhone(PurchaseManager.extra_bag_2_id);
 					break;
 				case 2:
-					SetUpPurchasePlane(PurchaseManager.extra_bag_3_id);
+			        SetUpPurchasePlaneOnIPhone(PurchaseManager.extra_bag_3_id);
 					break;
 			}
+#elif UNITY_ANDROID
+			switch (bagIndex)
+			{
+				case 1:
+					SetUpPurchasePlaneOnAndroid(PurchaseManager.extra_bag_2_id);
+					break;
+				case 2:
+					SetUpPurchasePlaneOnAndroid(PurchaseManager.extra_bag_3_id);
+					break;
+			}
+            
+#elif UNITY_EDITOR
+			UnityEditor.BuildTarget buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
 
-		}
-
-		public void SetUpPurchasePlane(string productID)
-        {
-
-			switch (Application.internetReachability)
-            {
-                case NetworkReachability.NotReachable:
-                    hintHUD.SetUpSingleTextTintHUD("无网络连接");
+            switch (buildTarget) {
+			    case UnityEditor.BuildTarget.Android:
+        			switch (bagIndex)
+                    {
+                        case 1:
+                            SetUpPurchasePlaneOnAndroid(PurchaseManager.extra_bag_2_id);
+                            break;
+                        case 2:
+                            SetUpPurchasePlaneOnAndroid(PurchaseManager.extra_bag_3_id);
+                            break;
+                    }
                     break;
-                case NetworkReachability.ReachableViaCarrierDataNetwork:
-                case NetworkReachability.ReachableViaLocalAreaNetwork:
-					purchaseHUD.SetUpPurchasePendingHUD(productID, delegate {
-                        SetUpEquipedEquipmentsPlane();
-                        bagItemsDisplay.UpdateBagTabs();
-                    });
+			    case UnityEditor.BuildTarget.iOS:
+        			switch(bagIndex){
+                        case 1:
+                            SetUpPurchasePlaneOnIPhone(PurchaseManager.extra_bag_2_id);
+                            break;
+                        case 2:
+                            SetUpPurchasePlaneOnIPhone(PurchaseManager.extra_bag_3_id);
+                            break;
+                    }
                     break;
             }
-           
+#endif
 
-        }
-			
-		public void HideAllItemSelectedTintIcon(){
-			bagItemsDisplay.HideAllItemSelectedTintIcon ();
 		}
 
 
-		public void OnSkillsViewButtonClick(){
+		private void EnterGoldWatchAdOnAndroid()
+		{
 
-			if(panelIndex == 1){
+			SetUpPurchasePlaneOnAndroid(PurchaseManager.gold_100_id);
+
+		}
+
+		public void SetUpPurchasePlaneOnIPhone(string productID)
+		{
+
+			switch (Application.internetReachability)
+			{
+				case NetworkReachability.NotReachable:
+					hintHUD.SetUpSingleTextTintHUD("无网络连接");
+					break;
+				case NetworkReachability.ReachableViaCarrierDataNetwork:
+				case NetworkReachability.ReachableViaLocalAreaNetwork:
+					purchaseHUD.SetUpPurchasePendingHUDOnIPhone(productID, delegate
+					{
+						SetUpEquipedEquipmentsPlane();
+						bagItemsDisplay.UpdateBagTabs();
+					});
+					break;
+			}
+		}
+
+		public void SetUpPurchasePlaneOnAndroid(string productID)
+		{
+
+			AdRewardType rewardType = AdRewardType.BagSlot_2;
+
+			MyAdType adType = MyAdType.CPAd;
+
+			if (productID.Equals(PurchaseManager.extra_bag_2_id))
+			{
+				rewardType = AdRewardType.BagSlot_2;
+				adType = MyAdType.RewardedVideoAd;
+			}
+			else if (productID.Equals(PurchaseManager.extra_bag_3_id))
+			{
+				rewardType = AdRewardType.BagSlot_3;
+				adType = MyAdType.RewardedVideoAd;
+			}
+			else if (productID.Equals(PurchaseManager.extra_equipmentSlot_id))
+			{
+				rewardType = AdRewardType.EquipmentSlot;
+				adType = MyAdType.RewardedVideoAd;
+			}
+			else if (productID.Equals(PurchaseManager.gold_100_id))
+			{
+				rewardType = AdRewardType.Gold;
+				adType = MyAdType.RewardedVideoAd;
+			}
+
+			switch (Application.internetReachability)
+			{
+				case NetworkReachability.NotReachable:
+					hintHUD.SetUpSingleTextTintHUD("无网络连接");
+					break;
+				case NetworkReachability.ReachableViaCarrierDataNetwork:
+				case NetworkReachability.ReachableViaLocalAreaNetwork:
+					if(productID.Equals(PurchaseManager.gold_100_id)){
+						purchaseHUD.SetUpPurchasePendingHUDOnAndroid(productID, adType, rewardType, delegate
+						{                     
+							Player.mainPlayer.totalGold += 100;
+							BuyRecord.Instance.RecordLastGoldAdTime();
+                            GameManager.Instance.persistDataManager.UpdateBuyGoldToPlayerDataFile();
+				            if(ExploreManager.Instance != null)
+							{
+								ExploreManager.Instance.expUICtr.UpdatePlayerGold();
+							}
+						}, null);
+					}else{
+						purchaseHUD.SetUpPurchasePendingHUDOnAndroid(productID, adType, rewardType, delegate
+                        {
+                            SetUpEquipedEquipmentsPlane();
+                            bagItemsDisplay.UpdateBagTabs();
+                        }, null);
+					}
+
+					break;
+			}
+		}
+
+		public void HideAllItemSelectedTintIcon()
+		{
+			bagItemsDisplay.HideAllItemSelectedTintIcon();
+		}
+
+
+		public void OnSkillsViewButtonClick()
+		{
+
+			if (panelIndex == 1)
+			{
 				return;
 			}
 
@@ -147,12 +271,13 @@ namespace WordJourney
 
 		}
 
-		public void OnBagButtonClick(){
+		public void OnBagButtonClick()
+		{
 
 			if (panelIndex == 0)
-            {
-                return;
-            }
+			{
+				return;
+			}
 
 
 			panelIndex = 0;
@@ -163,63 +288,71 @@ namespace WordJourney
 			bagButtonTitle.color = CommonData.tabBarTitleSelectedColor;
 			skillButtonTitle.color = CommonData.tabBarTitleNormalColor;
 
-            
+
 		}
 
 		/// <summary>
 		/// 初始化玩家属性界面
 		/// </summary>
-		public void SetUpPlayerStatusPlane(PropertyChange pc){
+		public void SetUpPlayerStatusPlane(PropertyChange pc)
+		{
 
-			propertyDisplay.UpdatePropertyDisplay (pc);
+			propertyDisplay.UpdatePropertyDisplay(pc);
 
-			if (ExploreManager.Instance != null) {
-				ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar ();
+			if (ExploreManager.Instance != null)
+			{
+				ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
 			}
 
 			playerLevelText.text = string.Format("等级: {0}", player.agentLevel);
 		}
 
-		public void SetUpItemDetail(Item item){
-			itemDetail.SetUpItemDetail (item);
+		public void SetUpItemDetail(Item item)
+		{
+			itemDetail.SetUpItemDetail(item);
 		}
 
-		public void ClearItemDetail(){
-			itemDetail.ClearItemDetails ();
+		public void ClearItemDetail()
+		{
+			itemDetail.ClearItemDetails();
 		}
-      
+
 
 		/// <summary>
 		/// 初始化已装备物品界面
 		/// </summary>
-		public void SetUpEquipedEquipmentsPlane(){
+		public void SetUpEquipedEquipmentsPlane()
+		{
 
-			for(int i = 0;i<player.allEquipedEquipments.Length;i++){
+			for (int i = 0; i < player.allEquipedEquipments.Length; i++)
+			{
 
 				Transform equipedEquipmentButton = allEquipedEquipmentButtons[i];
 
-				Equipment equipment = player.allEquipedEquipments [i];
+				Equipment equipment = player.allEquipedEquipments[i];
 
 				bool equipmentSlotUnlocked = true;
 
-				if (i == 6) {
+				if (i == 6)
+				{
 					equipmentSlotUnlocked = BuyRecord.Instance.extraEquipmentSlotUnlocked;
 				}
-            
-				equipedEquipmentButton.GetComponent<EquipedEquipmentCell> ().SetUpEquipedEquipmentCell (equipment, equipmentSlotUnlocked);
+
+				equipedEquipmentButton.GetComponent<EquipedEquipmentCell>().SetUpEquipedEquipmentCell(equipment, equipmentSlotUnlocked);
 
 				EquipedItemDragControl equipedItemDragControl = equipedEquipmentButton.GetComponent<EquipedItemDragControl>();
 
 				if (equipment.itemId < 0)
-                {
+				{
 					equipedItemDragControl.Reset();
 					equipedItemDragControl.backgroundImage.sprite = grayFrame;
-                    continue;
-                }
+					continue;
+				}
 
 				equipedItemDragControl.item = equipment;
 
-				switch(equipment.quality){
+				switch (equipment.quality)
+				{
 					case EquipmentQuality.Gray:
 						equipedItemDragControl.backgroundImage.sprite = grayFrame;
 						break;
@@ -237,59 +370,61 @@ namespace WordJourney
 			}
 
 		}
-			
+
 
 		public void HideAllEquipedEquipmentsSelectIcon()
-        {
-			for (int i = 0; i < allEquipedEquipmentButtons.Length;i++){
+		{
+			for (int i = 0; i < allEquipedEquipmentButtons.Length; i++)
+			{
 				Transform equipedEquipmentButton = allEquipedEquipmentButtons[i];
 				equipedEquipmentButton.Find("SelectedIcon").GetComponent<Image>().enabled = false;
 
-			}         
-        }
-
-
-		public void SetUpCurrentBagItemsPlane(){
-			bagItemsDisplay.SetUpCurrentBagItemsPlane ();
+			}
 		}
-			
 
 
+		public void SetUpCurrentBagItemsPlane()
+		{
+			bagItemsDisplay.SetUpCurrentBagItemsPlane();
+		}
 
 
-		//private void SetUpOperationButtons(Item item){
+		public void OnItemInEquipmentPlaneClick(Item item, int equipmentIndexInPanel)
+		{
 
-		//	// 如果物品是装备
-		//	switch (item.itemType) {
+			if (equipmentIndexInPanel == 6 && !BuyRecord.Instance.extraEquipmentSlotUnlocked)
+			{
+#if UNITY_IOS
+				SetUpPurchasePlaneOnIPhone(PurchaseManager.extra_equipmentSlot_id);
+#elif UNITY_ANDROID
+				SetUpPurchasePlaneOnAndroid(PurchaseManager.extra_equipmentSlot_id);
+#elif UNITY_EDITOR
+				UnityEditor.BuildTarget buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
 
-		//	case ItemType.Equipment:
+                switch (buildTarget) {
+                    case UnityEditor.BuildTarget.Android:
+    				    SetUpPurchasePlaneOnAndroid(PurchaseManager.extra_equipmentSlot_id);
+                        break;
+                    case UnityEditor.BuildTarget.iOS:
+    				    SetUpPurchasePlaneOnIPhone(PurchaseManager.extra_equipmentSlot_id);
+                        break;
+                }
+#endif
+			}
 
-		//		Equipment equipment = item as Equipment;
+            if (item == null || item.itemId < 0)
+            {
+                return;
+            }
 
-		//		if (equipment.equiped) {
-		//			SetUpOperationButtonsActive (false, true, false, false);
-		//		} else {
-		//			SetUpOperationButtonsActive (true, false, false, false);
-		//		}
+            GetComponent<BagViewController>().currentSelectItem = item;
 
-		//		break;
-		//	case ItemType.Consumables:
-		//		Consumables csm = item as Consumables;
-		//		//switch(csm.type){
-		//		//case ConsumablesType.ShuXingTiSheng:
-		//		//case ConsumablesType.YinShenJuanZhou:
-		//		//	SetUpOperationButtonsActive (false, false, true, false);
-		//		//	break;
-		//		//case ConsumablesType.ChongZhuShi:
-		//		//case ConsumablesType.DianJinShi:
-		//		//case ConsumablesType.XiaoMoJuanZhou:
-		//		//	SetUpOperationButtonsActive (false, false, false, true);
-		//		//	break;
-		//		//}
-		//		break;
-		//	}
+            SetUpItemDetail(item);
 
-		//}
+            HideAllEquipedEquipmentsSelectIcon();
+            HideAllItemSelectedTintIcon();
+
+        }
 
 
 		private void SetUpOperationButtonsActive(bool equipButton,bool unloadButton,bool useButton,bool confirmButton){
@@ -356,18 +491,7 @@ namespace WordJourney
 			hintHUD.SetUpSingleTextTintHUD (tint);
 		}
 			
-
-
-		//private void PurchaseSucceedCallBack(string purchaseResult){
-			
-		//	tintHUD.SetUpSingleTextTintHUD(purchaseResult);
-		//}
-
-		//private void PurchaseFailedCallBack(string purchaseResult){
-		//	tintHUD.SetUpSingleTextTintHUD(purchaseResult);
-		//}
-			
-
+      
 		// 关闭背包界面
 		public void QuitBagPlane(){
 

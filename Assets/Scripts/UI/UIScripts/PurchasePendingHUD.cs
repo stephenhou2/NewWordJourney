@@ -22,119 +22,274 @@ namespace WordJourney
 
 		private string currentPurchasingItemId;
 
-		public Transform queryShareHUD;
+		public QueryWatchAdHUD queryWatchADHUD;
 
 		private IEnumerator pendingCoroutine;
 
-		public void SetUpPurchasePendingHUD(string productId, CallBack purchaseFinishCallBack)
+		// 在安卓端该属性为播放的广告类型，ios端该属性没有用处
+		private MyAdType currentAdType;
+
+		//private AdRewardType adRewardType;
+
+		// 在安卓端该回调为广告播放成功的回调，ios端该回调无用
+		private AdCallBackSuccess adSuccessCallBack;
+
+		// 在安卓端该回调为广告播放失败的回调，ios端该回调无用
+		private AdCallBackFailure adFailCallBack;
+
+		/// <summary>
+		/// 初始化内购界面【安卓端为初始化广告界面】
+		/// </summary>
+		/// <param name="productId">Product identifier.</param>
+		/// <param name="purchaseFinishCallBack">Purchase finish call back.</param>
+		/// <param name="myAdType">My ad type.</param>
+		public void SetUpPurchasePendingHUDOnIPhone(string productId, CallBack purchaseFinishCallBack)
 		{
+
+#if !UNITY_IOS && !UNITY_EDITOR
+			return;
+#endif
 
 			Time.timeScale = 0;
 
 			currentPurchasingItemId = productId;
 
-            this.purchaseFinishCallBack = purchaseFinishCallBack;
+			this.purchaseFinishCallBack = purchaseFinishCallBack;
 
 			gameObject.SetActive(true);
 
-
-#if UNITY_IPHONE || UNITY_EDITOR   
-
 			pendingTint.gameObject.SetActive(true);
-			queryShareHUD.gameObject.SetActive(false);
+			queryWatchADHUD.gameObject.SetActive(false);
 
 			pendingCoroutine = PendingTintRotate();
 			StartCoroutine(pendingCoroutine);
-         
-			GameManager.Instance.purchaseManager.PurchaseProduct(productId, OnPurchaseSucceed, OnPurchaseFail);
-         
-#elif UNITY_ANDROID         
+
+			GameManager.Instance.purchaseManager.PurchaseProduct(productId, OnPurchaseSucceed, OnPurchaseFail);         
+
+		}
+
+		public void SetUpPurchasePendingHUDOnAndroid(string productId, MyAdType myAdType,AdRewardType adRewardType, AdCallBackSuccess sucessCallBack, AdCallBackFailure failCallBack)
+		{
+
+#if !UNITY_ANDROID && !UNITY_EDITOR
+			return;
+#endif
+                     
+			this.currentAdType = myAdType;
+
+			Time.timeScale = 0;
+
+			currentPurchasingItemId = productId;
+
+			this.adSuccessCallBack = sucessCallBack;
+			this.adFailCallBack = failCallBack;
+
+			gameObject.SetActive(true);
+
 			pendingTint.gameObject.SetActive(false);
-            ShowShareQueryHUD();
-#endif         
+
+			string query = string.Empty;
+
+			switch(adRewardType){
+				case AdRewardType.BagSlot_2:
+					query = "观看广告后可\n<color=orange>解锁背包2</color>\n是否确认观看广告？";
+					queryWatchADHUD.SetUpQueryWatchAdHUD(query, OnConfirmWatchAd, QuitPurchasePendingHUD);
+					break;
+				case AdRewardType.BagSlot_3:
+					query = "观看广告后可\n<color=orange>解锁背包3</color>\n是否确认观看广告？";
+					queryWatchADHUD.SetUpQueryWatchAdHUD(query, OnConfirmWatchAd, QuitPurchasePendingHUD);
+					break;
+				case AdRewardType.EquipmentSlot:
+					query = "观看广告后可\n<color=orange>解锁装饰槽</color>\n是否确认观看广告？";
+					queryWatchADHUD.SetUpQueryWatchAdHUD(query, OnConfirmWatchAd, QuitPurchasePendingHUD);
+					break;
+				case AdRewardType.Gold:
+					double timeSpanInSeconds = 0;
+					bool canRewatch = CheckCanReWatchGoldAd(out timeSpanInSeconds);
+					if(canRewatch){
+						query = "观看广告后可\n<color=orange>获得100金币</color>\n是否确认观看广告？";
+						queryWatchADHUD.SetUpQueryWatchAdHUD(query, OnConfirmWatchAd, QuitPurchasePendingHUD);
+					}else{
+						int minuteLeft = (1800 - (int)timeSpanInSeconds) / 60;
+						int secondsLeft = (1800 - (int)timeSpanInSeconds) % 60;
+						query = string.Format("<color=orange>{0}{1}:{2}{3}</color>后可以重新观看广告",
+						                      minuteLeft < 10 ? "0" : "",
+						                      minuteLeft,
+						                      secondsLeft < 10 ? "0": "",
+						                      secondsLeft);
+						queryWatchADHUD.SetUpQueryWatchAdHUDWhenCantWatch(query,timeSpanInSeconds,delegate {
+							query = "观看广告后可\n<color=orange>获得100金币</color>\n是否确认观看广告？";
+                            queryWatchADHUD.SetUpQueryWatchAdHUD(query, OnConfirmWatchAd, QuitPurchasePendingHUD);
+						});
+					}
+
+					break;
+				case AdRewardType.Life:
+					OnConfirmWatchAd();
+                    QuitPurchasePendingHUD();
+					break;
+				case AdRewardType.SkillPoint:
+					OnConfirmWatchAd();
+					QuitPurchasePendingHUD();
+					break;
+			}         
+
 		}
 
 
-		private void ShowShareQueryHUD(){
-			queryShareHUD.gameObject.SetActive(true);
+		private bool CheckCanReWatchGoldAd(out double timeSpanInSeconds){
+
+			bool canRewatch = false;
+
+			System.TimeSpan timeSpan = System.DateTime.Now - System.TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
+
+			double timeStamp = timeSpan.TotalSeconds;
+
+			timeSpanInSeconds = timeStamp - BuyRecord.Instance.lastGoldAdTimeStamp;
+
+			if(timeSpanInSeconds < 1800){
+				canRewatch = false;
+			}else{
+				canRewatch = true;
+			}
+
+			return canRewatch;
+
+		}
+        
+		public void OnConfirmWatchAd(){
+			switch (currentAdType)
+            {
+                case MyAdType.CPAd:
+                    if (!TGController.IsCPAdReady)
+                    {
+                        TGController.QuickRereshAd();
+                        OnWatchAdFail(currentAdType);
+                        return;
+                    }
+                    break;
+                case MyAdType.RewardedVideoAd:
+                    if (!TGController.IsRewardedVideoAdReady)
+                    {
+                        TGController.QuickRereshAd();
+                        OnWatchAdFail(currentAdType);
+                        return;
+                    }
+                    break;
+            }
+
+			TGController.ShowAd(currentAdType, OnWatchAdSuccess, OnWatchAdFail);
 		}
 
-		private void HideShareQueryHUD(){
-			queryShareHUD.gameObject.SetActive(false);
+		private void ShowQueryWatchADHUD(){
+			queryWatchADHUD.gameObject.SetActive(true);
 		}
 
-		public void OnWechatShareButtonClick(){
-			         
-			//if (Application.internetReachability == NetworkReachability.NotReachable)
-			//{
-			//	tintHUD.SetUpSingleTextTintHUD("无网络连接");
-			//}
-			//else
-			//{
-
-				HideShareQueryHUD();
-
-				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
-				{
-					TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.WeChat, OnPurchaseSucceed, OnShareFaild, OnQuitButtonClick);
-
-
-				});
-			//}
+		private void HidQueryWatchADHUD(){
+			queryWatchADHUD.gameObject.SetActive(false);
 		}
+        
 
-		public void OnWeiboShareButtonClick(){
+
+		private void OnWatchAdSuccess(MyAdType adType){
          
-			//if (Application.internetReachability == NetworkReachability.NotReachable)
-			//{
-			//	tintHUD.SetUpSingleTextTintHUD("无网络连接");
-			//}
-			//else
-			//{
-
-				HideShareQueryHUD();
-
-				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
-				{
-					TransformManager.FindTransform("ShareCanvas").GetComponent<ShareViewController>().SetUpShareView(ShareType.Weibo, OnPurchaseSucceed, OnShareFaild, OnQuitButtonClick);
-				});
-			//}
-
-		}
-
-		public void OnQuitButtonClick(){
-			HideShareQueryHUD();
-			gameObject.SetActive(false);
-		}
-
-
-		private void OnPurchaseSucceed(){
-
 			string purchaseResult = string.Empty;
 
-			bool needUpdatePlayerGold = false;
-
-			if (currentPurchasingItemId.Equals(PurchaseManager.extra_bag_2_id))
+            if (currentPurchasingItemId.Equals(PurchaseManager.extra_bag_2_id))
             {
                 purchaseResult = "解锁背包2";
             }
             else if (currentPurchasingItemId.Equals(PurchaseManager.extra_bag_3_id))
             {
-				purchaseResult = "解锁背包3";
+                purchaseResult = "解锁背包3";
             }
-			else if(currentPurchasingItemId.Equals(PurchaseManager.extra_bag_4_id))
+            else if (currentPurchasingItemId.Equals(PurchaseManager.extra_bag_4_id))
+            {
+                purchaseResult = "解锁背包4";
+            }
+            else if (currentPurchasingItemId.Equals(PurchaseManager.extra_equipmentSlot_id))
+            {
+                purchaseResult = "解锁装备槽7";
+            }
+            else if (currentPurchasingItemId.Equals(PurchaseManager.gold_100_id))
+            {
+                //needUpdatePlayerGold = true;
+                int goldGain = 0;
+                if (currentPurchasingItemId == PurchaseManager.gold_100_id)
+                {
+                    goldGain = 100;
+                }
+                
+                purchaseResult = string.Format("金币 + {0}", goldGain);
+
+			}else if(currentPurchasingItemId.Equals(PurchaseManager.skill_point_id)){
+				purchaseResult = "技能点 + 1";
+			}
+
+            tintHUD.SetUpSingleTextTintHUD(purchaseResult);
+
+            BuyRecord.Instance.PurchaseSuccess(currentPurchasingItemId);
+
+			if (adSuccessCallBack != null)
+            {
+                adSuccessCallBack(adType);
+            }
+
+            QuitPurchasePendingHUD();
+
+		}
+
+		private void OnWatchAdFail(MyAdType adType){
+
+			if(adFailCallBack != null){
+				adFailCallBack(adType);
+			}
+
+			string purchaseResult = "广告播放失败，请稍后重试";
+
+            tintHUD.SetUpSingleTextTintHUD(purchaseResult);
+
+            QuitPurchasePendingHUD();         
+		}
+
+		private void OnPurchaseSucceed(){
+
+			string purchaseResult = string.Empty;
+
+			if (currentPurchasingItemId.Equals(PurchaseManager.extra_bag_2_id))
+			{
+				purchaseResult = "解锁背包2";
+			}
+			else if (currentPurchasingItemId.Equals(PurchaseManager.extra_bag_3_id))
+			{
+				purchaseResult = "解锁背包3";
+			}
+			else if (currentPurchasingItemId.Equals(PurchaseManager.extra_bag_4_id))
 			{
 				purchaseResult = "解锁背包4";
 			}
-			else if(currentPurchasingItemId.Equals(PurchaseManager.extra_equipmentSlot_id))
+			else if (currentPurchasingItemId.Equals(PurchaseManager.extra_equipmentSlot_id))
 			{
 				purchaseResult = "解锁装备槽7";
-			}else if(currentPurchasingItemId.Equals(PurchaseManager.gold_500_id)
+			}
+			else if (currentPurchasingItemId.Equals(PurchaseManager.gold_500_id)
 			         || currentPurchasingItemId.Equals(PurchaseManager.gold_1600_id)
 			         || currentPurchasingItemId.Equals(PurchaseManager.gold_3500_id)
 			         || currentPurchasingItemId.Equals(PurchaseManager.gold_5000_id))
 			{
-				needUpdatePlayerGold = true;
+				//needUpdatePlayerGold = true;
+				//int goldGain = 0;
+				//if(currentPurchasingItemId == PurchaseManager.gold_500_id){
+				//	goldGain = 500;
+				//}else if(currentPurchasingItemId == PurchaseManager.gold_1600_id){
+				//	goldGain = 1600;
+				//}else if(currentPurchasingItemId == PurchaseManager.gold_3500_id){
+				//	goldGain = 3500;
+				//}else if(currentPurchasingItemId == PurchaseManager.gold_5000_id){
+				//	goldGain = 5000;
+				//}
+				//purchaseResult = string.Format("金币 + {0}", goldGain);
+					
 			}
 
 			tintHUD.SetUpSingleTextTintHUD(purchaseResult);
@@ -146,23 +301,10 @@ namespace WordJourney
 				purchaseFinishCallBack();
 			}
 
-			if(needUpdatePlayerGold){            
-                GameManager.Instance.persistDataManager.UpdateBuyGoldToPlayerDataFile();
-			}
 
 			QuitPurchasePendingHUD();
 		}
-
-
-		private void OnShareFaild(){
-			
-			string shareResult = "未检测到客户端";
-
-			tintHUD.SetUpSingleTextTintHUD(shareResult);
-
-            QuitPurchasePendingHUD();
-		}
-
+      
 		private void OnPurchaseFail(){
 
 			string purchaseResult = "购买失败，请稍后重试";
@@ -170,8 +312,6 @@ namespace WordJourney
 			tintHUD.SetUpSingleTextTintHUD(purchaseResult);
 
 			QuitPurchasePendingHUD();
-
-			//QuitPurchasePendingHUD ();
 
 		}
 
@@ -201,12 +341,14 @@ namespace WordJourney
 
 			Time.timeScale = 1f;
 
-#if UNITY_IPHONE || UNITY_EDITOR    
+#if UNITY_IOS || UNITY_EDITOR
 			if(pendingCoroutine != null){
 				StopCoroutine(pendingCoroutine);
 			}
 
-#endif         
+#endif
+
+			HidQueryWatchADHUD();
 			gameObject.SetActive (false);
 
 		}

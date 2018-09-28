@@ -44,6 +44,11 @@ namespace WordJourney
 
 		public override void MapEventTriggered(bool isSuccess, BattlePlayerController bp)
 		{   
+			if (bp.isInEvent)
+            {
+                return;
+            }
+
 			ExploreManager.Instance.expUICtr.SetUpDiaryView(diary);
 
 			MapEventsRecord.DiaryFinishAtMapIndex(mapIndex);

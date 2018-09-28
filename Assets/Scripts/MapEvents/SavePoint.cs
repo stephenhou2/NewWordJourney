@@ -71,6 +71,7 @@ namespace WordJourney
 			bp.ForceMoveToAndStopWhenEnconterWithMapEvent(new Vector3(transform.position.x,transform.position.y,0),delegate {
 
                 ExploreManager.Instance.SaveDataInExplore(delegate {
+
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
 
                     ExploreManager.Instance.expUICtr.SetUpSingleTextTintHUD("数据已存档");

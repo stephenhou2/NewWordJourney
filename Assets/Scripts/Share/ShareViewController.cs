@@ -32,9 +32,13 @@ namespace WordJourney
 
 		public Text learnedWordCountText;
 
-		//public Text correctPercentageText;
+		public Image codeIcon;
 
-		//public Text exploredLevelCountText;
+		public Text downloadHintText;
+
+		public Sprite iosCodeSprite;
+
+		public Sprite androidCodeSprite;
 
 		public Button shareButton;
 		public Text shareTo;
@@ -65,21 +69,22 @@ namespace WordJourney
 
 			bool ssdkInitialized = ssdk.CheckInitialization();
 
-            if (!ssdkInitialized)
-            {
-                ssdk.InitializeShareSDK();
-            }
+			if (!ssdkInitialized)
+			{
+				ssdk.InitializeShareSDK();
+			}
 		}
-        
+
 		/// <summary>
 		/// 初始化分享界面
 		/// </summary>
-		public void SetUpShareView(ShareType shareType, CallBack shareSucceedCallBack, CallBack shareFailedCallBack,CallBack quitShareCallBack)
+		public void SetUpShareView(ShareType shareType, CallBack shareSucceedCallBack, CallBack shareFailedCallBack, CallBack quitShareCallBack)
 		{
-			if(ExploreManager.Instance != null){
+			if (ExploreManager.Instance != null)
+			{
 				ExploreManager.Instance.UpdateWordDataBase();
 			}
-            
+
 			this.shareType = shareType;
 
 			shareResult = ShareResult.Canceled;
@@ -125,6 +130,28 @@ namespace WordJourney
 			shareButton.enabled = true;
 
 			GetComponent<Canvas>().enabled = true;
+
+#if UNITY_IOS
+			codeIcon.sprite = iosCodeSprite;
+            downloadHintText.text = "前往AppStore\n进行下载";
+#elif UNITY_ANDROID
+			codeIcon.sprite = androidCodeSprite;
+			downloadHintText.text = "前往TapTap\n进行下载";
+#elif UNITY_EDITOR
+			UnityEditor.BuildTarget buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
+
+                switch (buildTarget) {
+                case UnityEditor.BuildTarget.Android:
+        			codeIcon.sprite = androidCodeSprite;
+                    downloadHintText.text = "前往TapTap\n进行下载";   
+        			break;
+                case UnityEditor.BuildTarget.iOS:
+        			codeIcon.sprite = iosCodeSprite;
+                    downloadHintText.text = "前往AppStore\n进行下载";
+                    break;
+                }
+#endif
+
 
 			if (zoomCoroutine != null)
 			{

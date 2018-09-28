@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
-	// 每次受到攻击时，有50%的几率牺牲<color=orange>技能等级×1</color>的生命，提高<color=orange>技能等级×2</color>的物理攻击，可叠加
+	// 每次受到攻击时，有50%的几率牺牲<color=orange>技能等级×1</color>的生命，提高<color=orange>技能等级×3</color>的物理攻击，可叠加
 	public class ManNiuTuTeng : TriggeredPassiveSkill
     {
 		public float triggerProbability;
@@ -21,7 +21,7 @@ namespace WordJourney
 			int healthDecrease = skillLevel * healthDecreaseBase;
 			int attackIncrease = skillLevel * attackIncreaseBase;
 			return string.Format("每次受到攻击时，有50%的几率牺牲<color=white>(技能等级×1)</color><color=red>{0}</color>的生命，" +
-			                     "提高<color=white>(技能等级×2)</color><color=red>{1}</color>的物理攻击，可叠加", healthDecrease, attackIncrease);
+			                     "提高<color=white>(技能等级×3)</color><color=red>{1}</color>的物理攻击，可叠加", healthDecrease, attackIncrease);
 		}
 
 		protected override void BeAttackedTriggerCallBack(BattleAgentController self, BattleAgentController enemy)

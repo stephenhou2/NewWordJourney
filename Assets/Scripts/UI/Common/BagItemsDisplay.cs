@@ -169,10 +169,6 @@ namespace WordJourney
 			bagTabs[2].transform.Find("LockIcon").gameObject.SetActive(!BuyRecord.Instance.bag_3_unlocked);
 
             bagTabs[2].transform.GetComponentInChildren<Text>().enabled = BuyRecord.Instance.bag_3_unlocked;
-
-            //bagTabs[3].transform.Find("LockIcon").gameObject.SetActive(!BuyRecord.Instance.bag_4_unlocked);
-
-            //bagTabs[3].transform.GetComponentInChildren<Text>().enabled = BuyRecord.Instance.bag_4_unlocked;
 		}
 
 		public void ArrangeBag(){

@@ -8,25 +8,75 @@ namespace WordJourney
 	using UnityEngine.UI;
 
 	public class EnterExitHUD : MonoBehaviour
-    {
+	{
 
 		private ExitType exitType;
 
-		public Text queryText;
+		public Text queryTextOnIOS;
+		public Text queryTextOnAndroid;
 
-		public void SetUpEnterExitHUD(ExitType exitType){
+		public Transform exitQueryHUDOnIOS;
+		public Transform exitQueryHUDOnAndroid;
+
+		public PurchasePendingHUD purchasePendingHUD;
+
+		public void SetUpEnterExitHUD(ExitType exitType)
+		{
 
 			this.exitType = exitType;
 
+#if UNITY_IOS
 			switch(exitType){
-				case ExitType.ToLastLevel:
-					//queryText.text = "是否确认返回上一层?";
-					break;
-				case ExitType.ToNextLevel:
-					queryText.text = "是否确认进入下一层?";
-					break;
-			}
+                case ExitType.ToLastLevel:
+                    //queryTextOnIOS.text = "是否确认返回上一层?";
+                    break;
+                case ExitType.ToNextLevel:
+                    queryTextOnIOS.text = "是否确认进入下一层?";
+                    break;
+            }     
+			exitQueryHUDOnIOS.gameObject.SetActive(true);
+			exitQueryHUDOnAndroid.gameObject.SetActive(false);
+#elif UNITY_ANDROID
+			switch(exitType){
+                case ExitType.ToLastLevel:
+					//queryTextOnAndroid.text = "观看广告可获得<color=orange>一个技能点</color>\n前往上一层前是否观看广告？";
+                    break;
+                case ExitType.ToNextLevel:
+					queryTextOnAndroid.text = "观看广告可获得<color=orange>一个技能点</color>\n前往下一层前是否观看广告？";
+                    break;
+            }      
+			exitQueryHUDOnIOS.gameObject.SetActive(false);
+			exitQueryHUDOnAndroid.gameObject.SetActive(true);
+#elif UNITY_EDITOR
+			UnityEditor.BuildTarget buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
 
+                switch (buildTarget) {
+                case UnityEditor.BuildTarget.Android:
+        			switch(exitType){
+                        case ExitType.ToLastLevel:
+			            //queryTextOnIOS.text = "观看广告可获得<color=orange>一个技能点</color>\n前往上一层前是否观看广告？?";
+                            break;
+                        case ExitType.ToNextLevel:
+			                queryTextOnIOS.text = "观看广告可获得<color=orange>一个技能点</color>\n前往下一层前是否观看广告？?";
+                            break;
+                    }     
+                    exitQueryHUDOnIOS.gameObject.SetActive(true);
+                    exitQueryHUDOnAndroid.gameObject.SetActive(false);
+                    break;
+                case UnityEditor.BuildTarget.iOS:
+        			switch(exitType){
+                        case ExitType.ToLastLevel:
+                            //queryTextOnIOS.text = "是否确认返回上一层?";
+                            break;
+                        case ExitType.ToNextLevel:
+                            queryTextOnIOS.text = "是否确认进入下一层?";
+                            break;
+                    }     
+                    exitQueryHUDOnIOS.gameObject.SetActive(true);
+                    exitQueryHUDOnAndroid.gameObject.SetActive(false);
+                    break;
+                }
+#endif         
 			this.gameObject.SetActive(true);
 
 		}
@@ -58,17 +108,22 @@ namespace WordJourney
 			},from);
         }
         
-
-        public void CancelEnter()
-        {
+		public void WatchAdAndEnter(){
 			QuitEnterExitHUD();
-            ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-        }
+			purchasePendingHUD.SetUpPurchasePendingHUDOnAndroid(PurchaseManager.skill_point_id,MyAdType.CPAd,AdRewardType.SkillPoint,delegate(MyAdType adType){
+				
+			    Player.mainPlayer.skillNumLeft++;
+			    GameManager.Instance.persistDataManager.AddOneSkillPointToPlayerDataFile();
+				ConfirmEnter();
+			},null);
 
+		}
+
+      
 		public void QuitEnterExitHUD(){
 
 			this.gameObject.SetActive(false);
-
+			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 		}
 
 

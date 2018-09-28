@@ -59,7 +59,25 @@ namespace WordJourney
 
 			itemDetail.ClearItemDetails();
 
+
+#if UNITY_IOS
 			bagItemsDisplay.InitBagItemsDisplayPlane(OnItemInBagClickInSpecialOperation, PurchaseBagCallBack, buyGoldView.SetUpBuyGoldView);
+#elif UNITY_ANDROID
+			bagItemsDisplay.InitBagItemsDisplayPlane(OnItemInBagClickInSpecialOperation, PurchaseBagCallBack, EnterGoldWatchAdOnAndroid);
+#elif UNITY_EDITOR
+            UnityEditor.BuildTarget buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
+
+            switch (buildTarget) {
+            case UnityEditor.BuildTarget.Android:
+		        bagItemsDisplay.InitBagItemsDisplayPlane(OnItemInBagClickInSpecialOperation, PurchaseBagCallBack, EnterGoldWatchAdOnAndroid);
+                break;
+            case UnityEditor.BuildTarget.iOS:
+		        bagItemsDisplay.InitBagItemsDisplayPlane(OnItemInBagClickInSpecialOperation, PurchaseBagCallBack, buyGoldView.SetUpBuyGoldView);
+                break;
+            }
+#endif
+
+
 
             bagItemsDisplay.SetUpBagItemsPlane(0);
 
@@ -74,41 +92,138 @@ namespace WordJourney
 
 		}
 
-		private void PurchaseBagCallBack(int bagIndex){
-			switch (bagIndex)
-            {
-                case 1:
-                    SetUpPurchasePlane(PurchaseManager.extra_bag_2_id);
-                    break;
-                case 2:
-                    SetUpPurchasePlane(PurchaseManager.extra_bag_3_id);
-                    break;
-                case 3:
-                    SetUpPurchasePlane(PurchaseManager.extra_bag_4_id);
-                    break;
-            }
-        }
-
-		private void SetUpPurchasePlane(string productID)
+		private void PurchaseBagCallBack(int bagIndex)
         {
 
-			switch (Application.internetReachability)
+#if UNITY_IOS
+            switch(bagIndex){
+                case 1:
+                    SetUpPurchasePlaneOnIPhone(PurchaseManager.extra_bag_2_id);
+                    break;
+                case 2:
+                    SetUpPurchasePlaneOnIPhone(PurchaseManager.extra_bag_3_id);
+                    break;
+            }
+#elif UNITY_ANDROID
+            switch (bagIndex)
+            {
+                case 1:
+                    SetUpPurchasePlaneOnAndroid(PurchaseManager.extra_bag_2_id);
+                    break;
+                case 2:
+                    SetUpPurchasePlaneOnAndroid(PurchaseManager.extra_bag_3_id);
+                    break;
+            }
+
+#elif UNITY_EDITOR
+            UnityEditor.BuildTarget buildTarget = UnityEditor.EditorUserBuildSettings.activeBuildTarget;
+
+            switch (buildTarget) {
+                case UnityEditor.BuildTarget.Android:
+                    switch (bagIndex)
+                    {
+                        case 1:
+                            SetUpPurchasePlaneOnAndroid(PurchaseManager.extra_bag_2_id);
+                            break;
+                        case 2:
+                            SetUpPurchasePlaneOnAndroid(PurchaseManager.extra_bag_3_id);
+                            break;
+                    }
+                    break;
+                case UnityEditor.BuildTarget.iOS:
+                    switch(bagIndex){
+                        case 1:
+                            SetUpPurchasePlaneOnIPhone(PurchaseManager.extra_bag_2_id);
+                            break;
+                        case 2:
+                            SetUpPurchasePlaneOnIPhone(PurchaseManager.extra_bag_3_id);
+                            break;
+                    }
+                    break;
+            }
+#endif
+
+        }
+
+		public void SetUpPurchasePlaneOnIPhone(string productID)
+        {
+
+            switch (Application.internetReachability)
             {
                 case NetworkReachability.NotReachable:
                     hintHUD.SetUpSingleTextTintHUD("无网络连接");
                     break;
                 case NetworkReachability.ReachableViaCarrierDataNetwork:
                 case NetworkReachability.ReachableViaLocalAreaNetwork:
-					purchasePendingHUD.SetUpPurchasePendingHUD(productID, delegate {
+					purchasePendingHUD.SetUpPurchasePendingHUDOnIPhone(productID, delegate
+                    {
                         bagItemsDisplay.UpdateBagTabs();
                     });
                     break;
             }
-
-
         }
             
+		private void EnterGoldWatchAdOnAndroid()
+        {
 
+            SetUpPurchasePlaneOnAndroid(PurchaseManager.gold_100_id);
+
+        }
+
+		public void SetUpPurchasePlaneOnAndroid(string productID)
+        {
+
+            AdRewardType rewardType = AdRewardType.BagSlot_2;
+
+            MyAdType adType = MyAdType.CPAd;
+
+            if (productID.Equals(PurchaseManager.extra_bag_2_id))
+            {
+                rewardType = AdRewardType.BagSlot_2;
+                adType = MyAdType.RewardedVideoAd;
+            }
+            else if (productID.Equals(PurchaseManager.extra_bag_3_id))
+            {
+                rewardType = AdRewardType.BagSlot_3;
+                adType = MyAdType.RewardedVideoAd;
+            }
+            else if (productID.Equals(PurchaseManager.extra_equipmentSlot_id))
+            {
+                rewardType = AdRewardType.EquipmentSlot;
+                adType = MyAdType.RewardedVideoAd;
+            }
+            else if (productID.Equals(PurchaseManager.gold_100_id))
+            {
+                rewardType = AdRewardType.Gold;
+                adType = MyAdType.RewardedVideoAd;
+			}
+
+            switch (Application.internetReachability)
+            {
+                case NetworkReachability.NotReachable:
+                    hintHUD.SetUpSingleTextTintHUD("无网络连接");
+                    break;
+                case NetworkReachability.ReachableViaCarrierDataNetwork:
+                case NetworkReachability.ReachableViaLocalAreaNetwork:
+                    if (productID.Equals(PurchaseManager.gold_100_id))
+                    {
+						purchasePendingHUD.SetUpPurchasePendingHUDOnAndroid(productID, adType, rewardType, delegate
+                        {
+                            Player.mainPlayer.totalGold += 100;
+                            GameManager.Instance.persistDataManager.UpdateBuyGoldToPlayerDataFile();
+                        }, null);
+                    }
+                    else
+                    {
+						purchasePendingHUD.SetUpPurchasePendingHUDOnAndroid(productID, adType, rewardType, delegate
+                        {
+                            bagItemsDisplay.UpdateBagTabs();
+                        }, null);
+                    }
+
+                    break;
+            }
+        }
 
 		private void OnItemInBagClickInSpecialOperation(Item item)
         {

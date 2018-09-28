@@ -27,7 +27,9 @@ namespace WordJourney
 
 		public bool extraEquipmentSlotUnlocked;
 
-		//private bool bag_4_changeToGold = false;
+
+		public double lastGoldAdTimeStamp;
+
         
 
 		public void PurchaseSuccess(string productId){
@@ -43,6 +45,16 @@ namespace WordJourney
 			}
 
 			GameManager.Instance.persistDataManager.SaveBuyRecord ();
+
+		}
+
+		public void RecordLastGoldAdTime(){
+
+			System.TimeSpan timeSpan = System.DateTime.Now - System.TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
+
+			lastGoldAdTimeStamp = timeSpan.TotalSeconds;
+
+			GameManager.Instance.persistDataManager.SaveBuyRecord();
 
 		}
 

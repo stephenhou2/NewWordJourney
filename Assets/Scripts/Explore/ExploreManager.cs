@@ -132,7 +132,7 @@ namespace WordJourney
 
 			exploreSceneReady = true;
          
-			MapWalkableEventsStartAction();
+			//MapWalkableEventsStartAction();
          
 		}
       
@@ -393,6 +393,7 @@ namespace WordJourney
 			expUICtr.HideExploreMask ();
 			expUICtr.ShowFullMask ();
 		}
+        
 
 
 		public void ObtainReward(Item reward){
@@ -458,7 +459,7 @@ namespace WordJourney
 		/// <param name="monsterTrans">Monster trans.</param>
 		public void EnterFight(Transform monsterTrans){
 
-			DisableExploreInteractivity ();
+			DisableAllInteractivity();
 
 			battleMonsterCtr = monsterTrans.GetComponent<BattleMonsterController> ();
 

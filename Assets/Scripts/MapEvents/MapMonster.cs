@@ -41,7 +41,7 @@ namespace WordJourney
 
 		private MyTowards boneTowards;
 
-		private IEnumerator delayMoveCoroutine;
+
 
 		private IEnumerator monsterSayCoroutine;
 
@@ -201,7 +201,7 @@ namespace WordJourney
 			bp.isInEvent = true;
 
 			ExploreManager.Instance.MapWalkableEventsStopAction ();
-
+                     
 			StopMoveImmidiately ();
 
 			bp.StopMoveAndWait ();
@@ -223,7 +223,7 @@ namespace WordJourney
 
 			bp.isInEvent = true;
 
-			ExploreManager.Instance.DisableExploreInteractivity ();
+			//ExploreManager.Instance.DisableAllInteractivity ();
 
 			if (isInMoving) {
 				RefreshWalkableInfoWhenTriggeredInMoving ();
@@ -236,8 +236,6 @@ namespace WordJourney
 			bp.StopMoveAtEndOfCurrentStep ();
 
 			ExploreManager.Instance.EnterFight (this.transform);
-
-			//AlertTintSpark();
 
 			MapEventTriggered (false, bp);
 
@@ -443,6 +441,7 @@ namespace WordJourney
 			if (isTriggered) {
 				return;
 			}
+            
 
 			bp.escapeFromFight = false;
 			bp.isInEscaping = false;
@@ -455,6 +454,8 @@ namespace WordJourney
 			StartCoroutine (resetPositionAndFightCoroutine);
 
 			isTriggered = true;
+
+
 
 		}
 
