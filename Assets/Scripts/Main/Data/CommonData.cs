@@ -82,23 +82,14 @@ namespace WordJourney{
 		public static string mediumWordsTabel = "MEDIUM";
 		public static string masterWordsTabel = "MASTER";
 
-		public static string instanceContainerName = "InstanceContainer";
-		public static string poolContainerName = "PoolsContainer";
-
-		public static string exploreScenePoolContainerName = CommonData.poolContainerName + "/ExploreScenePoolContainer";
-		public static string bagCanvasPoolContainerName = CommonData.poolContainerName + "/BagCanvasPoolContainer";
-		public static string learnCanvasPoolContainerName = CommonData.poolContainerName + "/LearnCanvasPoolContainer";
-
-
+      
 		public static string homeCanvasBundleName = "home/canvas";
 		public static string recordCanvasBundleName = "record/canvas";
 		public static string bagCanvasBundleName = "bag/canvas";
 		public static string settingCanvasBundleName = "setting/canvas";
-		public static string spellCanvasBundleName = "spell/canvas";
 		public static string exploreSceneBundleName = "explore/scene";
 		public static string loadingCanvasBundleName = "loading/canvas";
 		public static string guideCanvasBundleName = "guide/canvas";
-		public static string learnCanvasBundleName = "learn/canvas";
 		public static string npcCanvasBundleName = "npc/canvas";
 		public static string shareCanvasBundleName = "share/canvas";
 		public static string allMonstersBundleName = "explore/monsters";
@@ -107,6 +98,8 @@ namespace WordJourney{
 		public static string allEffectsBundleName = "skills/effects";
 		public static string finalChapterCanvasBundleName = "finalchapter/canvas";
 		public static string playRecordCanvasBundleName = "playrecord/canvas";
+#warning 身份验证bundle正式打包时去掉
+		public static string identifyCanvasBundleName = "identify/canvas";
 
 		public static string allEquipmentSpritesBundleName = "item/equipment_icons";
 		public static string allConsumablesSpritesBundleName = "item/consumables_icons";
@@ -126,10 +119,7 @@ namespace WordJourney{
 		public static string mapTileset_4_BundleName = "explore/maptileset_4";
 		public static string mapTileset_5_BundleName = "explore/maptileset_5";
 	
-
-		public static string skillsContainerName = CommonData.instanceContainerName + "/AllSkills";
-		public static string monstersContainerName = CommonData.instanceContainerName + "/AllMonsters";
-
+      
 		public static string exploreDarktMaskAnimName = "dark";
 		public static string exploreLightMaskAnimName = "light";
 

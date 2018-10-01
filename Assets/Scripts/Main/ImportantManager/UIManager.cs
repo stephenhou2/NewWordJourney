@@ -212,6 +212,9 @@ namespace WordJourney
 				case "PlayRecordCanvas":
 					UIDic[canvasName].GetComponent<PlayRecordViewController>().DestroyInstances();
 					break;
+				case "IdentifyCanvas":
+					UIDic[canvasName].GetComponent<IdentifyViewController>().DestroyInstances();
+					break;
 
 			}
 

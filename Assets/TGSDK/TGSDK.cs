@@ -15,106 +15,107 @@ namespace Together
 
     public class TGSDK
     {
-#if UNITY_IOS && !UNITY_EDITOR
-		[DllImport("__Internal")]
-        private static extern string _TGSDK_sdkVersion();
-		[DllImport("__Internal")]
-        private static extern bool _TGSDK_checkSDKVersion(string version);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_setDebugModel(bool Debug);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_enableTestServer();
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_setSDKConfig(string key, string val);
-		[DllImport("__Internal")]
-		private static extern string _TGSDK_getSDKConfig(string key);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_initialize(string appid);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_initializeWithChannel(string appid, string channelid);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_initializeWithInfoPList();
-        [DllImport("__Internal")]
-        private static extern void _TGSDK_setScreenSize(double width, double height);
-        [DllImport("__Internal")]
-        private static extern void _TGSDK_userPlatformRegister(string userName, string userPassword);
-        [DllImport("__Internal")]
-        private static extern void _TGSDK_userPlatformLogin(string userName, string userPassword);
-        [DllImport("__Internal")]
-        private static extern void _TGSDK_userPartnerRegister(string puid, string partner);
-        [DllImport("__Internal")]
-        private static extern void _TGSDK_userPartnerLogin(string puid, string partner);
-        [DllImport("__Internal")]
-        private static extern void _TGSDK_userPartnerBind(string puid, string partner);
-		[DllImport("__Internal")]
-		private static extern int _TGSDK_isWIFI();
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_preloadAdOnlyWIFI();
-        [DllImport("__Internal")]
-        private static extern void _TGSDK_preloadAd();
-        [DllImport("__Internal")]
-		private static extern void _TGSDK_showAd(string scene);
-        [DllImport("__Internal")]
-		private static extern void _TGSDK_showAdWithSDK(string scene, string sdk);
-		[DllImport("__Internal")]
-        private static extern string _TGSDK_getAdStatus(string scene);
-		[DllImport("__Internal")]
-		private static extern bool _TGSDK_couldShowAd(string scene);
-		[DllImport("__Internal")]
-		private static extern bool _TGSDK_couldShowAdWithSDK(string scene, string sdk);
-		[DllImport("__Internal")]
-        private static extern void _TGSDK_showTestView(string scene);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_setBannerConfig(string scene, string type, float x, float y, float width, float height, int interval);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_closeBanner(string scene);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_reportAdRejected(string scene);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_showAdScene(string scene);
-		[DllImport("__Internal")]
-		private static extern string _TGSDK_getCPImagePath(string scene);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_showCPView(string scene);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_reportCPClick(string scene);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_reportCPClose(string scene);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_setCustomUserData(string userData);
-		[DllImport("__Internal")]
-        private static extern string _TGSDK_getStringParameterFromAdScene(string scene, string key, string def);
-		[DllImport("__Internal")]
-        private static extern int _TGSDK_getIntParameterFromAdScene(string scene, string key, int def);
-		[DllImport("__Internal")]
-        private static extern float _TGSDK_getFloatParameterFromAdScene(string scene, string key, float def);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_sendCounter(string name, string jsondata);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_paymentCounter(
-			string productId,
-			string method,
-			string transId,
-			string currency,
-			float price,
-			int quantity,
-			float amount,
-			int goodsAmount
-		);
-		[DllImport("__Internal")]
-		private static extern void _TGSDK_tagPayingUser(string user, string currency, float currentAmount, float totalAmount);
-		[DllImport("__Internal")]
-        private static extern string _TGSDK_getUserGDPRConsentStatus();
-		[DllImport("__Internal")]
-        private static extern void _TGSDK_setUserGDPRConsentStatus(string status);
-		[DllImport("__Internal")]
-        private static extern string _TGSDK_getIsAgeRestrictedUser();
-		[DllImport("__Internal")]
-        private static extern void _TGSDK_setIsAgeRestrictedUser(string status);
-		[DllImport("__Internal")]
-        private static extern string _TGSDK_getSceneNameById(string scene);
+//#if UNITY_IOS && !UNITY_EDITOR
+//		[DllImport("__Internal")]
+//		      private static extern string _TGSDK_sdkVersion();
+//		[DllImport("__Internal")]
+//		      private static extern bool _TGSDK_checkSDKVersion(string version);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_setDebugModel(bool Debug);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_enableTestServer();
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_setSDKConfig(string key, string val);
+//		[DllImport("__Internal")]
+//		private static extern string _TGSDK_getSDKConfig(string key);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_initialize(string appid);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_initializeWithChannel(string appid, string channelid);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_initializeWithInfoPList();
+//		      [DllImport("__Internal")]
+//		      private static extern void _TGSDK_setScreenSize(double width, double height);
+//		      [DllImport("__Internal")]
+//		      private static extern void _TGSDK_userPlatformRegister(string userName, string userPassword);
+//		      [DllImport("__Internal")]
+//		      private static extern void _TGSDK_userPlatformLogin(string userName, string userPassword);
+//		      [DllImport("__Internal")]
+//		      private static extern void _TGSDK_userPartnerRegister(string puid, string partner);
+//		      [DllImport("__Internal")]
+//		      private static extern void _TGSDK_userPartnerLogin(string puid, string partner);
+//		      [DllImport("__Internal")]
+//		      private static extern void _TGSDK_userPartnerBind(string puid, string partner);
+//		[DllImport("__Internal")]
+//		private static extern int _TGSDK_isWIFI();
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_preloadAdOnlyWIFI();
+//		      [DllImport("__Internal")]
+//		      private static extern void _TGSDK_preloadAd();
+//		      [DllImport("__Internal")]
+//		private static extern void _TGSDK_showAd(string scene);
+//		      [DllImport("__Internal")]
+//		private static extern void _TGSDK_showAdWithSDK(string scene, string sdk);
+//		[DllImport("__Internal")]
+//		      private static extern string _TGSDK_getAdStatus(string scene);
+//		[DllImport("__Internal")]
+//		private static extern bool _TGSDK_couldShowAd(string scene);
+//		[DllImport("__Internal")]
+//		private static extern bool _TGSDK_couldShowAdWithSDK(string scene, string sdk);
+//		[DllImport("__Internal")]
+//		      private static extern void _TGSDK_showTestView(string scene);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_setBannerConfig(string scene, string type, float x, float y, float width, float height, int interval);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_closeBanner(string scene);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_reportAdRejected(string scene);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_showAdScene(string scene);
+//		[DllImport("__Internal")]
+//		private static extern string _TGSDK_getCPImagePath(string scene);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_showCPView(string scene);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_reportCPClick(string scene);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_reportCPClose(string scene);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_setCustomUserData(string userData);
+//		[DllImport("__Internal")]
+//		      private static extern string _TGSDK_getStringParameterFromAdScene(string scene, string key, string def);
+//		[DllImport("__Internal")]
+//		      private static extern int _TGSDK_getIntParameterFromAdScene(string scene, string key, int def);
+//		[DllImport("__Internal")]
+//		      private static extern float _TGSDK_getFloatParameterFromAdScene(string scene, string key, float def);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_sendCounter(string name, string jsondata);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_paymentCounter(
+//			string productId,
+//			string method,
+//			string transId,
+//			string currency,
+//			float price,
+//			int quantity,
+//			float amount,
+//			int goodsAmount
+//		);
+//		[DllImport("__Internal")]
+//		private static extern void _TGSDK_tagPayingUser(string user, string currency, float currentAmount, float totalAmount);
+//		[DllImport("__Internal")]
+//		      private static extern string _TGSDK_getUserGDPRConsentStatus();
+//		[DllImport("__Internal")]
+//		      private static extern void _TGSDK_setUserGDPRConsentStatus(string status);
+//		[DllImport("__Internal")]
+//		      private static extern string _TGSDK_getIsAgeRestrictedUser();
+//		[DllImport("__Internal")]
+//		      private static extern void _TGSDK_setIsAgeRestrictedUser(string status);
+//		[DllImport("__Internal")]
+//		private static extern string _TGSDK_getSceneNameById(string scene);
+//#endif
 
-#elif UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
 		private static AndroidJavaClass _jc = null;
 		private static AndroidJavaClass jc()
 		{
@@ -304,7 +305,7 @@ namespace Together
 			return jc().CallStatic<string>("getSceneNameById", scene);
 		}
 #else
-        private static string _TGSDK_sdkVersion() {return null;}
+		private static string _TGSDK_sdkVersion() {return null;}
         private static bool _TGSDK_checkSDKVersion(string version) {return false;}
 		private static void _TGSDK_setDebugModel (bool debug) {}
 		private static void _TGSDK_enableTestServer () {}

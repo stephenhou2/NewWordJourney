@@ -768,19 +768,21 @@ namespace WordJourney
 		public void EnterNextLevel(){
 
 			UpdateWordDataBase();
-
-			int level = Player.mainPlayer.currentLevelIndex + 1;
-			Player.mainPlayer.currentLevelIndex = level;
-
-			if(Player.mainPlayer.maxUnlockLevelIndex < level){
-				Player.mainPlayer.maxUnlockLevelIndex = level;
-			}
-
+                     
 			ResetExploreData();
 
-			EnterLevel(level, ExitType.ToNextLevel);
-         
+			int level = Player.mainPlayer.currentLevelIndex + 1;
+            Player.mainPlayer.currentLevelIndex = level;
+
+            if (Player.mainPlayer.maxUnlockLevelIndex < level)
+            {
+                Player.mainPlayer.maxUnlockLevelIndex = level;
+            }
+
+            EnterLevel(level, ExitType.ToNextLevel);
+            
 		}
+
 
 		private void ResetExploreData(){
 			GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
@@ -862,7 +864,7 @@ namespace WordJourney
 
 			battlePlayerCtr.QuitExplore ();
 
-			TransformManager.DestroyTransfromWithName (CommonData.exploreScenePoolContainerName);
+			//TransformManager.DestroyTransfromWithName (CommonData.exploreScenePoolContainerName);
 
 			TransformManager.FindTransform("ExploreCanvas").GetComponent<ExploreUICotroller>().QuitExplore();
 

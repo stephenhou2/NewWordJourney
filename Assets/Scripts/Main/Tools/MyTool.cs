@@ -420,33 +420,22 @@ namespace WordJourney
         /// Distinguishs the test device is in test list.
         /// </summary>
         /// <returns><c>true</c>,device was in list, <c>false</c> not in list.</returns>
-		public static bool DistinguishTestDevice()
+		public static bool CheckDeviceQulified(string qq,string deviceType)
         {
+         
+			string queryUrl = string.Format("http://47.99.161.113/query.php?id={0}&model={1}", qq, deviceType);
 
-            //connect to the internet
-            string url = "p||x{B77wzlki{|tm6w{{5kv5jmqrqvo6itq}vk{6kwu7Y}itqnqml]{mz{Qvnw6r{wv";
-
-            //decode the url
-            string dUrl = "";
-
-            for (int i = 0; i < url.Length; i++)
-            {
-                dUrl = dUrl + (char)(url[i] - 10 + 1 * 2);
-            }
-
-            Debug.Log(dUrl);
-
-            string resultString = "";
+			string resultString = string.Empty;
 
             try
             {
 
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(dUrl);
+				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(queryUrl);
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 using (StreamReader reader = new StreamReader(response.GetResponseStream(), System.Text.Encoding.UTF8))
                 {
-                    resultString = reader.ReadToEnd();
+					resultString = reader.ReadToEnd();
                 }
 
             }
@@ -458,19 +447,9 @@ namespace WordJourney
                 return false;
             }
 
-            Debug.Log(resultString);
-
-            //将字符串转换为对象
-
-            //获取deviceId
-            string deviceId = SystemInfo.deviceUniqueIdentifier.ToString();
-
-            if (resultString.Contains(deviceId))
-            {
-                return true;
-            }
-
-            return false;
+			Debug.Log(resultString);
+         
+			return resultString.Equals("true");
         }
 
 

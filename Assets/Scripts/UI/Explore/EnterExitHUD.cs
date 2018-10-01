@@ -81,7 +81,11 @@ namespace WordJourney
 
 		}
 
-		public void ConfirmEnter()      
+        /// <summary>
+        /// 确认进入下一关
+        /// </summary>
+        /// <param name="delay">Delay.</param>
+		public void ConfirmEnterWithDelay(float delay)      
         {
 			//Debug.LogFormat("ConfirmEnterTime:{0}", Time.time);
 
@@ -93,31 +97,33 @@ namespace WordJourney
 
 			ExploreManager.Instance.expUICtr.EnterLevelMaskShowAndHide(delegate{
 				switch (exitType)
-                {
-                    case ExitType.ToLastLevel:
+				{
+					case ExitType.ToLastLevel:
 						from = MapSetUpFrom.NextLevel;
-                        //ExploreManager.Instance.EnterLastLevel();
-                        break;
-                    case ExitType.ToNextLevel:
-                        ExploreManager.Instance.EnterNextLevel();
+						//ExploreManager.Instance.EnterLastLevel();
+						break;
+					case ExitType.ToNextLevel:
+			            ExploreManager.Instance.EnterNextLevel();
 						from = MapSetUpFrom.LastLevel;
-                        break;
-                }
-
+						break;
+				}
                 ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
-			},from);
+			},from,delay);
         }
         
 		public void WatchAdAndEnter(){
-			QuitEnterExitHUD();
+
 			purchasePendingHUD.SetUpPurchasePendingHUDOnAndroid(PurchaseManager.skill_point_id,MyAdType.CPAd,AdRewardType.SkillPoint,delegate(MyAdType adType){
-				
 			    Player.mainPlayer.skillNumLeft++;
 			    GameManager.Instance.persistDataManager.AddOneSkillPointToPlayerDataFile();
-				ConfirmEnter();
+				ExploreManager.Instance.DisableAllInteractivity();
+			    ConfirmEnterWithDelay(1f);
 			},null);
 
+			QuitEnterExitHUD();
 		}
+
+
 
       
 		public void QuitEnterExitHUD(){

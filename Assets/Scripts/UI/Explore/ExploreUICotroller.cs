@@ -183,6 +183,8 @@ namespace WordJourney
 
 				transitionView.PlayTransition(transitionType, delegate
 				{
+					GameManager.Instance.persistDataManager.versionUpdateWhenLoad = false;
+
 					GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
 					{
 						TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(null);
@@ -235,13 +237,13 @@ namespace WordJourney
 			bottomBarContainer.gameObject.SetActive(false);
 		}
 
-		public void EnterLevelMaskShowAndHide(CallBack callBack, MapSetUpFrom from)
+		public void EnterLevelMaskShowAndHide(CallBack callBack, MapSetUpFrom from,float delay = 0)
 		{
 			if (enterLevelMaskShowAndHideCoroutine != null)
 			{
 				StopCoroutine(enterLevelMaskShowAndHideCoroutine);
 			}
-			enterLevelMaskShowAndHideCoroutine = MyEnterLevelMaskShowAndHide(callBack, from);
+			enterLevelMaskShowAndHideCoroutine = MyEnterLevelMaskShowAndHide(callBack, from, delay);
 			StartCoroutine(enterLevelMaskShowAndHideCoroutine);
 		}
 
@@ -352,8 +354,10 @@ namespace WordJourney
 
 		}
 
-		private IEnumerator MyEnterLevelMaskShowAndHide(CallBack callBack, MapSetUpFrom from)
+		private IEnumerator MyEnterLevelMaskShowAndHide(CallBack callBack, MapSetUpFrom from,float delay)
 		{
+			yield return new WaitForSeconds(delay);
+
 
 			float tempAlpha = 0;
 			float fadeSpeed = 3f;
@@ -999,16 +1003,14 @@ namespace WordJourney
 
 			}
 			else
-			{
-
-#if UNITY_IOS || UNITY_EDITOR
+			{            
 				bool pushRecommend = CheckPushCommentRecommend();
 
 				if (pushRecommend)
 				{
 					commentRecommendHUD.SetUpCommentRecommendHUD();
 				}
-#endif
+
 
 				int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
 

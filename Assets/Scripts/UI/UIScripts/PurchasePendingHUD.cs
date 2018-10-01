@@ -120,7 +120,7 @@ namespace WordJourney
 						queryWatchADHUD.SetUpQueryWatchAdHUDWhenCantWatch(query,timeSpanInSeconds,delegate {
 							query = "观看广告后可\n<color=orange>获得100金币</color>\n是否确认观看广告？";
                             queryWatchADHUD.SetUpQueryWatchAdHUD(query, OnConfirmWatchAd, QuitPurchasePendingHUD);
-						});
+						},QuitPurchasePendingHUD);
 					}
 
 					break;

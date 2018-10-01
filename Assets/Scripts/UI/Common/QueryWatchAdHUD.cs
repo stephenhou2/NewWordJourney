@@ -50,7 +50,9 @@ namespace WordJourney
         /// </summary>
         /// <param name="query">Query.</param>
         /// <param name="timeSpane">距离上次看过获取金币的视频广告的时间间隔.</param>
-		public void SetUpQueryWatchAdHUDWhenCantWatch(string query,double timeSpan,CallBack timeCanWatchCallBack){
+		public void SetUpQueryWatchAdHUDWhenCantWatch(string query,double timeSpan,CallBack timeCanWatchCallBack,CallBack quitCallBack){
+
+			this.quitCallBack = quitCallBack;
 
 			queryText.text = query;
 
@@ -111,6 +113,7 @@ namespace WordJourney
 		}
 
 		public void OnCancelButtonClick(){
+			
 			QuitQueryWatchAdHUD();
 
 			if(quitCallBack != null){

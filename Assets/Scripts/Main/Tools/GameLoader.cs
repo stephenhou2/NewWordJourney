@@ -8,15 +8,15 @@ using System.Collections.Generic;
 
 namespace WordJourney
 {
-	[System.Serializable]
-	public class QualifiedUserInfo
-    {
-		public string nickName;
-		public string identifier;
-		public string uniqueDeviceId;
-		public string deviceType;
+	//[System.Serializable]
+	//public class QualifiedUserInfo
+  //  {
+		//public string nickName;
+		//public string identifier;
+		//public string uniqueDeviceId;
+		//public string deviceType;
 
-    }
+    //}
 
 	public class GameLoader : MonoBehaviour
 	{
@@ -51,7 +51,7 @@ namespace WordJourney
 			Debug.unityLogger.logEnabled = true;
 			StringEncryption.isEncryptionOn = false;
 #else
-            Debug.unityLogger.logEnabled = true;
+            Debug.unityLogger.logEnabled = false;
 			StringEncryption.isEncryptionOn = true;         
 #endif
 			Debug.Log(CommonData.persistDataPath);
@@ -62,13 +62,33 @@ namespace WordJourney
 
 		void Start()
 		{
+
+#warning 正式打包这里不做身份验证
 #if UNITY_ANDROID
-			if(indentifyAndroidDevice && !MyTool.DistinguishTestDevice()){
-				Application.Quit();
+			DirectoryInfo persistDi = new DirectoryInfo(CommonData.persistDataPath);
+			bool needCheckQualification = !persistDi.Exists;
+			if(needCheckQualification && indentifyAndroidDevice){
+				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.identifyCanvasBundleName, "IdentifyCanvas", delegate
+				{
+					TransformManager.FindTransform("IdentifyCanvas").GetComponent<IdentifyViewController>().SetUpIdentifyView(delegate{
+						GameManager.Instance.UIManager.RemoveCanvasCache("IdentifyCanvas");
+						PersistData();                  
+				    });
+
+				});
+			}else{
+				PersistData();
 			}
+#elif UNITY_IOS
+			PersistData();   
 #endif
-			PersistData();         
+			      
 		}
+
+       
+
+
+
 
 		private IEnumerator InitData()
 		{
