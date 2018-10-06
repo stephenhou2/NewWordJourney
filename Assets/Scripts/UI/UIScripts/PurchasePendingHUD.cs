@@ -32,10 +32,13 @@ namespace WordJourney
 		//private AdRewardType adRewardType;
 
 		// 在安卓端该回调为广告播放成功的回调，ios端该回调无用
-		private AdCallBackSuccess adSuccessCallBack;
+		private AdCallBack adSuccessCallBack;
 
 		// 在安卓端该回调为广告播放失败的回调，ios端该回调无用
-		private AdCallBackFailure adFailCallBack;
+		private AdCallBack adFailCallBack;
+
+  //      // 在安卓端该回调为广告播放成功，但是没有完成奖励的回调【如没有看完激励视频广告】,ios端该回调无用
+		//private AdCallBack adUnrewardCallBack;
 
 		/// <summary>
 		/// 初始化内购界面【安卓端为初始化广告界面】
@@ -68,9 +71,9 @@ namespace WordJourney
 
 		}
 
-		public void SetUpPurchasePendingHUDOnAndroid(string productId, MyAdType myAdType,AdRewardType adRewardType, AdCallBackSuccess sucessCallBack, AdCallBackFailure failCallBack)
+		public void SetUpPurchasePendingHUDOnAndroid(string productId, MyAdType myAdType,AdRewardType adRewardType, AdCallBack sucessCallBack, AdCallBack failCallBack)
 		{
-
+            
 #if !UNITY_ANDROID && !UNITY_EDITOR
 			return;
 #endif
@@ -178,7 +181,7 @@ namespace WordJourney
                     break;
             }
 
-			TGController.ShowAd(currentAdType, OnWatchAdSuccess, OnWatchAdFail);
+			TGController.ShowAd(currentAdType, OnWatchAdSuccess, OnWatchAdFail, OnRewardFail);
 		}
 
 		private void ShowQueryWatchADHUD(){
@@ -251,6 +254,21 @@ namespace WordJourney
 
             QuitPurchasePendingHUD();         
 		}
+
+		private void OnRewardFail(MyAdType adType)
+        {
+
+            if (adFailCallBack != null)
+            {
+                adFailCallBack(adType);
+            }
+
+            string purchaseResult = "广告未播放完成，请稍后重试";
+
+            tintHUD.SetUpSingleTextTintHUD(purchaseResult);
+
+            QuitPurchasePendingHUD();
+        }
 
 		private void OnPurchaseSucceed(){
 

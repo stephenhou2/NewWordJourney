@@ -23,7 +23,7 @@ namespace WordJourney
 			//Player.mainPlayer.AddItem(Item.NewItemWith(59, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(603, 10));
                      
-			//Player.mainPlayer.AddItem(Item.NewItemWith(602, 1));
+			Player.mainPlayer.AddItem(Item.NewItemWith(601, 10));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(601, 1));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(603, 1));
 

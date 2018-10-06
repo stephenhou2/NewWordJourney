@@ -14,7 +14,11 @@ namespace WordJourney
 
 		public Text countDownText;
 
+		public Transform queryContainer;
+
 		public Transform warningContainer;
+
+		public Transform unexpectedAdFailContainer;
 
 		private CallBack confirmBuyCallBack;
 
@@ -25,7 +29,9 @@ namespace WordJourney
 		public void SetUpBuyLifeQueryView(CallBack confirmBuyCallBack, CallBack cancelBuyCallBack)
 		{
 
+			queryContainer.gameObject.SetActive(true);
 			warningContainer.gameObject.SetActive(false);
+			unexpectedAdFailContainer.gameObject.SetActive(false);
 
 #if UNITY_IOS
 			queryText.text = "使用复活卡可以\n<color=orange>复活并恢复全部生命和魔法</color>\n是否前往购买？";
@@ -61,8 +67,46 @@ namespace WordJourney
 
 		}
 
+
+
+		public void SetUpWhenADUnexpectedFailOnAndroid(CallBack confirmBuyCallBack, CallBack cancelBuyCallBack)
+        {         
+			queryContainer.gameObject.SetActive(false);
+            warningContainer.gameObject.SetActive(false);
+			unexpectedAdFailContainer.gameObject.SetActive(true);
+
+			this.confirmBuyCallBack = confirmBuyCallBack;
+
+            this.cancelBuyCallBack = cancelBuyCallBack;
+         
+        }
+
+		public void OnConfirmButtonClickWhenAdUnexpectedFail(){
+
+			warningContainer.gameObject.SetActive(false);
+			queryContainer.gameObject.SetActive(true);
+			unexpectedAdFailContainer.gameObject.SetActive(false);
+
+            queryText.text = "观看广告后可以\n<color=orange>复活并恢复30%的生命和魔法</color>\n是否前往观看？";
+
+            countDownText.text = "取消(<color=orange>30</color>)";
+            
+
+            if (queryCoroutine != null)
+            {
+                StopCoroutine(queryCoroutine);
+            }
+
+            queryCoroutine = QueryCountDown();
+            StartCoroutine(queryCoroutine);
+
+		}
+
+
 		public void OnConfirmBuyLifeButtonClick()
 		{
+
+
 			if(confirmBuyCallBack != null){
 				confirmBuyCallBack();
 			}

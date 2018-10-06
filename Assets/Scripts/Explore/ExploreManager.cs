@@ -90,14 +90,14 @@ namespace WordJourney
 		{
 			exploreSceneReady = false;
 
-			bool resetGameData = false;
+			//bool resetGameData = false;
 
 
 
-			if(Player.mainPlayer.health <= 0){
-				resetGameData = true;
-				GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
-			}
+			//if(Player.mainPlayer.health <= 0){
+			//	resetGameData = true;
+			//	//GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
+			//}
 
 			GameManager.Instance.gameDataCenter.InitExplorePrepareGameData();
 
@@ -116,7 +116,7 @@ namespace WordJourney
 
 			SaveDataInExplore(null,false);
 
-			expUICtr.SetUpExploreCanvas(resetGameData);
+			expUICtr.SetUpExploreCanvas();
 
             battlePlayerCtr.InitBattlePlayer();
 

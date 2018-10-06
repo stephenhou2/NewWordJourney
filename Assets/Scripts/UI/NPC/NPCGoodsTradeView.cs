@@ -273,8 +273,13 @@ namespace WordJourney
                     {
                         purchasePendingHUD.SetUpPurchasePendingHUDOnAndroid(productID, adType, rewardType, delegate
                         {
+							BuyRecord.Instance.RecordLastGoldAdTime();
                             Player.mainPlayer.totalGold += 100;
                             GameManager.Instance.persistDataManager.UpdateBuyGoldToPlayerDataFile();
+							if (ExploreManager.Instance != null)
+                            {
+                                ExploreManager.Instance.expUICtr.UpdatePlayerGold();
+                            }
                         }, null);
                     }
                     else

@@ -916,29 +916,6 @@ namespace WordJourney
 
 
 
-
-//		/// <summary>
-//		/// 对应类型的装备是否可以装备（装备槽是否已经被占用）
-//		/// </summary>
-//		/// <returns><c>true</c>, if if has equiped was checked, <c>false</c> otherwise.</returns>
-//		/// <param name="type">Type.</param>
-//		public bool CheckCanEquiped(EquipmentType type){
-//
-//			bool canEquiped = false;
-//
-//			int index = (int)type;
-//
-//			if (index != 5) {
-//				canEquiped = allEquipedEquipments [index].itemId == -1;
-//			} else {
-//				canEquiped = allEquipedEquipments [5].itemId == -1 || 
-//					(BuyRecord.Instance.extraEquipmentSlotUnlocked && allEquipedEquipments [6].itemId == -1);
-//			}
-//
-//			return canEquiped;
-//
-//		}
-
 		/// <summary>
 		/// 角色穿上装备
 		/// </summary>
@@ -1245,38 +1222,7 @@ namespace WordJourney
 		}
 
 
-		/// <summary>
-		/// NPC的奖励如果是惩罚的话，检验是否可以满足惩罚的要求（为了方便，惩罚的数据也写在了奖励里面，数值为负的）
-		/// </summary>
-		/// <returns><c>true</c>, if can hand out was checked, <c>false</c> otherwise.</returns>
-		/// <param name="type">惩罚类型.</param>
-		/// <param name="value">【如果是金钱惩罚，对应交付的金钱】【如果是物品惩罚，对应交付物品的id】.</param>
-		/// <param name="attachValue">【如果是物品惩罚，对应交付物品的数量】.</param>
-		public bool CheckCanHandOut(HLHRewardType type,int value,int attachValue){
-
-			bool canHandOut = true;
-
-			switch (type) {
-			//case HLHRewardType.Property:
-			//case HLHRewardType.Experience:
-				//break;
-			case HLHRewardType.Gold:
-				canHandOut = totalGold + value >= 0;
-				break;
-			case HLHRewardType.Item:
-				Item itemInBag = allItemsInBag.Find (delegate(Item obj) {
-					return obj.itemId == value;
-				});
-				if (itemInBag == null) {
-					canHandOut = false;
-				} else {
-					canHandOut = itemInBag.itemCount + attachValue >= 0;
-				}
-				break;
-			}
-			return canHandOut;
-		}
-
+      
 
 		/// <summary>
 		/// 判断当前经验是否满足升级条件	
@@ -1311,24 +1257,7 @@ namespace WordJourney
 			return levelUp;
 		}
 
-		/// <summary>
-		/// 检查物品是否已经被玩家解锁
-		/// </summary>
-		/// <returns><c>true</c>, if item unlocked was checked, <c>false</c> otherwise.</returns>
-		/// <param name="item">Item.</param>
-//		public bool CheckItemUnlocked(int itemId){
-//
-//			for (int i = 0; i < allUnlockScrollsInBag.Count; i++) {
-//				UnlockScroll unlockScroll = allUnlockScrollsInBag [i];
-//				if (unlockScroll.unlocked && unlockScroll.unlockedItemId == itemId) {
-//					return true;
-//				}
-//			}
-//
-//			return false;
-//
-//		}
-
+      
 
 
 
@@ -1585,55 +1514,6 @@ namespace WordJourney
 
 		}
 
-		/// <summary>
-		/// 分解物品
-		/// </summary>
-		/// <returns>分解后获得的字母碎片</returns>
-//		public List<char> ResolveItemAndGetCharacters(Item item,int resolveCount){
-//
-//			e.PlayAudioClip ("UI/sfx_UI_Resolve");
-//
-//			// 分解后得到的字母碎片
-//			List<char> charactersReturn = new List<char> ();
-//
-//			// 物品英文名称转换为char数组
-//			char[] charArray = item.itemNameInEnglish.ToCharArray ();
-//
-//			if (charArray.Length == 0) {
-//				charArray = CommonData.wholeAlphabet;
-//			}
-//
-//			// 每分解一个物品可以获得的字母碎片数量(解锁卷轴返回对应单词的所有字母，其余物品返回单词中的一个字母）
-//			int charactersReturnCount = item.itemType == ItemType.UnlockScroll ? charArray.Length : 1;
-//
-//			// char数组转换为可以进行增减操作的list
-//			List<char> charList = new List<char> ();
-//
-//			for (int i = 0; i < charArray.Length; i++) {
-//				charList.Add (charArray [i]);
-//			}
-//
-//			// 分解物品，背包中的字母碎片数量增加
-//			for (int j = 0; j < resolveCount; j++) {
-//
-//				for (int i = 0; i < charactersReturnCount; i++) {
-//
-//					char character = ReturnRandomCharacters (ref charList);
-//
-//					int characterIndex = (int)character - CommonData.aInASCII;
-//
-//					charactersCount [characterIndex]++;
-//
-//					charactersReturn.Add (character);
-//				}
-//			}
-//
-//			// 被分解的物品减去分解数量，如果数量<=0,从背包中删除物品
-//			RemoveItem(item,resolveCount);
-//
-//			return charactersReturn;
-//
-//		}
 
 		/// <summary>
 		/// 从单词的字母组成中随机返回一个字母

@@ -14,15 +14,17 @@ namespace WordJourney
 		RewardedVideoAd
 	}
 
-	public delegate void AdCallBackSuccess(MyAdType adType);
-	public delegate void AdCallBackFailure(MyAdType adType);
+	public delegate void AdCallBack(MyAdType adType);
+	//public delegate void AdCallBackFailure(MyAdType adType);
 
 	public class TGController : MonoBehaviour
 	{
-
+        
 		//广告回到Unity，重新获得焦点后的回调函数
-		public static AdCallBackSuccess adSuccessCallBack;
-		public static AdCallBackFailure adFailureCallBack;
+		public static AdCallBack adSuccessCallBack;
+		public static AdCallBack adFailureCallBack;
+
+		public static AdCallBack adRewardFailCallBack;
 
 		//判断广告sdk是否已经初始化了
 		public static bool _isAdInited = false;
@@ -175,23 +177,13 @@ namespace WordJourney
 				}
 
 			};
+
 			TGSDK.AdCompleteCallback = (string msg) =>
 			{
 				Debug.Log("AdCompleteCallback : " + msg);
-				//adMsg = "AdCompleteCallback" + msg;
-
-				//根据不同的类型给与奖励
-				if (currentAdType == MyAdType.RewardedVideoAd)
-				{
-					// 执行插屏广告的奖励回调
-					if (adSuccessCallBack.Method != null)
-					{
-						adSuccessCallBack(currentAdType);
-					}
-				}
-
-
+				//adMsg = "AdCompleteCallback" + msg;            
 			};
+
 			TGSDK.AdCloseCallback = (string msg) =>
 			{
 				Debug.Log("AdCloseCallback : " + msg);
@@ -214,15 +206,37 @@ namespace WordJourney
 				Debug.Log("AdClickCallback : " + msg);
 				//adMsg = "AdClickCallback" + msg;
 			};
+
 			TGSDK.AdRewardSuccessCallback = (string msg) =>
 			{
 				Debug.Log("AdRewardSuccessCallback : " + msg);
 				//adMsg = "AdRewardSuccessCallback" + msg;
+
+				//根据不同的类型给与奖励
+                if (currentAdType == MyAdType.RewardedVideoAd)
+                {
+                    // 执行插屏广告的奖励回调
+                    if (adSuccessCallBack.Method != null)
+                    {
+                        adSuccessCallBack(currentAdType);
+                    }
+                }
+
+
 			};
 			TGSDK.AdRewardFailedCallback = (string msg) =>
 			{
 				Debug.Log("AdRewardFailedCallback : " + msg);
 				//adMsg = "AdRewardFailedCallback" + msg;
+
+				// 奖励失败时的回调
+				if (currentAdType == MyAdType.RewardedVideoAd)
+				{
+					if (adRewardFailCallBack != null)
+					{
+						adRewardFailCallBack(currentAdType);
+					}
+				}
 			};
 
 
@@ -244,11 +258,12 @@ namespace WordJourney
 
 
 		//广告进行展示
-		static public void ShowAd(MyAdType myAdType,AdCallBackSuccess successCallBack,AdCallBackFailure failCallBack)
+		static public void ShowAd(MyAdType myAdType,AdCallBack successCallBack,AdCallBack failCallBack, AdCallBack adRewardFailCallBack)
 		{
 			
 			TGController.adSuccessCallBack = successCallBack;
 			TGController.adFailureCallBack = failCallBack;
+			TGController.adRewardFailCallBack = adRewardFailCallBack;
                      
 			string sceneId = "";
 			switch (myAdType)

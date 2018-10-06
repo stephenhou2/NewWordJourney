@@ -110,7 +110,7 @@ namespace WordJourney
 		public Transform finishGameQueryHUD;
 
 
-		public void SetUpExploreCanvas(bool hasResetGame = false)
+		public void SetUpExploreCanvas()
 		{
 
 			wordRecords = GameManager.Instance.gameDataCenter.currentMapWordRecords;
@@ -162,15 +162,15 @@ namespace WordJourney
 				}
 				transitionMask.gameObject.SetActive(false);
 
-				if (hasResetGame)
-				{
-					//GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
+				//if (hasResetGame)
+				//{
+				//	//GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
 
-					transitionView.PlayTransition(TransitionType.ResetGameHint, delegate
-					{
-						transitionMask.gameObject.SetActive(false);
-					});
-				}
+				//	transitionView.PlayTransition(TransitionType.ResetGameHint, delegate
+				//	{
+				//		transitionMask.gameObject.SetActive(false);
+				//	});
+				//}
 			}
 			else
 			{
@@ -1134,7 +1134,11 @@ namespace WordJourney
                         HideFullMask();
 						purchaseHUD.SetUpPurchasePendingHUDOnAndroid(productID, adType, rewardType, delegate (MyAdType myAdType) {
 							PlayerPartlyRecomeToLifeCallBack();
-                        }, null);
+						}, delegate {
+							buyLifeQueryHUD.SetUpWhenADUnexpectedFailOnAndroid(delegate {
+                                SetUpPurchasePlaneOnAndroid(PurchaseManager.new_life_id);
+                            }, CancelBuyLife);                     
+						});
 					}else if(productID.Equals(PurchaseManager.skill_point_id)){
 						enterExitHUD.QuitEnterExitHUD();
 						purchaseHUD.SetUpPurchasePendingHUDOnAndroid(productID, adType, rewardType, delegate (MyAdType myAdType) {

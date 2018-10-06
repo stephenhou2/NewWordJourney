@@ -126,7 +126,7 @@ namespace WordJourney
 			if(timeCountDownCoroutine != null){
 				StopCoroutine(timeCountDownCoroutine);
 			}
-
+                     
 			this.gameObject.SetActive(false);
 		}
 
