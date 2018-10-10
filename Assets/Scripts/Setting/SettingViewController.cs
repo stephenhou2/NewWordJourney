@@ -96,7 +96,9 @@ namespace WordJourney
             {
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
                 {
-                    TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, ExploreManager.Instance.QuitExploreScene, null);
+                    TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, delegate {
+						ExploreManager.Instance.QuitExploreScene();                  
+					}, null);
                 });
 
             }
@@ -131,6 +133,10 @@ namespace WordJourney
 					break;
 			}
 
+		}
+
+		public void OnPrivacyButtonClick(){
+			Application.OpenURL("http://www.lofter.com/lpost/1fc6f75f_12b25c509");
 		}
 
 		private void RestoreFinishCallBack(int result){

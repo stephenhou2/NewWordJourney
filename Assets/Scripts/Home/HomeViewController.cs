@@ -16,6 +16,10 @@ namespace WordJourney
 
 			homeView.SetUpHomeView ();
 
+			Resources.UnloadUnusedAssets();
+
+			GC.Collect();
+
 			Time.timeScale = 1f;
 		}
         
@@ -118,15 +122,7 @@ namespace WordJourney
 				homeView.OnQuitHomeView();
 			},false,true);
 		}
-
       
-		public void OnBagButtonClick(){
-			GameManager.Instance.soundManager.PlayAudioClip (CommonData.buttonClickAudioName);
-			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.bagCanvasBundleName, "BagCanvas", () => {
-				TransformManager.FindTransform("BagCanvas").GetComponent<BagViewController> ().SetUpBagView (true);
-				homeView.OnQuitHomeView();
-			},false,true);
-		}
 
 		public void OnSettingButtonClick(){
 			GameManager.Instance.soundManager.PlayAudioClip (CommonData.buttonClickAudioName);

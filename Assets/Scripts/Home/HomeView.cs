@@ -31,6 +31,8 @@ namespace WordJourney
 
 		public Transform bagToGoldHintHUD;
 
+		public Transform playRecordButton;
+
 		public void SetUpHomeView(){
 
 			GetComponent<Canvas> ().enabled = true;
@@ -40,7 +42,84 @@ namespace WordJourney
 			if(GameManager.Instance.purchaseManager.buyedGoodsChange.Contains("Bag_4")){
 				ShowBagToGoldHintHUD();
 				GameManager.Instance.purchaseManager.buyedGoodsChange.Remove("Bag_4");
+			}         
+		}
+
+		public void PlayRecordHint(){
+			IEnumerator myPlayRecordHintCoroutine = PlayRecordButtonZoom();
+			StartCoroutine(myPlayRecordHintCoroutine);
+		}
+
+		private IEnumerator PlayRecordButtonZoom(){
+
+			float scale = 1f;
+
+			float zoomSpeed = 0.5f;
+
+			while(scale<1.2f){
+
+				scale += zoomSpeed * Time.deltaTime;
+
+				playRecordButton.localScale = new Vector3(scale, scale, 1);
+
+				yield return null;
 			}
+
+			while (scale > 1f)
+            {
+
+                scale -= zoomSpeed * Time.deltaTime;
+
+                playRecordButton.localScale = new Vector3(scale, scale, 1);
+
+                yield return null;
+            }
+
+			yield return new WaitForSeconds(0.5f);
+
+			while (scale < 1.2f)
+            {
+
+                scale += zoomSpeed * Time.deltaTime;
+
+                playRecordButton.localScale = new Vector3(scale, scale, 1);
+
+                yield return null;
+            }
+
+            while (scale > 1f)
+            {
+
+                scale -= zoomSpeed * Time.deltaTime;
+
+                playRecordButton.localScale = new Vector3(scale, scale, 1);
+
+                yield return null;
+            }
+
+			yield return new WaitForSeconds(0.5f);
+
+            while (scale < 1.2f)
+            {
+
+                scale += zoomSpeed * Time.deltaTime;
+
+                playRecordButton.localScale = new Vector3(scale, scale, 1);
+
+                yield return null;
+            }
+
+            while (scale > 1f)
+            {
+
+                scale -= zoomSpeed * Time.deltaTime;
+
+                playRecordButton.localScale = new Vector3(scale, scale, 1);
+
+                yield return null;
+            }
+
+			playRecordButton.localScale = Vector3.one;
 
 		}
 			
@@ -192,6 +271,8 @@ namespace WordJourney
 //		}
 
 		public void OnQuitHomeView(){
+
+			StopAllCoroutines();
 
 			difficultySelectHUD.gameObject.SetActive(false);
 

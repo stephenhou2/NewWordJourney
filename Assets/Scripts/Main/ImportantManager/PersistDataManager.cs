@@ -210,7 +210,7 @@ namespace WordJourney
 			resetPd.totaldefeatMonsterCount = 0;
 
 			resetPd.currentExploreStartDateString = DateTime.Now.ToShortDateString();
-			resetPd.currentVersion = Player.mainPlayer.currentVersion;
+			//resetPd.currentVersion = Player.mainPlayer.currentVersion;
 			resetPd.spellRecord.Clear();
 
 			if(ExploreManager.Instance != null){

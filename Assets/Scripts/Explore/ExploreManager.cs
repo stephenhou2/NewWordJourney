@@ -620,6 +620,8 @@ namespace WordJourney
 
 			battlePlayerCtr.boxCollider.enabled = true;
 
+			battlePlayerCtr.enemy = null;
+
             //更新玩家金钱
             int goldGain = monster.rewardGold + player.extraGold;
             player.totalGold += goldGain;
@@ -677,6 +679,8 @@ namespace WordJourney
 			battleMonsterCtr.ResetToWaitAfterCurrentRoleAnimEnd ();
 
 			expUICtr.QuitFight ();
+
+			//battlePlayerCtr.enemy = null;
          
 			//GameManager.Instance.persistDataManager.SaveCompletePlayerData();
 
@@ -832,8 +836,12 @@ namespace WordJourney
 
 				EnableExploreInteractivity();
 
-				battlePlayerCtr.isInEvent = false;
-
+				if(battlePlayerCtr.enemy != null){
+					battlePlayerCtr.isInEvent = true;
+				}else{
+					battlePlayerCtr.isInEvent = false;
+				}
+            
 				MapWalkableEventsStartAction();
 
 				if(saveFinishCallBack != null){

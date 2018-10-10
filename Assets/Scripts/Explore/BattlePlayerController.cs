@@ -102,6 +102,8 @@ namespace WordJourney
 		private bool refuseNewPath = false;
 
 		private CallBack moveEndCallBack;
+
+
         
 
         protected override void Awake()
@@ -124,7 +126,7 @@ namespace WordJourney
             isInEscaping = false;
 
             isInPosFixAfterFight = false;
-
+                    
             base.Awake();
 
         }
@@ -1293,6 +1295,7 @@ namespace WordJourney
 			escapeFromFight = false;
 			isInEscaping = false;
 			currentUsingActiveSkill = null;
+			//enemy = null;
 
 			boxCollider.enabled = true;
 

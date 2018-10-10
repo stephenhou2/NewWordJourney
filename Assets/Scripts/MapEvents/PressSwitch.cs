@@ -135,7 +135,7 @@ namespace WordJourney
 
 				tmPro.enabled = false;            
 
-				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.y)] = 1;
+				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray [Mathf.RoundToInt (transform.position.x), Mathf.RoundToInt (transform.position.y)] = 0;
 
 				int posX = Mathf.RoundToInt(this.transform.position.x);
                 int posY = Mathf.RoundToInt(this.transform.position.y);

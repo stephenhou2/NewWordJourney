@@ -11,6 +11,8 @@ namespace WordJourney
 
 		public Item currentSelectItem;
 
+		private CallBack quitCallBack;
+
 		void Awake(){
 			//Equipment equipment = Item.NewItemWith(99, 1) as Equipment;
 			//equipment.SetToGoldQuality();
@@ -21,11 +23,16 @@ namespace WordJourney
 			//Player.mainPlayer.AddItem(Item.NewItemWith(542, 1));
 
 			//Player.mainPlayer.AddItem(Item.NewItemWith(59, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(603, 10));
-                     
-			Player.mainPlayer.AddItem(Item.NewItemWith(601, 10));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(601, 1));
-			//Player.mainPlayer.AddItem(Item.NewItemWith(603, 1));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(602, 10));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(600, 10));
+   //         Player.mainPlayer.AddItem(Item.NewItemWith(601, 10));
+   //         Player.mainPlayer.AddItem(Item.NewItemWith(603, 10));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(604, 3));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(605, 3));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(606, 3));
+			//Player.mainPlayer.AddItem(Item.NewItemWith(607, 3));         
+			//Player.mainPlayer.AddItem(Item.NewItemWith(608, 3));
+
 
 			//Player.mainPlayer.AddItem(Item.NewItemWith(304, 10));
 			//Player.mainPlayer.AddItem(Item.NewItemWith(307, 10));
@@ -33,9 +40,11 @@ namespace WordJourney
 			//Player.mainPlayer.totalGold = 6666;
 		}
 
-      
 
-		public void SetUpBagView(bool setVisible){
+
+		public void SetUpBagView(bool setVisible, CallBack quitCallBack){
+
+			this.quitCallBack = quitCallBack;
 
 			bagView.SetUpBagView (setVisible);
 
@@ -353,14 +362,17 @@ namespace WordJourney
 			bagView.SetUpCurrentBagItemsPlane ();
 			ExploreManager.Instance.expUICtr.UpdateBottomBar();
 
+			PropertyChange propertyChange = new PropertyChange();
+
 			if (currentSelectItem.itemType == ItemType.Equipment) {
 				Equipment eqp = currentSelectItem as Equipment;
 				if (eqp.equiped) {
+					propertyChange = Player.mainPlayer.ResetBattleAgentProperties(false);
 					bagView.SetUpEquipedEquipmentsPlane ();
 				}
 			}
 
-			bagView.SetUpPlayerStatusPlane (new PropertyChange());
+			bagView.SetUpPlayerStatusPlane (propertyChange);
 
 			bagView.ClearItemDetail ();
 
@@ -386,6 +398,10 @@ namespace WordJourney
 			expUICtr.UpdateBottomBar ();
 
 			Time.timeScale = 1;
+
+			if(quitCallBack != null){
+				quitCallBack();
+			}
 
 		}
 

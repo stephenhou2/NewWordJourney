@@ -113,6 +113,17 @@ public static class ShareSDKPostProcessBuild
                         <key>NSExceptionAllowsInsecureHTTPLoads</key>
                         <true/>
                     </dict>
+                    <key>lofter.com</key>
+                    <dict>
+                        <key>NSExceptionMinimumTLSVersion</key>
+                        <string>TLSv1.0</string>
+                        <key>NSIncludesSubdomains</key>
+                        <true/>
+                        <key>NSExceptionRequiresForwardSecrecy</key>
+                        <false/>
+                        <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                        <true/>
+                    </dict>
                 </dict>
         </dict>
 

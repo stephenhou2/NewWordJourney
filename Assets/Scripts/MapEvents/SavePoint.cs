@@ -68,6 +68,8 @@ namespace WordJourney
 
             Player.mainPlayer.saveTowards = bp.towards;
 
+			//bool isInEvent = ExploreManager.Instance.battlePlayerCtr.isInEvent;
+
 			bp.ForceMoveToAndStopWhenEnconterWithMapEvent(new Vector3(transform.position.x,transform.position.y,0),delegate {
 
                 ExploreManager.Instance.SaveDataInExplore(delegate {
@@ -79,6 +81,9 @@ namespace WordJourney
                     PlayTriggerAnim();
 
 					autoDetect.isInSavingData = false;
+               
+					//ExploreManager.Instance.battlePlayerCtr.isInEvent = isInEvent;
+
 
 				});
 
@@ -132,6 +137,8 @@ namespace WordJourney
 
 			Player.mainPlayer.saveTowards = bp.towards;
 
+			//bool isInEvent = ExploreManager.Instance.battlePlayerCtr.isInEvent;
+
 			bp.StopMoveAtEndOfCurrentStep(delegate {
 			
 				ExploreManager.Instance.SaveDataInExplore(delegate {
@@ -143,6 +150,8 @@ namespace WordJourney
                     PlayTriggerAnim();
 
 					autoDetect.isInSavingData = false;
+
+					//ExploreManager.Instance.battlePlayerCtr.isInEvent = isInEvent;
                              
 				});
 

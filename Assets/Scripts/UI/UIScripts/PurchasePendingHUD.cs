@@ -167,7 +167,7 @@ namespace WordJourney
                     if (!TGController.IsCPAdReady)
                     {
                         TGController.QuickRereshAd();
-                        OnWatchAdFail(currentAdType);
+						OnAdNotReady();
                         return;
                     }
                     break;
@@ -175,7 +175,7 @@ namespace WordJourney
                     if (!TGController.IsRewardedVideoAdReady)
                     {
                         TGController.QuickRereshAd();
-                        OnWatchAdFail(currentAdType);
+						OnAdNotReady();
                         return;
                     }
                     break;
@@ -253,6 +253,15 @@ namespace WordJourney
             tintHUD.SetUpSingleTextTintHUD(purchaseResult);
 
             QuitPurchasePendingHUD();         
+		}
+
+		private void OnAdNotReady(){
+			
+			string purchaseResult = "广告仍在加载中，请稍后重试";
+
+            tintHUD.SetUpSingleTextTintHUD(purchaseResult);
+
+            QuitPurchasePendingHUD();
 		}
 
 		private void OnRewardFail(MyAdType adType)

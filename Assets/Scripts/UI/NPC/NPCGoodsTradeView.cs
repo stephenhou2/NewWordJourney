@@ -392,6 +392,14 @@ namespace WordJourney
 
             ExploreManager.Instance.expUICtr.UpdateBottomBar();
 
+			if(currentSelectedItem.itemType == ItemType.Equipment){
+				Equipment equipment = currentSelectedItem as Equipment;
+			    if(equipment.equiped){
+					player.ResetBattleAgentProperties(false);
+			    }
+			}
+
+
             if (totallyRemoveFromBag)
             {
                 currentSelectedItem = null;

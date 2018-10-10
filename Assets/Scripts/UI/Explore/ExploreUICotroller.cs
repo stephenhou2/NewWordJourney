@@ -109,9 +109,13 @@ namespace WordJourney
 
 		public Transform finishGameQueryHUD;
 
+		public bool rejectNewUI;
+
 
 		public void SetUpExploreCanvas()
 		{
+
+			rejectNewUI = false;
 
 			wordRecords = GameManager.Instance.gameDataCenter.currentMapWordRecords;
 
@@ -187,8 +191,9 @@ namespace WordJourney
 
 					GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
 					{
-						TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(null);
-						ExploreManager.Instance.MapWalkableEventsStartAction();
+						TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(delegate {
+							ExploreManager.Instance.MapWalkableEventsStartAction();
+						});
 					});
 					transitionMask.gameObject.SetActive(false);
 
@@ -283,7 +288,10 @@ namespace WordJourney
 
 					TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, null, delegate
 					{
-						GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.homeCanvasBundleName, "HomeCanvas", null);
+						GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.homeCanvasBundleName, "HomeCanvas", delegate {
+
+							TransformManager.FindTransform("HomeCanvas").GetComponent<HomeViewController>().homeView.PlayRecordHint();
+						});
 					});
 
 				});
@@ -417,11 +425,18 @@ namespace WordJourney
 			IEnumerator transitionMaskDisplayCoroutine = TransitionMaskShowAndHide(cb);
 			StartCoroutine(transitionMaskDisplayCoroutine);
 		}
-
-		public void SetUpUnlockDoorView(List<SpecialItem> keys, int doorDifficulty, CallBack unlockSuccessCallBack, CallBack unlockFailCallBack)
+        
+		public void SetUpUnlockDoorView(List<SpecialItem> keys, HLHWord keyDoorWord, CallBack unlockSuccessCallBack, CallBack unlockFailCallBack)
 		{
 			ExploreManager.Instance.MapWalkableEventsStopAction();
-			keyDoorOperatorView.SetUpKeyDoorOperatorView(keys, doorDifficulty, unlockSuccessCallBack, unlockFailCallBack);
+			keyDoorOperatorView.SetUpKeyDoorOperatorView(keys, keyDoorWord, delegate (HLHWord word){
+				UpdateWordRecords(new List<HLHWord> { word });
+				unlockSuccessCallBack();
+				if (word != null)
+				{
+					SetUpWordDetailHUD(true, null);
+				}             
+			}, unlockFailCallBack);
 		}
 
 		public void UpdateMiniMapDisplay(Vector3 playerPos)
@@ -597,7 +612,9 @@ namespace WordJourney
 			{
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.guideCanvasBundleName, "GuideCanvas", delegate
 				{
-					TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(ExploreManager.Instance.MapWalkableEventsStartAction);
+					TransformManager.FindTransform("GuideCanvas").GetComponent<GuideViewController>().ShowNewPlayerGuide(delegate {
+						ExploreManager.Instance.MapWalkableEventsStartAction();
+					});
 					HideExploreMask();
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
 					hintHUD.SetUpSingleTextTintHUD("数据已存档");
@@ -859,7 +876,13 @@ namespace WordJourney
 
 		public void OnWordRecordDetailButtonClick()
 		{
+			if(rejectNewUI){
+				return;
+			}
+
 			ExploreManager.Instance.MapWalkableEventsStopAction();
+			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
+			rejectNewUI = true;
 			SetUpWordDetailHUD(true, null);
 		}
 
@@ -872,9 +895,11 @@ namespace WordJourney
 				HLHWord word = wordRecords[wordRecords.Count - 1];
 				wordDetailHUD.SetUpWordDetailHUD(wordRecords, delegate
 				{
+					rejectNewUI = false;
+
 					if (quitCallBack != null)
 					{
-						quitCallBack();
+						quitCallBack();                  
 					}
 					if (!controlMoveWhenQuit)
 					{
@@ -933,19 +958,20 @@ namespace WordJourney
 					continue;
 				}
 
-				bool update = true;
+				//bool update = true;
 				for (int j = 0; j < wordRecords.Count; j++)
 				{
 					if (wordRecords[j].wordId == word.wordId)
 					{
-						update = false;
+						//update = false;
+						wordRecords.RemoveAt(j);
 						break;
 					}
 				}
-				if (update)
-				{
+				//if (update)
+				//{
 					wordRecords.Add(words[i]);
-				}
+				//}
 			}
 			if (words.Count > 0 && words[words.Count - 1] != null)
 			{
@@ -1201,7 +1227,9 @@ namespace WordJourney
 				transitionMask.color = Color.black;
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
                 {
-                    TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, ExploreManager.Instance.QuitExploreScene, null);
+                    TransformManager.FindTransform("LoadingCanvas").GetComponent<LoadingViewController>().SetUpLoadingView(LoadingType.QuitExplore, delegate {
+						ExploreManager.Instance.QuitExploreScene();         
+			        }, null);
                 });
 
 			});

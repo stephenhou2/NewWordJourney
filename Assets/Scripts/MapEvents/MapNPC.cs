@@ -18,7 +18,7 @@ namespace WordJourney
 
         public bool needPosFix;
 
-		private IEnumerator delayMoveCoroutine;
+		//private IEnumerator delayMoveCoroutine;
 
 
         public override void AddToPool(InstancePool pool)
@@ -238,6 +238,13 @@ namespace WordJourney
 
         public override void EnterMapEvent(BattlePlayerController bp)
         {
+			if(ExploreManager.Instance.expUICtr.rejectNewUI){
+				bp.isInEvent = false;
+				return;
+			}
+
+			ExploreManager.Instance.expUICtr.rejectNewUI = true;
+
             if (isInMoving)
             {
                 RefreshWalkableInfoWhenTriggeredInMoving();
@@ -245,7 +252,7 @@ namespace WordJourney
 
             bp.isInEvent = true;
 
-            bp.StopMoveAndWait();
+            //bp.StopMoveAndWait();
 
             bp.FixPositionToStandard();
 

@@ -206,6 +206,8 @@ namespace WordJourney
                  
 			ExploreManager.Instance.expUICtr.HideTopBarMask();
 
+			ExploreManager.Instance.expUICtr.rejectNewUI = false;
+
 			if (npc == null) {
 				return;
 			}

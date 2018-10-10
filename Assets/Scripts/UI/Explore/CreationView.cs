@@ -20,6 +20,8 @@ namespace WordJourney
 		public Transform createButton;
 
 		private CallBack spellCallBack;
+
+		public TintHUD hintHUD;
               
 		public void InitCharacterFragmentsHUD(CallBack spellCallBack){
 			this.spellCallBack = spellCallBack;
@@ -28,7 +30,15 @@ namespace WordJourney
 
 		private void UpdateCharacterFragmentsButton(){
 
-			createButton.gameObject.SetActive(CharactersEnoughToSpell());
+			bool charactersEnough = CharactersEnoughToSpell();
+
+			if(charactersEnough){
+				createButton.gameObject.SetActive(true);
+				hintHUD.SetUpSingleTextTintHUD("这些碎片好像可以创造出什么东西");
+			}else{
+				createButton.gameObject.SetActive(false);
+			}
+
 
 		}
 

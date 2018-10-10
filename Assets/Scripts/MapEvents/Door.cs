@@ -139,6 +139,8 @@ namespace WordJourney
                 {
                     word = GetAValidWord();               
                 }
+
+				GameManager.Instance.pronounceManager.DownloadPronounceCache(word);
             }
 
 		}

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	using System.Data;
 
 	public enum KeyType{
 		Iron,
@@ -19,6 +20,8 @@ namespace WordJourney
 		//private KeyType keyType;
 
 		private int unlockDifficulty;
+
+		public HLHWord keyDoorWord;
 
 		private void UnlockDoorSuccessCallBack()
         {
@@ -89,9 +92,36 @@ namespace WordJourney
            
             bc2d.enabled = true;
             SetSortingOrder(-(int)transform.position.y);
-                     
+                    
+			int wordLength = unlockDifficulty + 3;
+
+			keyDoorWord = GetWordOfLength(wordLength);
+
         }
 
+		private HLHWord GetWordOfLength(int length)
+        {
+
+            string currentTableName = LearningInfo.Instance.GetCurrentLearningWordsTabelName();
+
+            string query = string.Format("SELECT * FROM {0} WHERE wordLength={1} ORDER BY RANDOM() LIMIT 1", currentTableName, length);
+
+            MySQLiteHelper sql = MySQLiteHelper.Instance;
+
+            sql.GetConnectionWith(CommonData.dataBaseName);
+
+            IDataReader reader = sql.ExecuteQuery(query);
+
+            reader.Read();
+
+            HLHWord word = MyTool.GetWordFromReader(reader);
+
+			GameManager.Instance.pronounceManager.DownloadPronounceCache(word);
+
+            //sql.CloseConnection(CommonData.dataBaseName);
+
+            return word;
+        }
         
         /// <summary>
         /// 查找人物身上对应的钥匙
@@ -175,7 +205,7 @@ namespace WordJourney
             }
             else
             {
-				ExploreManager.Instance.expUICtr.SetUpUnlockDoorView(keys, unlockDifficulty, UnlockDoorSuccessCallBack,UnlockDoorFailCallBack);
+				ExploreManager.Instance.expUICtr.SetUpUnlockDoorView(keys, keyDoorWord, UnlockDoorSuccessCallBack,UnlockDoorFailCallBack);
 				GameManager.Instance.soundManager.PlayAudioClip(CommonData.keyAudioName);
             }
         }

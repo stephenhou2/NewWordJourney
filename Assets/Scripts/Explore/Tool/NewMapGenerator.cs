@@ -307,19 +307,14 @@ namespace WordJourney
 			if(HLHGameLevelData.HasDiaryPaper() && !MapEventsRecord.IsDiaryFinish(mapIndex)){
 				GenerateDiaryPaper();
 			}
-                     
+
 			mySql.CloseConnection(CommonData.dataBaseName);
 
 			DestroyUnusedMapInstances();
 
-			//AllSavePointsIntoUse();
 		}
         
-		//private void AllSavePointsIntoUse(){
-		//	for (int i = 0; i < allSavePointsInMap.Count;i++){
-		//		allSavePointsInMap[i].isInSavingData = false;
-		//	}
-		//}
+
 
 		private void GenerateDiaryPaper(){
 
@@ -612,6 +607,8 @@ namespace WordJourney
 			// 获取当前地图中要使用的单词
 			HLHWord[] words = InitLearnWordsInMap (mapEventCount);
 
+			CacheWordsPronounciation(words);
+
 			// 生成一个记录可使用单词序号的列表
 			List<int> unusedWordIndexRecordList = new List<int> ();
 
@@ -739,9 +736,25 @@ namespace WordJourney
 
 				}
 
-			}
+			}         
+
     		return words;
     	}
+
+        /// <summary>
+        /// 预缓存本关所有单词的发音数据
+        /// </summary>
+        /// <param name="words">Words.</param>
+		private void CacheWordsPronounciation(HLHWord[] words){
+
+			for (int i = 0; i < words.Length;i++){
+				
+				HLHWord word = words[i];
+
+				GameManager.Instance.pronounceManager.DownloadPronounceCache(word);
+			}
+
+		}
 
 
 

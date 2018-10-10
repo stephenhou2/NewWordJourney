@@ -229,6 +229,8 @@ namespace WordJourney
 
 			int sharePlaneFixY = (int)(sharePlane.localPosition.y * transferScaler);
 
+			Debug.LogFormat("3y:{0}",sharePlane.localPosition.y);
+
 			int offsetYFix = (int)(shareShotcutRect.localPosition.y * transferScaler);         
 			int offsetX = (texture.width - shareHUDWidth) / 2;
 

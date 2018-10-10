@@ -281,12 +281,22 @@ namespace WordJourney
 		/// </summary>
 		public void OnBagButtonClick(){
 
+			if(ExploreManager.Instance.expUICtr.rejectNewUI){
+				return;
+			}
+
 			Time.timeScale = 0;
+
+			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
+
+			ExploreManager.Instance.expUICtr.rejectNewUI = true;
 
 			// 初始化背包界面并显示
 			GameManager.Instance.UIManager.SetUpCanvasWith (CommonData.bagCanvasBundleName, "BagCanvas", () => {
 				Transform bagCanvas = TransformManager.FindTransform("BagCanvas");
-				bagCanvas.GetComponent<BagViewController>().SetUpBagView(true);
+				bagCanvas.GetComponent<BagViewController>().SetUpBagView(true,delegate {               
+					ExploreManager.Instance.expUICtr.rejectNewUI = false;
+				});
 			}, false,true);
 
 		}

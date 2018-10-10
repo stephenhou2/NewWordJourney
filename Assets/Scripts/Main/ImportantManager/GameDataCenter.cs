@@ -53,7 +53,8 @@ namespace WordJourney
 			HomeCanvas,
 			LoadingCanvas,
 			GuideCanvas,
-			PlayRecordCanvas
+			PlayRecordCanvas,
+            UpdateDataCanvas
 		}
 
 		private GameSettings mGameSettings;
@@ -118,7 +119,9 @@ namespace WordJourney
 			{
 				return;
 			}
+
 			mGameSettings = DataHandler.LoadDataToSingleModelWithPath<GameSettings>(CommonData.gameSettingsDataFilePath);
+
 			if (mGameSettings == null)
 			{
 				mGameSettings = new GameSettings();
@@ -130,11 +133,7 @@ namespace WordJourney
 
 			string mapDataFilePath = string.Format("{0}/MapData/Level_{1}.json", CommonData.persistDataPath, level);
 
-			//Debug.Log(DataHandler.FileExist(mapDataFilePath));
-
 			HLHMapData mapData = DataHandler.LoadDataToSingleModelWithPath<HLHMapData>(mapDataFilePath);
-
-			//Debug.Log(mapData);
 
 			return mapData;
 
@@ -160,7 +159,13 @@ namespace WordJourney
 		public void LoadGameLevelDatas()
 		{
 			HLHGameLevelData[] gameLevelDatasArray = DataHandler.LoadDataToModelsWithPath<HLHGameLevelData>(CommonData.gameLevelDataFilePath);
+         
+			if(gameLevelDatasArray == null){
+				return;
+			}
+
 			mGameLevelDatas.Clear();
+
 			for (int i = 0; i < gameLevelDatasArray.Length; i++)
 			{
 				mGameLevelDatas.Add(gameLevelDatasArray[i]);
@@ -187,10 +192,17 @@ namespace WordJourney
 			{
 				return;
 			}
-			EquipmentModel[] itemModels = DataHandler.LoadDataToModelsWithPath<EquipmentModel>(CommonData.equipmentDataFilePath);
-			for (int i = 0; i < itemModels.Length; i++)
+
+			EquipmentModel[] equipmentModels = DataHandler.LoadDataToModelsWithPath<EquipmentModel>(CommonData.equipmentDataFilePath);
+
+			if (equipmentModels == null)
+            {
+                return;
+            }
+
+			for (int i = 0; i < equipmentModels.Length; i++)
 			{
-				mAllEquipmentModels.Add(itemModels[i]);
+				mAllEquipmentModels.Add(equipmentModels[i]);
 			}
 		}
 
@@ -213,7 +225,14 @@ namespace WordJourney
 			{
 				return;
 			}
+
 			ConsumablesModel[] consumablesModels = DataHandler.LoadDataToModelsWithPath<ConsumablesModel>(CommonData.consumablesDataFilePath);
+
+			if (consumablesModels == null)
+            {
+                return;
+            }
+
 			for (int i = 0; i < consumablesModels.Length; i++)
 			{
 				mAllConsumablesModels.Add(consumablesModels[i]);
@@ -239,7 +258,14 @@ namespace WordJourney
 			{
 				return;
 			}
+
 			PropertyGemstoneModel[] propertyGemstoneModels = DataHandler.LoadDataToModelsWithPath<PropertyGemstoneModel>(CommonData.propertyGemstoneDataFilePath);
+
+			if (propertyGemstoneModels == null)
+            {
+                return;
+            }
+
 			for (int i = 0; i < propertyGemstoneModels.Length; i++)
 			{
 				mAllPropertyGemstoneModels.Add(propertyGemstoneModels[i]);
@@ -265,7 +291,14 @@ namespace WordJourney
 			{
 				return;
 			}
+
 			SkillScrollModel[] skillScrollModels = DataHandler.LoadDataToModelsWithPath<SkillScrollModel>(CommonData.skillScrollDataFilePath);
+
+			if (skillScrollModels == null)
+            {
+                return;
+            }
+
 			for (int i = 0; i < skillScrollModels.Length; i++)
 			{
 				mAllSkillScrollModels.Add(skillScrollModels[i]);
@@ -290,7 +323,13 @@ namespace WordJourney
 			{
 				return;
 			}
+
 			SpecialItemModel[] specialItemModels = DataHandler.LoadDataToModelsWithPath<SpecialItemModel>(CommonData.specialItemDataFilePath);
+
+			if (specialItemModels == null)
+            {
+                return;
+            }
 
 			for (int i = 0; i < specialItemModels.Length; i++)
 			{
@@ -320,6 +359,10 @@ namespace WordJourney
 			}
 
 			SpellItemModel[] spellItemModels = DataHandler.LoadDataToModelsWithPath<SpellItemModel>(CommonData.spellItemDataFilePath);
+
+			if(spellItemModels == null){
+				return;
+			}
 
 			for (int i = 0; i < spellItemModels.Length; i++)
 			{
@@ -353,6 +396,10 @@ namespace WordJourney
 
 			HLHSentenceAndPoem[] proverbs = DataHandler.LoadDataToModelsWithPath<HLHSentenceAndPoem>(CommonData.proverbsDataFilePath);
 
+			if(proverbs == null){
+				return;
+			}
+         
 			for (int i = 0; i < proverbs.Length; i++)
 			{
 				mAllProverbs.Add(proverbs[i]);
@@ -390,6 +437,10 @@ namespace WordJourney
 			}
 
 			Puzzle[] puzzles = DataHandler.LoadDataToModelsWithPath<Puzzle>(CommonData.puzzlesDataFilePath);
+
+			if(puzzles == null){
+				return;
+			}
 
 			for (int i = 0; i < puzzles.Length; i++)
 			{
@@ -434,6 +485,10 @@ namespace WordJourney
 
 			DiaryModel[] diaryModelArray = DataHandler.LoadDataToModelsWithPath<DiaryModel>(CommonData.diaryDataFilePath);
 
+			if(diaryModelArray == null){
+				return;
+			}
+
 			for (int i = 0; i < diaryModelArray.Length; i++)
 			{
 				mAllDiaryModels.Add(diaryModelArray[i]);
@@ -463,28 +518,19 @@ namespace WordJourney
 				mCurrentMapMiniMapRecord = value;
 			}
 		}
-
-
-	
-
-		//public MiniMapRecord GetMiniMapRecordAt(int mapIndex){
-
-		//	MiniMapRecord record = null;
-
-		//	record = allMiniMapRecords.Find(delegate (MiniMapRecord obj)
-		//	{
-		//		return obj.mapIndex == mapIndex;
-		//	});
-
-		//	return record;
-
-		//}
+      
 
 		public List<HLHWord> currentMapWordRecords{
 			get
 			{
 				if (mCurrentMapWordRecords.Count == 0){
+					
 					HLHWord[] wordsArray = DataHandler.LoadDataToModelsWithPath<HLHWord>(CommonData.currentMapWordsRecordsFilePath);
+
+					if(wordsArray == null){
+						return null;
+					}
+
 					for (int i = 0; i < wordsArray.Length;i++){
 						mCurrentMapWordRecords.Add(wordsArray[i]);
 					}
@@ -782,6 +828,10 @@ namespace WordJourney
 
 			PlayRecord[] playRecords = DataHandler.LoadDataToModelsWithPath<PlayRecord>(CommonData.playRecordsFilePath);
 
+			if(playRecords == null){
+				return;
+			}
+
 			for (int i = 0; i < playRecords.Length;i++){
 				PlayRecord playRecord = playRecords[i];
 				mAllPlayRecords.Add(playRecord);
@@ -807,6 +857,10 @@ namespace WordJourney
 			GameObject[] skillCache = MyResourceManager.Instance.LoadAssets<GameObject> (CommonData.allSkillsBundleName);
 
 			Transform skillsContainer = TransformManager.FindOrCreateTransform ("AllSkills");
+
+			if(skillCache == null){
+				return;
+			}
 
 			for (int i = 0; i < skillCache.Length; i++) {
 				GameObject skill = GameObject.Instantiate (skillCache [i]);
@@ -905,6 +959,10 @@ namespace WordJourney
 
 			HLHNPCChatRecord[] chatRecordsArray = DataHandler.LoadDataToModelsWithPath<HLHNPCChatRecord>(CommonData.chatRecordsFilePath);
 
+			if(chatRecordsArray == null){
+				return;
+			}
+
 			for (int i = 0; i < chatRecordsArray.Length;i++){
 
 				mChatRecords.Add(chatRecordsArray[i]);
@@ -931,6 +989,10 @@ namespace WordJourney
 			}
 
 			MapEventsRecord[] mapEventsRecordsArray = DataHandler.LoadDataToModelsWithPath<MapEventsRecord>(CommonData.mapEventsRecordFilePath);
+
+			if(mapEventsRecordsArray == null){
+				return;
+			}
 
 			if(mapEventsRecordsArray.Length == 0){
 				GameManager.Instance.persistDataManager.ResetMapEventsRecord();
@@ -995,7 +1057,13 @@ namespace WordJourney
 			if(mAllMonstersData.Count > 0){
 				return;
 			}
+
 			MonsterData[] mMonstersDataArray = DataHandler.LoadDataToModelsWithPath<MonsterData>(CommonData.monstersDataFilePath);
+
+			if(mMonstersDataArray == null){
+				return;
+			}
+
 			for (int i = 0; i < mMonstersDataArray.Length;i++){
 				mAllMonstersData.Add(mMonstersDataArray[i]);
 			}
@@ -1021,6 +1089,10 @@ namespace WordJourney
 			Transform effectsContainer = TransformManager.FindOrCreateTransform ("AllEffects");
 
             effectsContainer.position = new Vector3(1000, 0, 0);
+
+			if(effectCache == null){
+				return;
+			}
 
 			for (int i = 0; i < effectCache.Length; i++) {
 				GameObject effect = GameObject.Instantiate (effectCache [i]);
@@ -1194,6 +1266,9 @@ namespace WordJourney
     				break;
 				case GameDataType.PlayRecordCanvas:
 					GameManager.Instance.UIManager.RemoveCanvasCache("PlayRecordCanvas");
+					break;
+				case GameDataType.UpdateDataCanvas:
+					GameManager.Instance.UIManager.RemoveCanvasCache("UpdateDataCanvas");
 					break;
 
 			}

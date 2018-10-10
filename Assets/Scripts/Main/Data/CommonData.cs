@@ -42,7 +42,8 @@ namespace WordJourney{
 			new KVPair("PlayRecordData","/Data/PlayRecords.json"),
 			new KVPair("MiniMapRecordData","/Data/CurrentMapMiniMapRecord.json"),
 			new KVPair("CurrentMapEventsRecordData","/Data/CurrentMapEventsRecord.json"),
-			new KVPair("CurrentMapWordsRecordData","/Data/CurrentMapWordsRecord.json")
+			new KVPair("CurrentMapWordsRecordData","/Data/CurrentMapWordsRecord.json"),
+			new KVPair("ApplicationInfo","/Data/ApplicationInfo.json")
 		};
 
 
@@ -65,6 +66,7 @@ namespace WordJourney{
 		public static string monstersDataFilePath = persistDataPath + "/MonstersData.json";
 
 		public static string buyRecordFilePath = persistDataPath + "/BuyRecord.json";
+		public static string applicationInfoFilePath = persistDataPath + "/ApplicationInfo.json";
 		public static string chatRecordsFilePath = persistDataPath + "/ChatRecords.json";
 		public static string mapEventsRecordFilePath = persistDataPath + "/MapEventsRecord.json";
 		public static string currentMapWordsRecordsFilePath = persistDataPath + "/CurrentMapWordsRecord.json";
@@ -75,6 +77,7 @@ namespace WordJourney{
 
 
 		public static string dataBaseName = "MyGameDB.db";
+		public static string dataBaseFilePath = persistDataPath + "/MyGameDB.db";
 		public static string dbPassword = "Wordcastle_eltsacdrow";
 
 
@@ -98,8 +101,7 @@ namespace WordJourney{
 		public static string allEffectsBundleName = "skills/effects";
 		public static string finalChapterCanvasBundleName = "finalchapter/canvas";
 		public static string playRecordCanvasBundleName = "playrecord/canvas";
-#warning 身份验证bundle正式打包时去掉
-		public static string identifyCanvasBundleName = "identify/canvas";
+		public static string updateDataCanvasBundleName = "updatedata/canvas";
 
 		public static string allEquipmentSpritesBundleName = "item/equipment_icons";
 		public static string allConsumablesSpritesBundleName = "item/consumables_icons";
@@ -248,7 +250,7 @@ namespace WordJourney{
 
 		public static int aInASCII = (int)('a');
 
-		public static float HWScalerOfCurrentScreen = Camera.main.pixelHeight / Camera.main.pixelWidth;
+		public static float HWScalerOfCurrentScreen = (float)Camera.main.pixelHeight / Camera.main.pixelWidth;
 
 		// 当前屏幕分辨率和预设屏幕分辨率之间的转换比例
 		public static float scalerToPresetResulotion = 1920f / Camera.main.pixelHeight;

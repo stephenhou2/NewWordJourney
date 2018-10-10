@@ -75,6 +75,11 @@ namespace WordJourney
 		//实际使用时可以把下面的字符串给注释掉
 		//public static string adMsg = "当前的状态是";
 
+		private static bool isRewardVedioComplete;
+
+		private static bool isRewardVedioSuccuss;
+
+
 		//唤起的时候进行初始化
 		private void Awake()
 		{
@@ -96,7 +101,7 @@ namespace WordJourney
 				return;
 			}
 			//设置当前为debug模式
-			TGSDK.SetDebugModel(true);
+			//TGSDK.SetDebugModel(true);
 			//初始化结束后的回调
 			TGSDK.SDKInitFinishedCallback = (string msg) =>
 			{
@@ -169,7 +174,10 @@ namespace WordJourney
 			TGSDK.AdShowFailedCallback = (string msg) =>
 			{
 				Debug.Log("AdShowFailedCallback : " + msg);
-				//adMsg = "AdShowFailedCallback" + msg;
+
+				isRewardVedioSuccuss = false;
+				isRewardVedioComplete = false;
+
 				//展示失败的时候设置回调的函数
 				if (adFailureCallBack.Method != null)
 				{
@@ -181,13 +189,13 @@ namespace WordJourney
 			TGSDK.AdCompleteCallback = (string msg) =>
 			{
 				Debug.Log("AdCompleteCallback : " + msg);
-				//adMsg = "AdCompleteCallback" + msg;            
+ 
+				isRewardVedioComplete = true;
 			};
 
 			TGSDK.AdCloseCallback = (string msg) =>
 			{
 				Debug.Log("AdCloseCallback : " + msg);
-				//adMsg = "AdCloseCallback" + msg;
 
 				//根据当前不同的广告类型给与奖励
 				if (currentAdType == MyAdType.CPAd)
@@ -198,45 +206,40 @@ namespace WordJourney
 						adSuccessCallBack(currentAdType);
 					}
 
-				}             
+				} else if(currentAdType == MyAdType.RewardedVideoAd){
+
+					if(isRewardVedioSuccuss || isRewardVedioComplete){
+
+						if(adSuccessCallBack != null){
+							adSuccessCallBack(currentAdType);
+						}
+
+					}else{
+
+						if(adRewardFailCallBack != null){
+							adRewardFailCallBack(currentAdType);
+						}
+
+					}
+    			}                 
 			};
 
 			TGSDK.AdClickCallback = (string msg) =>
 			{
 				Debug.Log("AdClickCallback : " + msg);
-				//adMsg = "AdClickCallback" + msg;
 			};
 
 			TGSDK.AdRewardSuccessCallback = (string msg) =>
 			{
 				Debug.Log("AdRewardSuccessCallback : " + msg);
-				//adMsg = "AdRewardSuccessCallback" + msg;
 
-				//根据不同的类型给与奖励
-                if (currentAdType == MyAdType.RewardedVideoAd)
-                {
-                    // 执行插屏广告的奖励回调
-                    if (adSuccessCallBack.Method != null)
-                    {
-                        adSuccessCallBack(currentAdType);
-                    }
-                }
-
-
+				isRewardVedioSuccuss = true;            
 			};
 			TGSDK.AdRewardFailedCallback = (string msg) =>
 			{
 				Debug.Log("AdRewardFailedCallback : " + msg);
-				//adMsg = "AdRewardFailedCallback" + msg;
 
-				// 奖励失败时的回调
-				if (currentAdType == MyAdType.RewardedVideoAd)
-				{
-					if (adRewardFailCallBack != null)
-					{
-						adRewardFailCallBack(currentAdType);
-					}
-				}
+				isRewardVedioSuccuss = false;            
 			};
 
 
@@ -264,6 +267,9 @@ namespace WordJourney
 			TGController.adSuccessCallBack = successCallBack;
 			TGController.adFailureCallBack = failCallBack;
 			TGController.adRewardFailCallBack = adRewardFailCallBack;
+
+			isRewardVedioSuccuss = false;
+			isRewardVedioComplete = false;
                      
 			string sceneId = "";
 			switch (myAdType)

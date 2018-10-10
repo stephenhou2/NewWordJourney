@@ -8,15 +8,7 @@ using System.Collections.Generic;
 
 namespace WordJourney
 {
-	//[System.Serializable]
-	//public class QualifiedUserInfo
-  //  {
-		//public string nickName;
-		//public string identifier;
-		//public string uniqueDeviceId;
-		//public string deviceType;
 
-    //}
 
 	public class GameLoader : MonoBehaviour
 	{
@@ -42,7 +34,7 @@ namespace WordJourney
 
 		public bool dataReady;
 
-		public bool indentifyAndroidDevice;
+		//public bool indentifyAndroidDevice;
 
 		void Awake()
 		{
@@ -63,33 +55,17 @@ namespace WordJourney
 		void Start()
 		{
 
-#warning 正式打包这里不做身份验证
-#if UNITY_ANDROID
-			DirectoryInfo persistDi = new DirectoryInfo(CommonData.persistDataPath);
-			bool needCheckQualification = !persistDi.Exists;
-			if(needCheckQualification && indentifyAndroidDevice){
-				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.identifyCanvasBundleName, "IdentifyCanvas", delegate
-				{
-					TransformManager.FindTransform("IdentifyCanvas").GetComponent<IdentifyViewController>().SetUpIdentifyView(delegate{
-						GameManager.Instance.UIManager.RemoveCanvasCache("IdentifyCanvas");
-						PersistData();                  
-				    });
+			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.updateDataCanvasBundleName, "UpdateDataCanvas", delegate
+			{
+				TransformManager.FindTransform("UpdateDataCanvas").GetComponent<UpdateDataViewController>().SetUpUpdateDataView();
 
-				});
-			}else{
-				PersistData();
-			}
-#elif UNITY_IOS
+			});
+                     
 			PersistData();   
-#endif
-			      
+      
 		}
 
-       
-
-
-
-
+             
 		private IEnumerator InitData()
 		{
 
@@ -107,28 +83,7 @@ namespace WordJourney
 			}
 
 			dataReady = true;
-
-			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.homeCanvasBundleName, "HomeCanvas", () =>
-			{
-
-				HomeViewController homeViewController = TransformManager.FindTransform("HomeCanvas").GetComponent<HomeViewController>();
-
-				homeViewController.SetUpHomeView();
-            
-				if (Application.internetReachability == NetworkReachability.NotReachable)
-				{
-					homeViewController.homeView.ShowNoAvalableNetHintHUD();
-				}
-				else
-				{
-					homeViewController.homeView.HideNoAvalableNetHintHUD();
-				}
-
-				GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
-
-			});
-
-			//CheckItemSprites();
+			Debug.Log("data ready");
 
 		}
 
@@ -151,26 +106,64 @@ namespace WordJourney
 
 		private void OnVersionUpdate(CheckDataModel checkData,MySQLiteHelper sql){
          
-            DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(checkData.chatRecords, CommonData.chatRecordsFilePath);
-            DataHandler.SaveInstanceListToFile<MapEventsRecord>(checkData.mapEventsRecords, CommonData.mapEventsRecordFilePath);
-            DataHandler.SaveInstanceDataToFile<GameSettings>(checkData.gameSettings, CommonData.gameSettingsDataFilePath);
-			DataHandler.SaveInstanceDataToFile<MiniMapRecord>(checkData.miniMapRecord, CommonData.miniMapRecordFilePath);
-            DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(checkData.currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);
-			DataHandler.SaveInstanceListToFile<PlayRecord>(checkData.playRecords, CommonData.playRecordsFilePath);
-
+			if(checkData.chatRecords != null && checkData.chatRecords.Count > 0){
+				DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(checkData.chatRecords, CommonData.chatRecordsFilePath);
+            }
+			if(checkData.mapEventsRecords != null && checkData.mapEventsRecords.Count > 0){
+				DataHandler.SaveInstanceListToFile<MapEventsRecord>(checkData.mapEventsRecords, CommonData.mapEventsRecordFilePath);
+            }
+			if(checkData.gameSettings != null){
+				DataHandler.SaveInstanceDataToFile<GameSettings>(checkData.gameSettings, CommonData.gameSettingsDataFilePath);
+            }
+			if(checkData.miniMapRecord != null){
+				DataHandler.SaveInstanceDataToFile<MiniMapRecord>(checkData.miniMapRecord, CommonData.miniMapRecordFilePath);
+            }
+			if(checkData.currentMapEventsRecord != null){
+				DataHandler.SaveInstanceDataToFile<CurrentMapEventsRecord>(checkData.currentMapEventsRecord, CommonData.currentMapEventsRecordFilePath);  
+            }
+			if(checkData.playRecords != null){
+				DataHandler.SaveInstanceListToFile<PlayRecord>(checkData.playRecords, CommonData.playRecordsFilePath);
+            }
+			if (checkData.buyRecord != null)
+            {
+                DataHandler.SaveInstanceDataToFile<BuyRecord>(checkData.buyRecord, CommonData.buyRecordFilePath, true);
+            }
 
             sql.GetConnectionWith(CommonData.dataBaseName);
             sql.BeginTransaction();
 
-			UpdateWordsDataBase(sql, 0, checkData.learnedWordsInSimple);
-			UpdateWordsDataBase(sql, 1, checkData.learnedWordsInMedium);
-			UpdateWordsDataBase(sql, 2, checkData.learnedWordsInMaster);
+			if (checkData.learnedWordsInSimple.Count > 0){
+				Debug.Log(checkData.learnedWordsInSimple.Count);
+				UpdateWordsDataBase(sql, 0, checkData.learnedWordsInSimple);
+			}
+
+			if(checkData.learnedWordsInMedium.Count > 0){
+				UpdateWordsDataBase(sql, 1, checkData.learnedWordsInMedium);
+			}
+
+			if(checkData.learnedWordsInMaster.Count > 0){
+				UpdateWordsDataBase(sql, 2, checkData.learnedWordsInMaster);
+			}
+
 
             sql.EndTransaction();
 
             sql.CloseConnection(CommonData.dataBaseName);
 
-			WordType wordType = checkData.gameSettings.wordType;
+			WordType wordType = WordType.Simple;
+
+			if(checkData.gameSettings != null){
+				wordType = checkData.gameSettings.wordType;
+            }
+
+			ApplicationInfo.Instance.currentVersion = GameManager.Instance.currentVersion;
+
+			DataHandler.SaveInstanceDataToFile<ApplicationInfo>(ApplicationInfo.Instance,CommonData.applicationInfoFilePath);
+
+			if(checkData.playerData == null){
+				GameManager.Instance.persistDataManager.SaveCompletePlayerData();
+				return;
+			}
 
 			if(checkData.playerData.currentExploreStartDateString == null 
 			   || checkData.playerData.currentExploreStartDateString == string.Empty){
@@ -219,41 +212,41 @@ namespace WordJourney
 				checkData.playerData.wordContinuousRightRecord = 0;
 			}
 
-			bool hasOldVersionTitle = false;
-
-			for (int i = 0; i < checkData.playerData.titleQualifications.Length;i++){
-				if(checkData.playerData.titleQualifications[i]){
-					hasOldVersionTitle = true;
-					break;
+			if(checkData.playerData.titleQualifications != null){
+				
+				bool hasOldVersionTitle = false;
+				
+				for (int i = 0; i < checkData.playerData.titleQualifications.Length;i++){
+					if(checkData.playerData.titleQualifications[i]){
+						hasOldVersionTitle = true;
+						break;
+					}
 				}
-			}
-
-			if(hasOldVersionTitle){
-				switch (wordType)
-                {
-                    case WordType.Simple:
-						Player.mainPlayer.titleQualificationsOfSimple = checkData.playerData.titleQualifications;
-						checkData.playerData.titleQualificationsOfSimple = checkData.playerData.titleQualifications;
-                        break;
-                    case WordType.Medium:
-						Player.mainPlayer.titleQualificationsOfMedium = checkData.playerData.titleQualifications;
-						checkData.playerData.titleQualificationsOfMedium = checkData.playerData.titleQualifications;
-                        break;
-                    case WordType.Master:
-						Player.mainPlayer.titleQualificationsOfMaster = checkData.playerData.titleQualifications;
-						checkData.playerData.titleQualificationsOfMaster = checkData.playerData.titleQualifications;
-                        break;
-                }
-				checkData.playerData.titleQualifications = new bool[]{false,false,false,false,false,false};
-			}
-                    
-
-			Player.mainPlayer.currentVersion = GameManager.Instance.currentVersion;
-			checkData.playerData.currentVersion = GameManager.Instance.currentVersion;
+				
+				if(hasOldVersionTitle){
+					switch (wordType)
+					{
+						case WordType.Simple:
+							Player.mainPlayer.titleQualificationsOfSimple = checkData.playerData.titleQualifications;
+							checkData.playerData.titleQualificationsOfSimple = checkData.playerData.titleQualifications;
+							break;
+						case WordType.Medium:
+							Player.mainPlayer.titleQualificationsOfMedium = checkData.playerData.titleQualifications;
+							checkData.playerData.titleQualificationsOfMedium = checkData.playerData.titleQualifications;
+							break;
+						case WordType.Master:
+							Player.mainPlayer.titleQualificationsOfMaster = checkData.playerData.titleQualifications;
+							checkData.playerData.titleQualificationsOfMaster = checkData.playerData.titleQualifications;
+							break;
+					}
+					checkData.playerData.titleQualifications = new bool[]{false,false,false,false,false,false};
+				}
+            }         
            
 			DataHandler.SaveInstanceDataToFile<PlayerData>(checkData.playerData, CommonData.playerDataFilePath,true);
-			DataHandler.SaveInstanceDataToFile<BuyRecord>(checkData.buyRecord, CommonData.buyRecordFilePath,true);
-         
+
+
+
 		}
 
 		private void OnNewInstall(){
@@ -268,12 +261,13 @@ namespace WordJourney
 
             Player.mainPlayer.currentExploreStartDateString = dateString;
 
-			PlayerData playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.oriPlayerDataFilePath);
+			PlayerData playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.playerDataFilePath);
 
             playerData.currentExploreStartDateString = dateString;
 
-			Player.mainPlayer.currentVersion = GameManager.Instance.currentVersion;
-			playerData.currentVersion = GameManager.Instance.currentVersion;
+			ApplicationInfo.Instance.currentVersion = GameManager.Instance.currentVersion;
+
+            DataHandler.SaveInstanceDataToFile<ApplicationInfo>(ApplicationInfo.Instance, CommonData.applicationInfoFilePath);
 
 			DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath,true);
 
@@ -289,34 +283,54 @@ namespace WordJourney
 			CheckDataModel checkData = new CheckDataModel();
          
 			MySQLiteHelper sql = MySQLiteHelper.Instance;
+
+			bool dataComplete = CheckDataComplete();
          
-			if (persistDi.Exists)
+			if (File.Exists(CommonData.playerDataFilePath))
 			{
 				checkData.playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.playerDataFilePath);
 				checkData.playerData.needChooseDifficulty = checkData.playerData.isNewPlayer;
-				checkData.versionUpdate = checkData.playerData.currentVersion + 0.001f < GameManager.Instance.currentVersion;
-			}
 
+				if(ApplicationInfo.Instance != null){
+					checkData.versionUpdate = ApplicationInfo.Instance.currentVersion + 0.001f < GameManager.Instance.currentVersion;
+				}else{
+					checkData.versionUpdate = true;
+				}
+			}
+            
 			if (checkData.versionUpdate)
 			{
-				sql.GetConnectionWith(CommonData.dataBaseName);
+				if(File.Exists(CommonData.dataBaseFilePath)){
+					
+					sql.GetConnectionWith(CommonData.dataBaseName);
+					
+					sql.BeginTransaction();
+					
+					checkData.learnedWordsInSimple = GetWordRecordsInDataBase(sql, 0);
+					checkData.learnedWordsInMedium = GetWordRecordsInDataBase(sql, 1);
+					checkData.learnedWordsInMaster = GetWordRecordsInDataBase(sql, 2);
+					
+					sql.EndTransaction();
+					sql.CloseConnection(CommonData.dataBaseName);
+                }
 
-				sql.BeginTransaction();
+				checkData.playerData.isNewPlayer = true;  
 
-				checkData.learnedWordsInSimple = GetWordRecordsInDataBase(sql, 0);
-				checkData.learnedWordsInMedium = GetWordRecordsInDataBase(sql, 1);
-				checkData.learnedWordsInMaster = GetWordRecordsInDataBase(sql, 2);
+				if(File.Exists(CommonData.buyRecordFilePath)){
+					checkData.buyRecord = BuyRecord.Instance;
+                }
 
-				sql.EndTransaction();
-				sql.CloseConnection(CommonData.dataBaseName);
+				if(File.Exists(CommonData.chatRecordsFilePath)){
+					checkData.chatRecords = GameManager.Instance.gameDataCenter.chatRecords;
+                }
 
-				checkData.playerData.currentVersion = GameManager.Instance.currentVersion;
+				if(File.Exists(CommonData.mapEventsRecordFilePath)){
+					checkData.mapEventsRecords = GameManager.Instance.gameDataCenter.mapEventsRecords;
+                }
 
-				checkData.playerData.isNewPlayer = true;            
-				checkData.buyRecord = BuyRecord.Instance;
-				checkData.chatRecords = GameManager.Instance.gameDataCenter.chatRecords;
-				checkData.mapEventsRecords = GameManager.Instance.gameDataCenter.mapEventsRecords;
-				checkData.gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
+				if(File.Exists(CommonData.gameSettingsDataFilePath)){
+					checkData.gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
+                }
 
 				if(File.Exists(CommonData.miniMapRecordFilePath)){
 					checkData.miniMapRecord = GameManager.Instance.gameDataCenter.currentMapMiniMapRecord;
@@ -333,21 +347,22 @@ namespace WordJourney
 
 #if UNITY_IOS
 
-			if (!persistDi.Exists || checkData.versionUpdate)
+			if (!persistDi.Exists || checkData.versionUpdate || !dataComplete)
 			{
 
 				DataHandler.CopyDirectory(CommonData.originDataPath, CommonData.persistDataPath, true);
 
-				if (checkData.versionUpdate)
-				{
-					GameManager.Instance.persistDataManager.versionUpdateWhenLoad = true;
+				if (!persistDi.Exists)
+                {
+                    OnNewInstall();
+                }
 
-					OnVersionUpdate(checkData, sql);               
-				}
-				else
-				{               
-					OnNewInstall();               
-				}
+                else if (checkData.versionUpdate || !dataComplete)
+                {
+                    GameManager.Instance.persistDataManager.versionUpdateWhenLoad = true;
+
+                    OnVersionUpdate(checkData, sql);
+                }
 
 				initDataCoroutine = InitData();
 
@@ -359,15 +374,16 @@ namespace WordJourney
 			{
 				DataHandler.CopyDirectory(CommonData.originDataPath, CommonData.persistDataPath, true);
 
-				if (checkData.versionUpdate)
-				{      
+				if (!persistDi.Exists)
+                {
+                    OnNewInstall();
+                }
+
+				else if (checkData.versionUpdate || !dataComplete)
+                {      
 					GameManager.Instance.persistDataManager.versionUpdateWhenLoad = true;
 
 					OnVersionUpdate(checkData,sql);               
-				}
-				else
-				{               
-					OnNewInstall();
 				}
 			}
 
@@ -379,18 +395,18 @@ namespace WordJourney
 #elif UNITY_ANDROID
 
 
-			if (!persistDi.Exists || checkData.versionUpdate)
+			if (!persistDi.Exists || checkData.versionUpdate || !dataComplete)
             {
     			IEnumerator copyDataCoroutine = CopyDataForPersist(delegate{
                 
-    			    if (checkData.versionUpdate)
-                    {         
-						OnVersionUpdate(checkData,sql);
-
-    			    }else{         
+					if(!persistDi.Exists){
 						OnNewInstall();
-                    }                   
-
+					}
+					else if (checkData.versionUpdate || !dataComplete)
+                    {         
+            			GameManager.Instance.persistDataManager.versionUpdateWhenLoad = true;			
+            			OnVersionUpdate(checkData,sql);
+    			    }                   
     			});
 			    StartCoroutine(copyDataCoroutine);
 			    return;
@@ -403,13 +419,14 @@ namespace WordJourney
 
                     IEnumerator copyDataCoroutine = CopyDataForPersist(delegate{
                 
-                    if (checkData.versionUpdate)
-                    {
-						OnVersionUpdate(checkData,sql);
-
-                    }else{
+					if(!persistDi.Exists){
 						OnNewInstall();
-                    }        
+					}
+					else if (checkData.versionUpdate || !dataComplete)
+                    {
+            			GameManager.Instance.persistDataManager.versionUpdateWhenLoad = true;
+            			OnVersionUpdate(checkData,sql);         
+                    }       
                   
                 });
                 StartCoroutine(copyDataCoroutine);
@@ -665,6 +682,59 @@ namespace WordJourney
 				sql.ExecuteQuery(query);
 			}
          
+
+		}
+
+
+		private bool CheckDataComplete(){
+        
+
+			//循环拷贝文件
+            for (int i = 0; i < CommonData.originDataArr.Length; i++)
+            {
+
+                //获取数组中的文件字典数据
+                KVPair originDataKV = CommonData.originDataArr[i];
+
+                string fileName = originDataKV.key;
+				string filePath = Application.persistentDataPath + originDataKV.value;
+
+                if (fileName.Equals("Level"))
+                {
+                    //执行level的循环操作
+                    for (int j = 0; j < 51; j++)
+                    {
+						filePath = Application.persistentDataPath + "/Data/MapData/Level_" + j + ".json";
+
+						if(!File.Exists(filePath)){
+							return false;
+						}
+
+                    }
+                }
+                else if (fileName.Equals("NPC"))
+                {
+                    //执行npc的循环操作
+                    for (int j = 0; j < 13; j++)
+                    {
+						filePath = Application.persistentDataPath + "/Data/NPCs/NPC_" + j + ".json";
+                       
+						if(!File.Exists(filePath)){
+							return false;
+						}
+                    }
+                }
+                else
+                {
+					if(!File.Exists(filePath)){
+						return false;
+					}
+                }
+
+            }
+
+			return true;
+
 
 		}
 

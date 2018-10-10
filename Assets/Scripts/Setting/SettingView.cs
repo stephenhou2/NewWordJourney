@@ -25,6 +25,7 @@ namespace WordJourney
         public Image pronounceOffImage;
 
 		public Button restoreItemsButton;
+		public Button privacyButton;
 
 		public TintHUD hintHUD;
 
@@ -50,10 +51,13 @@ namespace WordJourney
 
 #if UNITY_IOS
 			restoreItemsButton.gameObject.SetActive(true);
+			privacyButton.gameObject.SetActive(true);
 #elif UNITY_ANDROID
 			restoreItemsButton.gameObject.SetActive(false);
+			privacyButton.gameObject.SetActive(false);
 #elif UNITY_EDITOR
 			restoreItemsButton.gameObject.SetActive(false);
+			privacyButton.gameObject.SetActive(false);
 #endif
 
 			GetComponent<Canvas> ().enabled = true;

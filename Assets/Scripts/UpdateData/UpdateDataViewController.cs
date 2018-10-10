@@ -5,18 +5,16 @@ using UnityEngine;
 
 namespace WordJourney
 {
-	using UnityEngine.UI;
-
 	public class UpdateDataViewController : MonoBehaviour
 	{
 
 		public HLHFillBar loadingBar;
 
-		//public Image lampLight;
-
-		void Start(){		
-			SetUpUpdateDataView();
-		}
+		//void Start()
+		//{         
+		//	SetUpUpdateDataView();
+		//}
+        
 
 		public void SetUpUpdateDataView(){
 
@@ -49,14 +47,33 @@ namespace WordJourney
 				timer += Time.deltaTime;
 			}
 
-			//gameLoader.PersistData();
-
 			yield return new WaitUntil(() => gameLoader.dataReady);
 
             loadingBar.changeDuration = 1f;
             loadingBar.value = 60;
 
             yield return new WaitForSecondsRealtime(1.6f);
+
+			GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.homeCanvasBundleName, "HomeCanvas", () =>
+            {
+
+                HomeViewController homeViewController = TransformManager.FindTransform("HomeCanvas").GetComponent<HomeViewController>();
+
+                homeViewController.SetUpHomeView();
+
+                if (Application.internetReachability == NetworkReachability.NotReachable)
+                {
+                    homeViewController.homeView.ShowNoAvalableNetHintHUD();
+                }
+                else
+                {
+                    homeViewController.homeView.HideNoAvalableNetHintHUD();
+                }
+
+                GameManager.Instance.soundManager.PlayBgmAudioClip(CommonData.homeBgmName);
+
+            });
+
 
 			Transform homeCanvas = TransformManager.FindTransform("HomeCanvas");
 
@@ -71,9 +88,22 @@ namespace WordJourney
          
             yield return new WaitForSecondsRealtime(1f);
 
-			this.gameObject.SetActive(false);
+			//this.gameObject.SetActive(false);
 
-			Destroy(this.gameObject);         
+			GameManager.Instance.UIManager.RemoveCanvasCache("UpdateDataCanvas");
+
+			        
+		}
+
+		public void DestroyInstances(){
+
+			GetComponent<Canvas>().enabled = false;
+
+			MyResourceManager.Instance.UnloadAssetBundle(CommonData.updateDataCanvasBundleName, true);
+
+            Destroy(this.gameObject, 0.3f);
+
+
 		}
         
     }

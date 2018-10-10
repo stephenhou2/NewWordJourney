@@ -71,6 +71,11 @@ namespace WordJourney
 
 			sourceWords = GetUnlearnedWordsOfCount(skill.wordCountToLearn);
 
+			for (int i = 0; i < sourceWords.Length;i++){
+				HLHWord word = sourceWords[i];
+				GameManager.Instance.pronounceManager.DownloadPronounceCache(word);
+			}
+
 			if(sourceWords.Length == 0){
 				Debug.LogError("获取单词失败");
 				return;

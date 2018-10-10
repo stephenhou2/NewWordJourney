@@ -139,15 +139,7 @@ namespace WordJourney
 		public int skillNumLeft;
 
 		private int maxSkillCount = 6;
-
-
-		// 记录当前版本信息,用于版本比对【格式：x.xx  例如：1.01 代表1.01版，  版本更新时版本号需比上一版大】
-        public float currentVersion;
-
-		// 探索界面遮罩的状态  【0:黑暗状态，使用黑暗动画】 【1:明亮状态，使用明亮动画】
-		//public int exploreMaskStatus = 0;
-
-
+              
         // 开宝箱的幸运度 
 		// 0:  65%灰色装备 30%蓝色装备 5%金色装备
 		// 1:  60%灰色装备 30%蓝色装备 10%金色装备
@@ -220,7 +212,7 @@ namespace WordJourney
 				return;
 			}
 
-			this.currentVersion = playerData.currentVersion;
+			//this.currentVersion = playerData.currentVersion;
 
 			this.agentName = playerData.agentName;
 			this.agentLevel = playerData.agentLevel;
@@ -1628,8 +1620,8 @@ namespace WordJourney
 	[System.Serializable]
 	public class PlayerData{
 
-		// 记录当前版本信息,用于版本比对【格式：x.xx  例如：1.01 代表1.01版，  版本更新时版本号需比上一版大】
-        public float currentVersion;
+		//// 记录当前版本信息,用于版本比对【格式：x.xx  例如：1.01 代表1.01版，  版本更新时版本号需比上一版大】
+        //public float currentVersion;
 
 		public string agentName;
 
@@ -1769,7 +1761,7 @@ namespace WordJourney
 
 		public PlayerData(Player player){
 
-			this.currentVersion = player.currentVersion;
+			//this.currentVersion = player.currentVersion;
 
 			this.agentName = player.agentName;
 			this.agentLevel = player.agentLevel;

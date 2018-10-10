@@ -49,7 +49,9 @@ namespace WordJourney
 					}
 
 					c.transform.SetParent (canvasContainer);
-					c.transform.SetAsLastSibling ();               
+					c.transform.SetAsLastSibling ();
+
+					//Debug.LogFormat("screen width:{0},screen height:{1},scaler:{2}", Camera.main.pixelWidth, Camera.main.pixelHeight, CommonData.HWScalerOfCurrentScreen);
 
 					if(CommonData.HWScalerOfCurrentScreen < 1.7f){
 						c.GetComponent<CanvasScaler>().matchWidthOrHeight = 1;
@@ -133,6 +135,9 @@ namespace WordJourney
 			c.transform.SetParent(canvasContainer);
 			c.transform.SetAsLastSibling ();
 
+			//Debug.LogFormat("screen width:{0},screen height:{1},scaler:{2}", Camera.main.pixelWidth, Camera.main.pixelHeight, CommonData.HWScalerOfCurrentScreen);
+
+
 			if (CommonData.HWScalerOfCurrentScreen < 1.7f)
             {
                 c.GetComponent<CanvasScaler>().matchWidthOrHeight = 1;
@@ -212,8 +217,11 @@ namespace WordJourney
 				case "PlayRecordCanvas":
 					UIDic[canvasName].GetComponent<PlayRecordViewController>().DestroyInstances();
 					break;
-				case "IdentifyCanvas":
-					UIDic[canvasName].GetComponent<IdentifyViewController>().DestroyInstances();
+				//case "IdentifyCanvas":
+					//UIDic[canvasName].GetComponent<IdentifyViewController>().DestroyInstances();
+					//break;
+				case "UpdateDataCanvas":
+					UIDic[canvasName].GetComponent<UpdateDataViewController>().DestroyInstances();
 					break;
 
 			}
