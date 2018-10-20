@@ -60,13 +60,19 @@ namespace WordJourney
 				bool titleQualified = false;
 				switch(LearningInfo.Instance.currentWordType){
 					case WordType.Simple:
-						titleQualified = Player.mainPlayer.titleQualificationsOfSimple[i];
+						if(Player.mainPlayer.titleQualificationsOfSimple != null){
+							titleQualified = Player.mainPlayer.titleQualificationsOfSimple[i];
+                        }
 						break;
 					case WordType.Medium:
-						titleQualified = Player.mainPlayer.titleQualificationsOfMedium[i];
+						if(Player.mainPlayer.titleQualificationsOfMedium != null){
+							titleQualified = Player.mainPlayer.titleQualificationsOfMedium[i];
+                        }
 						break;
 					case WordType.Master:
-						titleQualified = Player.mainPlayer.titleQualificationsOfMaster[i];
+						if(Player.mainPlayer.titleQualificationsOfMaster != null){
+							titleQualified = Player.mainPlayer.titleQualificationsOfMaster[i];
+                        }
 						break;
 				}
             
@@ -96,17 +102,28 @@ namespace WordJourney
                     {
 						switch(LearningInfo.Instance.currentWordType){
 							case WordType.Simple:
-								Player.mainPlayer.titleQualificationsOfSimple[i] = true;
+								if (Player.mainPlayer.titleQualificationsOfSimple != null)
+								{
+									Player.mainPlayer.titleQualificationsOfSimple[i] = true;
+									qualificationIndex = i;
+								}
 								break;
 							case WordType.Medium:
-								Player.mainPlayer.titleQualificationsOfMedium[i] = true;
+								if (Player.mainPlayer.titleQualificationsOfMedium != null)
+								{
+									Player.mainPlayer.titleQualificationsOfMedium[i] = true;
+									qualificationIndex = i;
+								}
+								qualificationIndex = i;
 								break;
 							case WordType.Master:
-								Player.mainPlayer.titleQualificationsOfMaster[i] = true;
+								if (Player.mainPlayer.titleQualificationsOfMaster != null)
+								{
+									Player.mainPlayer.titleQualificationsOfMaster[i] = true;
+									qualificationIndex = i;
+								}
 								break;
 						}
-                        
-                        qualificationIndex = i;
                         break;
                     }
                     else

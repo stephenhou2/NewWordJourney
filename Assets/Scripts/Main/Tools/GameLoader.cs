@@ -93,9 +93,7 @@ namespace WordJourney
 		/// </summary>
 		private void LoadDatas()
 		{
-
-			//GameManager.Instance.gameDataCenter.InitPersistentGameData ();
-
+                 
 			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData();
 
 			Player.mainPlayer.SetUpPlayerWithPlayerData(playerData);
@@ -105,6 +103,7 @@ namespace WordJourney
 
 
 		private void OnVersionUpdate(CheckDataModel checkData,MySQLiteHelper sql){
+        
          
 			if(checkData.chatRecords != null && checkData.chatRecords.Count > 0){
 				DataHandler.SaveInstanceListToFile<HLHNPCChatRecord>(checkData.chatRecords, CommonData.chatRecordsFilePath);
@@ -193,6 +192,7 @@ namespace WordJourney
 				checkData.playerData.maxWordContinuousRightRecord = 0;
 			}
 
+
 			if(checkData.playerData.wordContinuousRightRecord > 0){
 				switch (wordType)
                 {
@@ -222,7 +222,23 @@ namespace WordJourney
 						break;
 					}
 				}
-				
+
+				if(checkData.playerData.titleQualificationsOfSimple == null || checkData.playerData.titleQualificationsOfSimple.Length == 0){
+					checkData.playerData.titleQualificationsOfSimple = new bool[] { false, false, false, false, false, false };
+				}
+
+				if(checkData.playerData.titleQualificationsOfMedium == null || checkData.playerData.titleQualificationsOfMedium.Length == 0){
+					checkData.playerData.titleQualificationsOfMedium = new bool[] { false, false, false, false, false, false };               
+				}
+
+				if(checkData.playerData.titleQualificationsOfMaster == null || checkData.playerData.titleQualificationsOfMaster.Length == 0){
+					checkData.playerData.titleQualificationsOfMaster = new bool[] { false, false, false, false, false, false };
+				}
+
+				Player.mainPlayer.titleQualificationsOfSimple = checkData.playerData.titleQualificationsOfSimple;
+				Player.mainPlayer.titleQualificationsOfMedium = checkData.playerData.titleQualificationsOfMedium;
+				Player.mainPlayer.titleQualificationsOfMaster = checkData.playerData.titleQualificationsOfMaster;
+                 
 				if(hasOldVersionTitle){
 					switch (wordType)
 					{
@@ -243,14 +259,11 @@ namespace WordJourney
 				}
             }         
            
-			DataHandler.SaveInstanceDataToFile<PlayerData>(checkData.playerData, CommonData.playerDataFilePath,true);
-
-
-
+			DataHandler.SaveInstanceDataToFile<PlayerData>(checkData.playerData, CommonData.playerDataFilePath,true);         
 		}
 
 		private void OnNewInstall(){
-
+         
 			GameSettings gameSettings = GameManager.Instance.gameDataCenter.gameSettings;
 
             string dateString = DateTime.Now.ToShortDateString();

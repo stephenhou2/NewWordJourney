@@ -35,7 +35,7 @@ namespace WordJourney
                     break;
             }     
 			exitQueryHUDOnIOS.gameObject.SetActive(true);
-			exitQueryHUDOnAndroid.gameObject.SetActive(false);
+			//exitQueryHUDOnAndroid.gameObject.SetActive(false);
 #elif UNITY_ANDROID
 			switch(exitType){
                 case ExitType.ToLastLevel:

@@ -28,15 +28,15 @@ namespace WordJourney
 
 			enemy.AddHurtAndShow(actualHurt, HurtType.Physical, self.towards);
 
+			enemy.SetEffectAnim(enemyEffectAnimName);
+
 			if(!hasTriggered){
 				
 				enemy.agent.attack += -attackDecrease;
 
 				enemy.agent.attackChangeFromSkill += -attackDecrease;
 
-				hasTriggered = true;
-            
-                enemy.SetEffectAnim(enemyEffectAnimName);
+				hasTriggered = true;     
 
 				enemy.AddTintTextToQueue("攻击\n降低");
 

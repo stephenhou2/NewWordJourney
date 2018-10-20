@@ -231,11 +231,13 @@ namespace WordJourney
 
 			UpdateStatusPlane ();
 
-			if (enemy != null) {
-				enemy.UpdateStatusPlane ();
+			bool fightEnd = CheckFightEnd();
+
+			if (enemy == null) {
+				return;
 			}
 
-			bool fightEnd = CheckFightEnd();
+			enemy.UpdateStatusPlane();
 
 			// 如果战斗没有结束，则默认在攻击间隔时间之后按照默认攻击方式进行攻击
 			if((enemy as BattlePlayerController).isInFight && !enemy.isDead && !fightEnd){
@@ -253,6 +255,17 @@ namespace WordJourney
 		/// </summary>
 		public override bool CheckFightEnd(){
 
+			if (agent.health <= 0)
+            {
+                AgentDie();
+                return true;
+            }
+
+			if (enemy == null)
+            {
+                return true;
+            }
+
             if (enemy.agent.health <= 0)
             {
                 MapMonster mm = GetComponent<MapMonster>();
@@ -261,13 +274,10 @@ namespace WordJourney
                 }
 				enemy.AgentDie ();
 				return true;
-			} else if (agent.health <= 0) {
-				AgentDie ();
-				return true;
-			}else {
-				return false;
-			}
+			} 
 
+			return false;
+         
 		}
 
 		public override void UpdateStatusPlane(){
@@ -301,12 +311,17 @@ namespace WordJourney
 			exploreManager.DisableExploreInteractivity ();
 
 			isDead = true;
-			enemy.isIdle = true;
 
-			GetComponent<MapMonster>().DisableAllDetect();
+			if(enemy != null){
+				enemy.isIdle = true;
+				enemy.QuitFight();
+			}
 
-			enemy.QuitFight();
+			MapMonster mm = GetComponent<MapMonster>();
+			mm.DisableAllDetect();
+			mm.AddToCurrentMapEventRecord();
 
+         
             QuitFight();
 
 			exploreManager.BattlePlayerWin(new Transform[] { transform });
@@ -335,13 +350,16 @@ namespace WordJourney
 				}
             
 				AllEffectAnimsIntoPool();
-				enemy.AllEffectAnimsIntoPool();
+				if(enemy != null){
+					enemy.AllEffectAnimsIntoPool();
+					if ((enemy as BattlePlayerController).fadeStepsLeft > 0)
+                    {
+                        enemy.SetEffectAnim(CommonData.yinShenEffectName, null, 0, 0);
+                    }
+                    enemy = null;
+				}
+            
 
-				if ((enemy as BattlePlayerController).fadeStepsLeft > 0)
-                {
-					enemy.SetEffectAnim(CommonData.yinShenEffectName, null, 0, 0);
-                }
-				enemy = null;
 			});
 		}
 

@@ -181,10 +181,8 @@ namespace WordJourney
             {
                 ActiveSkill activeSkill = player.attachedActiveSkills[i];
                 activeSkill.coolenPercentage = 0;
-                activeSkill.skillStatus = ActiveSkillStatus.None;
-
-            }
-
+                activeSkill.skillStatus = ActiveSkillStatus.None;            
+            }         
 		}
 
 		public void InitAllActiveSkillButtons(){
@@ -286,8 +284,10 @@ namespace WordJourney
 			}
 
 			Time.timeScale = 0;
-
-			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
+            
+			if(ExploreManager.Instance.battlePlayerCtr.isInMoving){
+				ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
+            }
 
 			ExploreManager.Instance.expUICtr.rejectNewUI = true;
 

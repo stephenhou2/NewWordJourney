@@ -25,6 +25,12 @@ namespace WordJourney
         // 标记是否在单步移动中
         private bool inSingleMoving;
 
+		public bool isInMoving{
+			get{
+				return inSingleMoving;
+			}
+		}
+
         // 移动路径点集
         public List<Vector3> pathPosList;
 
@@ -941,18 +947,24 @@ namespace WordJourney
 		/// <returns><c>true</c>, if end was fought, <c>false</c> otherwise.</returns>
 		public override bool CheckFightEnd(){
 
+			if (agent.health <= 0)
+            {
+                AgentDie();
+                isInFight = false;
+                return true;
+            }
+
+			if(enemy == null){
+				return true;
+			}
+
 			if (enemy.agent.health <= 0) {
 				enemy.AgentDie ();
 				isInFight = false;
 				return true;
-			} else if (agent.health <= 0) {
-				AgentDie ();
-				isInFight = false;
-				return true;
-			}else {
-				return false;
-			}
-
+			} 
+				
+			return false;         
 		}
 			
 		public void ResetAttackAfterInterval(HLHRoleAnimInfo animInfo,float interval){
@@ -1083,6 +1095,7 @@ namespace WordJourney
 		{
 			animName = RoleAnimNameAdapt (animName);
 			base.PlayRoleAnim (animName, playTimes, cb);
+			//Debug.Log(animName);
 		}
 
 		public void PlayRoleAnimByTime(string animName,float animBeginTime,int playTimes,CallBack cb){
@@ -1227,18 +1240,7 @@ namespace WordJourney
 				}
 
 			}
-
-			//if (towards == MyTowards.Up || towards == MyTowards.Down) {
-			//	if (IsInAttackAnim (animName)) {
-			//		adaptName = CommonData.roleAttackAnimName;
-			//	} else if (IsInIntervalAnim (animName)) {
-			//		adaptName = CommonData.roleAttackIntervalAnimName;
-			//	} else if (IsInPhysicalSkillAnim (animName)) {
-			//		adaptName = CommonData.roleAttackAnimName;
-			//	} else if (IsInMagiclSkillAnim (animName)) {
-			//		adaptName = CommonData.roleAttackAnimName;
-			//	}
-			//}
+            
 
 			return adaptName;
 
@@ -1301,9 +1303,7 @@ namespace WordJourney
 
 			SetRoleAnimTimeScale (1.0f);
 
-			agent.ResetBattleAgentProperties (false);
-
-
+			agent.ResetBattleAgentProperties (false);         
 
 		}
 
@@ -1327,11 +1327,17 @@ namespace WordJourney
 
 			exploreManager.expUICtr.ShowFullMask();
          
-			enemy.boxCollider.enabled = true;
-
+			if(enemy != null){
+				enemy.boxCollider.enabled = true;
+			}
+         
 			bool fromFight = isInFight;
 
-			enemy.QuitFight();
+			if (enemy != null)
+			{
+				enemy.QuitFight();
+			}
+
             QuitFight();
 
 			exploreManager.expUICtr.QuitFight();
@@ -1340,14 +1346,22 @@ namespace WordJourney
 
 			GameManager.Instance.soundManager.PlayAudioClip(CommonData.playerDieAudioName);
 
-			enemy.AllEffectAnimsIntoPool();
+			if (enemy != null)
+			{
+				enemy.AllEffectAnimsIntoPool();
+			}
+
+			StopMoveAtEndOfCurrentStep();
+			TowardsRight(false);
 
 			PlayRoleAnim (CommonData.roleDieAnimName, 1, ()=>{
 				IEnumerator queryBuyLifeCoroutine = QueryBuyLife(fromFight);
 				StartCoroutine(queryBuyLifeCoroutine);
 				AllEffectAnimsIntoPool();
-				enemy.AllEffectAnimsIntoPool();
-				enemy = null;
+				if(enemy != null){
+					enemy.AllEffectAnimsIntoPool();
+                    enemy = null;
+				}            
 			});
 
 		}
@@ -1362,6 +1376,10 @@ namespace WordJourney
 				exploreManager.expUICtr.ShowBuyLifeQueryHUD();
 			}
 		}
+
+
+
+
 
 
 		public void RecomeToLife(){

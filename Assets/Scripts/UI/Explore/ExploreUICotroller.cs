@@ -880,10 +880,13 @@ namespace WordJourney
 				return;
 			}
 
-			ExploreManager.Instance.MapWalkableEventsStopAction();
-			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
-			rejectNewUI = true;
-			SetUpWordDetailHUD(true, null);
+			if (wordRecords.Count > 0)
+            {
+    			ExploreManager.Instance.MapWalkableEventsStopAction();
+    			ExploreManager.Instance.battlePlayerCtr.StopMoveAtEndOfCurrentStep();
+    			rejectNewUI = true;
+    			SetUpWordDetailHUD(true, null);
+			}
 		}
 
 		public void SetUpWordDetailHUD(bool controlMoveWhenQuit, CallBack quitCallBack)
@@ -906,6 +909,9 @@ namespace WordJourney
 						ExploreManager.Instance.MapWalkableEventsStartAction();
 					}
 				});
+			}else{
+				rejectNewUI = false;
+				ExploreManager.Instance.MapWalkableEventsStartAction();
 			}
 		}
 
@@ -995,7 +1001,6 @@ namespace WordJourney
 
 					bool pushRecommend = false;
 
-#if UNITY_IOS || UNITY_EDITOR
 					pushRecommend = CheckPushCommentRecommend();
 
 					if (pushRecommend)
@@ -1003,7 +1008,6 @@ namespace WordJourney
 						controlMoveWhenQuit = false;
 
 					}
-#endif
 
 					int qualificationIndex = LearnTitleQualification.CheckLearnTitleQualification();
 
@@ -1023,6 +1027,8 @@ namespace WordJourney
 							LearnTitleQualification qualification = CommonData.learnTitleQualifications[qualificationIndex];
 
 							achievementView.SetUpAchievementView(qualification);
+
+							UpdateTitleQualification(qualificationIndex);
 						}
 					});
 				}
@@ -1045,6 +1051,8 @@ namespace WordJourney
 					LearnTitleQualification qualification = CommonData.learnTitleQualifications[qualificationIndex];
 
 					achievementView.SetUpAchievementView(qualification);
+
+					UpdateTitleQualification(qualificationIndex);
 				}
 
 			}
@@ -1055,12 +1063,40 @@ namespace WordJourney
 
 		}
 
+		private void UpdateTitleQualification(int qualifyIndex){
+
+			WordType wordType = LearningInfo.Instance.currentWordType;
+
+			PlayerData playerData = GameManager.Instance.persistDataManager.LoadPlayerData();
+
+			switch(wordType){
+				case WordType.Simple:
+					Player.mainPlayer.titleQualificationsOfSimple[qualifyIndex] = true;
+					playerData.titleQualificationsOfSimple[qualifyIndex] = true;
+					break;
+				case WordType.Medium:
+					Player.mainPlayer.titleQualificationsOfMedium[qualifyIndex] = true;
+					playerData.titleQualificationsOfMedium[qualifyIndex] = true;
+					break;
+				case WordType.Master:
+					Player.mainPlayer.titleQualificationsOfMedium[qualifyIndex] = true;
+					playerData.titleQualificationsOfMedium[qualifyIndex] = true;
+					break;
+			}
+
+			DataHandler.SaveInstanceDataToFile<PlayerData>(playerData, CommonData.playerDataFilePath);
+		}
+
 		/// <summary>
 		/// 检测是否到了推送
 		/// </summary>
 		/// <returns><c>true</c>, if push comment recommend was checked, <c>false</c> otherwise.</returns>
 		private bool CheckPushCommentRecommend()
 		{
+			if(ApplicationInfo.Instance.hasRecommentPushed){
+				return false;
+			}
+
 			bool push = false;
 			int totalLearnedWordCount = Player.mainPlayer.totalLearnedWordCount;
 			if (totalLearnedWordCount == 300)
@@ -1199,7 +1235,7 @@ namespace WordJourney
 
 		private void CancelBuyLife(){
 			
-			Player.mainPlayer.needChooseDifficulty = true;
+			//Player.mainPlayer.needChooseDifficulty = true;
 
 			transitionView.PlayTransition (TransitionType.Death, delegate {
 				

@@ -55,14 +55,17 @@ namespace WordJourney
 					
 					enemy.AddHurtAndShow(hurt, HurtType.Physical, self.towards);
 					
-					enemy.CheckFightEnd();
+					bool fightEnd = enemy.CheckFightEnd();
 					
 					enemy.UpdateStatusPlane();
+
+					if(fightEnd){
+						yield break;
+					}
 					
 					yield return new WaitForSeconds(1f);
                 }
-
-                            
+         
                 count++;
             }
 

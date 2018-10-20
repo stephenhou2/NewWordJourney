@@ -90,10 +90,7 @@ namespace WordJourney
 		{
 			exploreSceneReady = false;
 
-			//bool resetGameData = false;
-
-
-
+			//bool resetGameData = false;         
 			//if(Player.mainPlayer.health <= 0){
 			//	resetGameData = true;
 			//	//GameManager.Instance.persistDataManager.ResetPlayerDataToOriginal();
@@ -680,19 +677,7 @@ namespace WordJourney
 
 			expUICtr.QuitFight ();
 
-			//battlePlayerCtr.enemy = null;
-         
-			//GameManager.Instance.persistDataManager.SaveCompletePlayerData();
-
-			//PlayRecord playRecord = new PlayRecord(false, enemy.agent.agentName);
-
-			//List<PlayRecord> playRecords = GameManager.Instance.gameDataCenter.allPlayRecords;
-         
-			//playRecords.Add(playRecord);
-
-			//GameManager.Instance.persistDataManager.SavePlayRecords(playRecords);
-         
-			expUICtr.ShowBuyLifeQueryHUD ();
+			expUICtr.ShowBuyLifeQueryHUD();
          
 		}
 

@@ -59,9 +59,14 @@ namespace WordJourney
 
 					enemy.AddHurtAndShow(poisonHurt, HurtType.Physical, self.towards);
 
-					enemy.CheckFightEnd();
+					bool fightEnd = enemy.CheckFightEnd();
 
-					enemy.UpdateStatusPlane();
+                    enemy.UpdateStatusPlane();
+
+                    if (fightEnd)
+                    {
+                        yield break;
+                    }
 
 					yield return new WaitForSeconds(1.0f);
 

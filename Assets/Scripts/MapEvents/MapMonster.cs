@@ -80,6 +80,9 @@ namespace WordJourney
 
 		}
 
+		public void AddToCurrentMapEventRecord(){
+			GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, oriPos);
+		}
 
 		public override void ResetWhenDie(){
 

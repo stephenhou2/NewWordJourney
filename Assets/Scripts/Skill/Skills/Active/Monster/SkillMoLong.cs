@@ -69,7 +69,14 @@ namespace WordJourney
 					
 					enemy.AddHurtAndShow(durativeHurtBase, HurtType.Physical, self.towards);
 					
-					enemy.CheckFightEnd();
+					bool fightEnd = enemy.CheckFightEnd();
+
+                    enemy.UpdateStatusPlane();
+
+                    if (fightEnd)
+                    {
+                        yield break;
+                    }
 
 					yield return new WaitForSeconds(1.0f);
                 }

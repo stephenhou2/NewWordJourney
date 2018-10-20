@@ -27,7 +27,11 @@ namespace WordJourney
 
 			zoomCoroutine = HUDZoomIn(null);
 
+			StartCoroutine(zoomCoroutine);
 
+			ApplicationInfo.Instance.hasRecommentPushed = true;
+
+			GameManager.Instance.persistDataManager.SaveApplicationInfo();
          
 		}
 

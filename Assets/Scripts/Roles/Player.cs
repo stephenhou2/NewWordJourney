@@ -163,17 +163,17 @@ namespace WordJourney
 		// 称号达成情况
 		public int maxSimpleWordContinuousRightRecord;
 		public int simpleWordContinuousRightRecord;      
-        public bool[] titleQualificationsOfSimple;
+		public bool[] titleQualificationsOfSimple = new bool[]{false,false,false,false,false,false};
 
 
         public int maxMediumWordContinuousRightRecord;
         public int mediumWordContinuousRightRecord;
-        public bool[] titleQualificationsOfMedium;
+		public bool[] titleQualificationsOfMedium = new bool[] { false, false, false, false, false, false };
 
 
         public int maxMasterWordContinuousRightRecord;
         public int masterWordContinuousRightRecord;
-        public bool[] titleQualificationsOfMaster;
+		public bool[] titleQualificationsOfMaster = new bool[] { false, false, false, false, false, false };
 
         // 所有已学习过的单词数量记录
 		public int totalLearnedWordCount;
@@ -1713,17 +1713,17 @@ namespace WordJourney
         // 称号达成情况
         public int maxSimpleWordContinuousRightRecord;
         public int simpleWordContinuousRightRecord;
-        public bool[] titleQualificationsOfSimple;
+		public bool[] titleQualificationsOfSimple = new bool[] { false, false, false, false, false, false };
 
 
         public int maxMediumWordContinuousRightRecord;
         public int mediumWordContinuousRightRecord;
-        public bool[] titleQualificationsOfMedium;
+		public bool[] titleQualificationsOfMedium = new bool[] { false, false, false, false, false, false };
 
 
         public int maxMasterWordContinuousRightRecord;
         public int masterWordContinuousRightRecord;
-        public bool[] titleQualificationsOfMaster;
+		public bool[] titleQualificationsOfMaster = new bool[] { false, false, false, false, false, false };
 
 
 # warning 下面这三个属性用于verision1.0->verison1.1更新时使用，后续版本更新时将下面这三个属性删除      

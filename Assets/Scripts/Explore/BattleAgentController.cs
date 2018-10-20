@@ -162,9 +162,9 @@ namespace WordJourney
 
 			ExploreText ft = new ExploreText (text,towards,basePosition);
 
-			if(!isDead){
+			//if(!isDead){
 				agentUICtr.exploreTextManager.AddHurtText(ft);
-			}
+			//}
          
 		}
 

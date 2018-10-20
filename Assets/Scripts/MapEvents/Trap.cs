@@ -156,7 +156,9 @@ namespace WordJourney
 			battlePlayer.AddHurtAndShow(50, HurtType.Physical, towards);
 			if (battlePlayer.agent.health <= 0)
             {
-                battlePlayer.AgentDie();
+				//ExploreManager.Instance.DisableAllInteractivity();
+				battlePlayer.AgentDie();
+               
             }
 			ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
 		}
@@ -165,13 +167,22 @@ namespace WordJourney
 			int count = 0;
 			battlePlayer.SetEffectAnim(CommonData.burnedEffectName,null,0,3f);
 			while(count < 3){
+
 				yield return new WaitForSeconds(1f);
+
+				yield return new WaitUntil(() => !battlePlayer.isInEvent);
+
 				MyTowards towards = battlePlayer.GetReversedTowards();
+
 				battlePlayer.AddHurtAndShow(50, HurtType.Physical, towards);
-				if(battlePlayer.agent.health<=0){
-					battlePlayer.AgentDie();
-				}
 				ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
+
+				if(battlePlayer.agent.health<=0){
+					//ExploreManager.Instance.DisableAllInteractivity();
+					battlePlayer.AgentDie();
+					yield break;
+				}
+
 				count++;
 			}
 		}
@@ -181,14 +192,22 @@ namespace WordJourney
 			battlePlayer.SetEffectAnim(CommonData.poisonedEffectName,null,0,3f);
             while (count < 3)
             {
-                yield return new WaitForSeconds(1f);
+				yield return new WaitForSeconds(1f);
+
+				yield return new WaitUntil(() => !battlePlayer.isInEvent);
+            
                 MyTowards towards = battlePlayer.GetReversedTowards();
+
                 battlePlayer.AddHurtAndShow(100, HurtType.Physical, towards);
+				ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
+
 				if (battlePlayer.agent.health <= 0)
                 {
-                    battlePlayer.AgentDie();
+					//ExploreManager.Instance.DisableAllInteractivity();
+					battlePlayer.AgentDie();
+					yield break;
                 }
-				ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
+
                 count++;
             }
 		}

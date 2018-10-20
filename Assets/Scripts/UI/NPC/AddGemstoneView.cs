@@ -76,9 +76,7 @@ namespace WordJourney
                 break;
             }
 #endif
-
-
-
+                     
             bagItemsDisplay.SetUpBagItemsPlane(0);
 
 			specialOperationHUD.InitSpecialOperationHUD(RefreshCurrentSelectItemDetailDisplay, AddGemstoneCallBack);

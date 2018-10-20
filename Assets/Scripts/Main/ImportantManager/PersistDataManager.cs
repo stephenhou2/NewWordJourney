@@ -87,6 +87,10 @@ namespace WordJourney
 		}
         
 
+		public void SaveApplicationInfo(){
+			DataHandler.SaveInstanceDataToFile<ApplicationInfo>(ApplicationInfo.Instance, CommonData.applicationInfoFilePath);
+		}
+
 		public void UpdateBuyGoldToPlayerDataFile(){
 
 			PlayerData playerData = DataHandler.LoadDataToSingleModelWithPath<PlayerData>(CommonData.playerDataFilePath);
@@ -243,12 +247,13 @@ namespace WordJourney
 
 			Player.mainPlayer.ResetBattleAgentProperties(false);
 
-			SaveCompletePlayerData(); 
+			SaveCompletePlayerData();
+
+			GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
 
 			SaveMapEventsRecord();
 
-
-                       
+			GameManager.Instance.gameDataCenter.currentMapEventsRecord = DataHandler.LoadDataToSingleModelWithPath<CurrentMapEventsRecord>(CommonData.currentMapEventsRecordFilePath);
 		}
 
 

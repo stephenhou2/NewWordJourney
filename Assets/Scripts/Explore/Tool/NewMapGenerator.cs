@@ -860,6 +860,10 @@ namespace WordJourney
 
 						break;
 					case "monster":
+						if (GameManager.Instance.gameDataCenter.currentMapEventsRecord.IsMapEventTriggered(mapIndex, eventTile.position))
+                        {
+                            continue;
+                        }
 						mapEvent = GetMonster(eventTile);
 						if (mapEvent != null)
 						{
