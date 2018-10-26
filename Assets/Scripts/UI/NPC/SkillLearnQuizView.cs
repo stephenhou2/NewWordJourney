@@ -496,7 +496,7 @@ namespace WordJourney
                 {
                     reader.Read();
 
-					HLHWord word = MyTool.GetWordFromReader(reader);
+					HLHWord word = HLHWord.GetWordFromReader(reader);
 
                     words[index] = word;
 
@@ -540,7 +540,7 @@ namespace WordJourney
                 {
                     reader.Read();
 
-					HLHWord word = MyTool.GetWordFromReader(reader);
+					HLHWord word = HLHWord.GetWordFromReader(reader);
 
                     words[index] = word;
 
@@ -555,7 +555,7 @@ namespace WordJourney
 
                 while (reader.Read())
                 {
-					HLHWord word = MyTool.GetWordFromReader(reader);
+					HLHWord word = HLHWord.GetWordFromReader(reader);
                     
                     words[index] = word;
 

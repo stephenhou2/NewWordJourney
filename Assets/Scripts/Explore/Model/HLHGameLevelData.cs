@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace WordJourney
 {
+
+    /// <summary>
+    /// 关卡数据模型
+    /// </summary>
 	[System.Serializable]
 	public class HLHGameLevelData{
 
@@ -29,6 +33,10 @@ namespace WordJourney
 
 		public Count goldAmountRange;
 
+        /// <summary>
+        /// 本关是否出现老头npc
+        /// </summary>
+        /// <returns><c>true</c>, if wise man was hased, <c>false</c> otherwise.</returns>
         public static bool HasWiseMan(){
 
             return Player.mainPlayer.currentLevelIndex == 0 
@@ -56,15 +64,36 @@ namespace WordJourney
 
         }
 
+        /// <summary>
+        /// 判断本关是否是boss关
+        /// </summary>
+        /// <returns><c>true</c>, if boss level was ised, <c>false</c> otherwise.</returns>
         public static bool IsBossLevel(){
             return (Player.mainPlayer.currentLevelIndex + 1) % 5 == 0;
         }
 
+        
+        /// <summary>
+		/// 判断本关是否出现日记
+        /// </summary>
+        /// <returns><c>true</c>, if diary paper was hased, <c>false</c> otherwise.</returns>
 		public static bool HasDiaryPaper(){
 			return Player.mainPlayer.currentLevelIndex == 0 ||
 						 ((Player.mainPlayer.currentLevelIndex + 1) % 5 == 0 && Player.mainPlayer.currentLevelIndex < 45);
 		}
 
+
+        /// <summary>
+        /// 关卡数据构造函数
+        /// </summary>
+        /// <param name="gameLevelIndex">关卡序号.</param>
+        /// <param name="itemIdsInPot">瓦罐中可出现的物品id list.</param>
+        /// <param name="itemIdsInBucket">木桶中可出现的物品id list.</param>
+        /// <param name="itemIdsInNormalTreasureBox">宝箱中可出现的物品id list.</param>
+        /// <param name="monsterIds">关卡中可出现的怪物id list.</param>
+        /// <param name="bossId">关卡中的boss id.</param>
+        /// <param name="goldAmountRange">关卡中钱袋中可开出的金币数量范围.</param>
+        /// <param name="monsterIdsOfCurrentLevel">本关中所有怪物的id list【普通怪物+boss】.</param>
 		public HLHGameLevelData(int gameLevelIndex, List<int> itemIdsInPot,List<int> itemIdsInBucket,List<int> itemIdsInNormalTreasureBox,
 		                        List<int> monsterIds,int bossId,Count goldAmountRange,List<int>monsterIdsOfCurrentLevel){
 			this.gameLevelIndex = gameLevelIndex;

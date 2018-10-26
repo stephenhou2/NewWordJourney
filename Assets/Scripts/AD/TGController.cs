@@ -55,7 +55,7 @@ namespace WordJourney
 		public static bool _isRewardedVideoAdReady = false;
 		public static bool IsRewardedVideoAdReady
 		{
-			get { 
+			get {
 				return IsAdInited && TGSDK.CouldShowAd(rewardedVideoId); 
 			}
 		}
@@ -235,6 +235,7 @@ namespace WordJourney
 
 				isRewardVedioSuccuss = true;            
 			};
+
 			TGSDK.AdRewardFailedCallback = (string msg) =>
 			{
 				Debug.Log("AdRewardFailedCallback : " + msg);
@@ -263,7 +264,8 @@ namespace WordJourney
 		//广告进行展示
 		static public void ShowAd(MyAdType myAdType,AdCallBack successCallBack,AdCallBack failCallBack, AdCallBack adRewardFailCallBack)
 		{
-			
+
+            // 传入当前广告的播放回调
 			TGController.adSuccessCallBack = successCallBack;
 			TGController.adFailureCallBack = failCallBack;
 			TGController.adRewardFailCallBack = adRewardFailCallBack;
@@ -284,6 +286,7 @@ namespace WordJourney
 
 			Debug.Log(TGSDK.CouldShowAd(sceneId));
 
+            // 如果可以播放广告，则播放广告
 			if (TGSDK.CouldShowAd(sceneId))
 			{
 				currentAdType = myAdType;

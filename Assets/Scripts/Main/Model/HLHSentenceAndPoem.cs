@@ -11,6 +11,9 @@ namespace WordJourney
         Poem
     }
 
+    /// <summary>
+    /// 谚语或诗句模型
+    /// </summary>
     [System.Serializable]
     public struct HLHSentenceAndPoem
     {

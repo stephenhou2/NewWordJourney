@@ -2,7 +2,9 @@
 
 namespace WordJourney
 {
-	
+	/// <summary>
+    /// 应用信息
+    /// </summary>
 	[System.Serializable]
     public class ApplicationInfo
     {
@@ -23,7 +25,7 @@ namespace WordJourney
 
 		// 记录当前版本信息,用于版本比对【格式：x.xx  例如：1.01 代表1.01版，  版本更新时版本号需比上一版大】
         public float currentVersion;
-
+        // 评论提示是否已经推送过
 		public bool hasRecommentPushed;
 
         // IOS上记录是否已经同意过隐私策略

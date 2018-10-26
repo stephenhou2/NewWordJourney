@@ -29,6 +29,10 @@ namespace WordJourney
 
 		private CallBackWithPropertyChange skillStatusChangeCallBack;
 
+        /// <summary>
+        /// 初始化技能面板
+        /// </summary>
+        /// <param name="skillStatusChangeCallBack">技能状态变更后的回调</param>
 		public void InitSkillsView(CallBackWithPropertyChange skillStatusChangeCallBack){
 
 			this.skillStatusChangeCallBack = skillStatusChangeCallBack;

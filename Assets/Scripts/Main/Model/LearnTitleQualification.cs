@@ -4,15 +4,25 @@ using UnityEngine;
 
 namespace WordJourney  
 {
+	/// <summary>
+    /// 学习称号达成条件模型
+    /// </summary>
 	public class LearnTitleQualification
 	{
+		// 总学习单词要求
         public int totalWordsCount;
+        // 正确率要求
         public float totalCorrectPercentage;
+        // 连续正确单词要求
         public int continuousCorrectWordCount;
+        // 称号名称
         public string title;
+        // 称号需求描述文本
         public string qualificationNeed;
+        // 称号达成奖励的金币
         public int rewardGold;
 
+        //构造函数
         public LearnTitleQualification(int totalWordsCount, float totalCorrectPercentage, int continuousCorrectWordCount, string title, string qualificationNeed, int rewardGold)
         {
             this.totalWordsCount = totalWordsCount;

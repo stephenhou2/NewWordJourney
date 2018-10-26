@@ -6,34 +6,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
-
-    using System.Data;
-
-    // 普通单词模型  
-    [System.Serializable]
-    public struct GeneralWord
-    {
-
-        // 单词id
-        public int wordId;
-        // 单词拼写
-        public string spell;
-        // 单词释义
-        public string explaination;
-        //		// 单词是否可用于制造融合石
-        //		public bool valid;
-
-
-        public GeneralWord(int wordId, string spell, string explaination)
-        {
-            this.wordId = wordId;
-            this.spell = spell;
-            this.explaination = explaination;
-
-        }
-
-
-    }
+	using System.Data;
 
     // 普通单词模型  
     [System.Serializable]
@@ -62,10 +35,10 @@ namespace WordJourney
         public int ungraspTimes;
         // 是否熟悉
 		public bool isFamiliar;
-
+        // 备用发音url
 		public string backupProuounciationURL;
 
-
+        // 构造函数
         public HLHWord(int wordId, string spell, string phoneticSymbol, string explaination, string sentenceEN, string sentenceCH, string pronounciationURL,
 		               int wordLength, int learnedTimes, int ungraspTimes,bool isFamiliar,string backupPronounciationURL)
         {
@@ -84,73 +57,44 @@ namespace WordJourney
         }
 
 
-        //		public static LearnWord RandomWord(){
-        //
-        //			LearningInfo learnInfo = LearningInfo.Instance;
-        //
-        //			int wordId = 0;
-        //
-        //			if (learnInfo.learnedWordCount != 0) {
-        //
-        //				wordId = Random.Range (0, learnInfo.learnedWordCount);
-        //
-        //				List<LearnWord> learnedWords = learnInfo.GetAllLearnedWords ();
-        //
-        //				return learnedWords [wordId];
-        //
-        //			}
-        //
-        //
-        //			string tableName = string.Empty;
-        //
-        //			WordType wt = GameManager.Instance.gameDataCenter.gameSettings.wordType;
-        //
-        //			switch (wt) {
-        //			case WordType.CET46:
-        //				tableName = CommonData.CET46Table;
-        //				break;
-        //			case WordType.NMET:
-        //				tableName = CommonData.NMETTable;
-        //				break;
-        //			case WordType.GRE:
-        //				tableName = CommonData.GRETable;
-        //				break;
-        //			case WordType.TOEFL:
-        //				tableName = CommonData.TOEFLTable;
-        //				break;
-        //			}
-        //
-        //			MySQLiteHelper sql = MySQLiteHelper.Instance;
-        //
-        //			// 连接数据库
-        //			sql.GetConnectionWith (CommonData.dataBaseName);
-        //
-        //			int wordsCount = sql.GetItemCountOfTable (tableName,null,true);
-        //
-        //			wordId = Random.Range (0, wordsCount);
-        //
-        //			string[] conditions = new string[]{string.Format ("id={0}", wordId)};
-        //
-        //			IDataReader reader = sql.ReadSpecificRowsOfTable (tableName, null, conditions, true);
-        //
-        //			reader.Read ();
-        //
-        //			string spell = reader.GetString (1);
-        //
-        //			string explaination = reader.GetString (2);
-        //
-        //			string phoneticSymbol = reader.GetString (3);
-        //
-        //			string example = reader.GetString (4);
-        //
-        //			int learnedTimes = reader.GetInt16 (5);
-        //
-        //			int ungraspTimes = reader.GetInt16 (6);
-        //
-        //			return new LearnWord (wordId, spell, explaination, phoneticSymbol, example, learnedTimes, ungraspTimes);
-        //
-        //		}
+		/// <summary>
+        /// 从reader中读取单词数据，生成单词对象
+        /// </summary>
+        /// <returns>The word from reader.</returns>
+        /// <param name="reader">Reader.</param>
+        public static HLHWord GetWordFromReader(IDataReader reader)
+        {
 
+            int wordId = reader.GetInt32(0);
+
+            string spell = reader.GetString(1);
+
+            string phoneticSymble = reader.GetString(2);
+
+            string explaination = reader.GetString(3);
+
+            string sentenceEN = reader.GetString(4);
+
+            string sentenceCH = reader.GetString(5);
+
+            string pronounciationURL = reader.GetString(6);
+
+            int wordLength = reader.GetInt16(7);
+
+            int learnedTimes = reader.GetInt16(8);
+
+            int ungraspTimes = reader.GetInt16(9);
+
+            bool isFamiliar = reader.GetInt16(10) == 1;
+
+            string backupPronouncitaionURL = reader.GetString(11);
+
+            HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL,
+                                       wordLength, learnedTimes, ungraspTimes, isFamiliar, backupPronouncitaionURL);
+
+            return word;
+        }
+              
         public override string ToString()
         {
             return string.Format("[LearnWord]---{0}:{1}", spell, explaination);

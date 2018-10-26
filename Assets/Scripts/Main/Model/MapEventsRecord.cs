@@ -21,10 +21,19 @@ namespace WordJourney
 		// 已触发过的事件位置记录表
 		public List<Vector2> triggeredEventPositions = new List<Vector2>();
 
+        // 拼写是否已经完成
 		public bool spellFinish;
 
+        // 日记是否已经完成
 		public bool diaryFinish;
 
+        /// <summary>
+        /// 地图事件记录类
+        /// </summary>
+        /// <param name="mapIndex">Map index.</param>
+        /// <param name="triggeredEventPositions">Triggered event positions.</param>
+        /// <param name="spellFinish">If set to <c>true</c> spell finish.</param>
+        /// <param name="diaryFinish">If set to <c>true</c> diary finish.</param>
 		public MapEventsRecord(int mapIndex,List<Vector2> triggeredEventPositions,bool spellFinish,bool diaryFinish){
 			this.mapIndex = mapIndex;
 			this.triggeredEventPositions = triggeredEventPositions;
@@ -69,8 +78,13 @@ namespace WordJourney
             return eventTriggered;
 
         }
+        
 
-
+        /// <summary>
+        /// 判断拼写是否已经完成了
+        /// </summary>
+        /// <returns><c>true</c>, if spell finish was ised, <c>false</c> otherwise.</returns>
+        /// <param name="mapIndex">Map index.</param>
 		public static bool IsSpellFinish(int mapIndex){
 		
 			bool spellFinish = false;
@@ -86,6 +100,11 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 判断日记是否已经完成了
+        /// </summary>
+        /// <returns><c>true</c>, if diary finish was ised, <c>false</c> otherwise.</returns>
+        /// <param name="mapIndex">Map index.</param>
 		public static bool IsDiaryFinish(int mapIndex){
             
 			bool diaryFinish = false;
@@ -101,6 +120,11 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 添加事件触发记录
+        /// </summary>
+        /// <param name="mapIndex">Map index.</param>
+        /// <param name="eventPos">Event position.</param>
 		public static void AddEventTriggeredRecord(int mapIndex, Vector2 eventPos){
 
 			MapEventsRecord mapEventsRecord = GameManager.Instance.gameDataCenter.mapEventsRecords.Find(delegate (MapEventsRecord obj)
@@ -112,9 +136,13 @@ namespace WordJourney
 				mapEventsRecord.triggeredEventPositions.Add(eventPos);
 			}
 
-
+            
 		}
 
+        /// <summary>
+        /// 记录在指定地图序号上拼写已经完成【由于地图序号在随机后已经固定下来，所以指定地图序号就对应到指定关卡上】
+        /// </summary>
+        /// <param name="mapIndex">Map index.</param>
 		public static void SpellFinishAtMapIndex(int mapIndex){
 
 			MapEventsRecord mapEventsRecord = GameManager.Instance.gameDataCenter.mapEventsRecords.Find(delegate (MapEventsRecord obj)
@@ -126,6 +154,10 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 记录日记已在指定地图序号上完成
+        /// </summary>
+        /// <param name="mapIndex">Map index.</param>
 		public static void DiaryFinishAtMapIndex(int mapIndex){
 
 			MapEventsRecord mapEventsRecord = GameManager.Instance.gameDataCenter.mapEventsRecords.Find(delegate (MapEventsRecord obj)
@@ -151,10 +183,13 @@ namespace WordJourney
         // 已触发过的事件位置记录表
         public List<Vector2> triggeredEventPositions = new List<Vector2>();
 
+        // npc位置信息数组
 		public Vector2[] npcPosArray;
 
+        // npc数组
 		public HLHNPC[] npcArray;
 
+        // 谜语门位置信息数组
 		public Vector2[] puzzleDoorPosArray;
         
 		public static bool CheckRecordValid(CurrentMapEventsRecord record){
@@ -206,6 +241,11 @@ namespace WordJourney
             return eventTriggered;         
         }
 
+        /// <summary>
+        /// 添加本层地图事件记录
+        /// </summary>
+        /// <param name="mapIndex">Map index.</param>
+        /// <param name="eventPos">Event position.</param>
 		public void AddEventTriggeredRecord(int mapIndex, Vector2 eventPos)
         {     
 			if (!GameManager.Instance.gameDataCenter.currentMapEventsRecord.triggeredEventPositions.Contains(eventPos))

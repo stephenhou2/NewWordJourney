@@ -14,7 +14,9 @@ namespace WordJourney
 	public delegate void SkillCallBack(BattleAgentController selfBaCtr,BattleAgentController enemyBaCtr);
 
 
-
+    /// <summary>
+    /// 被动技能执行器
+    /// </summary>
 	public class TriggeredSkillExcutor{
 		public TriggeredPassiveSkill triggeredSkill;
 		public SkillCallBack triggeredCallback;
@@ -24,21 +26,25 @@ namespace WordJourney
 			this.triggeredCallback = callBack;
 		}
 
-		public void OnClear(){
+		public void Clear(){
 			triggeredSkill = null;
 			triggeredCallback = null;
 		}
 	}
 
+    /// <summary>
+    /// 角色控制器
+    /// </summary>
 	[RequireComponent(typeof(NormalAttack))]
 	public abstract class BattleAgentController : MonoBehaviour {
 
 		// 控制的角色
 		[HideInInspector]public Agent agent;
         
-
+        // 敌方角色控制器
 		public BattleAgentController enemy;
 
+        // 角色UI控制
 		protected BattleAgentUIController agentUICtr;
 
 		public bool isIdle;// 是否在空闲状态中
@@ -80,19 +86,22 @@ namespace WordJourney
 		// 等待角色动画结束协程
 		public IEnumerator waitRoleAnimEndCoroutine;
 
+        // 动画结束后的回调
 		protected CallBack animEndCallBack;
 
 		// 角色的普通攻击技能
 		public NormalAttack normalAttack;
 
+        // 当前正在使用的主动技能
 		protected ActiveSkill currentUsingActiveSkill;
 
-        // 战斗中角色的位置偏移
-		//public Vector3 posDif;
-
-		// 移动速度
-		//public float moveDuration{ get{return 1 / (agent.moveSpeed * 0.015f + 2f); }}
-		public float moveDuration { get { return agent.moveSpeed / (agent.moveSpeed /0.26f - 19.7803f); } }
+        // 单步移动周期
+		public float moveDuration { 
+			get 
+			{ 
+				return agent.moveSpeed / (agent.moveSpeed /0.26f - 19.7803f); 
+			}
+		}
 
 		// 骨骼动画控制器
 		protected UnityArmatureComponent armatureCom{
@@ -101,23 +110,29 @@ namespace WordJourney
 			}
 		}
 
-      
-		protected ExploreManager exploreManager{get{ return ExploreManager.Instance; }}
-
-
-		public List<string> currentTriggeredEffectAnim = new List<string>();
-
+        // 探索场景控制器
+		protected ExploreManager exploreManager
+		{
+			get{ 
+				return ExploreManager.Instance; 
+			}
+		}
+        
+        // 角色朝向
 		public MyTowards towards;
 
+        // 特效动画容器
 		public Transform effectAnimContainer;
 
-        public float effectAnimYScaler;//特效动画在y轴方向上的调整系数（按照实际场景中相对玩家角色的大小【高度1.2】来定）
+		//特效动画在y轴方向上的调整系数（按照实际场景中相对玩家角色的大小【高度1.2】来定）
+        public float effectAnimYScaler;
 
 
 		protected virtual void Awake(){
 
 			boxCollider = GetComponent <BoxCollider2D> ();
 
+			// 角色攻击关键帧添加监听
 			ListenerDelegate<EventObject> keyFrameListener = KeyFrameMessage;
 
 			if (this is BattleMonsterController ) {
@@ -156,35 +171,42 @@ namespace WordJourney
 		/// <param name="text">Text.</param>
 		public void AddHurtTextToQueue(string text,MyTowards towards){
 
+            // 角色的世界位置转化为在画布中的位置
 			Vector3 basePosition = MyTool.ToPointInCanvas(transform.position);
 
+            // 根据分辨率不同调整屏幕位置
 			basePosition = new Vector3(basePosition.x * CommonData.scalerToPresetHW, basePosition.y, 0);
 
+            // 生成探索文本
 			ExploreText ft = new ExploreText (text,towards,basePosition);
-
-			//if(!isDead){
-				agentUICtr.exploreTextManager.AddHurtText(ft);
-			//}
          
+            // 将探索文本加入伤害文本队列
+			agentUICtr.exploreTextManager.AddHurtText(ft);
+
 		}
 
 
 		/// <summary>
-		/// 添加纵向文字动画到队列
+		/// 添加纵向提示文字动画到队列
 		/// </summary>
 		/// <param name="text">Text.</param>
 		public void AddTintTextToQueue (string text)
 		{
+			// 角色的世界位置转化为在画布中的位置
 			Vector3 basePosition = MyTool.ToPointInCanvas (transform.position);
-
+			// 根据分辨率不同调整屏幕位置
 			basePosition = new Vector3(basePosition.x * CommonData.scalerToPresetHW, basePosition.y, 0);
-
+			// 生成探索文本
 			ExploreText ft = new ExploreText (text,MyTowards.Left,basePosition);
-
-			agentUICtr.exploreTextManager.AddTintText (ft);
+			// 将探索文本加入提示文本队列
+			agentUICtr.exploreTextManager.AddHintText (ft);
 		}
 
 
+        /// <summary>
+        /// 获取角色朝向的反方向
+        /// </summary>
+        /// <returns>The reversed towards.</returns>
 		public MyTowards GetReversedTowards(){
 			
 			MyTowards reversedTowards = MyTowards.Left;
@@ -216,34 +238,18 @@ namespace WordJourney
 		/// <param name="specialAttack">Special attack.</param>
 		public void AddHurtAndShow(int hurt,HurtType type,MyTowards textTowards){
 
+            // 至少有1点伤害值
 			if(hurt == 0){
 				hurt = 1;
 			}
 
 			string hurtString = string.Empty;
-			//if (agent.shenLuTuTengScaler == 0) {
-				agent.health -= hurt;
-			//}else{
 
-				//if ((float)agent.mana / agent.maxMana > 0.3f) {
-
-				//	int manaValid = agent.mana - (int)(agent.maxMana * 0.3f);
-
-				//	if (manaValid >= hurt / 2) {
-				//		agent.mana -= hurt / 2;
-				//	} else {
-				//		agent.mana = (int)(agent.maxMana * 0.3f);
-				//		int healthChange = hurt - manaValid * 2;
-				//		agent.health -= healthChange;
-				//	}
-				//} else {
-				//	agent.health -= hurt;
-				//}
-			//}
-
+			agent.health -= hurt;
+         
 			string colorText = string.Empty;
-
-
+         
+            // 根据伤害类型添加颜色富文本
 			switch (type) {
 			case HurtType.Physical:
 					if (this is BattlePlayerController)
@@ -269,7 +275,8 @@ namespace WordJourney
 				break;
 
 			}
-                     
+             
+            // 加入到伤害文本队列
 			AddHurtTextToQueue (hurtString,textTowards);
 
 		}
@@ -288,6 +295,10 @@ namespace WordJourney
 
 		}
 
+		/// <summary>
+        /// 回魔并播放回魔文字动画
+        /// </summary>
+        /// <param name="gain">Gain.</param>
 		public void AddManaGainAndShow(int gain){
 
 			agent.mana += gain;
@@ -298,24 +309,37 @@ namespace WordJourney
 
 		}
 
-
+        /// <summary>
+        /// 设置角色骨骼层级
+        /// </summary>
+        /// <param name="order">Order.</param>
 		public virtual void SetSortingOrder(int order){
 			armatureCom.sortingOrder = order;
 		}
+        
 
-
-
-		public void SetRoleAnimTimeScale(float scale){
-
-			armatureCom.animation.timeScale = scale;
-
+        /// <summary>
+        /// 设置角色动画时间比例
+        /// </summary>
+        /// <param name="scale">Scale.</param>
+		public void SetRoleAnimTimeScale(float scale){         
+			armatureCom.animation.timeScale = scale;         
 		}
 
+        /// <summary>
+        /// 获得角色动画的时间比例
+        /// </summary>
+        /// <returns>The role animation time scaler.</returns>
 		public float GetRoleAnimTimeScaler(){
 			return armatureCom.animation.timeScale;
 		}
 			
-
+        /// <summary>
+        /// 监听到的关键帧消息
+        /// </summary>
+        /// <param name="key">Key.</param>
+        /// <param name="eventObject">Event object.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
 		protected void KeyFrameMessage<T>(string key,T eventObject){
 
 			EventObject frameObject = eventObject as EventObject;
@@ -328,27 +352,36 @@ namespace WordJourney
 
 		}
 
+        // 执行技能逻辑
 		protected abstract void AgentExcuteHitEffect ();
 
-
+        //设置朝向
 		public abstract void TowardsLeft(bool andWait = true);
 		public abstract void TowardsRight(bool andWait = true);
 		public abstract void TowardsUp (bool andWait = true);
 		public abstract void TowardsDown (bool andWait = true);
 
-
+        /// <summary>
+        /// 判断是否在橘色动画播放过程中
+        /// </summary>
+        /// <returns><c>true</c>, if in animation playing was ised, <c>false</c> otherwise.</returns>
 		public bool IsInAnimPlaying()
         {
             return armatureCom.animation.isPlaying;
         }
-
-
+        
+        /// <summary>
+        /// 移除角色身上指定触发型被动技能的执行器
+        /// </summary>
+        /// <param name="skill">Skill.</param>
 		public void RemoveTriggeredSkillExcutor(TriggeredPassiveSkill skill){
 
+            // 非战斗状态下不执行
             if(!isInFight){
                 return;
             }
 
+            // 更具技能的触发时机查询移除技能执行器
 			if (skill.beforeFightTrigger) {
 				int index = beforeFightTriggerExcutors.FindIndex (delegate(TriggeredSkillExcutor obj) {
 					return obj.triggeredSkill == skill;
@@ -395,11 +428,11 @@ namespace WordJourney
 
 
 		/// <summary>
-		/// 角色攻击间隔计时器
+		/// 攻击间隔时间后触发指定技能
 		/// </summary>
 		/// <param name="skill">计时结束后使用的技能</param>
 		protected IEnumerator InvokeAttack(ActiveSkill skill){
-
+            
 			float timePassed = 0;
 
 			float acutalAttackInterval = agent.attackInterval / armatureCom.animation.timeScale;
@@ -412,15 +445,21 @@ namespace WordJourney
 
 			}
 
-			//Debug.LogFormat("skill name:{0},skill invoke Time:{1}", skill.skillName, Time.time);
-
 			UseSkill (skill);
 
 		}
-
+        
+        /// <summary>
+        /// 检查战斗是否结束
+        /// </summary>
+        /// <returns><c>true</c>, if fight end was checked, <c>false</c> otherwise.</returns>
 		public abstract bool CheckFightEnd ();
-
+        
+        /// <summary>
+        /// 播放角色被攻击时的轻微抖动动画
+        /// </summary>
 		public void PlayShakeAnim(){
+			//如果角色已经死亡，则不执行抖动动画
 			if (agent.health <= 0) {
 				return;
 			}
@@ -578,32 +617,24 @@ namespace WordJourney
 
 		}
 			
-
-		/// <summary>
-		/// 使用技能
-		/// </summary>
-		/// <param name="skill">Skill.</param>
+        
+		// 使用技能
 		public abstract void UseSkill (ActiveSkill skill);
 
-		///// <summary>
-		///// 角色默认的战斗方法
-		///// </summary>
-		//public abstract void Fight ();
-
-
-
+        // 角色死亡
 		public abstract void AgentDie ();
 
+        // 退出战斗
 		public abstract void QuitFight ();
 
-		protected virtual void StopCoroutinesWhenFightEnd (){
-
-			StopAllCoroutines ();
-
-			//CancelInvoke ();
-
+        // 战斗结束后停止所有协程
+		protected virtual void StopCoroutinesWhenFightEnd (){         
+			StopAllCoroutines ();         
 		}
 
+        /// <summary>
+        /// 所有特效动画放入缓存池中
+        /// </summary>
 		public void AllEffectAnimsIntoPool(){
 
 			for (int i = 0; i < effectAnimContainer.childCount; i++) {
@@ -623,8 +654,13 @@ namespace WordJourney
 
 		}
 
+        // 更新角色状态面板
 		public abstract void UpdateStatusPlane ();
-
+        
+        /// <summary>
+        /// 执行战斗前被动技能回调
+        /// </summary>
+        /// <param name="enemy">Enemy.</param>
 		public void ExcuteBeforeFightSkillCallBacks(BattleAgentController enemy){
 			for (int i = 0; i < beforeFightTriggerExcutors.Count; i++) {
 				SkillCallBack cb = beforeFightTriggerExcutors [i].triggeredCallback;
@@ -632,6 +668,10 @@ namespace WordJourney
 			}
 		}
 
+		/// <summary>
+        /// 执行攻击时被动技能回调
+        /// </summary>
+        /// <param name="enemy">Enemy.</param>
 		public void ExcuteAttackSkillCallBacks(BattleAgentController enemy){
 			for (int i = 0; i < attackTriggerExcutors.Count; i++) {
 				SkillCallBack cb = attackTriggerExcutors [i].triggeredCallback;
@@ -639,6 +679,10 @@ namespace WordJourney
 			}
 		}
 
+		/// <summary>
+        /// 执行击中时被动技能回调
+        /// </summary>
+        /// <param name="enemy">Enemy.</param>
 		public void ExcuteHitSkillCallBacks(BattleAgentController enemy){
 			for (int i = 0; i < beHitTriggerExcutors.Count; i++) {
 				SkillCallBack cb = beHitTriggerExcutors [i].triggeredCallback;
@@ -646,6 +690,10 @@ namespace WordJourney
 			}
 		}
 
+		/// <summary>
+        /// 执行被攻击时被动技能回调
+        /// </summary>
+        /// <param name="enemy">Enemy.</param>
 		public void ExcuteBeAttackedSkillCallBacks(BattleAgentController enemy){
 			for (int i = 0; i < beAttackedTriggerExcutors.Count; i++) {
 				SkillCallBack cb = beAttackedTriggerExcutors [i].triggeredCallback;
@@ -653,6 +701,10 @@ namespace WordJourney
 			}
 		}
 
+		/// <summary>
+        /// 执行被击中时被动技能回调
+        /// </summary>
+        /// <param name="enemy">Enemy.</param>
 		public void ExcuteBeHitSkillCallBacks(BattleAgentController enemy){
 			for (int i = 0; i < beHitTriggerExcutors.Count; i++) {
 				SkillCallBack cb = beHitTriggerExcutors [i].triggeredCallback;
@@ -661,39 +713,20 @@ namespace WordJourney
 		}
 			
 
+		/// <summary>
+        /// 执行战斗结束时被动技能回调
+        /// </summary>
+        /// <param name="enemy">Enemy.</param>
 		public void ExcuteFightEndCallBacks(BattleAgentController enemy){
 			for (int i = 0; i < fightEndTriggerExcutors.Count; i++) {
 				SkillCallBack cb = fightEndTriggerExcutors [i].triggeredCallback;
 				cb (this, enemy);
 			}
 		}
-
-//		public void RemoveTriggeredSkillEffect(){
-//			agent.AddPropertyChangeFromOther (
-//				-propertyCalculator.maxHealthChangeFromTriggeredSkill,
-//				-propertyCalculator.hitChangeFromTriggeredSkill,
-//				-propertyCalculator.attackChangeFromTriggeredSkill,
-//				-propertyCalculator.attackSpeedChangeFromTriggeredSkill,
-//				-propertyCalculator.manaChangeFromTriggeredSkill,
-//				-propertyCalculator.armorChangeFromTriggeredSkill,
-//				-propertyCalculator.magicResistChangeFromTriggeredSkill,
-//				-propertyCalculator.dodgeChangeFromTriggeredSkill,
-//				-propertyCalculator.critChangeFromTriggeredSkill,
-//				-propertyCalculator.maxHealthChangeScalerFromTriggeredSkill,
-//				-propertyCalculator.hitChangeScalerFromTriggeredSkill,
-//				-propertyCalculator.attackChangeScalerFromTriggeredSkill,
-//				-propertyCalculator.attackSpeedChangeScalerFromTriggeredSkill,
-//				-propertyCalculator.manaChangeScalerFromTriggeredSkill,
-//				-propertyCalculator.armorChangeScalerFromTriggeredSkill,
-//				-propertyCalculator.magicResistChangeScalerFromTriggeredSkill,
-//				-propertyCalculator.dodgeChangeScalerFromTriggeredSkill,
-//				-propertyCalculator.critChangeScalerFromTriggeredSkill,
-//				-propertyCalculator.physicalHurtScalerChangeFromTriggeredSkill,
-//				-propertyCalculator.magicalHurtScalerChangeFromTriggeredSkill,
-//				-propertyCalculator.critChangeScalerFromTriggeredSkill);
-//
-//		}
-
+      
+        /// <summary>
+        /// 清除所有被动技能的执行器
+        /// </summary>
 		public void ClearAllSkillCallBacks(){
 
 			beforeFightTriggerExcutors.Clear ();
@@ -712,8 +745,6 @@ namespace WordJourney
 		public void ClearAllEffectStatesAndSkillCallBacks(){
 
 			ClearAllSkillCallBacks ();
-
-//			propertyCalculator.ClearSkillsOfType<TriggeredPassiveSkill> ();
 		}
 
 		/// <summary>

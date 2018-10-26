@@ -4,6 +4,9 @@ using UnityEngine;
 using System;
 using System.Reflection;
 
+/// <summary>
+/// 单例类【非mono】
+/// </summary>
 public class Singleton<T> where T:class
 {
 	private static T instance;
@@ -37,6 +40,9 @@ public class Singleton<T> where T:class
 
 }
 
+/// <summary>
+/// 单例类【mono】
+/// </summary>
 public class SingletonMono<T> : MonoBehaviour where T : MonoBehaviour  
 {  
 	private static volatile T instance;  

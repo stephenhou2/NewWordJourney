@@ -11,8 +11,6 @@ namespace WordJourney
 //	[System.Serializable]
 	public class LearningInfo:Singleton<LearningInfo> {
 
-		// 完成过多少次单词学习过程
-//		public int totalLearnTimeCount;
 
 		/// <summary>
 		/// 空构造函数
@@ -53,8 +51,11 @@ namespace WordJourney
         
 
 
-
-
+        
+        /// <summary>
+        /// 获取当前学习中的单词词库表名称
+        /// </summary>
+        /// <returns>The current learning words tabel name.</returns>
 		public string GetCurrentLearningWordsTabelName(){
 
 			string tableName = string.Empty;
@@ -74,6 +75,10 @@ namespace WordJourney
 			return tableName;
 		}
 
+        /// <summary>
+        /// 获取当前词库的单词总数
+        /// </summary>
+        /// <returns>The total words count.</returns>
 		private int GetTotalWordsCount(){
 
 			string tableName = GetCurrentLearningWordsTabelName ();
@@ -98,6 +103,10 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 获取当前词库已学习单词总数
+        /// </summary>
+        /// <returns>The current learned words count.</returns>
 		private int GetCurrentLearnedWordsCount(){
 
 			string tableName = GetCurrentLearningWordsTabelName ();
@@ -122,6 +131,10 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 获取当前词库错误过的单词总数
+        /// </summary>
+        /// <returns>The wrong words count.</returns>
 		private int GetWrongWordsCount(){
 
 			string tableName = GetCurrentLearningWordsTabelName ();
@@ -148,7 +161,10 @@ namespace WordJourney
 		}
 			
 
-
+        /// <summary>
+        /// 获取所有已学习过的单词
+        /// </summary>
+        /// <returns>The all learned words.</returns>
 		public List<HLHWord> GetAllLearnedWords(){
 
 			List<HLHWord> learnedWords = new List<HLHWord>();
@@ -173,7 +189,7 @@ namespace WordJourney
 					return null;
 				}
 
-				HLHWord word = MyTool.GetWordFromReader(reader);            
+				HLHWord word = HLHWord.GetWordFromReader(reader);            
 
 				learnedWords.Add (word);
 
@@ -187,40 +203,7 @@ namespace WordJourney
 
 		}
 
-		public List<HLHWord> GetAllGraspedWord(){
-
-			List<HLHWord> graspedWords = new List<HLHWord>();
-
-			string tableName = GetCurrentLearningWordsTabelName();
-
-			MySQLiteHelper sql = MySQLiteHelper.Instance;
-
-			sql.GetConnectionWith(CommonData.dataBaseName);
-
-			string[] graspedCondition = { "learnedTimes>ungraspTimes" };
-
-			IDataReader reader = sql.ReadSpecificRowsOfTable(tableName, null, graspedCondition, true);
-
-			while(reader.Read()){
-
-				if (reader == null)
-                {
-					sql.CloseConnection(CommonData.dataBaseName);
-                    return null;
-                }
-
-				HLHWord word = MyTool.GetWordFromReader(reader);
-
-				graspedWords.Add(word);
-
-			}
-
-
-			sql.CloseConnection(CommonData.dataBaseName);
-
-			return graspedWords;
-
-		}
+       
 
         /// <summary>
         /// 获取所有熟悉的单词
@@ -250,7 +233,7 @@ namespace WordJourney
                     return null;
                 }
 
-				HLHWord word = MyTool.GetWordFromReader(reader);            
+				HLHWord word = HLHWord.GetWordFromReader(reader);            
 
 				familiarWords.Add(word);
 
@@ -291,7 +274,7 @@ namespace WordJourney
                     return null;
                 }
 
-				HLHWord word = MyTool.GetWordFromReader(reader);
+				HLHWord word = HLHWord.GetWordFromReader(reader);
 
 				unfamiliarWords.Add(word);
 
@@ -304,42 +287,6 @@ namespace WordJourney
 
         }
 
-
-		public List<HLHWord> GetAllUngraspedWords(){
-
-			List<HLHWord> ungraspWords = new List<HLHWord>();
-
-			string tableName = GetCurrentLearningWordsTabelName ();
-            
-			MySQLiteHelper sql = MySQLiteHelper.Instance;
-
-			// 连接数据库
-			sql.GetConnectionWith (CommonData.dataBaseName);
-
-			string[] ungraspedCondition = {"ungraspTimes>=1"};
-
-			// 读取器
-			IDataReader reader = sql.ReadSpecificRowsOfTable(tableName,null,ungraspedCondition,true);
-
-			// 从表中读取数据
-			while (reader.Read ()) {
-
-				if (reader == null) {
-					sql.CloseConnection(CommonData.dataBaseName);
-					return null;
-				}
-
-				HLHWord word = MyTool.GetWordFromReader(reader);
-
-				ungraspWords.Add (word);
-
-			}
-
-			sql.CloseAllConnections ();
-
-			return ungraspWords;
-
-		}
 
 
 

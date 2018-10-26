@@ -201,7 +201,7 @@ namespace WordJourney
 
 			reader.Read ();
 
-			return MyTool.GetWordFromReader(reader);
+			return HLHWord.GetWordFromReader(reader);
 		}
 
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)

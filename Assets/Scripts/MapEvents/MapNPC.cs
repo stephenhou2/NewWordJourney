@@ -7,20 +7,15 @@ namespace WordJourney
    
     public class MapNPC : MapWalkableEvent
     {
-
+        // npc 的 id
         private int npcId;
-
+        // npc
         [HideInInspector] public HLHNPC npc;
-
-        //public NPCAlertArea[] alertAreas;
-
+        // 战胜npc的奖励      
         [HideInInspector] public HLHNPCReward fightReward;
-
+        // 是否需要进行位置修正
         public bool needPosFix;
-
-		//private IEnumerator delayMoveCoroutine;
-
-
+      
         public override void AddToPool(InstancePool pool)
         {
             bc2d.enabled = false;
@@ -58,60 +53,25 @@ namespace WordJourney
 
         }
 
-
+        /// <summary>
+        /// 延迟移动【暂时没有用，npc不动】
+        /// </summary>
+        /// <returns>The movement.</returns>
+        /// <param name="delay">Delay.</param>
         private IEnumerator DelayedMovement(int delay)
-        {
-
-            //DisableAllDetect();
-
+        {         
             yield return new WaitForSeconds(delay);
-
-            //EnableAllDetect();
-
+         
             StartMove();
 
         }
               
-        //private void DisableAllDetect()
-        //{
-
-        //    DisableAllAlertAreaDetect();
-
-        //    bc2d.enabled = false;
-
-        //}
-
-        //private void EnableAllDetect()
-        //{
-        //    EnableAllAlertAreaDetect();
-        //    bc2d.enabled = true;
-        //}
-
-        //private void InitAllAlertAreaDetect()
-        //{
-        //    for (int i = 0; i < alertAreas.Length; i++)
-        //    {
-        //        alertAreas[i].InitializeAlertArea();
-        //    }
-        //}
-
-        //private void EnableAllAlertAreaDetect()
-        //{
-        //    for (int i = 0; i < alertAreas.Length; i++)
-        //    {
-        //        alertAreas[i].EnableAlertDetect();
-        //    }
-        //}
-
-        //private void DisableAllAlertAreaDetect()
-        //{
-        //    for (int i = 0; i < alertAreas.Length; i++)
-        //    {
-        //        alertAreas[i].DisableAlertDetect();
-        //    }
-        //}
-
-
+        
+        /// <summary>
+        /// 初始化地图npc
+        /// </summary>
+        /// <param name="mapIndex">Map index.</param>
+        /// <param name="attachedInfo">Attached info.</param>
         public override void InitializeWithAttachedInfo(int mapIndex, MapAttachedInfoTile attachedInfo)
         {
             transform.position = attachedInfo.position;
@@ -128,11 +88,7 @@ namespace WordJourney
 			for (int i = 0; i < GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcPosArray.Length;i++){
 
 				Vector2 pos = GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcPosArray[i];
-
-				//if(pos == -Vector2.one){
-				//	break;
-				//}
-
+                            
 				if(MyTool.ApproximatelySameIntPosition2D(pos,attachedInfo.position)){
 					npc = GameManager.Instance.gameDataCenter.currentMapEventsRecord.npcArray[i];
 					break;
@@ -158,7 +114,6 @@ namespace WordJourney
 			}
          
 			bc2d.enabled = true;
-            //InitAllAlertAreaDetect();
 
             gameObject.SetActive(true);
 
@@ -180,62 +135,13 @@ namespace WordJourney
 
             miniMapInstance.GetComponent<SpriteRenderer>().sprite = miniMapNpcSprite;
 
-            //for (int i = 0; i < alertAreas.Length; i++)
-            //{
-            //    alertAreas[i].InitializeAlertArea();
-            //}
-
-            //StartMove();
         }
 
-
-        //public void OnTriggerEnter2D(Collider2D col)
-        //{
-
-        //    BattlePlayerController bp = col.GetComponent<BattlePlayerController>();
-
-        //    if (bp == null)
-        //    {
-        //        return;
-        //    }
-
-        //    if (bp.isInEvent)
-        //    {
-        //        return;
-        //    }
-
-        //    if (bp.needPosFix)
-        //    {
-        //        return;
-        //    }
-
-        //    if (needPosFix)
-        //    {
-        //        return;
-        //    }
-
-        //    if (baCtr.isDead)
-        //    {
-        //        return;
-        //    }
-
-        //    if (bp.isInPosFixAfterFight)
-        //    {
-        //        return;
-        //    }
-
-        //    EnterMapEvent(bp);
-        //}
-
-        //      public void OnTriggerExit2D(Collider2D col){
-        //
-        //          BattleAgentController ba = col.GetComponent<BattleAgentController> ();
-        //
-        //          if (!(ba is BattlePlayerController)) {
-        //              return;
-        //          }
-        //      }
-
+        
+        /// <summary>
+        /// 进入地图npc事件中
+        /// </summary>
+        /// <param name="bp">Bp.</param>
         public override void EnterMapEvent(BattlePlayerController bp)
         {
 			if(ExploreManager.Instance.expUICtr.rejectNewUI){
@@ -252,24 +158,16 @@ namespace WordJourney
 
             bp.isInEvent = true;
 
-            //bp.StopMoveAndWait();
-
             bp.FixPositionToStandard();
 
             MapEventTriggered(false, bp);
         }
 
-        //public void DetectPlayer(BattlePlayerController bp)
-        //{
-        //    if (isInMoving)
-        //    {
-        //        RefreshWalkableInfoWhenTriggeredInMoving();
-        //    }
-        //    bp.StopMoveAtEndOfCurrentStep();
-        //    bp.isInEvent = true;
-        //    MapEventTriggered(true, bp);
-        //}
-
+        /// <summary>
+        /// 地图事件触发后的逻辑
+        /// </summary>
+        /// <param name="isFromDetect">If set to <c>true</c> is from detect.</param>
+        /// <param name="bp">Bp.</param>
         public override void MapEventTriggered(bool isFromDetect, BattlePlayerController bp)
         {
             bp.boxCollider.enabled = false;
@@ -279,10 +177,6 @@ namespace WordJourney
                 return;
             }
 
-            //if (!npc.isExcutor) {
-            //  DisableAllAlertAreaDetect ();
-            //}
-
             ExploreManager.Instance.DisableExploreInteractivity();
 
             ExploreManager.Instance.MapWalkableEventsStopAction();
@@ -290,9 +184,7 @@ namespace WordJourney
             StopMoveImmidiately();
 
             ExploreManager.Instance.currentEnteredMapEvent = this;
-
-            //bp.StopMoveAtEndOfCurrentStep ();
-
+         
             if (canMove)
             {
 				IEnumerator adjustAndFightCoroutine = AdjustPositionAndTowards(bp);
@@ -314,14 +206,7 @@ namespace WordJourney
 			bc2d.enabled = false;
         }
 
-        //public void EnterFight(BattlePlayerController bp)
-        //{
-        //    bp.escapeFromFight = false;
-        //    bp.isInEscaping = false;
-        //    StartCoroutine("AdjustPositionAndTowardsAndFight", bp);
-        //}
-
-
+      
         /// <summary>
         /// 与npc相遇时只调整方向，不调整位置
         /// </summary>
@@ -421,281 +306,12 @@ namespace WordJourney
 
         }
 
-        //private IEnumerator AdjustPositionAndTowardsAndFight(BattlePlayerController battlePlayerCtr)
-        //{
-
-        //    yield return new WaitUntil(() => battlePlayerCtr.isIdle);
-
-        //    Vector3 playerOriPos = battlePlayerCtr.transform.position;
-        //    Vector3 npcOriPos = transform.position;
-
-        //    int playerPosX = Mathf.RoundToInt(playerOriPos.x);
-        //    int playerPosY = Mathf.RoundToInt(playerOriPos.y);
-        //    int npcPosX = Mathf.RoundToInt(npcOriPos.x);
-        //    int npcPosY = Mathf.RoundToInt(npcOriPos.y);
-
-        //    int npcLayerOrder = -npcPosY;
-
-        //    int posOffsetX = playerPosX - npcPosX;
-        //    int posOffsetY = playerPosY - npcPosY;
-
-        //    Vector3 npcFightPos = Vector3.zero;
-        //    Vector3 playerFightPos = new Vector3(playerPosX, playerPosY, 0);
-
-        //    int minX = 0;
-        //    int maxX = ExploreManager.Instance.newMapGenerator.columns - 1;
-
-        //    if (posOffsetX > 0)
-        //    {
-
-        //        battlePlayerCtr.TowardsLeft(false);
-        //        baCtr.TowardsRight();
-
-        //        if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX - 1, playerPosY] == 1)
-        //        {
-        //            npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
-        //            npcLayerOrder = -playerPosY;
-        //            needPosFix = false;
-        //            battlePlayerCtr.needPosFix = false;
-        //        }
-        //        else if (playerPosX - 1 >= minX && playerPosX - 1 == npcPosX && playerPosY == npcPosY)
-        //        {
-        //            npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
-        //            npcLayerOrder = -playerPosY;
-        //            needPosFix = false;
-        //            battlePlayerCtr.needPosFix = false;
-        //        }
-        //        else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
-        //        {
-        //            npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
-        //            npcLayerOrder = -playerPosY;
-        //            needPosFix = false;
-        //            battlePlayerCtr.needPosFix = false;
-        //        }
-        //        else
-        //        {
-        //            if (posOffsetY > 0)
-        //            {
-
-        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
-        //                npcLayerOrder = -playerPosY + 1;
-
-        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
-
-        //                baCtr.SetSortingOrder(-playerPosY + 1);
-
-        //            }
-        //            else
-        //            {
-
-        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
-        //                npcLayerOrder = -playerPosY - 1;
-
-        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
-
-        //                baCtr.SetSortingOrder(-playerPosY - 1);
-
-        //            }
-        //            needPosFix = true;
-        //            battlePlayerCtr.needPosFix = true;
-        //        }
-
-        //    }
-        //    else if (posOffsetX == 0)
-        //    {
-
-        //        if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX + 1, playerPosY] == 1)
-        //        {
-
-        //            baCtr.TowardsLeft();
-
-        //            battlePlayerCtr.TowardsRight(false);
-
-        //            npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
-
-        //            needPosFix = false;
-        //            battlePlayerCtr.needPosFix = false;
-
-        //        }
-        //        else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
-        //        {
-        //            baCtr.TowardsLeft();
-
-        //            battlePlayerCtr.TowardsRight(false);
-
-        //            npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
-
-        //            needPosFix = false;
-        //            battlePlayerCtr.needPosFix = false;
-        //        }
-        //        else if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX - 1, playerPosY] == 1)
-        //        {
-
-        //            baCtr.TowardsRight();
-
-        //            battlePlayerCtr.TowardsLeft(false);
-
-        //            npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
-
-        //            needPosFix = false;
-        //            battlePlayerCtr.needPosFix = false;
-
-        //        }
-        //        else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
-        //        {
-
-        //            baCtr.TowardsRight();
-
-        //            battlePlayerCtr.TowardsLeft(false);
-
-        //            npcFightPos = new Vector3(playerOriPos.x - 1, playerPosY, 0);
-
-        //            needPosFix = false;
-        //            battlePlayerCtr.needPosFix = false;
-
-        //        }
-        //        else
-        //        {
-
-        //            baCtr.TowardsLeft();
-
-        //            battlePlayerCtr.TowardsRight(false);
-
-        //            if (posOffsetY > 0)
-        //            {
-
-        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
-        //                npcLayerOrder = -playerPosY + 1;
-
-        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
-
-        //                baCtr.SetSortingOrder(-playerPosY + 1);
-
-        //                //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
-
-        //            }
-        //            else
-        //            {
-
-        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
-        //                npcLayerOrder = -playerPosY - 1;
-
-        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
-
-        //                baCtr.SetSortingOrder(-playerPosY - 1);
-
-        //                //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
-        //            }
-
-        //            needPosFix = true;
-        //            battlePlayerCtr.needPosFix = true;
-
-        //        }
-
-        //    }
-        //    else if (posOffsetX < 0)
-        //    {
-
-        //        battlePlayerCtr.TowardsRight(false);
-        //        baCtr.TowardsLeft();
-
-        //        if (playerPosX + 1 <= maxX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX + 1, playerPosY] == 1)
-        //        {
-
-        //            npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
-
-        //            needPosFix = false;
-        //            battlePlayerCtr.needPosFix = false;
-
-        //        }
-        //        else if (playerPosX + 1 <= maxX && playerPosX + 1 == npcPosX && playerPosY == npcPosY)
-        //        {
-
-        //            npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
-
-        //            needPosFix = false;
-        //            battlePlayerCtr.needPosFix = false;
-
-        //        }
-        //        else if (playerPosX + 1 <= maxX && playerPosX + 1 == Mathf.RoundToInt(moveDestination.x) && playerPosY == Mathf.RoundToInt(moveDestination.y))
-        //        {
-        //            npcFightPos = new Vector3(playerOriPos.x + 1, playerPosY, 0);
-
-        //            needPosFix = false;
-        //            battlePlayerCtr.needPosFix = false;
-
-        //        }
-        //        else
-        //        {
-        //            if (posOffsetY > 0)
-        //            {
-
-        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY - 0.15f, 0);
-        //                npcLayerOrder = -playerPosY + 1;
-
-        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
-
-        //                baCtr.SetSortingOrder(-playerPosY + 1);
-
-        //                //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
-
-        //            }
-        //            else
-        //            {
-
-        //                npcFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
-        //                npcLayerOrder = -playerPosY - 1;
-
-        //                playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
-
-        //                baCtr.SetSortingOrder(-playerPosY - 1);
-
-        //                //battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
-        //            }
-
-        //            needPosFix = true;
-        //            battlePlayerCtr.needPosFix = true;
-
-        //        }
-
-        //    }
-
-        //    battlePlayerCtr.FixPosTo(playerFightPos, null);
-
-        //    RunToPosition(npcFightPos, delegate {
-
-        //        if (!battlePlayerCtr.escapeFromFight)
-        //        {
-        //            if (transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x)
-        //            {
-        //                baCtr.TowardsRight();
-        //            }
-        //            else
-        //            {
-        //                baCtr.TowardsLeft();
-        //            }
-        //            if (!battlePlayerCtr.isInEscaping)
-        //            {
-        //                ExploreManager.Instance.EnterFight(this.transform);
-        //                ExploreManager.Instance.PlayerAndMonsterStartFight();
-        //            }
-        //            else
-        //            {
-        //                ExploreManager.Instance.EnterFight(this.transform);
-        //                ExploreManager.Instance.MonsterStartFight();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            bool monsterDie = baCtr.agent.health <= 0;
-        //            RefreshWalkableInfoWhenQuit(monsterDie);
-        //            QuitFightAndDelayMove(5);
-        //            battlePlayerCtr.escapeFromFight = false;
-        //        }
-        //    }, npcLayerOrder);
-        //}
-
-
+      
+        /// <summary>
+        /// 调整npc的位置和朝向
+        /// </summary>
+        /// <returns>The position and towards.</returns>
+        /// <param name="battlePlayerCtr">Battle player ctr.</param>
 		private IEnumerator AdjustPositionAndTowards(BattlePlayerController battlePlayerCtr)
 		{
 
@@ -754,8 +370,6 @@ namespace WordJourney
 
 						baCtr.SetSortingOrder(-playerPosY + 1);
 
-						//battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
-
 					}
 					else
 					{
@@ -766,8 +380,6 @@ namespace WordJourney
 						playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
 						baCtr.SetSortingOrder(-playerPosY - 1);
-
-						//battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 					}
 
 					needPosFix = true;
@@ -802,9 +414,7 @@ namespace WordJourney
 						playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
 
 						baCtr.SetSortingOrder(-playerPosY + 1);
-
-						//battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
-
+                  
 					}
 					else
 					{
@@ -815,8 +425,6 @@ namespace WordJourney
 						playerFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
 
 						baCtr.SetSortingOrder(-playerPosY - 1);
-
-						//battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 					}
 
 					needPosFix = true;
@@ -856,8 +464,6 @@ namespace WordJourney
 
 						baCtr.SetSortingOrder(-playerPosY + 1);
 
-						//battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
-
 					}
 					else
 					{
@@ -869,7 +475,6 @@ namespace WordJourney
 
 						baCtr.SetSortingOrder(-playerPosY - 1);
 
-						//battlePlayerCtr.FixPosTo(playerFightPos, 0.1f, null);
 					}
 
 					needPosFix = true;
@@ -901,7 +506,12 @@ namespace WordJourney
         }
 
 
-
+        /// <summary>
+        /// 行走到指定位置【暂时没有用，npc不会动】
+        /// </summary>
+        /// <param name="position">Position.</param>
+        /// <param name="cb">Cb.</param>
+        /// <param name="showAlertArea">If set to <c>true</c> show alert area.</param>
         public override void WalkToPosition(Vector3 position, CallBack cb, bool showAlertArea = true)
         {
 
@@ -967,7 +577,12 @@ namespace WordJourney
 
         }
 
-
+        /// <summary>
+        /// 跑到指定位置【暂时没有用，npc不会动】
+        /// </summary>
+        /// <param name="position">Position.</param>
+        /// <param name="cb">Cb.</param>
+        /// <param name="layerOrder">Layer order.</param>
         protected override void RunToPosition(Vector3 position, CallBack cb, int layerOrder)
         {
 

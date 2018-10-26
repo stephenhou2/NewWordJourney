@@ -52,27 +52,27 @@ namespace WordJourney
 
 			bp.isInEvent = false;
 
-            if (!Player.mainPlayer.canSave)
-            {
-                return;
-            }
+            //if (!Player.mainPlayer.canSave)
+            //{
+            //    return;
+            //}
 
-            Debug.Log("save data at save point");
+            //Debug.Log("save data at save point");
 
             ExploreManager.Instance.DisableAllInteractivity();
 
             isInSavingData = true;
             autoDetect.isInSavingData = true;
 
-            Player.mainPlayer.savePosition = this.transform.position;
+            //Player.mainPlayer.savePosition = this.transform.position;
 
-            Player.mainPlayer.saveTowards = bp.towards;
+            //Player.mainPlayer.saveTowards = bp.towards;
 
 			//bool isInEvent = ExploreManager.Instance.battlePlayerCtr.isInEvent;
 
 			bp.ForceMoveToAndStopWhenEnconterWithMapEvent(new Vector3(transform.position.x,transform.position.y,0),delegate {
 
-                ExploreManager.Instance.SaveDataInExplore(delegate {
+				GameManager.Instance.persistDataManager.SaveDataInExplore(delegate {
 
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
 
@@ -140,8 +140,8 @@ namespace WordJourney
 			//bool isInEvent = ExploreManager.Instance.battlePlayerCtr.isInEvent;
 
 			bp.StopMoveAtEndOfCurrentStep(delegate {
-			
-				ExploreManager.Instance.SaveDataInExplore(delegate {
+					
+			    GameManager.Instance.persistDataManager.SaveDataInExplore(delegate {
 				
 					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
 

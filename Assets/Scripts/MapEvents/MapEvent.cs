@@ -6,57 +6,18 @@ namespace WordJourney
 {
 	using TMPro;
 
-	// 地图物品类型枚举
-//	public enum MapItemType{
-//		Buck,
-//		Pot,
-//		TreasureBox,
-//		Tree,
-//		Stone,
-//		NormalTrapOn,
-//		NormalTrapOff,
-//		Switch,
-//		Door,
-//		MovableFloor,
-//		Transport,
-//		Billboard,
-//		FireTrap,
-//		Hole,
-//		MovableBox,
-//		LauncherTowardsUp,
-//		LauncherTowardsDown,
-//		LauncherTowardsLeft,
-//		LauncherTowardsRight,
-//		Plant,
-//		PressSwitch,
-//		Crystal,
-//		MapNPC,
-//		Docoration
-//	}
-
-//	public class MapEnglishTriggerInfo{
-//		
-//		public LearnWord targetWord;
-//		public LearnWord confuseWord_1;
-//		public LearnWord confuseWord_2;
-//
-//		public MapEnglishTriggerInfo(LearnWord[] wordsArray){
-//			this.targetWord = wordsArray[0];
-//			this.confuseWord_1 = confuseWord1;
-//			this.confuseWord_2 = confuseWord2;
-//		}
-//	}
-
+    /// <summary>
+    /// 地图事件类
+    /// </summary>
 	public abstract class MapEvent : MonoBehaviour {
 
+        // 地图事件对应的音效名称
 		public string audioClipName;
-
+        // 图片精灵
 		protected SpriteRenderer mapItemRenderer;
-
+        // 3d文本
 		public TextMeshPro tmPro;
-
-		//protected CallBack animEndCallBack;
-
+        // 包围盒
 		protected BoxCollider2D bc2d;
 
 		// 单词数组，第0项为显示的目标单词
@@ -65,24 +26,17 @@ namespace WordJourney
         // 地图事件在小地图上对应的元素对象
 		public Transform miniMapInstance;
 
+        // 是否通过单词才能触发
 		protected bool isWordTriggered{
 			get{
 				return wordsArray != null && wordsArray.Length > 0;
 			}
 		}
 
-//		protected ExploreManager mExploreManager;
-//		protected ExploreManager exploreManager{
-//			get{
-//				if (mExploreManager == null) {
-//					mExploreManager = ExploreManager.Instance.GetComponent<ExploreManager> ();
-//				}
-//				return mExploreManager;
-//			}
-//		}
+
 
 		protected virtual void Awake(){
-
+            // 绑定组件         
 			mapItemRenderer = GetComponent<SpriteRenderer> ();
 
 			bc2d = GetComponent<BoxCollider2D> ();
@@ -93,15 +47,25 @@ namespace WordJourney
 			//}
 		}
 
-//		public abstract void InitMapItem ();
-
+        /// <summary>
+        /// 加入缓存池
+        /// </summary>
+        /// <param name="pool">Pool.</param>
 		public abstract void AddToPool (InstancePool pool);
-
+        
+        /// <summary>
+        /// 设置显示层级
+        /// </summary>
+        /// <param name="order">Order.</param>
 		public virtual void SetSortingOrder(int order){
 			mapItemRenderer.sortingOrder = order;
 		}
 
-
+        /// <summary>
+        /// 根据地图附加信息初始化地图事件
+        /// </summary>
+        /// <param name="mapIndex">Map index.</param>
+        /// <param name="attachedInfo">Attached info.</param>
 		public abstract void InitializeWithAttachedInfo (int mapIndex, MapAttachedInfoTile attachedInfo);
 
 
@@ -126,10 +90,18 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 判断玩家是否需要在触发当前地图事件时停止运动
+        /// </summary>
+        /// <returns><c>true</c>, if player need to stop when entered was ised, <c>false</c> otherwise.</returns>
 		public virtual bool IsPlayerNeedToStopWhenEntered (){
 			return true;
 		}
 
+        /// <summary>
+        /// 判断单词在选择错误的时候是否需要显示单词详细信息
+        /// </summary>
+        /// <returns><c>true</c>, if full word need to show when choose wrong was ised, <c>false</c> otherwise.</returns>
 		public virtual bool IsFullWordNeedToShowWhenChooseWrong(){
 			return true;
 		}

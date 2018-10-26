@@ -7,7 +7,8 @@ namespace WordJourney{
 
 		// 按照给定的transform名称（带层级）查找，如果没有找到指定transform，则按照参数中的层级关系创建该transform
 		public static Transform FindOrCreateTransform(string transformName){
-			
+
+            // 按‘/‘分割层级
 			string[] strs = transformName.Split(new char[] {'/'});
 			List<Transform> transList = new List<Transform> ();
 
@@ -37,7 +38,11 @@ namespace WordJourney{
 
 		}
 			
-
+        /// <summary>
+        /// 寻找场景中指定名称的游戏体
+        /// </summary>
+        /// <returns>The transform.</returns>
+        /// <param name="transformName">Transform name.</param>
 		public static Transform FindTransform (string transformName){
 
 			GameObject go = GameObject.Find (transformName);
@@ -50,6 +55,12 @@ namespace WordJourney{
 
 		}
 
+        /// <summary>
+        /// 在父级物体上获取指定类型的组件
+        /// </summary>
+        /// <returns>The in parents.</returns>
+        /// <param name="go">Go.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
 		static public T FindInParents<T>(GameObject go) where T : Component
 		{
 			if (go == null) return null;
@@ -67,12 +78,13 @@ namespace WordJourney{
 			return comp;
 		}
 
+        /// <summary>
+        /// 创建新的游戏体，放在指定的父级物体下，并重新命名为指定名称
+        /// </summary>
+        /// <returns>The transform.</returns>
+        /// <param name="transformName">Transform name.</param>
+        /// <param name="parentTrans">Parent trans.</param>
 		public static Transform NewTransform(string transformName,Transform parentTrans = null){
-
-	//		if (commonContainer == null) {
-	//			commonContainer = (new GameObject ()).transform;
-	//			commonContainer.name = "ContainerModel";
-	//		}
 
 			Transform mContainer = (new GameObject ()).transform;
 			if (parentTrans != null) {
@@ -82,19 +94,13 @@ namespace WordJourney{
 			return mContainer;
 		}
 
-//		public static void DestroyTransform(Transform trans){
-//
-//			try{
-//				Destroy(trans.gameObject);
-//			}catch(System.Exception e){
-//				Debug.Log ("删除游戏物体失败" + e.ToString ());
-//			}
-//
-//		}
+      
 
 
-
-
+        /// <summary>
+        /// 销毁指定名称的游戏体
+        /// </summary>
+        /// <param name="transformName">Transform name.</param>
 		public static void DestroyTransfromWithName(string transformName){
 
 			Transform trans = FindTransform (transformName);

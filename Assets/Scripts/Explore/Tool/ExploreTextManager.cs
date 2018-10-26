@@ -7,21 +7,21 @@ namespace WordJourney
 {
 	using UnityEngine.UI;
 	using DG.Tweening;
-
-	public enum MyTowards{
-		Up,
-		Down,
-		Left,
-		Right
-
-	}
-
+    
+    /// <summary>
+    /// 探索中文字模型【主要用于属性变化提示数字，文字】
+    /// </summary>
 	public class ExploreText{
+		// 文本
 		public string text;
+        // 朝向
 		public MyTowards towards;
+        // 文字动画运动的原始位置
 		public Vector3 basePosition;
+        // 在待显示文字提示的等待列表中的序号
 		public int indexInList;
 
+        // 构造函数
 		public ExploreText(string text,MyTowards towards,Vector3 basePosition){
 			this.text = text;
 			this.towards = towards;
@@ -29,47 +29,42 @@ namespace WordJourney
 		}
 	}
 
-
+    /// <summary>
+	/// 探索中文字控制器
+    /// </summary>
 	public class ExploreTextManager : MonoBehaviour {
 
+        // 缓存池
 		private InstancePool exploreTextPool;
-
+        // 模型
 		private Transform exploreTextModel;
-
+        // 容器
 		private Transform exploreTextContainer;
         
-
+        // 伤害文字动画间隔
 		private float hurtTextInterval = 0.1f;
-
+        // 提示文字动画间隔
 		private float tintTextInterval = 0.3f;
 
-		private float viewPortTransformScaler;
 
-
-
+        // 等待显示的伤害文本列表
 		private List<ExploreText> hurtTextList = new List<ExploreText> ();
+        // 等待显示的提示文本列表
+		private List<ExploreText> hintTextList = new List<ExploreText> ();
 
-		private List<ExploreText> tintTextList = new List<ExploreText> ();
-
-		private void Start()
-		{
-			//viewPortTransformScaler = CommonData.scalerToPresetResulotion
-		}
-
-
+        
+        /// <summary>
+        /// 初始化文本动画控制器
+        /// </summary>
+        /// <param name="exploreTextPool">Explore text pool.</param>
+        /// <param name="exploreTextModel">Explore text model.</param>
+        /// <param name="exploreTextContainer">Explore text container.</param>
 		public void InitExploreTextManager(InstancePool exploreTextPool,Transform exploreTextModel,Transform exploreTextContainer){
 			this.exploreTextPool = exploreTextPool;
 			this.exploreTextModel = exploreTextModel;
 			this.exploreTextContainer = exploreTextContainer;
 		}
 
-//		public void SetUpFightTextManager(Vector3 selfPos,MyTowards towards){
-//
-//			direction = towards;
-//
-//			basePosition = ToPointInCanvas (selfPos);
-//
-//		}
 
 		/// <summary>
 		/// 添加伤害文本到显示队列中
@@ -86,9 +81,9 @@ namespace WordJourney
 		/// 添加纵向屏幕文字到显示队列中
 		/// </summary>
 		/// <param name="exploreText">Explore text.</param>
-		public void AddTintText(ExploreText exploreText){
-			exploreText.indexInList = tintTextList.Count;
-			tintTextList.Add (exploreText);
+		public void AddHintText(ExploreText exploreText){
+			exploreText.indexInList = hintTextList.Count;
+			hintTextList.Add (exploreText);
 			IEnumerator showNewHintTextCoroutine = ShowANewTintText(exploreText);
 			StartCoroutine (showNewHintTextCoroutine);
 		}
@@ -128,11 +123,11 @@ namespace WordJourney
 			PlayTintTextAnim (exploreText);
 
 			// 将exploreText从显示队列中移除
-			tintTextList.RemoveAt (0);
+			hintTextList.RemoveAt (0);
 
 			// 显示队列中的其他 exploreText 在队列中整体左移（由于exploreText的队列序号是在exploreText内部存储，所以需要手动移动整个队列中的exploreText）
-			for (int i = 0; i < tintTextList.Count; i++) {
-				tintTextList [i].indexInList--;
+			for (int i = 0; i < hintTextList.Count; i++) {
+				hintTextList [i].indexInList--;
 			}
 
 		}
@@ -146,12 +141,19 @@ namespace WordJourney
 			// 从缓存池获取文本模型
 			Text hurtText = exploreTextPool.GetInstance<Text> (exploreTextModel.gameObject, exploreTextContainer);
 
+            // 伤害文本的原始位置
 			Vector3 originHurtPos = Vector3.zero;
+            // 伤害文本的第一次跳动终点
 			Vector3 firstHurtPos = Vector3.zero;
+            // 伤害文本的第二次跳动终点
 			Vector3 secondHurtPos = Vector3.zero;
+            // 提示文本的原始位置【伤害可能附带暴击，闪避等提示文字】
 			Vector3 originTintPos = Vector3.zero;
+			// 提示文本的终点位置【伤害可能附带暴击，闪避等提示文字】
 			Vector3 finalTintPos = Vector3.zero;
 
+
+            // 下面设置文本的动画路径
 			switch(et.towards){
 			case MyTowards.Left:
 			case MyTowards.Up:
@@ -211,6 +213,7 @@ namespace WordJourney
 
 			tintText.gameObject.SetActive(true);
          
+            // 提示文本做一次缩放
 			tintText.transform.DOScale(new Vector3(1.2f,1.2f,1f),0.3f).OnComplete (() => {
 
 				tintText.text = "";

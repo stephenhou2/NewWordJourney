@@ -71,80 +71,7 @@ namespace WordJourney
 
 			return pos1_x == pos2_x && pos1_y == pos2_y;
 		}
-
-		//		public static Vector3 RoundToIntPos(Vector3 oriPos){
-		//			int pos_x = Mathf.RoundToInt (oriPos.x);
-		//			int pos_y = Mathf.RoundToInt (oriPos.y);
-		//			int pos_z = Mathf.RoundToInt (oriPos.z);
-		//			return new Vector3 (pos_x, pos_y, pos_z);
-		//
-		//		}
-
-
-		public static Vector3 FindNearestPos(Vector3 oriPos, List<Vector3> endPosList)
-		{
-
-			Vector3 nearestPos = oriPos;
-			float distance = float.MaxValue;
-
-			for (int i = 0; i < endPosList.Count; i++)
-			{
-
-				Vector3 potentialPosition = endPosList[i];
-
-				if (potentialPosition == oriPos)
-				{
-					continue;
-				}
-
-				float newDistance = Vector3.Magnitude(potentialPosition - oriPos);
-
-				if (newDistance < distance)
-				{
-					nearestPos = potentialPosition;
-					distance = newDistance;
-				}
-
-			}
-
-			return nearestPos;
-
-		}
-
-
-		public static int FindNearestPosIndex(Vector3 oriPos, List<Vector3> endPosList)
-		{
-
-			int posIndex = 0;
-
-			float distance = float.MaxValue;
-
-			for (int i = 0; i < endPosList.Count; i++)
-			{
-
-				Vector3 potentialPosition = endPosList[i];
-
-				if (potentialPosition == oriPos)
-				{
-					continue;
-				}
-
-				float newDistance = Vector3.Magnitude(potentialPosition - oriPos);
-
-				if (newDistance < distance)
-				{
-					posIndex = i;
-					distance = newDistance;
-				}
-
-			}
-
-			return posIndex;
-
-		}
-
-
-
+              
 
 		private static string[] chineseNums = new string[] { "一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十" };
 
@@ -162,7 +89,7 @@ namespace WordJourney
 		}
 
 
-
+        // 怪物骨骼名称
 		private static string[] normalMonsterNames = new string[]{
 			"01_skeleton",
 			"02_alchemist",
@@ -193,6 +120,7 @@ namespace WordJourney
 			"27_cyclops"
 		};
 
+		// boss骨骼名称
 		private static string[] bossNames = new string[] {
 			"01_boss_magic_armor",
 			"02_boss_commando",
@@ -206,6 +134,7 @@ namespace WordJourney
 			"10_boss_dragon"
 		};
 
+		// 怪物UI骨骼名称
 		private static string[] normalMonsterUINames = new string[]{
 			"01_skeleton_UI",
 			"02_alchemist_UI",
@@ -236,6 +165,7 @@ namespace WordJourney
 			"27_cyclops_UI"
 		};
 
+        // boss UI骨骼名称
 		private static string[] bossUINames = new string[] {
 			"01_boss_magic_armor_UI",
 			"02_boss_commando_UI",
@@ -249,7 +179,11 @@ namespace WordJourney
 			"10_boss_dragon_UI"
 		};
 
-
+        /// <summary>
+        /// 根据怪物id获取怪物骨骼名称
+        /// </summary>
+        /// <returns>The monster name.</returns>
+        /// <param name="monsterId">Monster identifier.</param>
 		public static string GetMonsterName(int monsterId)
 		{
 			if (monsterId <= 0)
@@ -265,7 +199,13 @@ namespace WordJourney
 				return bossNames[monsterId - 101];
 			}
 		}
+        
 
+        /// <summary>
+        /// 根据怪物id获取怪物UI骨骼名称
+        /// </summary>
+        /// <returns>The monster UIN ame.</returns>
+        /// <param name="monsterId">Monster identifier.</param>
 		public static string GetMonsterUIName(int monsterId)
 		{
 			if (monsterId <= 0)
@@ -282,6 +222,7 @@ namespace WordJourney
 			}
 		}
 
+        // npc骨骼名称
 		private static string[] npcNames = new string[]{
 			"wiseman",
 			"merchant",
@@ -298,6 +239,11 @@ namespace WordJourney
 			"berserker"
 		};
 
+        /// <summary>
+        /// 根据npc id 获取npc骨骼名称
+        /// </summary>
+        /// <returns>The npc name.</returns>
+        /// <param name="npcId">Npc identifier.</param>
 		public static string GetNpcName(int npcId)
 		{
 
@@ -306,7 +252,11 @@ namespace WordJourney
 			return npcName;
 		}
 
-
+        /// <summary>
+        /// 获取属性中文名称
+        /// </summary>
+        /// <returns>The property name.</returns>
+        /// <param name="type">Type.</param>
 		public static string GetPropertyName(PropertyType type)
 		{
 			string propertyName = string.Empty;
@@ -365,6 +315,11 @@ namespace WordJourney
 			return propertyName;
 		}
 
+        /// <summary>
+        /// 获取属性值字符串
+        /// </summary>
+        /// <returns>The property value string.</returns>
+        /// <param name="value">Value.</param>
 		public static string GetPropertyValueString(float value)
 		{
 
@@ -378,80 +333,6 @@ namespace WordJourney
 			}
 
 		}
-
-
-
-		public static HLHWord GetWordFromReader(IDataReader reader){
-			
-			int wordId = reader.GetInt32(0);
-
-            string spell = reader.GetString(1);
-
-            string phoneticSymble = reader.GetString(2);
-
-            string explaination = reader.GetString(3);
-
-            string sentenceEN = reader.GetString(4);
-
-            string sentenceCH = reader.GetString(5);
-
-            string pronounciationURL = reader.GetString(6);
-
-            int wordLength = reader.GetInt16(7);
-
-            int learnedTimes = reader.GetInt16(8);
-
-            int ungraspTimes = reader.GetInt16(9);
-
-            bool isFamiliar = reader.GetInt16(10) == 1;
-
-            string backupPronouncitaionURL = reader.GetString(11);
-
-            HLHWord word = new HLHWord(wordId, spell, phoneticSymble, explaination, sentenceEN, sentenceCH, pronounciationURL,
-                                       wordLength, learnedTimes, ungraspTimes, isFamiliar, backupPronouncitaionURL);
-
-			return word;
-		}
-
-
-
-		//判断当前设备是否在测试列表中
-        /// <summary>
-        /// Distinguishs the test device is in test list.
-        /// </summary>
-        /// <returns><c>true</c>,device was in list, <c>false</c> not in list.</returns>
-		public static bool CheckDeviceQulified(string qq,string deviceType)
-        {
-         
-			string queryUrl = string.Format("http://47.99.161.113/query.php?id={0}&model={1}", qq, deviceType);
-
-			string resultString = string.Empty;
-
-            try
-            {
-
-
-				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(queryUrl);
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                using (StreamReader reader = new StreamReader(response.GetResponseStream(), System.Text.Encoding.UTF8))
-                {
-					resultString = reader.ReadToEnd();
-                }
-
-            }
-            catch (Exception err)
-            {
-
-                Debug.Log(err.ToString());
-
-                return false;
-            }
-
-			Debug.Log(resultString);
-         
-			return resultString.Equals("true");
-        }
-
 
 	}
 }

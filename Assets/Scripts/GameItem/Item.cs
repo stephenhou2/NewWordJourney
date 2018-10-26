@@ -6,28 +6,40 @@ using System.Data;
 
 namespace WordJourney{
 	
-
+    /// <summary>
+    /// 物品类型
+    /// </summary>
 	public enum ItemType{
-		Equipment,
-		Consumables,
-        PropertyGemstone,
-        SkillScroll,
-        SpecialItem,
-        SpellItem
+		Equipment,//装备
+		Consumables,//消耗品
+        PropertyGemstone,//属性宝石
+        SkillScroll,//技能卷轴
+        SpecialItem,//特殊物品【点金石，重铸石，退魔卷轴，开关等等】
+        SpellItem//拼写物品
 	}
 
+    /// <summary>
+    /// 物品类
+    /// </summary>
 	[System.Serializable]
 	public abstract class Item {
 
+        // 物品名称
 		public string itemName;
+        // 物品描述
 		public string itemDescription;
+        // 物品图片名称
 		public string spriteName;
+        // 物品id
 		public int itemId;
+        // 物品类型
 		public ItemType itemType;
 
+        // 物品数量
 		public int itemCount;
+        // 物品价格
 		public int price;
-
+        // 标记是否是新获得的物品
 		public bool isNewItem = true;
 
 
@@ -43,10 +55,17 @@ namespace WordJourney{
 
 		/// <summary>
 		/// 通过物品id和数量初始化物品
+		/// 【0-299】装备
+		/// 【300-399】消耗品
+		/// 【400-499】属性宝石
+		/// 【500-599】技能卷轴
+		/// 【600-699】特殊物品
 		/// </summary>
 		public static Item NewItemWith(int itemId,int itemCount){
 
 			Item newItem = null;
+
+            // 逻辑上相同：寻找数据模型->使用数据模型创建新物品
 
 			if (itemId < 300)
 			{
@@ -132,41 +151,16 @@ namespace WordJourney{
 		/// 初始化基础属性
 		/// </summary>
 		/// <param name="itemModel">Item model.</param>
-		protected void InitBaseProperties(ItemModel itemModel){
-
+		protected void InitBaseProperties(ItemModel itemModel){         
 			itemId = itemModel.itemId;
 			itemName = itemModel.itemName;
 			itemDescription = itemModel.itemDescription;
 			spriteName = itemModel.spriteName;
 			itemType = itemModel.itemType;
-			price = itemModel.price;
-
+			price = itemModel.price;         
 		}
 			
-
-		public static Item GetRandomItem(){
-
-			int typeSeed = Random.Range (0, 4);
-
-			int randomItemId = 0;
-
-			switch (typeSeed) {
-			case 0:
-				randomItemId = Random.Range (0, 60);
-				break;
-			case 1:
-				randomItemId = Random.Range (100, 120);
-				break;
-			case 2:
-				randomItemId = Random.Range (200, 260);
-				break;
-			case 3:
-				randomItemId = Random.Range (400, 460);
-				break;
-			}
-			return NewItemWith (randomItemId, 1);
-		}
-
+      
 		/// <summary>
 		/// 获取所有游戏物品中的武器类物品
 		/// </summary>
@@ -191,20 +185,6 @@ namespace WordJourney{
 			
 
 
-
-		/// <summary>
-		/// 获取物品类型字符串
-		/// </summary>
-		/// <returns>The item type string.</returns>
-		//public abstract string GetItemTypeString ();
-
-		/// <summary>
-		/// 获取物品属性字符串
-		/// </summary>
-		/// <returns>The item properties string.</returns>
-//		public abstract string GetItemBasePropertiesString ();
-
-
 		public override string ToString ()
 		{
 			return string.Format ("[Item]:" + itemName);
@@ -212,6 +192,9 @@ namespace WordJourney{
 
 	}
 
+    /// <summary>
+    /// 属性+属性值组合
+    /// </summary>
 	[System.Serializable]
 	public struct PropertySet{
 

@@ -6,12 +6,18 @@ namespace WordJourney
 {
 	using System.Text;
 
+    /// <summary>
+    /// 属性宝石等级
+    /// </summary>
 	public enum GemstoneGrade{
 		Low,
         Medium,
         High
 	}
 
+    /// <summary>
+    /// 属性宝石类
+    /// </summary>
 	[System.Serializable]
 	public class PropertyGemstone : Item
     {      
@@ -64,7 +70,12 @@ namespace WordJourney
 		public PropertyGemstone(){
 			this.itemId = -1;
 		}
-
+        
+        /// <summary>
+        /// 属性宝石构造函数
+        /// </summary>
+        /// <param name="pgModel">Pg model.</param>
+        /// <param name="itemCount">Item count.</param>
 		public PropertyGemstone(PropertyGemstoneModel pgModel,int itemCount){
 
 			InitBaseProperties(pgModel);
@@ -95,6 +106,11 @@ namespace WordJourney
 			this.grade = pgModel.grade;
 		}
 
+        /// <summary>
+        /// 属性宝石构造函数
+        /// </summary>
+        /// <param name="pgModel">Pg model.</param>
+        /// <param name="itemCount">Item count.</param>
 		public PropertyGemstone(PropertyGemstone pgModel,int itemCount){
 
 			itemId = pgModel.itemId;
@@ -130,10 +146,10 @@ namespace WordJourney
 
 		}
 
-
+        /// <summary>
+        /// 属性宝石确认属性值，并生成对应描述
+        /// </summary>
 		public void GemStonePropertyConfigure(){
-
-			//PropertyChange propertyChange = new PropertyChange();
 
 			StringBuilder stringBuilder = new StringBuilder();
 

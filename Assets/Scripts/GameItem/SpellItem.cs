@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
-
+    // 拼写物品类型
 	public enum SpellItemType{
         Equipment,
         ProeprtyGemstone,
@@ -36,6 +36,11 @@ namespace WordJourney
         public int attachInfo_2;
 
       
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="spellItemModel">Spell item model.</param>
+        /// <param name="itemCount">Item count.</param>
 		public SpellItem(SpellItemModel spellItemModel,int itemCount){
 
 			InitBaseProperties(spellItemModel);
@@ -43,6 +48,7 @@ namespace WordJourney
 			this.itemType = ItemType.SpellItem;
 
 			this.spellItemType = spellItemModel.spellItemType;
+
 			this.attachInfo_1 = spellItemModel.attachInfo_1;
             
 			this.attachInfo_2 = spellItemModel.attachInfo_2;
@@ -57,17 +63,24 @@ namespace WordJourney
                    
 		}
 
+        /// <summary>
+        /// Generates the item.
+        /// </summary>
+        /// <returns>The item.</returns>
 		public Item GenerateItem()
         {
 			Item generatedItem = null;
 
+            // 如果拼写物品是装备
 			if (spellItemType == SpellItemType.Equipment)
             {
-
+                // 获取装备类型
                 EquipmentType equipmentType = (EquipmentType)attachInfo_1;
 
+                // 根据玩家探索到的关卡确定装备等级
                 int equipmentGrade = (Player.mainPlayer.maxUnlockLevelIndex - 1) / 5 + 1;
 
+                // 没有10级的装备，最后开出来的都是9级装备
 				if(equipmentGrade == 10){
 					equipmentGrade = 9;
 				}

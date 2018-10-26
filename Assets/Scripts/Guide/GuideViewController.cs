@@ -7,34 +7,32 @@ namespace WordJourney
 {
 	using UnityEngine.UI;
 
+    /// <summary>
+    /// 用户引导页控制器
+    /// </summary>
 	public class GuideViewController : MonoBehaviour
     {
         
+        // 引导队列【引导为对UI和玩法的一个一个的显示】
 		public Transform[] guideArray;
-
-		//public Transform guideDialogView;
-		//public Text guideDialogText;
-
-		//public Transform guideHelpContainer;
-
-
+      
+        // 当前引导序号
 		private int guideIndex;
-        
-		//private int guideDialogIndex;
-
+      
+        // 引导结束的回调
 		private CallBack guideFinishCallBack;
         
-
+        /// <summary>
+        /// 显示用户引导界面
+        /// </summary>
+        /// <param name="guideFinishCallBack">Guide finish call back.</param>
 		public void ShowNewPlayerGuide(CallBack guideFinishCallBack){
 
 			Time.timeScale = 0f;
 
-			//guideDialogView.gameObject.SetActive(false);
-
-			//guideHelpContainer.gameObject.SetActive(false);
-
 			this.guideFinishCallBack = guideFinishCallBack;
 
+            // 从第0个引导开始显示
 			guideIndex = 0;
 
 			for (int i = 0; i < guideArray.Length; i++)
@@ -45,17 +43,15 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 显示下一个引导
+        /// </summary>
 		public void ShowNextGuide(){
 
 			guideIndex++;
 
 			if(guideIndex >= guideArray.Length){
 
-				//for (int i = 0; i < guideArray.Length;i++){
-				//	guideArray[i].gameObject.SetActive(false);
-				//}
-
-				//SetUpGuideDialogView();
 				QuitNewPlayerGuide();
 				return;
 			}
@@ -66,35 +62,9 @@ namespace WordJourney
 
 		}
 
-		//private void SetUpGuideDialogView(){
-		//	guideDialogView.gameObject.SetActive(true);
-		//	//guideDialogIndex = 0;
-		//	//guideDialogText.text = guideDialogStrings[guideDialogIndex];
-
-		//}
-
-
-
-		//public void MoveToNextDialog(){
-		//	guideDialogIndex++;
-		//	if(guideDialogIndex >= guideDialogStrings.Length){
-		//		guideDialogView.gameObject.SetActive(false);
-		//		ShowHelpGuide();
-		//		return;
-		//	}
-		//	guideDialogText.text = guideDialogStrings[guideDialogIndex];
-		//}
-        
-		//public void ShowHelpGuide(){
-		//	//guideHelpContainer.gameObject.SetActive(true);
-		//}
-
-
-		//public void HelpGuideConfirmAndQuitGuide(){
-		//	//guideHelpContainer.gameObject.SetActive(false);
-		//	QuitNewPlayerGuide();
-		//}
-
+        /// <summary>
+        /// 退出用户引导界面
+        /// </summary>
 		private void QuitNewPlayerGuide(){
 
 			Time.timeScale = 1f;

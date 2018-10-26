@@ -5,13 +5,14 @@ using UnityEngine;
 
 namespace WordJourney
 {
-
+    /// <summary>
+    /// 物品模型
+    /// </summary>
 	[System.Serializable]
 	public class ItemModel {
 
 		public string itemName;
 		public string itemDescription;
-//		public string itemPropertyDescription;
 		public string spriteName;
 		public int itemId;
 
@@ -31,19 +32,7 @@ namespace WordJourney
 	/// </summary>
 	[System.Serializable]
 	public class EquipmentModel:ItemModel{
-
-	//		[System.Serializable]
-	//		public struct ItemInfoForProduce
-	//		{
-	//			public int itemId;
-	//			public int itemCount;
-	//
-	//			public ItemInfoForProduce(int itemId,int itemCount){
-	//				this.itemId = itemId;
-	//				this.itemCount = itemCount;
-	//			}
-	//		}
-
+      
 		public EquipmentType equipmentType;//装备类型
 
 		public int maxHealthGain;//最大生命增益
@@ -97,7 +86,9 @@ namespace WordJourney
 
 	}
 
-
+    /// <summary>
+    /// 消耗品模型类
+    /// </summary>
 	[System.Serializable]
 	public class ConsumablesModel:ItemModel{
 
@@ -124,7 +115,7 @@ namespace WordJourney
         public int healthRecoveryGain;
         public int magicRecoveryGain;
 
-		public int consumablesGrade;
+		public int consumablesGrade;// 消耗品等级【不同等级的怪物在掉落消耗品时，根据这个查询掉落物品的范围】
 
 		public bool isShowInBagOnly;
 
@@ -132,6 +123,9 @@ namespace WordJourney
 
 	}
 
+    /// <summary>
+    /// 属性宝石模型类
+    /// </summary>
 	[System.Serializable]
 	public class PropertyGemstoneModel:ItemModel{
 
@@ -181,6 +175,9 @@ namespace WordJourney
 		public GemstoneGrade grade;
 	}
 
+    /// <summary>
+    /// 技能卷轴模型类
+    /// </summary>
 	[System.Serializable]
 	public class SkillScrollModel:ItemModel{
 
@@ -188,6 +185,9 @@ namespace WordJourney
 
 	}
 
+    /// <summary>
+    /// 特殊物品模型类
+    /// </summary>
 	[System.Serializable]
 	public class SpecialItemModel:ItemModel{
 
@@ -197,7 +197,9 @@ namespace WordJourney
 
 	}
 
-
+    /// <summary>
+    /// 拼写物品模型类
+    /// </summary>
 	[System.Serializable]
 	public class SpellItemModel:ItemModel{
 		
@@ -226,6 +228,10 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 获取一个未使用过的拼写物品模型
+        /// </summary>
+        /// <returns>The AU nused spell item model.</returns>
 		public static SpellItemModel GetAUnusedSpellItemModel(){
          
             List<SpellItemModel> allUnusedSpellItemModels = new List<SpellItemModel>();

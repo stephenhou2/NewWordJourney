@@ -29,10 +29,46 @@ namespace WordJourney
 		}
 
 
+		// 不同等级的物品外框sprite，普通物品都是灰色外框，装备根据不同等级区分不同颜色的外框
+        public Sprite grayFrame;
+        public Sprite blueFrame;
+        public Sprite goldFrame;
+        public Sprite purpleFrame;
+
+		public void SetUpEquipedItemDragControl(Equipment equipment)
+		{
+			if (equipment.itemId < 0)
+            {
+                Reset();
+                backgroundImage.sprite = grayFrame;
+				return;
+            }
+
+            item = equipment;
+
+            switch (equipment.quality)
+            {
+                case EquipmentQuality.Gray:
+                    backgroundImage.sprite = grayFrame;
+                    break;
+                case EquipmentQuality.Blue:
+                    backgroundImage.sprite = blueFrame;
+                    break;
+                case EquipmentQuality.Gold:
+                    backgroundImage.sprite = goldFrame;
+                    break;
+                case EquipmentQuality.Purple:
+                    backgroundImage.sprite = purpleFrame;
+                    break;
+            }
+		}
+
+
+
 		protected override void OnUserShortClick (PointerEventData eventData)
 		{
          
-			bagView.OnItemInEquipmentPlaneClick(item,equipmentIndexInPanel);
+			bagView.GetComponent<BagViewController>().OnItemInEquipmentPlaneClick(item,equipmentIndexInPanel);
 
 			selectedIcon.enabled = item != null && (item as Equipment).itemId >= 0;
 		}

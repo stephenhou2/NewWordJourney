@@ -37,8 +37,8 @@ namespace WordJourney
 		// 在安卓端该回调为广告播放失败的回调，ios端该回调无用
 		private AdCallBack adFailCallBack;
 
-  //      // 在安卓端该回调为广告播放成功，但是没有完成奖励的回调【如没有看完激励视频广告】,ios端该回调无用
-		//private AdCallBack adUnrewardCallBack;
+        // 如果广告未加载成功，开始计次，计次达到三次时认定播放成功
+		private int adNotReadyCount;
 
 		/// <summary>
 		/// 初始化内购界面【安卓端为初始化广告界面】
@@ -256,12 +256,21 @@ namespace WordJourney
 		}
 
 		private void OnAdNotReady(){
-			
-			string purchaseResult = "广告仍在加载中，请稍后重试";
+         
+			adNotReadyCount++; 
 
-            tintHUD.SetUpSingleTextTintHUD(purchaseResult);
+			if (adNotReadyCount < 3)
+            {
+                string purchaseResult = "广告仍在加载中，请稍后重试";
 
-            QuitPurchasePendingHUD();
+                tintHUD.SetUpSingleTextTintHUD(purchaseResult);
+
+                QuitPurchasePendingHUD();
+
+			}else{            
+				adNotReadyCount = 0;
+				OnWatchAdSuccess(currentAdType);
+			}
 		}
 
 		private void OnRewardFail(MyAdType adType)

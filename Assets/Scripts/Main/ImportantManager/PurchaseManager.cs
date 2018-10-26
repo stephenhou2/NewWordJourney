@@ -8,7 +8,9 @@ using UnityEngine.Purchasing;
 // one of the existing Survival Shooter scripts.
 namespace WordJourney
 {
-	// Deriving the Purchaser class from IStoreListener enables it to receive messages from Unity Purchasing.
+	/// <summary>
+    /// 购买控制器
+    /// </summary>
 	public class PurchaseManager : MonoBehaviour, IStoreListener
 	{
 		private IStoreController controller;
@@ -18,10 +20,7 @@ namespace WordJourney
 		//private string receipt;
 		//private IExtensionProvider extensions;
 
-		// Product identifiers for all products capable of being purchased: 
-		// "convenience" general identifiers for use with Purchasing, and their store-specific identifier 
-		// counterparts for use with and outside of Unity Purchasing. Define store-specific identifiers 
-		// also on each platform's publisher dashboard (iTunes Connect, Google Play Developer Console, etc.
+        // 商品id
 		public static string extra_equipmentSlot_id = "com.yougan233.wordjourney.extraEquipmentSlot_Ring";
 		public static string extra_bag_2_id = "com.yougan233.wordjourney.extraBagSlot_2";
 		public static string extra_bag_3_id = "com.yougan233.wordjourney.extraBagSlot_3";
@@ -43,11 +42,14 @@ namespace WordJourney
 		// 已购买项目如果存在变动，则变动信息放在这个列表中
 		public List<string> buyedGoodsChange = new List<string>();
 
+        // 购买成功回调
 		private CallBack purchaseSucceedCallback;
+        // 购买失败回调
 		private CallBack purchaseFailCallback;
-
+        // 恢复内置购买回调
 		private CallBackWithInt restoreCallBack;
 
+        // 初始化，并创建商品
 		void Start()
 		{
 
@@ -73,7 +75,7 @@ namespace WordJourney
 
 
 		/// <summary>
-		/// Called when Unity IAP is ready to make purchases.
+		/// 初始化
 		/// </summary>
 		public void OnInitialized (IStoreController controller, IExtensionProvider extensions)
 		{
@@ -88,6 +90,10 @@ namespace WordJourney
          
 		}
 
+        /// <summary>
+        /// 检查是否已经完成初始化
+        /// </summary>
+        /// <returns><c>true</c>, if initialized was ised, <c>false</c> otherwise.</returns>
 		private bool IsInitialized()
 		{
 			// Only say we are initialized if both the Purchasing references are set.
@@ -111,9 +117,13 @@ namespace WordJourney
 			if(IsInitialized()){
 				m_appleExtension.RestoreTransactions(OnTransitionRestored);
 			}
-
+            
 		}
 
+        /// <summary>
+        /// 恢复内购项
+        /// </summary>
+        /// <param name="success">If set to <c>true</c> success.</param>
 		private void OnTransitionRestored(bool success){
 			if(restoreCallBack != null){
 				restoreCallBack(success ? 1 : 0);
@@ -122,6 +132,12 @@ namespace WordJourney
 		}
         
 
+        /// <summary>
+        /// 购买指定id的商品
+        /// </summary>
+        /// <param name="productId">商品id</param>
+        /// <param name="successCallback">成功回调</param>
+        /// <param name="failCallback">失败回调</param>
 		public void PurchaseProduct(string productId,CallBack successCallback,CallBack failCallback){
 
 			if (!IsInitialized() && Application.internetReachability != NetworkReachability.NotReachable)
@@ -161,7 +177,7 @@ namespace WordJourney
 		/// <summary>
 		/// Called when a purchase completes.
 		///
-		/// May be called at any time after OnInitialized().
+		/// 购买成功时走的原始方法
 		/// </summary>
 		public PurchaseProcessingResult ProcessPurchase (PurchaseEventArgs e)
 		{
@@ -172,12 +188,12 @@ namespace WordJourney
 			if(purchaseSucceedCallback != null){
 				purchaseSucceedCallback ();
             }
-
+            
 			return PurchaseProcessingResult.Complete;
 		}
 
 		/// <summary>
-		/// Called when a purchase fails.
+		/// 购买失败时走的原始方法
 		/// </summary>
 		public void OnPurchaseFailed (Product i, PurchaseFailureReason p)
 		{

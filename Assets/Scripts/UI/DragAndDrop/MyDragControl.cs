@@ -36,11 +36,7 @@ namespace WordJourney
 		protected abstract void OnUserLongPress (PointerEventData eventData);//用户长按事件响应
 		protected abstract void OnUserDrag (PointerEventData eventData);//用户拖拽事件响应
 		protected abstract void OnUserPointerUp (PointerEventData eventData);//用户手指或鼠标松开事件响应
-
-
-//		protected GameObject GetEnteredObject(PointerEventData data){
-//			return data.pointerEnter;
-//		}
+        
 
 		/// <summary>
 		/// 检测到手指或鼠标按下时开启协程，判断用户本次操作类型
@@ -54,14 +50,10 @@ namespace WordJourney
 
 			checkOperationTypeCoroutine = CheckUserOperationType (data,longPressCallBack);
 
-//			pressTime = 0;
-
 			StartCoroutine (checkOperationTypeCoroutine);
 		}
 
 		public void OnPointerUp(PointerEventData data){
-
-//			Debug.Log ("Pointer up");
 			if (checkOperationTypeCoroutine != null) {
 				StopCoroutine (checkOperationTypeCoroutine);
 			}

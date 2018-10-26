@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -11,13 +10,12 @@ namespace WordJourney
 	public class MyResourceManager:SingletonMono<MyResourceManager>{
 
 
-
+        // assetbundle错误code
 		private enum AssetBundleErrorCode{
 			None = 0,
 			ManifestNull = 1,
 			AssetBundleNull = 2,
-			AssetNull = 3
-
+			AssetNull = 3            
 		}
 
 		/// <summary>
@@ -34,7 +32,9 @@ namespace WordJourney
 		/// </summary>
 		private Dictionary<string,AssetBundle> bundleCacheDic;
 
-
+        /// <summary>
+        /// bundle依赖字典
+        /// </summary>
 		private Dictionary<string,string[]> dependencyDic;
 
 		/// <summary>
@@ -63,7 +63,9 @@ namespace WordJourney
 			Initilize ();
 		}
 
-
+        /// <summary>
+        /// 初始化资源加载器
+        /// </summary>
 		public void Initilize(){
 
 			if (bundleCacheDic == null) {
@@ -80,6 +82,7 @@ namespace WordJourney
 
 			isManifestReady = false;
 
+            // 首先初始化manifest信息
 			InitilizeManifest ();
 
 		}
@@ -95,19 +98,20 @@ namespace WordJourney
 
 			string manifestBundlePath = GetBundleFilePath (manifestName);
 
+            // 加载manifest文件
 			AssetBundle ab = AssetBundle.LoadFromFile(manifestBundlePath);
 
 			if (ab == null) {
 				errorCode = AssetBundleErrorCode.ManifestNull;
+
+				Debug.Log("Manifeset null!");
+
+				return;
 			}
 
 			mainManifest = ab.LoadAsset<AssetBundleManifest> ("AssetBundleManifest");
 
 			isManifestReady = mainManifest != null;
-
-//			Debug.Log (mainManifest);
-
-			return;
 
 		}
 
@@ -161,7 +165,13 @@ namespace WordJourney
 			return loadedBundle;
 
 		}
+        
 
+        /// <summary>
+        /// 获取并记录指定名称bundle所依赖的所有bundle名称
+        /// </summary>
+        /// <returns>The and record dependecies.</returns>
+        /// <param name="bundleName">Bundle name.</param>
 		private string[] GetAndRecordDependecies(string bundleName){
 
 			string[] dependencies = mainManifest.GetAllDependencies (bundleName);
@@ -234,6 +244,12 @@ namespace WordJourney
 
 		}
 
+
+        /// <summary>
+		/// www加载资源【用于android上的bundle加载】
+        /// </summary>
+        /// <returns>The assets using www.</returns>
+        /// <param name="filePath">File path.</param>
 		public WWW LoadAssetsUsingWWW(string filePath)
 		{
 			//路径前缀
@@ -266,7 +282,10 @@ namespace WordJourney
 
 		}
 
-
+        /// <summary>
+        /// 加载所有的依赖项
+        /// </summary>
+        /// <param name="bundleName">Bundle name.</param>
 		private void LoadAllDependencies(string bundleName){
 
 			string[] dependencies = null;
@@ -325,8 +344,12 @@ namespace WordJourney
 
 		}
 
-
-
+        
+        /// <summary>
+        /// 卸载bundle
+        /// </summary>
+        /// <param name="bundleName">Bundle name.</param>
+        /// <param name="unloadAllLoadedObjects">如果为true，则完全卸载bundle，所有使用bundle生成的资源都会收到影响</param>
 		public void UnloadAssetBundle(string bundleName,bool unloadAllLoadedObjects){
 
 			if (!bundleCacheDic.ContainsKey (bundleName)) {

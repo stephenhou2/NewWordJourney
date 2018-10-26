@@ -8,29 +8,31 @@
 
 	public class EditHelper {
           
-		//[MenuItem("EditHelper/EncodeTest")]
-		//public static void EncodeTest(){
+		[MenuItem("EditHelper/EncodeData")]
+		public static void EncodeData(){
 
-		//	string testFilePath = "/Users/houlianghong/Desktop/EncryptionTest/test.json";
+			string playerDataPath = CommonData.originDataPath + "/PlayerData_ori.json";
+			string targetDataPath_1 = CommonData.originDataPath + "/PlayerData.json";
+			string targetDataPath_2 = CommonData.originDataPath + "/OriginalPlayerData.json";
 
-		//	string encodeFilePath = "/Users/houlianghong/Desktop/EncryptionTest/encode.json";
-            
-		//	string decodeFilePaht = "/Users/houlianghong/Desktop/EncryptionTest/decode.json";
+			string source = DataHandler.LoadDataString(playerDataPath);
 
-		//	string source = DataHandler.LoadDataString(testFilePath);
+			string encode = StringEncryption.Encode(source);
 
-		//	string encode = StringEncryption.Encode(source);
-
-		//	DataHandler.SaveDataString(encode, encodeFilePath);
-
-		//	encode = DataHandler.LoadDataString(encodeFilePath);
-
-		//	string decode = StringEncryption.Decode(encode);
-
-		//	DataHandler.SaveDataString(decode, decodeFilePaht);
+			DataHandler.SaveDataString(encode, targetDataPath_1);
+			DataHandler.SaveDataString(encode, targetDataPath_2);
 
 
-		//}
+			string buyRecordDataPath = CommonData.originDataPath + "/BuyRecord_ori.json";
+			string buyRecordTargetPath = CommonData.originDataPath + "/BuyRecord.json";
+			source = DataHandler.LoadDataString(buyRecordDataPath);
+
+			encode = StringEncryption.Encode(source);
+
+			DataHandler.SaveDataString(encode, buyRecordTargetPath);
+
+
+		}
 
       
 
@@ -195,7 +197,7 @@
 
 			PlayerData pd = new PlayerData (p);
 
-			string originalPlayerDataPath = CommonData.oriPlayerDataFilePath;
+			string originalPlayerDataPath = CommonData.originDataPath + "/PlayerData_ori.json";
 
 			DataHandler.SaveInstanceDataToFile<PlayerData> (pd, originalPlayerDataPath);
 

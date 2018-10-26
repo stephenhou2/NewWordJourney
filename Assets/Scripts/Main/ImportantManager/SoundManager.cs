@@ -6,28 +6,21 @@ using UnityEngine;
 namespace WordJourney
 {
 
-
+    /// <summary>
+    /// 音频控制器
+    /// </summary>
 	public class SoundManager : MonoBehaviour {
 
-//		private static SoundManager mInstance;
-//		public static SoundManager Instance{
-//			get{
-//				if (mInstance == null) {
-//					mInstance = TransformManager.FindTransform ("SoundManager").GetComponent<SoundManager> ();
-//				}
-//				return mInstance;
-//			}
-//		}
-
-	
+        // 背景音乐音源
 		public AudioSource bgmAS;
-
+        // 发音音源
 		public AudioSource pronunciationAS;
-
+		// 所有音效音源列表【不包括背景音乐音源和发音音源，主要用于其他音效的播放】
 		public List<AudioSource> audioSourceList = new List<AudioSource> ();
 
 		//private Dictionary<string,int> audioClipInfoDic = new Dictionary<string, int> (); 
 
+        // 更新所有音源的音量
 		public void UpdateVolume(){
 			float newVolume = GameManager.Instance.gameDataCenter.gameSettings.systemVolume;
 			bgmAS.volume = newVolume;
@@ -36,14 +29,21 @@ namespace WordJourney
 			}
 		}
 
+        /// <summary>
+        /// 播放指定名称的背景音乐
+        /// </summary>
+        /// <param name="bgmName">名称</param>
+        /// <param name="isLoop">是否循环播放</param>
 		public void PlayBgmAudioClip(string bgmName,bool isLoop = true){
 
 			string fullPath = "";
 
+            // 检查音频路径，如果只是音频名称的话，补全路径
 			if (!bgmName.StartsWith ("Audio/BGM/")) {
 				fullPath = "Audio/BGM/" + bgmName;
 			}
 
+            // 如果已经在播放这个背景音乐，则直接返回【否则会从头播放】
 			if(bgmAS.isPlaying && bgmAS.clip.name == bgmName){
 				return;
 			}
@@ -65,7 +65,11 @@ namespace WordJourney
 
 
 
-
+        /// <summary>
+        /// 获取指定路径的音频clip
+        /// </summary>
+        /// <returns>The audio clip.</returns>
+        /// <param name="path">Path.</param>
 		private AudioClip GetAudioClip(string path){
 
 			AudioClip audioClip = Resources.Load (path) as AudioClip;
@@ -94,6 +98,11 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 播放发音
+        /// </summary>
+        /// <param name="clip">Clip.</param>
+        /// <param name="isLoop">If set to <c>true</c> is loop.</param>
 		public void PlayPronuncitaion(AudioClip clip,bool isLoop = false){
 
 			pronunciationAS.clip = clip;
@@ -125,12 +134,10 @@ namespace WordJourney
 				return;
 			}
 
-			//Debug.Log(audioPath);
 
+            // 获取一个可用的音源
 			int idleASIndex = GetIdleAudioSourceIndex ();
-
-//			audioClipInfoDic.Add (clipName, idleASIndex);
-
+            
 			AudioSource audioSource = audioSourceList [idleASIndex];
 
 			audioSource.clip = clip;
@@ -142,82 +149,19 @@ namespace WordJourney
 
 		}
 
+        // 暂停背景音乐
 		public void PauseBgm(){
 			bgmAS.Pause ();
 		}
 
+        // 重新开始播放背景音乐
 		public void ResumeBgm(){
 			bgmAS.Play ();
 		}
-
+        // 停止播放背景音乐
 		public void StopBgm(){
 			bgmAS.Stop ();
-		}
-
-//		public void PlayExploreBackgroundMusic(){
-//			bgmAS.clip = exploreBackground;
-//			bgmAS.Play ();
-//		}
-//
-//		public void PlayWordPronunciation(AudioClip pronunciation){
-//
-//			pronunciationAS.clip = pronunciation;
-//
-//			pronunciationAS.Play ();
-//
-//		}
-//
-//		public void PlaySkillEffectClips(string audioClipName){
-//
-//			AudioClip skillClip = skillEffectAudioClips.Find (delegate(AudioClip obj) {
-//				return obj.name == audioClipName;
-//			});
-//
-//
-//			if (skillClip == null) {
-//				Debug.LogError(string.Format("名字为{0}的音频文件不存在",audioClipName));
-//			}
-//
-//			effectAS.clip = skillClip;
-//
-//			effectAS.pitch = Random.Range (lowPitchRange, highPitchRange);
-//
-//			effectAS.Play ();
-//
-//		}
-//
-//		public void PlayFootStepClips(){
-//
-//			AudioClip footStepClip = RandomAudioClip (footStepAudioClips);
-//
-//			footSoundAS.clip = footStepClip;
-//
-//			footSoundAS.pitch = Random.Range (lowPitchRange, highPitchRange);
-//
-//			footSoundAS.Play ();
-//
-//		}
-//
-//		public void PlayMapEffectClips(string audioClipName){
-//
-//			AudioClip clip = mapEffectAudioClips.Find (delegate(AudioClip obj) {
-//				return obj.name == audioClipName;
-//			});
-//
-//			if (clip == null) {
-//				Debug.LogError(string.Format("名字为{0}的音频文件不存在",audioClipName));
-//			}
-//
-//			effectAS.clip = clip;
-//
-//			effectAS.pitch = Random.Range (lowPitchRange, highPitchRange);
-//
-//			effectAS.Play ();
-//
-//
-//		}
-
-
+		}      
 			
 	}
 }

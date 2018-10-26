@@ -3,22 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace WordJourney{
-
-
-
+   
+    // 无参回调
 	public delegate void CallBack();
+    // bool型参数回调
 	public delegate void ChooseCallBack(bool arg);
-
+    // transform型参数回调
 	public delegate void ExploreEventHandler (Transform colliderTrans);
 
+    
+    // 朝向枚举
+	public enum MyTowards
+    {
+        Up,
+        Down,
+        Left,
+        Right
 
+    }
+   
+    /// <summary>
+    /// 基础数据结构体
+    /// </summary>
 	public struct CommonData{
 
+        // 原始数据资源路径【最上级路径】
 		public static string originDataPath = Application.streamingAssetsPath + "/Data";
+        // 持久化数据资源路径【最上级路径】
 		public static string persistDataPath = Application.persistentDataPath + "/Data";
-
-
-
+              
+        // 原始数据键值对
 		public static KVPair[] originDataArr = {
 			new KVPair("BuyRecord","/Data/BuyRecord.json"),
 			new KVPair("GameLevelDatas","/Data/GameLevelDatas.json"),
@@ -46,11 +60,12 @@ namespace WordJourney{
 			new KVPair("ApplicationInfo","/Data/ApplicationInfo.json")
 		};
 
-
+        // assetbundle名称
 		public static string assetBundleRootName = "AssetBundle";
 
-		public static string playerDataFilePath = persistDataPath + "/PlayerData.json";
-		public static string oriPlayerDataFilePath = persistDataPath + "/OriginalPlayerData.json";
+		//******************************数据路径******************************//
+		public static string playerDataFilePath = persistDataPath + "/PlayerData.json";// 实际玩家数据
+		public static string oriPlayerDataFilePath = persistDataPath + "/OriginalPlayerData.json";// 原始玩家数据，用于通关之后重置玩家信息
 		public static string gameSettingsDataFilePath = persistDataPath + "/GameSettings.json";
 		public static string gameLevelDataFilePath = persistDataPath + "/GameLevelDatas.json";
 		public static string equipmentDataFilePath = persistDataPath + "/GameItems/EquipmentDatas.json";
@@ -62,7 +77,7 @@ namespace WordJourney{
         public static string proverbsDataFilePath = persistDataPath + "/HLHSentenceAndPoemData.json";
 		public static string puzzlesDataFilePath = persistDataPath + "/PuzzleDatas.json";
 		public static string diaryDataFilePath = persistDataPath + "/DiaryData.json";
-		public static string npcsDataDirPath = persistDataPath + "/NPCs";
+		public static string npcsDataDirPath = persistDataPath + "/NPCs";//npc数据文件夹
 		public static string monstersDataFilePath = persistDataPath + "/MonstersData.json";
 
 		public static string buyRecordFilePath = persistDataPath + "/BuyRecord.json";
@@ -74,18 +89,20 @@ namespace WordJourney{
 		public static string playRecordsFilePath = persistDataPath + "/PlayRecords.json";
 		public static string miniMapRecordFilePath = persistDataPath + "/CurrentMapMiniMapRecord.json";
 		public static string currentMapEventsRecordFilePath = persistDataPath + "/CurrentMapEventsRecord.json";
+		//******************************数据路径******************************//
 
-
+        // 数据库相关
 		public static string dataBaseName = "MyGameDB.db";
 		public static string dataBaseFilePath = persistDataPath + "/MyGameDB.db";
 		public static string dbPassword = "Wordcastle_eltsacdrow";
 
-
+        // 单词难度列表
 		public static string simpleWordsTable = "SIMPLE";
 		public static string mediumWordsTabel = "MEDIUM";
 		public static string masterWordsTabel = "MASTER";
 
       
+        //bundle名称
 		public static string homeCanvasBundleName = "home/canvas";
 		public static string recordCanvasBundleName = "record/canvas";
 		public static string bagCanvasBundleName = "bag/canvas";
@@ -113,8 +130,9 @@ namespace WordJourney{
 		public static string allCharacterSpritesBundleName = "item/character_icons";
 		public static string allSkillsBundleName = "skills/skills";
 		public static string allSkillSpritesBundleName = "skills/icons";
-		public static string allUISpritesBundleName = "ui/common";
+		public static string allUISpritesBundleName = "ui/common";// 通用UIbundle
 
+        // 地图图集bundle名称
 		public static string mapTileset_1_BundleName = "explore/maptileset_1";
 		public static string mapTileset_2_BundleName = "explore/maptileset_2";
 		public static string mapTileset_3_BundleName = "explore/maptileset_3";
@@ -122,6 +140,7 @@ namespace WordJourney{
 		public static string mapTileset_5_BundleName = "explore/maptileset_5";
 	
       
+        // 动画播放名称【非资源名称，而是动画播放的动画名称】
 		public static string exploreDarktMaskAnimName = "dark";
 		public static string exploreLightMaskAnimName = "light";
 
@@ -138,28 +157,28 @@ namespace WordJourney{
 		public static string roleMagicalSkillAnimName = "magical_skill";
 		public static string roleAttackIntervalAnimName = "interval";
 
-		//******* 玩家使用武器攻击的动画名称 *********//
+		//******* 玩家使用武器攻击的动画播放名称 *********//
 		public static string playerAttackBareHandName = "attack_default";
 		public static string playerAttackWithSwordName = "attack_sword";
 		public static string playerAttackWithStaffName = "attack_staff";
 		public static string playerAttackWithAxeName = "attack_axe";
 		public static string playerAttackWithDraggerName = "attack_dragger";
 
-		//******* 玩家使用物理伤害型技能攻击的动画名称 *********//
+		//******* 玩家使用物理伤害型技能攻击的动画播放名称 *********//
 		public static string playerPhysicalSkillBareHandName = "skill1_default";
 		public static string playerPhysicalSkillWithSwordName = "skill1_sword";
 		public static string playerPhysicalSkillWithStaffName = "skill1_staff";
 		public static string playerPhysicalSkillWithAxeName = "skill1_axe";
 		public static string playerPhysicalSkillWithDraggerName = "skill1_dragger";
 
-		//******* 玩家使用魔法伤害型技能攻击的动画名称 *********//
+		//******* 玩家使用魔法伤害型技能攻击的动画播放名称 *********//
 		public static string playerMagicalSkillBareHandName = "skill2_default";
 		public static string playerMagicalSkillWithSwordName = "skill2_sword";
 		public static string playerMagicalSkillWithStaffName = "skill2_staff";
 		public static string playerMagicalSkillWithAxeName = "skill2_axe";
 		public static string playerMagicalSkillWithDraggerName = "skill2_dragger";
 
-		//******* 玩家攻击间隔的动画名称 *********//
+		//******* 玩家攻击间隔的动画播放名称 *********//
 		public static string playerIntervalBareHandName = "interval_default";
 		public static string playerIntervalWithSwordName = "interval_sword";
 		public static string playerIntervalWithStaffName = "interval_staff";
@@ -167,7 +186,7 @@ namespace WordJourney{
 		public static string playerIntervalWithDraggerName = "interval_dragger";
 
 
-		// 特效名称
+		// 动画特效播放名称
 		public static string healthHealEffecttName = "state_health_heal";
 		public static string magicHealEffectName = "state_magic_heal";
 		public static string levelUpEffectName = "state_level_up";
@@ -191,14 +210,7 @@ namespace WordJourney{
 		public static string critDownEffectName = "state_crit_down";
 		public static string skillPointUpEffectName = "state_skill_point_up";
 			
-
-
-  //      // 技能 音效 名称
-		//public static string poisonedAudioName = "MapEvents/sfx_poisonTrap";
-		//public static string burnedAudioName = "MapEvents/sfx_fireTrap";
-
-
-
+      
 		// 物品 音效 名称
 		public static string gemstoneAudioName = "Item/sfx_gemstone";
 		public static string dianjinAudioName = "Item/sfx_chongZhu";
@@ -248,8 +260,10 @@ namespace WordJourney{
 		public static string bagAudioName = "UI/sfx_UI_Bag";
 		public static string dropItemAudioName = "UI/sfx_UI_dropItem";
 
+        // 字母a的ASCII码
 		public static int aInASCII = (int)('a');
 
+        // 当前屏幕的宽高比
 		public static float HWScalerOfCurrentScreen = (float)Camera.main.pixelHeight / Camera.main.pixelWidth;
 
 		// 当前屏幕分辨率和预设屏幕分辨率之间的转换比例
@@ -258,41 +272,50 @@ namespace WordJourney{
 		// 当前屏幕宽高比与设计屏幕宽高比之间的比例
 		public static float scalerToPresetHW = Camera.main.pixelHeight * 1080f / Camera.main.pixelWidth / 1920f;
 
+        // 当前屏幕宽度相对于预设宽度的比例
 		public static float scalerToPresetW = Camera.main.pixelWidth / 1080f;
+        // 当前屏幕高度相对于预设高度的比例
 		public static float scalerToPresetH = Camera.main.pixelHeight / 1920f;
 
-
+        // 单个背包容量
 		public static int singleBagItemVolume = 21;
+        // 单页单词记录容量
 		public static int singleWordsRecordsPageVolume = 7;
 
+        // 最大关卡序号
 		public static int maxLevelIndex = 50;
 
-		public static char diamond = (char)6;
-		public static int totalFadeStep = 20;
-
+        // 选中颜色
 		public static Color selectedColor = new Color (243f/255, 152f/255, 0);
+        // 未选中颜色
 		public static Color deselectedColor = new Color (166f/255, 147f/255, 124f/225);
 
+        // 各种等级装备名称显示颜色
 		public static Color grayEquipmentColor = new Color(222f / 255, 202f / 255, 170f / 255);
 		public static Color blueEquipmentColor = new Color(0, 219f / 255, 217f / 255);
 		public static Color goldEquipmentColor = new Color(243f / 255, 152f / 255, 0);
 		public static Color purpleEquipmentColor = new Color(195f / 255, 25f / 255, 186f / 255);
 
+        // tabbbar选中颜色
 		public static Color tabBarTitleNormalColor = new Color(166f / 255, 147f / 255, 124f / 255);
+        // tabbar未选中颜色
 		public static Color tabBarTitleSelectedColor = new Color(243f / 255, 152f / 255, 0);
 
+        // 深黄色
 		public static Color darkYellowTextColor = new Color(222f / 255, 202f / 255, 170f / 255);
+        // 橘色
 		public static Color orangeTextColor = new Color(243f / 255, 152f / 255, 0);
 
-
+        // 主界面背景音乐名称
 		public static string homeBgmName = "Castle";
+        // 探索界面背景音乐名称
 		public static string exploreBgmName = "Explore";
 
+        // 字母表字母数组
 		public static char[] wholeAlphabet = new char[]{'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+        
 
-		public static Vector2 iphoneXResolution = new Vector2(1125,2436);
-
-
+        // 游戏小贴士
 		public static string[] gameTints = {
             "每个NPC都有不同的技能，试试不同的搭配吧",
             "并不是每个怪物都需要消灭，合理分配资源才能走到最后",

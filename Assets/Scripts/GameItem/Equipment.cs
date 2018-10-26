@@ -6,23 +6,29 @@ using UnityEngine;
 namespace WordJourney
 {
 	using System.Text;
-
+    // 装备类型
 	public enum EquipmentType{
-		Weapon,
-		Helmet,
-		Armor,
-		Glove,
-		Shoes,
-		Ring
+		Weapon,// 武器
+		Helmet,// 头盔
+		Armor,// 护甲
+		Glove,// 手套
+		Shoes,// 鞋子
+		Ring// 指环
 	}
 
+    /// <summary>
+    /// 装备默认品质类型
+    /// </summary>
 	public enum EquipmentDefaultQuality{
 		Random,
         Gold,
         Purple,
         Gray
 	}
-
+    
+    /// <summary>
+    /// 装备品质
+    /// </summary>
 	public enum EquipmentQuality{
 		Gray,
         Blue,
@@ -30,6 +36,9 @@ namespace WordJourney
         Purple
 	}
 
+    /// <summary>
+    /// 武器类型
+    /// </summary>
 	public enum WeaponType{
 		None,
 		Sword,
@@ -114,8 +123,6 @@ namespace WordJourney
 
 		public List<PropertyGemstone> attachedPropertyGemstones;// 镶嵌的属性宝石
 
-//		public EquipmentModel.ItemInfoForProduce[] itemInfosForProduce;
-
 
 		//装备是否已佩戴
 		public bool equiped;
@@ -171,15 +178,21 @@ namespace WordJourney
 			this.oriHealthRecoveryGain = equipmentModel.healthRecoveryGain;
 			this.oriMagicRecoveryGain = equipmentModel.magicRecoveryGain;
 
+            // 基础价格
 			this.oriPrice = equipmentModel.price;
+            // 实际价格【根据品质会在基础价格上有一定浮动】
 			this.price = equipmentModel.price;
+            // 默认品质【初始化生成时默认的品质】
 			this.defaultQuality = equipmentModel.defaultQuality;
 
+            // 装备类型
 			this.equipmentType = (EquipmentType)(equipmentModel.equipmentType);
+            // 装备等级
 			this.equipmentGrade = equipmentModel.equipmentGrade;
-
+            // 附加属性集
 			this.specProperties = equipmentModel.specProperties;
 
+            // 按照默认属性初始化装备
 			switch(defaultQuality){
 				case EquipmentDefaultQuality.Random:
 					RebuildEquipment();
@@ -198,11 +211,11 @@ namespace WordJourney
 					break;
 			}
             
-
+            // 武器类型【该数据仅对于武器有用】
 			this.weaponType = equipmentModel.weaponType;
-
+            // 镶嵌的宝石集合
 			attachedPropertyGemstones = new List<PropertyGemstone>();
-
+            // 初始化装备描述【属性转化为实际描述】
 			InitDescription ();
 		}
 
@@ -241,13 +254,16 @@ namespace WordJourney
 			ResetPropertiesByQuality (quality);
 		}
 
+        /// <summary>
+        /// 镶嵌属性宝石
+        /// </summary>
+        /// <param name="propertyGemstone">Property gemstone.</param>
 		public void AddPropertyGemstone(PropertyGemstone propertyGemstone){
          
 			propertyGemstone.GemStonePropertyConfigure();
 
 			attachedPropertyGemstones.Add(propertyGemstone);
 
-			//Debug.Log(attachedPropertyGemstone.itemCount);
 		}
 
         /// <summary>
@@ -272,13 +288,13 @@ namespace WordJourney
         
 
 		/// <summary>
-		/// 根据装备品质初始化装备
+		/// 根据指定品质初始化装备
 		/// </summary>
 		/// <param name="quality">Quality.</param>
 		public void ResetPropertiesByQuality(EquipmentQuality quality){
 
 			this.quality = quality;
-
+            // 装备先重置到空属性
 			ResetEquipmentToEmptyProperty ();
 
 			this.maxHealthGain = oriMaxHealthGain;
@@ -312,13 +328,13 @@ namespace WordJourney
 
 			switch (quality){            
     			case EquipmentQuality.Gray:
-    				gainScaler = Random.Range (1.0f, 1.2f);
+    				gainScaler = Random.Range (1.0f, 1.2f);// 灰色品质的属性浮动在1.0-1.2
 
 					this.price = oriPrice;
 
     				break;
     			case EquipmentQuality.Blue:
-    				gainScaler = Random.Range (1.2f, 1.3f);
+    				gainScaler = Random.Range (1.2f, 1.3f);// 蓝色品质的属性浮动在1.2-1.3
 
 					this.price = oriPrice * 2;
                                    
@@ -336,7 +352,7 @@ namespace WordJourney
     				break;
     			case EquipmentQuality.Purple:
 
-    				gainScaler = 1.0f;
+    				gainScaler = 1.0f;// 紫色装备属性不浮动
     				
 					this.price = oriPrice;
     				break;
@@ -394,21 +410,9 @@ namespace WordJourney
                     break;
 
             }
-
-			//if (attachedSkillId > 0 && equiped) {
-			//	attachedSkill = SkillGenerator.GenerateSkill (attachedSkillId);
-			//}
-
-			//PropertyChange propertyChange = new PropertyChange();
-
-			//if (equiped) {
-			//	propertyChange = Player.mainPlayer.ResetBattleAgentProperties (false);
-			//}
-
+         
 			InitDescription ();
-
-			//return propertyChange;
-
+         
 		}
 
 		/// <summary>
@@ -441,9 +445,7 @@ namespace WordJourney
 
 			this.healthRecoveryGain = 0;
 			this.magicRecoveryGain = 0;
-
-			//RemoveAttachedSkill ();
-
+         
 		}
 
 
@@ -582,6 +584,10 @@ namespace WordJourney
 		}
 
 
+        /// <summary>
+        /// 初始化附加属性
+        /// </summary>
+        /// <param name="ps">Ps.</param>
 		private void InitSpecificProperty(PropertySet ps){
 
 			switch (ps.type) {

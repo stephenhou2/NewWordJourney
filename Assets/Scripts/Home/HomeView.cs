@@ -3,40 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
-
 namespace WordJourney
 {
 
 	using UnityEngine.UI;
 
+    /// <summary>
+    /// 主界面
+    /// </summary>
 	public class HomeView : MonoBehaviour {
 
-
+        // 遮罩
 		public Image maskImage;
 
+        // logo
 		public Transform logoBandage;
 
+        // 单词难度选择面板
 		public DifficultySelectHUD difficultySelectHUD;
 
+        // 提示
 		public TintHUD tintHUD;
 
+        // logo浮动速度
 		public float logoFloatSpeed;
-
+        // logo单次浮动周期
 		public float singleDuration;
-
+        // logo 浮动的控制协程
 		private IEnumerator logoFloatCoroutine;
 
+        // 提示没有网络的提示框
 		public Transform noAvalableNetHintHUD;
 
+        // 提示背包4置换500金币的提示框
 		public Transform bagToGoldHintHUD;
 
+        // 通关记录按钮
 		public Transform playRecordButton;
 
+        /// <summary>
+        /// 初始化主界面
+        /// </summary>
 		public void SetUpHomeView(){
 
 			GetComponent<Canvas> ().enabled = true;
 
+            // logo浮动动画
 			LogoBandageStartFloat();
 
 			if(GameManager.Instance.purchaseManager.buyedGoodsChange.Contains("Bag_4")){
@@ -44,12 +56,19 @@ namespace WordJourney
 				GameManager.Instance.purchaseManager.buyedGoodsChange.Remove("Bag_4");
 			}         
 		}
-
+        
+        /// <summary>
+        /// 通关记录缩放提醒
+        /// </summary>
 		public void PlayRecordHint(){
 			IEnumerator myPlayRecordHintCoroutine = PlayRecordButtonZoom();
 			StartCoroutine(myPlayRecordHintCoroutine);
 		}
 
+        /// <summary>
+        /// 通过记录缩放动画控制
+        /// </summary>
+        /// <returns>The record button zoom.</returns>
 		private IEnumerator PlayRecordButtonZoom(){
 
 			float scale = 1f;
@@ -123,13 +142,17 @@ namespace WordJourney
 
 		}
 			
-
+        /// <summary>
+        /// 开启屏幕遮罩
+        /// </summary>
 		public void ShowMaskImage (){
 			maskImage.gameObject.SetActive (true);
 		}
 
 
-
+        /// <summary>
+        /// 关闭屏幕遮罩
+        /// </summary>
 		private void HideMaskImage(){
 			maskImage.gameObject.SetActive (false);
 		}
@@ -144,6 +167,9 @@ namespace WordJourney
 		}
 
 
+        /// <summary>
+        /// 显示背包4置换为500金币的提示框
+        /// </summary>
 		public void ShowBagToGoldHintHUD(){
 			bagToGoldHintHUD.gameObject.SetActive(true);
 		}
@@ -161,7 +187,9 @@ namespace WordJourney
 
 		}
 
-        
+        /// <summary>
+        /// logo开始浮动
+        /// </summary>
 		private void LogoBandageStartFloat(){
 			if(logoFloatCoroutine == null){
 				logoFloatCoroutine = LogoBandageFloat();
@@ -169,7 +197,10 @@ namespace WordJourney
 			}
 		}
         
-
+        /// <summary>
+        /// logo浮动动画控制协程
+        /// </summary>
+        /// <returns>The bandage float.</returns>
 		private IEnumerator LogoBandageFloat(){
 
 			logoBandage.localPosition = Vector3.zero;
@@ -209,67 +240,7 @@ namespace WordJourney
 
 		}
 
-//		public void SetUpChapterSelectPlane(){
-//
-//			int maxUnlockChapterIndex = Player.mainPlayer.maxUnlockLevelIndex / 5;
-//
-//			for (int i = 0; i < chapterButtons.Length; i++) {
-//
-//				Button chapterButton = chapterButtons [i];
-//
-//				Text chapterNameText = chapterButton.GetComponentInChildren<Text> ();
-//
-//				if (i <= maxUnlockChapterIndex) {
-//					
-//					chapterButton.interactable = true;
-//
-//					string chapterName = GameManager.Instance.gameDataCenter.gameLevelDatas [5 * i].chapterName;
-//
-//					string chapterIndexInChinese = MyTool.NumberToChinese (i + 1);
-//
-//					string fullName = string.Format ("第{0}章  {1}", chapterIndexInChinese, chapterName);
-//
-//					chapterNameText.text = fullName;
-//
-//				} else {
-//					chapterButton.interactable = false;
-//					chapterNameText.text = "? ? ? ?";
-//				}
-//
-//			}
-//
-//			chaptersContainer.localScale = new Vector3 (0.1f, 0.1f, 1);
-//
-//			chapterSelectPlane.gameObject.SetActive (true);
-//
-//			IEnumerator chapterSelectZoomInCoroutine = ChapterSelectHUDZoomIn ();
-//
-//			StartCoroutine (chapterSelectZoomInCoroutine);
-//
-//		}
-//
-//		private IEnumerator ChapterSelectHUDZoomIn(){
-//			
-//
-//			float chapterSelectHUDScale = chaptersContainer.localScale.x;
-//
-//			float chapterSelectHUDZoomSpeed = (1 - chapterSelectHUDScale) / chapterSelectPlaneZoomInDuration;
-//
-//			while (chapterSelectHUDScale < 1) {
-//				float zoomInDelta = chapterSelectHUDZoomSpeed * Time.deltaTime;
-//				chaptersContainer.localScale += new Vector3 (zoomInDelta, zoomInDelta, 0);
-//				chapterSelectHUDScale += zoomInDelta;
-//				yield return null;
-//			}
-//
-//			chaptersContainer.localScale = Vector3.one;
-//
-//		}
-//
-//		public void QuitChapterSelectPlane(){
-//			chapterSelectPlane.gameObject.SetActive (false);
-//		}
-
+      
 		public void OnQuitHomeView(){
 
 			StopAllCoroutines();

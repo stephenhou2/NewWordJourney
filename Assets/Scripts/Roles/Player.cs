@@ -138,7 +138,7 @@ namespace WordJourney
 
 		public int skillNumLeft;
 
-		private int maxSkillCount = 6;
+		public int maxSkillCount = 6;
               
         // 开宝箱的幸运度 
 		// 0:  65%灰色装备 30%蓝色装备 5%金色装备
@@ -924,25 +924,7 @@ namespace WordJourney
 			allEquipedEquipments [equipmentIndexInPanel] = equipment;
 
 			BattlePlayerController bpCtr = battleAgentCtr as BattlePlayerController;
-
-			//if (equipment.attachedSkillId > 0) {
-				
-			//	if (equipment.attachedSkill == null) {
-
-			//		Skill attachedSkill = SkillGenerator.GenerateSkill (equipment.attachedSkillId);
-
-			//		equipment.attachedSkill = attachedSkill;
-
-			//		AddSkill (attachedSkill);
-
-			//	}else {
-					
-			//		Skill attachedSkill = equipment.attachedSkill;
-
-			//		AddSkill (attachedSkill);
-			//	}
-			//}
-
+                     
 			allItemsInBag.Remove (equipment);
 
 			PropertyChange pc = ResetBattleAgentProperties (false);
@@ -1366,8 +1348,14 @@ namespace WordJourney
 			}
 				
 		}
+        
 
-
+        /// <summary>
+        /// 从背包中移除物品
+        /// </summary>
+        /// <returns><c>true</c>, if item was removed, <c>false</c> otherwise.</returns>
+        /// <param name="item">Item.</param>
+        /// <param name="removeCount">Remove count.</param>
 		public bool RemoveItem(Item item,int removeCount){
 
 			bool totallyRemoveFromBag = false;
@@ -1505,6 +1493,22 @@ namespace WordJourney
 			}
 
 		}
+
+		/// <summary>
+        /// 玩家获取字母碎片
+        /// </summary>
+        /// <param name="character">Character.</param>
+        public void PlayerObtainCharacterFragment(char character)
+        {
+            // 添加获取的字母记录
+            allCollectedCharacters.Add(character);
+
+            // 更新字母碎片显示
+			if(ExploreManager.Instance != null){
+				ExploreManager.Instance.expUICtr.UpdateCharacterFragmentsHUD();
+			}
+           
+        }
 
 
 		/// <summary>

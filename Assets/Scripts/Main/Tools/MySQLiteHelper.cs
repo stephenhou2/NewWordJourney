@@ -10,7 +10,10 @@ using System.Text;
 
 
 namespace WordJourney{
-	
+
+    /// <summary>
+    /// 数据库处理辅助类
+    /// </summary>
 	public class MySQLiteHelper : Singleton<MySQLiteHelper> {
         
 		private IDbCommand m_command;

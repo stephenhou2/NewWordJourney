@@ -5,17 +5,20 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	/// <summary>
+    /// 告示牌【地图事件】
+    /// </summary>
 	public class Billboard : MapEvent {
 
+        // 告示牌上显示的警句名言
         public HLHSentenceAndPoem sap;
 
+        
 		public override bool IsPlayerNeedToStopWhenEntered ()
 		{
 			return true;
 		}
-			
-
-
+      
 		public override void AddToPool (InstancePool pool)
 		{
 			bc2d.enabled = false;

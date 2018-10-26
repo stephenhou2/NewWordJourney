@@ -5,29 +5,32 @@ using UnityEngine;
 
 namespace WordJourney
 {
-
+    /// <summary>
+    /// 可行走地图事件类【暂时只有地图怪物会走，地图npc不会走】
+    /// </summary>
 	public abstract class MapWalkableEvent : MapEvent {
 
-
+        // 是否可以行走
 		public bool canMove;
-
+        // 是否在自动行走的过程中
 		public bool isInAutoWalk;
-
+        // 是否作为地图事件触发了
 		public bool isTriggered;
-
-		public bool canEnterFight;
-
+        // 是否在移动的过程中
 		public bool isInMoving;
-
+        // 移动协程
 		protected IEnumerator moveCoroutine;
-
+        // 自动行走控制协程【控制发出行走指令，不管具体怎么走】
 		private IEnumerator autoWalkCoroutine;
-
+        // 延迟移动协程
 		protected IEnumerator delayMoveCoroutine;
 
+        // 移动原点
 		public Vector3 moveOrigin;
+        // 移动终点
 		public Vector3 moveDestination;
         
+        // 可移动距离【与人物角色的距离超过10的移动物体不能移动】
 		public int movableDistance = 10;
 
 		protected BattleMonsterController mBaCtr;
@@ -41,7 +44,9 @@ namespace WordJourney
 			}
 		}
 
-
+        /// <summary>
+        /// 开始移动
+        /// </summary>
 		public void StartMove(){
 			
 			Transform bpTrans = ExploreManager.Instance.battlePlayerCtr.transform;
@@ -82,7 +87,9 @@ namespace WordJourney
 		}
 
 
-
+        /// <summary>
+        /// 立刻停止运动
+        /// </summary>
 		public void StopMoveImmidiately(){
 			if (moveCoroutine != null) {
 				StopCoroutine (moveCoroutine);
@@ -102,6 +109,10 @@ namespace WordJourney
 			}
 		}
 
+        
+        /// <summary>
+        /// 本步移动结束后停止运动
+        /// </summary>
 		public void StopMoveAtEndOfCurrentMove(){
 
 			if(autoWalkCoroutine != null){
@@ -125,7 +136,10 @@ namespace WordJourney
             }
 		}
 
-
+        /// <summary>
+        /// 自动行走的协程
+        /// </summary>
+        /// <returns>The walk.</returns>
 		protected IEnumerator AutoWalk(){
 
 			if(!baCtr.isIdle){
@@ -136,7 +150,7 @@ namespace WordJourney
             
 			while (true)
             {           
-
+                // 每间隔2-4s行走一步
 				float standDuration = Random.Range(2.0f, 4.0f);
             
                 float timer = 0;
@@ -175,14 +189,15 @@ namespace WordJourney
                         }
 					});
                 }
-            }
-
-
-
-
+            }         
 
 		}
         
+
+        /// <summary>
+        /// 走起来～
+        /// </summary>
+        /// <param name="callBack">Call back.</param>
 		protected void Walk(CallBack callBack){
 
 			int[,] mapWalkableInfo = ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray;
@@ -228,39 +243,16 @@ namespace WordJourney
 
 		public abstract void QuitFightAndDelayMove (int delay);
 
+        /// <summary>
+        /// 移动协程【控制移动速度，移动路径等】
+        /// </summary>
+        /// <returns>The to.</returns>
+        /// <param name="position">Position.</param>
+        /// <param name="timeScale">Time scale.</param>
+        /// <param name="cb">Cb.</param>
 		protected IEnumerator MoveTo(Vector3 position,float timeScale,CallBack cb){
 
 			isInMoving = true;
-//			int targetPosX = Mathf.RoundToInt (position.x);
-//			int targetPosY = Mathf.RoundToInt (position.y);
-//
-//			float distance = Mathf.Sqrt ((targetPosX - transform.position.x) * (targetPosX - transform.position.x) + 
-//				(targetPosY - transform.position.y) * (targetPosY - transform.position.y));
-//
-//			float moveDuration = baCtr.moveDuration * distance * timeScale;
-//
-//			Vector3 moveVector = new Vector3((targetPosX - transform.position.x) / moveDuration,(targetPosY - transform.position.y) / moveDuration,0);
-//
-//			float timer = 0;
-//
-//			while (timer < moveDuration) {
-//
-//				transform.position += moveVector * Time.deltaTime;
-//
-//				timer += Time.deltaTime;
-//
-//				yield return null;
-//
-//			}
-//
-//			transform.position = position;
-//
-//			if (cb != null) {
-//				cb ();
-//			}
-
-//			int targetPosX = Mathf.RoundToInt (position.x);
-//			int targetPosY = Mathf.RoundToInt (position.y);
 
 			float distance = Mathf.Sqrt ((position.x - transform.position.x) * (position.x - transform.position.x) + 
 				(position.y - transform.position.y) * (position.y - transform.position.y));
@@ -292,7 +284,10 @@ namespace WordJourney
 		}
 
 
-
+        /// <summary>
+        /// 检查是否可以运动
+        /// </summary>
+        /// <returns><c>true</c>, if can walk was checked, <c>false</c> otherwise.</returns>
 		protected bool CheckCanWalk(){
 			int posX = Mathf.RoundToInt (transform.position.x);
 			int posY = Mathf.RoundToInt (transform.position.y);
@@ -300,6 +295,12 @@ namespace WordJourney
 				|| IsPositionCanWalk (posX - 1, posY) || IsPositionCanWalk (posX + 1, posY);
 		}
 
+        /// <summary>
+        /// 检查指定位置是否可以走【可行走信息不是1，不能走；指定位置上有其他可行走物体，不能走，例如指定位置上有一只其他怪，不能走上去】
+        /// </summary>
+        /// <returns><c>true</c>, if position can walk was ised, <c>false</c> otherwise.</returns>
+        /// <param name="posX">Position x.</param>
+        /// <param name="posY">Position y.</param>
 		protected bool IsPositionCanWalk(int posX,int posY){
 
 			int[,] mapWalkableInfo = ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray;
@@ -313,8 +314,14 @@ namespace WordJourney
 			return mapWalkableInfo [posX, posY] == 1 && mapWalkableEventsLayoutInfo [posX, posY] == 0;
 		}
 
-		protected Vector3 GetRandomPositionAround(Vector3 position){
 
+        /// <summary>
+        /// 获取上下左右中的一个随机点
+        /// </summary>
+        /// <returns>The random position around.</returns>
+        /// <param name="position">Position.</param>
+		protected Vector3 GetRandomPositionAround(Vector3 position){
+            
 			int posX = Mathf.RoundToInt (position.x);
 			int posY = Mathf.RoundToInt (position.y);
 
@@ -356,6 +363,10 @@ namespace WordJourney
 
 		}
 
+
+        /// <summary>
+        /// 开始行走时，刷新行走信息
+        /// </summary>
 		public void RefreshWalkableInfoWhenStartMove(){
 
 			int walkableEventOriPosX = Mathf.RoundToInt(moveOrigin.x);

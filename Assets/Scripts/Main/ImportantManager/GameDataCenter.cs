@@ -8,7 +8,7 @@ namespace WordJourney
 
 	public class GameDataCenter
 	{
-
+        // 游戏数据类型
 		public enum GameDataType
 		{
 			GameSettings,
@@ -57,6 +57,7 @@ namespace WordJourney
             UpdateDataCanvas
 		}
 
+        // 数据
 		private GameSettings mGameSettings;
 		private List<HLHGameLevelData> mGameLevelDatas = new List<HLHGameLevelData>();
 		private List<EquipmentModel> mAllEquipmentModels = new List<EquipmentModel>();
@@ -87,6 +88,7 @@ namespace WordJourney
 		private List<MonsterData> mAllMonstersData = new List<MonsterData>();
 		private CurrentMapEventsRecord mCurrentMapEventsRecord;
 
+        // 初始化探索数据
 		public void InitExplorePrepareGameData()
 		{
 			LoadEquipmentModels();
@@ -1102,12 +1104,7 @@ namespace WordJourney
 			}
 		}
 
-		//public void ResetGameData(){
-		//	mChatRecords.Clear();
-		//	mMapEventsRecords.Clear();
-		//	//mGameSettings = null;
-		//}
-
+      
 
 		public void ReleaseDataWithDataTypes(GameDataType[] dataTypes){
 
@@ -1117,6 +1114,10 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 根据数据名称释放数据资源
+        /// </summary>
+        /// <param name="type">Type.</param>
 		private void ReleaseDataWithName(GameDataType type){
 
 			switch (type) {
@@ -1274,6 +1275,7 @@ namespace WordJourney
 			}
 		}
 
+        // 重置探索数据
 		public void ResetExploreData()
         {
             mMapEventsRecords.Clear();

@@ -7,28 +7,43 @@ namespace WordJourney
 {
 	using UnityEngine.UI;
 
+
+    /// <summary>
+    /// 最终通关场景控制器
+    /// </summary>
 	public class FinalChapterViewControlller : MonoBehaviour
     {
 
+        // 和老头子的对话内容
 		public Text dialogText;
 
+        // 和老头子的对话面板
 		public Transform dialogHUD;
 
+        // 玩家进入通关场景时，会自动移动到老头子旁边和老头子对话
+        // 自动移动的终点
 		public Vector2 playerMoveDestination;
 
+        // 显示下段对话的按钮
 		public Button nextDialogButton;
 
+        // 提示文本面板
 		public TintHUD hintHUD;
 
+        // 重设人物属性的界面
 		public RebuildPlayerView rebuildPlayerView;
 
+        // 询问是否确认按照当前设置重设人物属性的界面
 		public Transform queryRebuildHUD;
 
+        // 重设完成回调
 		private CallBack rebuildFinishCallBack;
 
+        // 遮罩
 		public Image mask;
 
-              
+           
+        // 终章的所有对话内容
 		private string[] finalDialogs = {
 			"恭喜你，我的朋友，你完成了最终的试炼。",
 			"你是如此的不同，在漫漫岁月里，只有你最后来到了这里。",
@@ -41,20 +56,25 @@ namespace WordJourney
             "再见了，我的朋友，接下来去开始新的冒险吧！"
 		};
 
+        // 当前对话序号
 		private int dialogIndex;
 
 		private Transform npcTrans;
 
+        /// <summary>
+        /// 初始化终章场景
+        /// </summary>
 		public void SetUpFinalChapterView(){
                  
+            // 如果老头子还没有消失
 			if(ExploreManager.Instance.newMapGenerator.allNPCsInMap.Count > 0){
 
 				mask.enabled = true;
 
 				npcTrans = ExploreManager.Instance.newMapGenerator.allNPCsInMap[0].transform;
-
+                // 对话序号置0
 				dialogIndex = 0;
-
+                // 等待玩家走到指定位置后显示和npc的对话面板
                 IEnumerator waitCoroutine = WaitPlayerWalkFinishAndShowDialogHUD();
 
                 StartCoroutine(waitCoroutine);
@@ -68,23 +88,28 @@ namespace WordJourney
          
 		}
 
+        /// <summary>
+        /// 等待玩家走到指定位置后显示和npc的对话界面
+        /// </summary>
+        /// <returns>The player walk finish and show dialog hud.</returns>
 		private IEnumerator WaitPlayerWalkFinishAndShowDialogHUD(){
 
 			yield return new WaitUntil(() => TransformManager.FindTransform("CanvasContainer/LoadingCanvas") == null);
 
 			ExploreManager.Instance.battlePlayerCtr.boxCollider.enabled = false;
 
+            // 等待1s
 			yield return new WaitForSeconds(1f);
-
+            // 播放idle动画
 			ExploreManager.Instance.battlePlayerCtr.PlayRoleAnim(CommonData.roleIdleAnimName, 0, null);
-
+            // 移动到指定位置
 			ExploreManager.Instance.battlePlayerCtr.MoveToPosition(playerMoveDestination, ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray);
 
 			//yield return null;
 
 			//Debug.LogFormat("[{0},{1}]..........[{2},{3}]", ExploreManager.Instance.battlePlayerCtr.transform.position.x, ExploreManager.Instance.battlePlayerCtr.transform.position.y,
 							//playerMoveDestination.x, playerMoveDestination.y);
-
+            // 等待移动完成
 			yield return new WaitUntil(() => (Mathf.Abs(ExploreManager.Instance.battlePlayerCtr.transform.position.x - playerMoveDestination.x) <= 0.01f
 			                                  && Mathf.Abs(ExploreManager.Instance.battlePlayerCtr.transform.position.y - playerMoveDestination.y) <= 0.01f));
 
@@ -97,21 +122,27 @@ namespace WordJourney
 			//mask.enabled = false;
 		}
 
+        /// <summary>
+        /// 进入下个对话按钮
+        /// </summary>
 		public void OnNextDialogButtonClick()
 		{
 			dialogIndex++;
 
+            // 来到最后一段对话
 			if (dialogIndex == finalDialogs.Length){
 
                 int posX = Mathf.RoundToInt(npcTrans.position.x);
                 int posY = Mathf.RoundToInt(npcTrans.position.y);
 
+                // npc的位置改为可行走
                 ExploreManager.Instance.newMapGenerator.mapWalkableEventInfoArray[posX, posY] = 1;
-
+                // 记录npc已经触发过
                 MapEventsRecord.AddEventTriggeredRecord(50, npcTrans.position);
 
                 npcTrans.gameObject.SetActive(false);
 
+                // 回收npc
                 ExploreManager.Instance.newMapGenerator.allNPCsInMap.Clear();
 
                 Destroy(npcTrans.gameObject, 0.3f);
@@ -126,13 +157,15 @@ namespace WordJourney
             }      
 
 
-
+            // 如果不是倒数第三个对话，直接显示对话内容
 			if (dialogIndex != finalDialogs.Length - 2)
 			{
 				dialogText.text = finalDialogs[dialogIndex];
 			}else{
+				
 				dialogHUD.gameObject.SetActive(false);
-            
+
+				// 倒数第三个对话的时候显示分享界面
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.shareCanvasBundleName, "ShareCanvas", delegate
 				{
 				    
@@ -147,27 +180,29 @@ namespace WordJourney
 
 		}
 
+        // 退出终章对话界面
 		private void QuitFinalDialogHUD(){
 
 			dialogHUD.gameObject.SetActive(false);
 
 			mask.enabled = false;
 
-			//GameManager.Instance.UIManager.RemoveCanvasCache("FinalChapterCanvas");
-
 		}
         
+        // 显示重置面板
 		public void ShowQueryRebuildHUD(CallBack rebuildFinishCallBack){
 			ExploreManager.Instance.DisableAllInteractivity();
 			this.rebuildFinishCallBack = rebuildFinishCallBack;
 			queryRebuildHUD.gameObject.SetActive(true);         
 		}
 
+        // 确认进入重置面板
 		public void OnConfirmEnterRebuildButtonClick(){
 			queryRebuildHUD.gameObject.SetActive(false);
 			rebuildPlayerView.SetUpRebuildPlayerView(rebuildFinishCallBack);         
 		}
 
+        // 取消进入重置面板
 		public void OnCancelEnterRebuildButtonClick(){
 			queryRebuildHUD.gameObject.SetActive(false);
 			ExploreManager.Instance.EnableExploreInteractivity();
@@ -175,7 +210,7 @@ namespace WordJourney
 		}
 
 
-      
+        // 销毁终章整体UI界面
 		public void DestroyInstances(){
 
 			this.gameObject.SetActive(false);

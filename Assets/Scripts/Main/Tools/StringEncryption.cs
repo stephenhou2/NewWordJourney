@@ -9,7 +9,10 @@ namespace WordJourney
 	using System;
 	using System.Security.Cryptography;
 	using System.Text;
-
+    
+    /// <summary>
+    /// 字符串数据加密处理
+    /// </summary>
 	public class StringEncryption
     {
 
@@ -17,6 +20,11 @@ namespace WordJourney
 
 		private static string key = "wordcastle2018091600000000000000";
 
+		public static bool Validate(string source){
+			return !source.StartsWith("{") && !source.EndsWith("}");
+		}
+
+        // 编码
 		public static string Encode(string source){
 
 			try{
@@ -43,6 +51,7 @@ namespace WordJourney
 			}
 		}
 
+        // 反编码
 		public static string Decode(string source){
 
 			try

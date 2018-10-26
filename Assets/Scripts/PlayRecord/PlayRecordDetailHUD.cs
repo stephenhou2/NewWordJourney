@@ -72,11 +72,11 @@ namespace WordJourney
 		public void SetUpPlayRecordDetailHUD(PlayRecord playRecord)
 		{         
          
-			if(playRecord.finishGame){
+			//if(playRecord.finishGame){
 				exploreEndAt.text = "获得艾尔文的宝藏";
-			}else{
-				exploreEndAt.text = string.Format("失败于: {0}", playRecord.dieFrom);
-			}
+			//}else{
+			//	exploreEndAt.text = string.Format("失败于: {0}", playRecord.dieFrom);
+			//}
 
 			exploreMaxLevelText.text = string.Format("最大探索层数: {0}", playRecord.maxExploreLevel);
 

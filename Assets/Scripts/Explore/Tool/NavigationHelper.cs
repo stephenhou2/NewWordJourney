@@ -1,11 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using System.Text;
 
 namespace WordJourney
 {
+	/// <summary>
+    /// A*寻路计算器
+    /// </summary>
 	public class NavigationHelper : MonoBehaviour {
 
 		// 地图上可行走位置的二维数组
@@ -32,7 +33,7 @@ namespace WordJourney
 		private int mapHeight;
 
 		/// <summary>
-		/// 寻路接口
+		/// 计算一条最小消耗的可行路径
 		/// </summary>
 		/// <returns>The path.</returns>
 		/// <param name="startPoint">Start point.</param>
@@ -46,16 +47,9 @@ namespace WordJourney
 
 			pathPos = new List<Vector3> ();
 
-//			bool isEndPosArrivable = mapWalkableInfoArray [endPoint.x, endPoint.y] == 1;
-//
-//			if (!isEndPosArrivable) {
-//				return pathPos;
-//			}
-
 			// 每次自动探测路径前将待检测点集和已关闭点集和路径点集清空
 			openList.Clear ();
 			closedList.Clear ();
-//			pathPos.Clear ();
 
 			// 拿到全地图信息（包括是否可行走和每个点上的行走消耗）
 			this.mapWalkableInfoArray = mapWalkableInfoArray;
@@ -188,12 +182,7 @@ namespace WordJourney
 		/// </summary>
 		/// 地图外部或者障碍物或者不可到达点或者是已经关闭或者已经在待检测点集中返回true，其余返回false
 		/// <param name="p">P.</param>
-		private bool UnwalkableOrClosedOrExistInOpen(PointIn2D p){
-
-//			if (mapWalkableInfoArray [p.x, p.y] == 0 || mapWalkableInfoArray [p.x, p.y] == -1) {
-//				return true;
-//			}
-
+		private bool UnwalkableOrClosedOrExistInOpen(PointIn2D p){         
 
 			if (mapWalkableInfoArray [p.x, p.y] <= 0) {
 				return true;
@@ -215,27 +204,30 @@ namespace WordJourney
 
 			return false;
 		}
-
-		void OnDestroy(){
-//			mapWalkableInfoArray = null;
-		}
-
+        
 			
 	}
 
+    /// <summary>
+    /// 2d世界中的寻路点模型
+    /// </summary>
 	[System.Serializable]
 	public class PointIn2D{
 
+        // 父级点
 		public PointIn2D fatherPoint;
 
 		public int x;
 
 		public int y;
 
+        // 计算因子F，该值是计算因子H和计算因子G的综合值
 		public int F{ get; set;}
 
+        // 计算因子H，该值表示从上个点行走到这个点的距离
 		private int H{ get; set;}
 
+        // 计算因子G，该值表示该点的行走耗费
 		private int G{ get; set;}
 
 		public PointIn2D(int x,int y){

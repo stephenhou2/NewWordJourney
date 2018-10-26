@@ -248,16 +248,19 @@ namespace WordJourney
 			{
 				StopCoroutine(enterLevelMaskShowAndHideCoroutine);
 			}
-			enterLevelMaskShowAndHideCoroutine = MyEnterLevelMaskShowAndHide(callBack, from, delay);
+			enterLevelMaskShowAndHideCoroutine = MyEnterLevelMaskShowAndHide(delegate {
+				if(callBack != null){
+					callBack();
+				}
+				hintHUD.SetUpSingleTextTintHUD("数据已存档");
+			}, from, delay);
 			StartCoroutine(enterLevelMaskShowAndHideCoroutine);
 		}
 
 
 		public void SetUpSaveDataHintViewAndSave(CallBack saveCallBack, CallBack saveFinishCallBack)
-		{
-
-			saveDataHintView.SetUpSaveDataHintView(saveCallBack, saveFinishCallBack);
-
+		{         
+			saveDataHintView.SetUpSaveDataHintView(saveCallBack, saveFinishCallBack);         
 		}
 
 		/// <summary>
@@ -407,9 +410,9 @@ namespace WordJourney
 			{
 				case MapSetUpFrom.LastLevel:
 				case MapSetUpFrom.Home:
-					hintHUD.SetUpSingleTextTintHUD("数据已存档");
-					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
-					ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
+					//hintHUD.SetUpSingleTextTintHUD("数据已存档");
+					//GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
+					//ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
 					break;
 				case MapSetUpFrom.NextLevel:
 					break;
@@ -616,9 +619,9 @@ namespace WordJourney
 						ExploreManager.Instance.MapWalkableEventsStartAction();
 					});
 					HideExploreMask();
-					GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
-					hintHUD.SetUpSingleTextTintHUD("数据已存档");
-					ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
+					//GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
+					//hintHUD.SetUpSingleTextTintHUD("数据已存档");
+					//ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
 				});
 			}
 
@@ -673,12 +676,12 @@ namespace WordJourney
 			HideExploreMask();
 			ExploreManager.Instance.battlePlayerCtr.isInEvent = false;
 			transitionMask.gameObject.SetActive(false);
-			if (showSaveHint)
-			{
-				GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
-				hintHUD.SetUpSingleTextTintHUD("数据已存档");
-				ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
-			}
+			//if (showSaveHint)
+			//{
+				//GameManager.Instance.soundManager.PlayAudioClip(CommonData.skillUpgradeAudioName);
+				//hintHUD.SetUpSingleTextTintHUD("数据已存档");
+				//ExploreManager.Instance.newMapGenerator.ManuallyPlaySavePointAnim();
+			//}
 		}
 
 
@@ -1242,6 +1245,8 @@ namespace WordJourney
 				transitionMask.gameObject.SetActive(true);
 
 				transitionMask.color = Color.black;
+
+                
 
 				GameManager.Instance.persistDataManager.ResetDataWhenPlayerDie();
                             

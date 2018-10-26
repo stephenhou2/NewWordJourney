@@ -48,9 +48,11 @@ namespace WordJourney
 			}
 
 			yield return new WaitUntil(() => gameLoader.dataReady);
-
+                     
             loadingBar.changeDuration = 1f;
             loadingBar.value = 60;
+
+			//GameManager.Instance.SaveAllData();
 
             yield return new WaitForSecondsRealtime(1.6f);
 

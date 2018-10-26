@@ -278,7 +278,7 @@ namespace WordJourney
                 case TransitionType.Death:               
 					break;
                 case TransitionType.End: 
-					PlayRecord playRecord = new PlayRecord(true, "");
+					PlayRecord playRecord = new PlayRecord();
                     List<PlayRecord> playRecords = GameManager.Instance.gameDataCenter.allPlayRecords;
                     playRecords.Add(playRecord);
                     GameManager.Instance.persistDataManager.SavePlayRecords(playRecords);

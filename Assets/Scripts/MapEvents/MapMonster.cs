@@ -9,42 +9,57 @@ namespace WordJourney
 	using DragonBones;
 	using Transform = UnityEngine.Transform;
 
+    /// <summary>
+    /// 地图怪物控制器
+    /// </summary>
 	public class MapMonster : MapWalkableEvent {
 
+        // 怪物探测区域
 		public MonsterAlertArea[] alertAreas;
 
+        // 警示【发现人物角色时头上的感叹号闪烁】
 		public UnityArmatureComponent alertTint;
 
+        // 碰撞层
 		public LayerMask collisionLayer;
         
+        // 警示图标的偏移量
 		private float alertIconOffsetX;
 		private float alertIconOffsetY;
 
+        // 怪物说的话的偏移量
 		private float monsterSayContainerOffsetX;
 		private float monsterSayContainerOffsetY;
       
         // 怪物说的话容器
 		public SpriteRenderer monsterSayContainer;
 
+        // 标示是否已做好战斗准备
 		public bool isReadyToFight;
 
-		// 触发机关的位置【如果没有触发的机关，则设置为（-1，-1，-1）】
+		// 触发机关的位置【目前只有boss有这个功能，如果没有触发的机关，则设置为（-1，-1，-1）】
 		public Vector3 pairEventPos;
 
+        // 在地图上的原始位置
 		public Vector2 oriPos;
 
+        // 地图高度【用于进行坐标转换，例如击败怪物控制地图上一个事件的状态发生变化，由于地图数据中传入的位置是以左上角为原点，所以要进行一次y轴上的坐标转换】
 		private int mapHeight;
 
+        // 地图序号【用于地图事件记录，目前只有boss被击败后在对应地图序号的地图事件上会记录boss的原始位置，下次初始化地图的时候boss就不会再出来了】
 		public int mapIndex;
 
+        // 标示是否有奖励
 		public bool hasReward = true;
 
+        // 怪物骨骼朝向【怪物骨骼朝向只有左右朝向，但是根据行走方向，还定义了朝上和朝下】
 		private MyTowards boneTowards;
 
 
-
+        // 控制怪物说话的显示和消失的协程
 		private IEnumerator monsterSayCoroutine;
 
+        // 传入地图高度
 		public void SetPosTransferSeed(int mapHeight){
 			this.mapHeight = mapHeight;
 		}
@@ -65,6 +80,10 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 加入缓存池
+        /// </summary>
+        /// <param name="pool">Pool.</param>
 		public override void AddToPool (InstancePool pool)
 		{
 			StopMoveImmidiately ();
@@ -80,10 +99,16 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 添加到当前地图的地图事件记录中
+        /// </summary>
 		public void AddToCurrentMapEventRecord(){
 			GameManager.Instance.gameDataCenter.currentMapEventsRecord.AddEventTriggeredRecord(mapIndex, oriPos);
 		}
 
+        /// <summary>
+        /// 当怪物死亡时重置
+        /// </summary>
 		public override void ResetWhenDie(){
 
 			StopAllCoroutines ();
@@ -92,19 +117,26 @@ namespace WordJourney
 
 		}
 
-
+        /// <summary>
+        /// 退出战斗，等待一段时间后重新开始行走
+        /// </summary>
+        /// <param name="delay">Delay.</param>
 		public override void QuitFightAndDelayMove(int delay){
 
+            // 首先立刻停止运动
 			StopMoveImmidiately ();
 
+            // 重置一些属性
 			isInAutoWalk = false;
 			isTriggered = false;
 			isReadyToFight = false;
 
+            // 隐藏探测区域
 			HideAllAlertAreas ();
 
 			bc2d.enabled = true;
 
+            
 			if (delayMoveCoroutine != null)
             {
                 StopCoroutine(delayMoveCoroutine);
@@ -126,6 +158,9 @@ namespace WordJourney
 		}
 
 
+        /// <summary>
+        /// 显示警示区域
+        /// </summary>
 		public void ShowAlertAreaTint(){
 			MyTowards towards = baCtr.towards;
 			for (int i = 0; i < alertAreas.Length; i++) {
@@ -137,6 +172,9 @@ namespace WordJourney
 			}
 		}
 
+        /// <summary>
+        /// disable所有探测区域
+        /// </summary>
 		public void DisableAllDetect(){
 
 			for (int i = 0; i < alertAreas.Length; i++) {
@@ -157,44 +195,56 @@ namespace WordJourney
 		}
 
 
-
-
+        
+        /// <summary>
+        /// 当trigger进入到怪物的探测包围盒中时
+        /// </summary>
+        /// <param name="col">Col.</param>
 		public void OnTriggerEnter2D (Collider2D col){
 
 			BattlePlayerController bp = col.GetComponent<BattlePlayerController> ();
 
+            // 如果进入包围盒的不是玩家角色，直接返回
 			if (bp == null) {
 				return;
 			}
 
+            // 如果玩家处于隐身状态，直接返回
 			if (bp.fadeStepsLeft > 0)
             {
                 return;
             }
 
-
+            // 如果玩家在地图事件中，直接返回
 			if (bp.isInEvent) {
 				return;
 			}
 
+            // 如果玩家在战斗中，直接返回
 			if (bp.isInFight) {
 				return;
 			}
 
+            // 如果怪物已经死亡，直接返回【例如被一刀打死了】
 			if (baCtr.isDead) {
 				return;
 			}
 
+            // 如果玩家在位置修正中，直接返回
 			if (bp.isInPosFixAfterFight) {
 				return;
 			}
 
 			isReadyToFight = true;
 
-			//EnterMapEvent (bp);
+            // 探测到玩家
 			DetectPlayer(bp);
 		}
 
+        /// <summary>
+        /// 进入地图事件
+        /// </summary>
+        /// <param name="bp">Bp.</param>
 		public override void EnterMapEvent (BattlePlayerController bp)
 		{         
 			if (isInMoving) {
@@ -203,17 +253,25 @@ namespace WordJourney
 
 			bp.isInEvent = true;
 
+            // 所有运动中的怪物/npc停止运动【本步结束以后】
 			ExploreManager.Instance.MapWalkableEventsStopAction ();
                      
+            // 自己这只怪物立刻停止运动
 			StopMoveImmidiately ();
 
+            // 人物停止运动并且原地等待
 			bp.StopMoveAndWait ();
 
+            // 进入战斗
 			ExploreManager.Instance.EnterFight (this.transform);
 
 			MapEventTriggered (false, bp);
 		}
 
+        /// <summary>
+        /// 探测到用户
+        /// </summary>
+        /// <param name="bp">Bp.</param>
 		public void DetectPlayer(BattlePlayerController bp){
 
 			if(bp.fadeStepsLeft > 0){
@@ -225,8 +283,6 @@ namespace WordJourney
 			}
 
 			bp.isInEvent = true;
-
-			//ExploreManager.Instance.DisableAllInteractivity ();
 
 			if (isInMoving) {
 				RefreshWalkableInfoWhenTriggeredInMoving ();
@@ -241,11 +297,17 @@ namespace WordJourney
 			ExploreManager.Instance.EnterFight (this.transform);
 
 			MapEventTriggered (false, bp);
-
+            
 		}
 
+        /// <summary>
+        /// 使用地图附加信息初始化怪物
+        /// </summary>
+        /// <param name="mapIndex">Map index.</param>
+        /// <param name="attachedInfo">Attached info.</param>
 		public override void InitializeWithAttachedInfo(int mapIndex,MapAttachedInfoTile attachedInfo)
 		{
+			// 地图序号
 			this.mapIndex = mapIndex;
 
 			this.oriPos = attachedInfo.position;
@@ -263,11 +325,12 @@ namespace WordJourney
 			}
                      
 
-
+            // 标记怪物是否可以移动
 			canMove = bool.Parse(KVPair.GetPropertyStringWithKey("canMove",attachedInfo.properties));
-
+            // 击败怪物对应控制的地图事件的位置信息
 			string pairEventPosString = KVPair.GetPropertyStringWithKey ("pairEventPos", attachedInfo.properties);
 
+            // 击败怪物后控制地图事件的位置信息
 			if (pairEventPosString != string.Empty && pairEventPosString != "-1") {
 
 				string[] posXY = pairEventPosString.Split (new char[]{ '_' }, System.StringSplitOptions.RemoveEmptyEntries);
@@ -286,10 +349,13 @@ namespace WordJourney
 				alertAreas [i].InitializeAlertArea ();
 			}
 
+            // 隐藏所有的探测区域
 			HideAllAlertAreas ();
 
+            // 随机朝向
             RandomTowards();
 
+            // 如果可以运动，则显示探测区域
 			if (canMove) {
 				ShowAlertAreaTint ();
 			}
@@ -300,10 +366,10 @@ namespace WordJourney
 
 			GetComponent<Monster> ().ResetBattleAgentProperties (true);
 
+            // 激活怪物
 			baCtr.SetAlive();
 
-			//StartMove ();
-
+            // 重置属性
 			bc2d.enabled = true;
 			isReadyToFight = false;
 
@@ -317,6 +383,9 @@ namespace WordJourney
          
 		}
 
+        /// <summary>
+        /// 随机朝向
+        /// </summary>
 		private void RandomTowards(){
 
 			int towardsIndex = Random.Range (0, 4);
@@ -335,10 +404,12 @@ namespace WordJourney
 				break;
 			case 2:
 				baCtr.TowardsUp ();
+                // 朝上时要查一下骨骼实际的朝向
 				boneTowards = (baCtr as BattleMonsterController).GetMonsterBoneTowards();               
 				break;
 			case 3:
 				baCtr.TowardsDown ();
+				// 朝下时要查一下骨骼实际的朝向
 				boneTowards = (baCtr as BattleMonsterController).GetMonsterBoneTowards();         
 				break;
 			}
@@ -355,6 +426,7 @@ namespace WordJourney
 		/// <returns>The to fight icon shining.</returns>
 		private void AlertTintSpark(){
 
+            // 根据骨骼动画的朝向，决定红色❗️的位置
 			switch (boneTowards)
             {
                 case MyTowards.Right:
@@ -372,7 +444,10 @@ namespace WordJourney
 		}
 
 
-
+        /// <summary>
+        /// 显示怪物说的话
+        /// </summary>
+        /// <param name="say">Say.</param>
 		private void ShowMonsterSay(string say){
 			switch (boneTowards)
             {
@@ -392,10 +467,12 @@ namespace WordJourney
 				StopCoroutine(monsterSayCoroutine);
 			}
 
+            // 控制怪物说的话消失的协程
 			monsterSayCoroutine = MonsterSayDelayDisappear();
 
 			StartCoroutine(monsterSayCoroutine);
 		}
+
 
 		private IEnumerator MonsterSayDelayDisappear(){
 			yield return new WaitForSeconds(2.0f);
@@ -403,6 +480,10 @@ namespace WordJourney
 			tmPro.text = string.Empty;
 		}
 
+        /// <summary>
+        /// 获取怪物说的话
+        /// </summary>
+        /// <returns>The monster say.</returns>
 		private string GetMonsterSay(){
 			string say = string.Empty;
 			if (wordsArray != null && wordsArray.Length > 0)
@@ -426,6 +507,10 @@ namespace WordJourney
 			return say;
 		}
 
+        /// <summary>
+        /// 警示区域延迟消失
+        /// </summary>
+        /// <returns>The tint lately hide.</returns>
 		private IEnumerator AlertTintLatelyHide(){
 
 			yield return new WaitForSeconds(0.1f);
@@ -438,7 +523,11 @@ namespace WordJourney
 
 		}
 			
-
+        /// <summary>
+        /// 地图事件触发后的逻辑
+        /// </summary>
+        /// <param name="isSuccess">If set to <c>true</c> is success.</param>
+        /// <param name="bp">Bp.</param>
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
 			if (isTriggered) {
@@ -457,56 +546,25 @@ namespace WordJourney
 			StartCoroutine (resetPositionAndFightCoroutine);
 
 			isTriggered = true;
-
-
-
+                     
 		}
 
-		//private IEnumerator WordShowAndHide(){
-
-		//	HLHWord word = null;
-
-  //          bool hasValidWord = false;
-  //          for (int i = 0; i < wordsArray.Length; i++)
-  //          {
-  //              if (wordsArray[i].spell.Length <= 12)
-  //              {
-  //                  hasValidWord = true;
-  //                  word = wordsArray[i];
-  //                  break;
-  //              }
-  //          }
-
-  //          if (!hasValidWord)
-  //          {
-  //              word = GetAValidWord();            
-  //          }
-
-
-  //          if (tmPro != null)
-  //          {
-  //              tmPro.text = word.spell;
-  //          }
-  //          yield return new WaitForSeconds(1f);
-
-  //          if (tmPro != null)
-  //          {
-  //              tmPro.text = string.Empty;
-  //          }
-
-		//}
-			
-
+        /// <summary>
+        /// 调整位置后开始战斗
+        /// </summary>
+        /// <returns>The position and start fight.</returns>
+        /// <param name="battlePlayerCtr">Battle player ctr.</param>
 		private IEnumerator ResetPositionAndStartFight(BattlePlayerController battlePlayerCtr){
 
+            // 等待准备好
 			yield return new WaitUntil (() => isReadyToFight);
-
+            // 头山闪红色叹号
 			AlertTintSpark();
-         
+            // 播放idle动画
 			baCtr.PlayRoleAnim (CommonData.roleIdleAnimName, 0, null);
-
+            // 判断玩家角色是否需要重新开始攻击动作
 			bool playerNeedResetAttack = battlePlayerCtr.NeedResetAttack();
-
+            
 			yield return new WaitForSeconds (0.4f);
 
 			HideAllAlertAreas ();
@@ -534,35 +592,52 @@ namespace WordJourney
 
 			HLHRoleAnimInfo playerCurrentAnimInfo = battlePlayerCtr.GetCurrentRoleAnimInfo ();
          
+
+
+            // 根据玩家角色和怪物的位置，战斗点附近的可行走情况决定人物和怪物的战斗位置
+            //人物在怪物右边
 			if (posOffsetX > 0) {
-				
+				// 人物角色先朝左
 				battlePlayerCtr.TowardsLeft(!battlePlayerCtr.isInFight);
-            
+                // 如果怪物在人物水平向左一格的附近位置，并且该位置没有超出地图左侧界限
 				if (playerPosX - 1 >= minX && playerPosX - 1 == monsterPosX && playerPosY == monsterPosY) {
+					// 怪物跑向的位置【人物左边一格】
 					monsterRunPos = new Vector3(playerPosX - 1f, playerPosY, 0);
+                    // 怪物战斗位置【人物左边一格】
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
+                    // 怪物层级调整到人物层级
                     monsterLayerOrder = -playerPosY;
-				} else if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX - 1, playerPosY] == 1) {
+				} 
+                // 人物左侧没有超过地图左侧界限，且地图上人物左侧位置上没有东西【可行走信息为1】
+				else if (playerPosX - 1 >= minX && ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[playerPosX - 1, playerPosY] == 1) {
 					monsterRunPos = new Vector3(playerPosX - 0.5f, playerPosY, 0);
 					monsterFightPos = new Vector3 (playerPosX - 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
-                } else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
+                } 
+                // 人物左侧没有超过地图左侧界限，地图上人物左侧位置没有东西，但是可行走信息不为1，但是是当前怪物的单步行走目标位置【每个怪物在行走之前都会把目标位置可行走信息设为5，防止其他怪物也走上去】
+				else if (playerPosX - 1 >= minX && playerPosX - 1 == Mathf.RoundToInt (moveDestination.x) && playerPosY == Mathf.RoundToInt (moveDestination.y)) {
 					monsterRunPos = new Vector3(playerPosX - 1f, playerPosY, 0);
 					monsterFightPos = new Vector3(playerPosX - 1, playerPosY, 0);
                     monsterLayerOrder = -playerPosY;
-				} else {
+				} 
+                // 其他情况都要让怪物和人物的战斗位置尽量放进同一个格子里了
+				else {
+					// 如果人物靠上
                     if (posOffsetY > 0)
                     {     
+						//怪物跑到的位置
 						monsterRunPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        // 怪物战斗位置
                         monsterFightPos = new Vector3(playerPosX - 0.25f, playerPosY - 0.15f, 0);
+                        // 怪物的层级比人物高1级
                         monsterLayerOrder = -playerPosY + 1;
-
+                        // 人物的战斗位置
                         playerFightPos = new Vector3(playerPosX + 0.25f, playerPosY + 0.15f, 0);
 
-                        baCtr.SetSortingOrder(-playerPosY + 1);
+						baCtr.SetSortingOrder(monsterLayerOrder);
 
                     }
-                    else
+					else// 如果人物靠下
                     {             
 						monsterRunPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
                         monsterFightPos = new Vector3(playerPosX - 0.25f, playerPosY + 0.15f, 0);
@@ -694,24 +769,30 @@ namespace WordJourney
 				}
 			}
             
+            // 如果玩家需要重置战斗动作
 			if(playerNeedResetAttack){
 				battlePlayerCtr.ResetAttack(playerCurrentAnimInfo);
 				ExploreManager.Instance.expUICtr.UpdateActiveSkillButtons();
 			}
          
-
+            // 玩家位置修正
             battlePlayerCtr.FixPosTo(playerFightPos, null);
 				
+            // 怪物跑到位置
 			RunToPosition (monsterRunPos, delegate {
             
+                // 如果跑到的时候已经死了，直接返回
 				if(baCtr.isDead){
 					return;
 				}
 
+                // 调整怪物位置到战斗位置
 				baCtr.FixPosTo(monsterFightPos, null);
 
+                // 如果玩家没有逃离战斗
 				if(!battlePlayerCtr.escapeFromFight){
 
+                    // 根据双方位置关系重新调整朝向
 					if(transform.position.x <= ExploreManager.Instance.battlePlayerCtr.transform.position.x){
 						baCtr.TowardsRight();
 						boneTowards = MyTowards.Right;
@@ -720,15 +801,19 @@ namespace WordJourney
 						boneTowards = MyTowards.Left;
 					}
 
+                    // 如果玩家没有逃离战斗，并且玩家还没有进入战斗，则玩家和怪物都进入战斗
 					if (!battlePlayerCtr.isInEscaping && !battlePlayerCtr.isInFight) {
 						
 						ExploreManager.Instance.PlayerAndMonsterStartFight();
 						               
 					} else {
+						// 其他情况下只有怪物进入战斗
 						ExploreManager.Instance.MonsterStartFight ();
 
 					}
-				}else{
+				}
+                // 玩家在怪物跑的过程中脱离了战斗【这个现在从动画播放时长和跑动的时长上看是不会实现的，但是逻辑先做着】
+				else{
 					bool monsterDie = baCtr.agent.health <= 0;
 					RefreshWalkableInfoWhenQuit(monsterDie);
 					QuitFightAndDelayMove(5);
@@ -738,7 +823,12 @@ namespace WordJourney
 
 		}
 
-
+        /// <summary>
+        /// 走到指定位置上
+        /// </summary>
+        /// <param name="position">Position.</param>
+        /// <param name="cb">Cb.</param>
+        /// <param name="showAlertArea">If set to <c>true</c> show alert area.</param>
 		public override void WalkToPosition(Vector3 position,CallBack cb,bool showAlertArea = true){
 
 			baCtr.PlayRoleAnim (CommonData.roleWalkAnimName, 0, null);
@@ -820,7 +910,12 @@ namespace WordJourney
 		}
 
 
-
+        /// <summary>
+        /// 跑到指定位置上
+        /// </summary>
+        /// <param name="position">Position.</param>
+        /// <param name="cb">Cb.</param>
+        /// <param name="layerOrder">Layer order.</param>
 		protected override void RunToPosition(Vector3 position,CallBack cb,int layerOrder){
 
 			baCtr.PlayRoleAnim (CommonData.roleRunAnimName, 0, null);
@@ -868,14 +963,22 @@ namespace WordJourney
 			StartCoroutine (moveCoroutine);
 
 		}
-
-
+        
+        /// <summary>
+        /// 设置骨骼动画层级
+        /// </summary>
+        /// <param name="order">Order.</param>
 		public override void SetSortingOrder (int order)
 		{
 			baCtr.SetSortingOrder (order);
 		}
 			
 
+
+        /// <summary>
+        /// 获取一个可用的单词
+        /// </summary>
+        /// <returns>The AV alid word.</returns>
 		private HLHWord GetAValidWord()
         {
 
@@ -891,13 +994,17 @@ namespace WordJourney
 
             reader.Read();
 
-			HLHWord word = MyTool.GetWordFromReader(reader);
+			HLHWord word = HLHWord.GetWordFromReader(reader);
 
             return word;
         }
 
-
-          public Item GenerateRewardItem()
+        
+        /// <summary>
+        /// 生成奖励物品
+        /// </summary>
+        /// <returns>The reward item.</returns>
+        public Item GenerateRewardItem()
         {
 			Monster monster = GetComponent<Monster>();
 

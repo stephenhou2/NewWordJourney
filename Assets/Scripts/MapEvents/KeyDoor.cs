@@ -114,7 +114,7 @@ namespace WordJourney
 
             reader.Read();
 
-            HLHWord word = MyTool.GetWordFromReader(reader);
+			HLHWord word = HLHWord.GetWordFromReader(reader);
 
 			GameManager.Instance.pronounceManager.DownloadPronounceCache(word);
 

@@ -22,9 +22,14 @@ namespace WordJourney
 	//	YinShenJuanZhou
 	//}
 
-
+    /// <summary>
+    /// 消耗品类
+    /// </summary>
 	[System.Serializable]
 	public class Consumables : Item {
+
+        
+        // 消耗品的属性增益
 
 		public int healthGain;
 		public int manaGain;
@@ -50,9 +55,9 @@ namespace WordJourney
 		public int magicRecoveryGain;
 
 		public int consumablesGrade;
-
+        // 是否只能出现在背包栏中
 		public bool isShowInBagOnly;
-
+        // 使用该消耗品时的音频特效名称
 		public string audioName;
 
 		/// <summary>
@@ -98,32 +103,41 @@ namespace WordJourney
          
 		}
       
-
+        /// <summary>
+        /// 使用消耗品
+        /// </summary>
+        /// <returns>返回角色属性变化</returns>
+        /// <param name="battleAgentController">Battle agent controller.</param>
 		public PropertyChange UseConsumables(BattleAgentController battleAgentController){
 
 			Player player = Player.mainPlayer;
 
 			PropertyChange propertyChange = new PropertyChange();
 
+            // 如果提升最大生命值
             if (maxHealthGain > 0)
             {
                 int maxHealthRecord = player.maxHealth;
 				player.maxHealth += maxHealthGain;
                 player.originalMaxHealth += maxHealthGain;
+                // 按照最大生命值的提升比例同时提升实际生命值
                 player.health = Mathf.RoundToInt((player.health * (float)player.maxHealth / maxHealthRecord));
                 propertyChange.maxHealthChange = maxHealthGain;
             }
 
+            // 如果提升最大魔法值
             if (maxManaGain > 0)
             {
                 int maxManaRecord = player.maxMana;
                 player.maxMana += maxManaGain;
                 player.originalMaxMana += maxManaGain;
+				// 按照最大魔法值的提升比例同时提升实际魔法值
                 player.mana = Mathf.RoundToInt(player.mana * (float)player.maxMana / maxManaRecord);
                 propertyChange.maxManaChange = maxManaGain;
             
             }
          
+            // 如果提升实际生命值
             if (healthGain > 0)
             {            
 				if (battleAgentController != null)
@@ -135,6 +149,7 @@ namespace WordJourney
 				}
             }
 
+            // 如果提升实际魔法值
             if (manaGain > 0)
             {            
 				if (battleAgentController != null)
@@ -148,10 +163,20 @@ namespace WordJourney
 				player.mana += manaGain;
 			}
 
+            // 如果提升实际经验值
 			if(experienceGain > 0){
-				player.experience += experienceGain;            
+				player.experience += experienceGain;   
+				bool isLevelUp = Player.mainPlayer.LevelUpIfExperienceEnough();
+                if (isLevelUp)
+                {
+                    ExploreManager.Instance.battlePlayerCtr.SetEffectAnim(CommonData.levelUpEffectName);
+                    GameManager.Instance.soundManager.PlayAudioClip(CommonData.levelUpAudioName);
+                    ExploreManager.Instance.expUICtr.ShowLevelUpPlane();
+                }
+
 			}
 
+            // 提升物理攻击力
             if (attackGain > 0)
             {
                 player.attack += attackGain;
@@ -159,6 +184,7 @@ namespace WordJourney
                 propertyChange.attackChange = attackGain;
             }
 
+            // 提升魔法攻击力
             if (magicAttackGain > 0)
             {
                 player.magicAttack += magicAttackGain;
@@ -166,6 +192,7 @@ namespace WordJourney
                 propertyChange.magicAttackChange = magicAttackGain;
             }
 
+            // 提升护甲
             if (armorGain > 0)
             {
                 player.armor += armorGain;
@@ -173,6 +200,7 @@ namespace WordJourney
                 propertyChange.armorChange = armorGain;
             }
 
+            // 提升抗性
             if (magicResistGain > 0)
             {
                 player.magicResist += magicResistGain;
@@ -180,6 +208,7 @@ namespace WordJourney
                 propertyChange.magicResistChange = magicResistGain;
             }
 
+            // 提升护甲穿透
             if (armorDecreaseGain > 0)
             {
                 player.armorDecrease += armorDecreaseGain;
@@ -187,6 +216,7 @@ namespace WordJourney
                 propertyChange.armorDecreaseChange = armorDecreaseGain;
             }
 
+            // 提升抗性穿透
             if (magicResistDecreaseGain > 0)
             {
                 player.magicResistDecrease += magicResistDecreaseGain;
@@ -194,12 +224,14 @@ namespace WordJourney
                 propertyChange.magicResistDecreaseChange = magicResistDecreaseGain;
             }
 
+            // 提升移动速度
             if (moveSpeedGain > 0)
             {
                 player.moveSpeed += moveSpeedGain;
                 player.originalMoveSpeed += moveSpeedGain;
             }
 
+            // 提升暴击
             if (critGain > 0)
             {
 				float myCritGain = (float)critGain / 100;
@@ -208,6 +240,7 @@ namespace WordJourney
 				propertyChange.critChange = myCritGain;
             }
 
+            // 提升闪避
             if (dodgeGain > 0)
             {
                 float myDodgeGain = (float)dodgeGain / 100;
@@ -216,6 +249,7 @@ namespace WordJourney
 				propertyChange.dodgeChange = myDodgeGain;
             }
 
+            // 提升暴击伤害倍率
             if (critHurtScalerGain > 0)
             {
                 float myCritHurtScalerGain = (float)critHurtScalerGain / 100;
@@ -223,6 +257,7 @@ namespace WordJourney
 				player.originalCritHurtScaler += myCritHurtScalerGain;
             }
 
+            // 提升物理伤害系数
             if (physicalHurtScalerGain > 0)
             {
                 float myPhysicalHurtScalerGain = (float)physicalHurtScalerGain / 100;
@@ -230,6 +265,7 @@ namespace WordJourney
 				player.originalPhysicalHurtScaler += myPhysicalHurtScalerGain;
             }
 
+            // 提升魔法伤害系数
             if (magicalHurtScalerGain > 0)
             {
                 float myMagicalHurtScalerGain = (float)magicalHurtScalerGain / 100;
@@ -237,6 +273,7 @@ namespace WordJourney
 				player.originalMagicalHurtScaler += myMagicalHurtScalerGain;
             }
 
+            // 提升额外金币
             if (extraGoldGain > 0)
             {
                 player.extraGold += extraGoldGain;
@@ -244,6 +281,7 @@ namespace WordJourney
                 propertyChange.extraGoldChange = extraGoldGain;
             }
 
+            // 提升额外经验
             if (extraExperienceGain > 0)
             {
                 player.extraExperience += extraExperienceGain;
@@ -251,6 +289,7 @@ namespace WordJourney
                 propertyChange.extraExperienceChange = extraExperienceGain;
             }
 
+            // 提升生命回复
             if (healthRecoveryGain > 0)
             {
                 player.healthRecovery += healthRecoveryGain;
@@ -258,6 +297,7 @@ namespace WordJourney
                 propertyChange.healthRecoveryChange = healthRecoveryGain;
             }
 
+            // 提升魔法回复
             if (magicRecoveryGain > 0)
             {
                 player.magicRecovery += magicRecoveryGain;
