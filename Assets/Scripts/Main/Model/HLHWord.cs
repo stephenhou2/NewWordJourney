@@ -33,7 +33,7 @@ namespace WordJourney
         public int learnedTimes;
         // 单词背错的次数
         public int ungraspTimes;
-        // 是否熟悉
+		// 是否熟悉【0:没有学习过或者不熟悉 1:熟悉】
 		public bool isFamiliar;
         // 备用发音url
 		public string backupProuounciationURL;

@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	/// <summary>
+    /// 复习水晶
+    /// </summary>
 	public class ReviewPool : MapEvent
     {
 		private bool isExausted;

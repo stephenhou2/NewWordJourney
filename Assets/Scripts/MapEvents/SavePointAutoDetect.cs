@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	/// <summary>
+    /// 存档点的探测
+    /// </summary>
 	public class SavePointAutoDetect : MonoBehaviour
     {
 

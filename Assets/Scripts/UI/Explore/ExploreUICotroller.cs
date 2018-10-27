@@ -1240,15 +1240,22 @@ namespace WordJourney
 			
 			//Player.mainPlayer.needChooseDifficulty = true;
 
-			transitionView.PlayTransition (TransitionType.Death, delegate {
-				
-				transitionMask.gameObject.SetActive(true);
+			transitionView.PlayTransition (TransitionType.Death, delegate
+			{
 
-				transitionMask.color = Color.black;
+    			transitionMask.gameObject.SetActive(true);
 
-                
+    			transitionMask.color = Color.black;
 
-				GameManager.Instance.persistDataManager.ResetDataWhenPlayerDie();
+				GameManager.Instance.persistDataManager.ResetDataWhenPlayerDie(ExploreManager.Instance.battlePlayerCtr);
+
+    			if (ExploreManager.Instance.battlePlayerCtr.fadeStepsLeft < 5)
+    			{
+    				if (ExploreManager.Instance.battlePlayerCtr.fadeStepsLeft == 0){
+    					ExploreManager.Instance.battlePlayerCtr.SetEffectAnim(CommonData.yinShenEffectName);
+    				}
+    					ExploreManager.Instance.battlePlayerCtr.fadeStepsLeft = 5;
+    			}
                             
 				GameManager.Instance.UIManager.SetUpCanvasWith(CommonData.loadingCanvasBundleName, "LoadingCanvas", delegate
 				{

@@ -55,6 +55,7 @@ namespace WordJourney
         // 玩家等级文字显示
 		public Text playerLevelText;
 
+		public HelpViewController propertyHelpView;
 
 
 		/// <summary>
@@ -576,6 +577,15 @@ namespace WordJourney
 			hintHUD.SetUpSingleTextTintHUD (tint);
 		}
 			
+        /// <summary>
+        /// 显示属性帮助面板
+        /// </summary>
+		public void ShowPropertyHelpView(){
+			propertyHelpView.SetUpHelpView();
+		}
+
+
+
       
 		// 关闭背包界面
 		public void QuitBagPlane(){

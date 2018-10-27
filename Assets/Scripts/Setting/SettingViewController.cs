@@ -5,18 +5,21 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	/// <summary>
+    /// 设置界面控制器
+    /// </summary>
     public class SettingViewController : MonoBehaviour
     {
-
+        // 设置界面
         public SettingView settingView;
-
-        //private bool isPointerUp;
-
+        // 标记游戏设置是否更改过
         private bool settingChanged;
-
+        // 当前词库序号
         private int currentSelectWordTypeIndex;
 
-
+        /// <summary>
+        /// 初始化设置界面
+        /// </summary>
         public void SetUpSettingView()
         {         
             GameSettings settings = GameManager.Instance.gameDataCenter.gameSettings;
@@ -24,8 +27,11 @@ namespace WordJourney
 			settingView.SetUpSettingView(settings,ChangeVolume);
 
         }
-
-
+        
+        /// <summary>
+        /// 音量调整
+        /// </summary>
+        /// <param name="volume">Volume.</param>
 		public void ChangeVolume(float volume)
         {
 
@@ -43,6 +49,9 @@ namespace WordJourney
 
         }
 
+        /// <summary>
+        /// 更改自动发音设置
+        /// </summary>
         public void ChangePronunciationEnability()
         {
 
@@ -56,7 +65,10 @@ namespace WordJourney
 
         }
 
-
+        /// <summary>
+        /// 更改词库类型
+        /// </summary>
+        /// <param name="index">Index.</param>
         public void ChangeWordType(int index)
         {
             int wordTypeIndex = (int)GameManager.Instance.gameDataCenter.gameSettings.wordType;
@@ -69,6 +81,9 @@ namespace WordJourney
             }
         }
 
+        /// <summary>
+        /// 更改词库确认按钮点击响应
+        /// </summary>
         public void OnConfirmButtonClick()
 		{
 
@@ -111,6 +126,9 @@ namespace WordJourney
 
         }
 
+        /// <summary>
+        /// 更改词库取消按钮点击响应
+        /// </summary>
         public void OnCancelButtonClick()
         {
             //settingView.SetUpSettingView(GameManager.Instance.gameDataCenter.gameSettings);
@@ -135,10 +153,17 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 隐私策略按钮点击响应
+        /// </summary>
 		public void OnPrivacyButtonClick(){
 			Application.OpenURL("http://www.lofter.com/lpost/1fc6f75f_12b25c509");
 		}
 
+        /// <summary>
+        /// 恢复内购回调
+        /// </summary>
+        /// <param name="result">Result.</param>
 		private void RestoreFinishCallBack(int result){
 			settingView.HideRestoreMask();
 			bool success = result == 1;
@@ -150,6 +175,9 @@ namespace WordJourney
 				
 		}
 
+        /// <summary>
+        /// 退出设置界面
+        /// </summary>
         public void OnQuitSettingViewButtonClick()
         {
 
@@ -179,9 +207,9 @@ namespace WordJourney
 
 
         }
-
+        
         /// <summary>
-        /// Changes the settings and save.
+        /// 游戏设置发生更改后保存游戏设置
         /// </summary>
         private void ChangeSettingsAndSave()
         {
@@ -195,17 +223,7 @@ namespace WordJourney
 
         }
 
-        public void QuitAPP()
-        {
-
-#if UNITY_ANDROID
-            Application.Quit();
-#endif
-
-		}
-
-
-
+      
 		public void DestroyInstances(){
 
 			MyResourceManager.Instance.UnloadAssetBundle (CommonData.settingCanvasBundleName, true);

@@ -7,14 +7,9 @@ namespace WordJourney
 {
 	public class UpdateDataViewController : MonoBehaviour
 	{
-
+        // 加载进度条
 		public HLHFillBar loadingBar;
 
-		//void Start()
-		//{         
-		//	SetUpUpdateDataView();
-		//}
-        
 
 		public void SetUpUpdateDataView(){
 

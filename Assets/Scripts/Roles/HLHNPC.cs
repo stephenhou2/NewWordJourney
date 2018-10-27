@@ -5,38 +5,45 @@ using UnityEngine;
 
 namespace WordJourney
 {
-
+    /// <summary>
+    /// npc数据类
+    /// </summary>
 	[System.Serializable]
 	public class HLHNPC {
-		
+
+        // npc id
 		public int npcId;
-
+        // npc 名称
 		public string npcName;
-
-		//public bool isExcutor;
-
+        // 是否有交谈功能
 		public bool isChatTriggered;
-
+        // 是否有交易功能
 		public bool isTradeTriggered;
-
+        // 是否有传送功能
 		public bool isTransportTriggered;
-
+        // 是否有教授技能的功能
 		public bool isLearnSkillTriggered;
-
+        // 是否有提升属性的功能【废弃】
 		public bool isPropertyPromotionTriggered;
-
+        // 是否有镶嵌宝石的功能
 		public bool isAddGemStoneTriggered;
         
+        // 提升的属性列表【废弃】
 		public List<HLHPropertyPromotion> propertyPromotionList = new List<HLHPropertyPromotion>();
 
+        // 指定关卡一定会出现的对话组列表
 		public List<HLHDialogGroup> levelDefiniteDialogGroups = new List<HLHDialogGroup>();
 
+        // 未指定关卡的对话组列表
 		public List<HLHDialogGroup> levelUndefiniteDialogGroups = new List<HLHDialogGroup>();
 
+        // 传送层级列表
 		public List<int> transportLevelList = new List<int>();
       
+        // 商品列表
 		public List<HLHNPCGoodsGroup> npcGoodsGroupList = new List<HLHNPCGoodsGroup> ();
 
+        // 
 		public List<HLHDialog> regularGreetings = new List<HLHDialog> ();
 
 		// 单词选择正确时的对话组
@@ -50,14 +57,22 @@ namespace WordJourney
 		// 本层触发的对话组的记录
 		private HLHDialogGroup dialogGroupRecord;
 
+        // 在售商品记录列表
 		public List<HLHNPCGoods> goodsInSellRecord = new List<HLHNPCGoods>();
 
-		private bool isGoodsInitialized;
+        // 是否已经初始化过商品数据
+		public bool isGoodsInitialized;
       
+        // npc技能id数组
 		public List<int> npcSkillIds = new List<int>();
 
+        // 是否已经教授过技能
 		public bool hasTeachedASkill = false;
         
+        /// <summary>
+        /// 获取一个可用的传送层数
+        /// </summary>
+        /// <returns>The valid travel level identifiers.</returns>
 		public List<int> GetValidTravelLevelIds(){
 
 			List<int> validTravelLevelIds = new List<int>();
@@ -81,26 +96,24 @@ namespace WordJourney
 		}
 
 		/// <summary>
-		/// 查找人物当前触发的对话组
+		/// 获取合适的对话组【本层指定必须出现的优先级高】
 		/// </summary>
 		/// <returns>The qulified dialog group.</returns>
 		/// <param name="player">Player.</param>
 		public HLHDialogGroup FindQulifiedDialogGroup(Player player){
-
-			//if (dialogGroupRecord != null && dialogGroupRecord.isMultiTimes)
-            //{
-            //    return dialogGroupRecord;            
-            //}
+        
 
 			HLHDialogGroup targetDg = null;
 
          
+            // 查询所有指定层级必须出现的对话组中，有没有指定本层必须出现的
 			for (int i = 0; i < levelDefiniteDialogGroups.Count; i++) {
                 
 				HLHDialogGroup dg = levelDefiniteDialogGroups [i];
 
 				if(dg.triggerLevel == player.currentLevelIndex){
 
+                    // 如果指定本层必须出现，则检查本层是否已经完成了该对话组
 					if(CheckDialogGroupFinished(dg)){
 						break;
 					}
@@ -114,6 +127,7 @@ namespace WordJourney
 
 			}
 
+            // 如果没有必须出现的对话组，则随机一个对话组
 			int randomSeed = Random.Range(0, levelUndefiniteDialogGroups.Count);
 
 			targetDg = levelUndefiniteDialogGroups[randomSeed];
@@ -124,6 +138,12 @@ namespace WordJourney
 
 		}
 
+
+        /// <summary>
+        /// 检查传入的对话组是否已经完成全部交谈的话
+        /// </summary>
+        /// <returns><c>true</c>, if dialog group finished was checked, <c>false</c> otherwise.</returns>
+        /// <param name="dialogGroup">Dialog group.</param>
 		public bool CheckDialogGroupFinished(HLHDialogGroup dialogGroup){
 
 			bool dialogGroupFinished = false;
@@ -144,9 +164,22 @@ namespace WordJourney
 
 		}
         
+        /// <summary>
+        /// 检查商品是否已经卖完了
+        /// </summary>
+        /// <returns><c>true</c>, if golld sold out was checked, <c>false</c> otherwise.</returns>
+		public bool CheckGolldSoldOut(){
+			return isGoodsInitialized && goodsInSellRecord.Count == 0;
+		}
+
+        /// <summary>
+        /// 获取本层的商品id列表
+        /// </summary>
+        /// <returns>The current level goods.</returns>
 		public List<HLHNPCGoods> GetCurrentLevelGoods(){
 
-			if (goodsInSellRecord.Count != 0 || isGoodsInitialized) {
+            // 如果已经初始化过，则返回本层的商品记录
+			if (isGoodsInitialized) {
 				return goodsInSellRecord;
 			}
 
@@ -167,6 +200,11 @@ namespace WordJourney
 			return goodsInSellRecord;
 		}
 
+
+        /// <summary>
+        /// 从可能商品列表中产生随机商品
+        /// </summary>
+        /// <param name="possibleGoods">Possible goods.</param>
 		private void GenerateRandomGoods(List<HLHNPCGoods> possibleGoods){
 			
 			if (possibleGoods.Count == 0) {
@@ -195,42 +233,57 @@ namespace WordJourney
 
     }
 
-
+    /// <summary>
+    /// 对话组模型
+    /// </summary>
 	[System.Serializable]
 	public class HLHDialogGroup{
 
+        // 对话组id
 		public int dialogGroupId;
 
 		// 对话的触发关卡序号【-1代表对话不跟关卡走】
 		public int triggerLevel = -1;
 
+        // 所有对话列表
 		public List<HLHDialog> dialogs;
 
+        // 对话组结束时是否触发奖励
 		public bool isRewardTriggered;
 
+        // 奖励
 		public HLHNPCReward reward;
 
+        // 对话组是否完成
 		public bool isFinish;
 
+        // 是否是可以多次触发的对话组
 		public bool isMultiTimes;
       
 
 	}
 
-
+    /// <summary>
+    /// 聊天记录
+    /// </summary>
 	[System.Serializable]
 	public struct HLHNPCChatRecord
 	{
+		// npc id 
 		public int npcId;
+        // 对话组id
 		public int npcDialogGroupID;
 
+        //构造函数
 		public HLHNPCChatRecord(int npcId,int npcDialogGroupID){
 			this.npcId = npcId;
 			this.npcDialogGroupID = npcDialogGroupID;
 		}
 	}
 		
-
+    /// <summary>
+    /// 对话模型
+    /// </summary>
 	[System.Serializable]
 	public class HLHDialog{
 
@@ -242,6 +295,9 @@ namespace WordJourney
 
 	}
    
+    /// <summary>
+    /// 属性提升模型
+    /// </summary>
 	[System.Serializable]
 	public struct HLHPropertyPromotion{
 		public PropertyType propertyType;
@@ -318,7 +374,9 @@ namespace WordJourney
 		Item
 	}
 
-
+    /// <summary>
+    /// 奖励模型
+    /// </summary>
 	[System.Serializable]
 	public struct HLHNPCReward{
 
@@ -338,9 +396,14 @@ namespace WordJourney
 
 	}
 
+
+    /// <summary>
+    /// 商品组模型
+    /// </summary>
 	[System.Serializable]
 	public class HLHNPCGoodsGroup{
 
+        // 每个npc可以卖5个商品，下面分别是5个商品的备选商品id列表
 		public List<HLHNPCGoods> goodsList_1= new List<HLHNPCGoods> ();
 		public List<HLHNPCGoods> goodsList_2= new List<HLHNPCGoods> ();
 		public List<HLHNPCGoods> goodsList_3= new List<HLHNPCGoods> ();
@@ -349,11 +412,15 @@ namespace WordJourney
 
 	}
 		
-
+    /// <summary>
+    /// npc商品模型
+    /// </summary>
 	[System.Serializable]
 	public class HLHNPCGoods{
 
+        // 商品id
 		public int goodsId;
+        // 商品价格浮动
 		public float priceFloat;
 		public int equipmentQuality;//0:灰色，1:蓝色，2:金色
 
@@ -363,6 +430,10 @@ namespace WordJourney
 		private Item itemAsGoods;// 商品
 		private int goodsPrice;// 商品价格
 
+        /// <summary>
+        /// 获取商品
+        /// </summary>
+        /// <returns>The goods item.</returns>
 		public Item GetGoodsItem(){
 
 			if(itemAsGoods != null){
@@ -403,6 +474,7 @@ namespace WordJourney
 			return itemAsGoods;
 		}
 
+        // 获取商品价格
 		public int GetGoodsPrice(){
 			return goodsPrice;
 		}

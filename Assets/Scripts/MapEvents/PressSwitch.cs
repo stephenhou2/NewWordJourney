@@ -5,9 +5,13 @@ using UnityEngine;
 
 namespace WordJourney
 {
+
+    /// <summary>
+    /// 开关类
+    /// </summary>
 	public class PressSwitch : TriggeredGear {
 
-
+        // 控制的地图事件的位置
 		public Vector2 pairEventPos;
 
 		// 地图高度（用于转换坐标系）

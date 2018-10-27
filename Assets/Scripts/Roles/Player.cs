@@ -8,11 +8,13 @@ using DG.Tweening;
 namespace WordJourney
 {
 
+    /// <summary>
+    /// 人物数据类
+    /// </summary>
 	public class Player : Agent {
 
 		private static volatile Player mPlayerSingleton;
 
-//		private static object objectLock = new System.Object();
 
 		// 玩家角色单例
 		public static Player mainPlayer{
@@ -48,7 +50,7 @@ namespace WordJourney
 
 
 		public AttackSpeed originalAttackSpeed;//基础攻速
-		public AttackSpeed attackSpeed;
+		public AttackSpeed attackSpeed;// 实际攻速
 
 		//玩家经验值
 		//public int mExperience;
@@ -65,6 +67,7 @@ namespace WordJourney
 			}
 		}
 
+        // 攻击间隔【通过实际攻速计算得来】
 		public override  float attackInterval{
 			get{
 				float interval = 1.1f;
@@ -91,7 +94,7 @@ namespace WordJourney
 
 		public List<Item> allItemsInBag = new List<Item>();//背包中要显示的所有物品（已穿戴的装备和已解锁的卷轴将会从这个表中删除）
 
-		public List<Consumables> allConsumablesInBag = new List<Consumables> ();
+		public List<Consumables> allConsumablesInBag = new List<Consumables> ();// 背包中所有消耗品
 
 		public List<PropertyGemstone> allPropertyGemstonesInBag = new List<PropertyGemstone>();//背包中所有的属性宝石
 
@@ -103,18 +106,19 @@ namespace WordJourney
 
         // 地图初始化记录
         public List<int> mapIndexRecord = new List<int>();
-
+        // 拼写记录
 		public List<string> spellRecord = new List<string>();
-
+        // 当前关卡
 		public int currentLevelIndex;
-
+        // 最大解锁关卡
 		public int maxUnlockLevelIndex;
-
+        // 未使用过的谜语id列表
 		public List<int> unusedPuzzleIds = new List<int>();
 
 		// 是否是新建的玩家
 		public bool isNewPlayer;
       
+        // 最大背包数量
 		public int maxBagCount{ 
 			get{
 				int max = 1;
@@ -126,18 +130,19 @@ namespace WordJourney
 					max = 3;
 				}
 				if(BuyRecord.Instance.bag_4_unlocked){
-					max = 4;
+					max = 3;
 				}
 				return max;
 			} 
 		}
 
+        // 所有学习过的技能
 		public List<Skill> allLearnedSkills = new List<Skill>();
-
+        // 所有学习过的技能记录
 		public List<SkillModel> allLearnedSkillsRecord = new List<SkillModel>();
-
+        // 剩余技能点
 		public int skillNumLeft;
-
+        // 最多学习的技能数量
 		public int maxSkillCount = 6;
               
         // 开宝箱的幸运度 
@@ -186,9 +191,11 @@ namespace WordJourney
         // 一共击杀的怪物数量
 		public int totaldefeatMonsterCount;
 
+        // 本次探索中学过的单词总数
 		public int learnedWordsCountInCurrentExplore;
+        // 本次探索中错误的单词总数
 		public int correctWordsCountInCurrentExplore;
-
+        // 本次探索的开始日期
 		public string currentExploreStartDateString;
 
 		public bool canSave;//是否可以存档【刚进入探索界面时不存档】
@@ -198,12 +205,11 @@ namespace WordJourney
 
         // 记录到的在存档点的额朝向
 		public MyTowards saveTowards;
-
-
-
-
-		//public CurrentMapEventsRecord currentMapEventsRecord;
-
+        
+        /// <summary>
+        /// 使用玩家数据初始化玩家
+        /// </summary>
+        /// <param name="playerData">Player data.</param>
 		public void SetUpPlayerWithPlayerData(PlayerData playerData){
 
 			Debug.Log ("set up player data");
@@ -211,8 +217,6 @@ namespace WordJourney
 			if (playerData == null) {
 				return;
 			}
-
-			//this.currentVersion = playerData.currentVersion;
 
 			this.agentName = playerData.agentName;
 			this.agentLevel = playerData.agentLevel;
@@ -288,42 +292,41 @@ namespace WordJourney
             this.mapIndexRecord = playerData.mapIndexRecord;
 
 			this.allLearnedSkillsRecord = playerData.allLearnedSkillsRecord;
-                     
+                  
+            // 初始化7个空装备占位
 			allEquipedEquipments = new Equipment[7];
 
+            // 占位
 			for(int i = 0;i<allEquipedEquipments.Length;i++){
 				allEquipedEquipments [i] = new Equipment ();
 			}
-
-
+            
+			// 读取玩家装备信息并绑定
+			// 从背包中的装备中读取，因为背包中的装备和装备栏中的装备是一个东西，统一使用背包中的装备来操作
+            // 这样已装备的物品和背包中的该装备才是同一个东西，在添加/移除物品时才不会有问题
 			for (int i = 0; i < allEquipmentsInBag.Count; i++) {
 
 				Equipment e = allEquipmentsInBag [i];
-
+                 
 				if (!e.equiped) {
 					continue;
 				}
+				// 如果是已装备的装备
+                // 转化装备类型为装备序号
 				int equipmentTypeIndex = (int)e.equipmentType;
 
+                // 如果是指环，并且装备槽6已经装备了装备，则该指环放到装备槽7
 				if (e.equipmentType == EquipmentType.Ring && allEquipedEquipments [5].itemId >= 0) {
 					allEquipedEquipments [6] = e;
 				}else{
 					allEquipedEquipments[equipmentTypeIndex] = e;
 				}         
 			}
-
-			//for (int i = 0; i < allEquipmentsInBag.Count;i++){
-			//	Equipment e = allEquipmentsInBag[i];
-			//	if(e.itemId >=0){
-			//		int equipmentTypeIndex = (int)(e.equipmentType);
-			//		allEquipedEquipments[equipmentTypeIndex] = e;
-			//	}
-			//}
             
+            // 一些其他数据绑定
 			this.currentLevelIndex = playerData.currentLevelIndex;
 			this.maxUnlockLevelIndex = playerData.maxUnlockLevelIndex;
-
-			//this.exploreMaskStatus = playerData.exploreMaskStatus;
+            
                      
 			this.totalGold = playerData.totalGold;
 			this.experience = playerData.experience;
@@ -375,10 +378,7 @@ namespace WordJourney
 			this.spellRecord = playerData.spellRecord;
 
 			this.unusedPuzzleIds = playerData.unusedPuzzleIds;
-
-			//this.currentMapEventsRecord = playerData.currentMapEventsRecord;
-                     
-			this.allStatus.Clear ();
+            
 
 			allItemsInBag = new List<Item> ();
 
@@ -458,7 +458,9 @@ namespace WordJourney
 
 
 
-
+        /// <summary>
+        /// 清除技能
+        /// </summary>
 		public void ClearAttachedSkills()
         {
             for (int i = 0; i < allLearnedSkills.Count; i++)
@@ -471,12 +473,20 @@ namespace WordJourney
             attachedPermanentPassiveSkills.Clear();
         }
 
+        /// <summary>
+        /// 清除已收集到的字母碎片
+        /// </summary>
 		public void ClearCollectedCharacters(){
 
 			allCollectedCharacters.Clear();
-
+            
 		}
 
+
+        /// <summary>
+        /// 获取一个没有使用过的谜语id
+        /// </summary>
+        /// <returns>The an unused puzzle identifier.</returns>
 		public int GetAnUnusedPuzzleId(){
 
 			if(unusedPuzzleIds == null){
@@ -500,7 +510,9 @@ namespace WordJourney
 
 		}
 
-
+        /// <summary>
+        /// 乱序初始化地图序号【每5层乱序随机，5层内包含的关卡是固定的】
+        /// </summary>
 		public void InitializeMapIndex()
 		{
 
@@ -541,7 +553,7 @@ namespace WordJourney
 		}
 
 
-
+        // 获取当前层级地图序号
         public int GetMapIndex()
         {
 			if(mapIndexRecord.Count == 0){
@@ -553,10 +565,14 @@ namespace WordJourney
 
        
 
-
+        /// <summary>
+        /// 重算玩家属性
+        /// </summary>
+        /// <returns>The battle agent properties.</returns>
+        /// <param name="toOriginalState">If set to <c>true</c> to original state.</param>
 		public override PropertyChange ResetBattleAgentProperties (bool toOriginalState = false)
 		{
-
+            // 记录重算前的玩家属性
 			int maxHealthRecord = maxHealth;
 			int healthRecord = health;
 			int maxManaRecord = maxMana;
@@ -574,7 +590,7 @@ namespace WordJourney
 			int extraGoldRecord = extraGold;
 			int extraExperienceRecord = extraExperience;
 
-            // 方案一：
+            // 方案一：【不使用该方式】
             // 因为人物属性都是>0的【逻辑上已进行强制】,原始属性+技能属性变化可能时负值，故需使用一个中间值进行存储
    //         int tempMaxHealth = originalMaxHealth + maxHealthChangeFromSkill;
    //         int tempMaxMana = originalMaxMana + maxManaChangeFromSkill;
@@ -695,6 +711,7 @@ namespace WordJourney
 			this.extraLuckInOpenTreasure = 0;
             this.extraLuckInMonsterTreasure = 0;
 
+            // 装备加成
 			for (int i = 0; i < allEquipedEquipments.Length; i++)
             {
 
@@ -736,6 +753,7 @@ namespace WordJourney
                 healthRecovery += eqp.healthRecoveryGain;
                 magicRecovery += eqp.magicRecoveryGain;
 
+                // 装备上镶嵌的宝石加成
 				for (int j = 0; j < eqp.attachedPropertyGemstones.Count;j++){
 					PropertyGemstone attachedPropertyGemstone = eqp.attachedPropertyGemstones[j];
 					maxHealth += attachedPropertyGemstone.maxHealthGain;
@@ -768,12 +786,14 @@ namespace WordJourney
 
             }
 
+            // 永久型被动技能加成
 			for (int i = 0; i < attachedPermanentPassiveSkills.Count; i++)
             {
                 PermanentPassiveSkill pps = attachedPermanentPassiveSkills[i];
                 pps.AffectAgents(battleAgentCtr, null);
             }
 
+            // 计算其他技能的影响【例如怪物的触发型被动，减护甲之类的】
 			maxHealth += maxHealthChangeFromSkill;
             maxMana += maxManaChangeFromSkill;
 
@@ -792,8 +812,9 @@ namespace WordJourney
             crit += critChangeFromSkill;
             dodge += dodgeChangeFromSkill;
 
-			crit += float.Epsilon;
-			dodge += float.Epsilon;
+            // float类型的细微调整，防止由于精度损失导致UI界面显示问题【例如4%，数据上可能是3.9999999988399，会显示为3%】
+			crit += 0.00001f;
+			dodge += 0.00001f;
 
             critHurtScaler += critHurtScalerChangeFromSkill;
             physicalHurtScaler += physicalHurtScalerChangeFromSkill;
@@ -805,15 +826,17 @@ namespace WordJourney
             healthRecovery += healthRecoveryChangeFromSkill;
             magicRecovery += magicRecoveryChangeFromSkill;
                      
-
+            // 如果要回满生命和魔法
 			if (toOriginalState) {
 				health = maxHealth;
 				mana = maxMana;
 			} else {
+				// 按照最大生命和最大魔法的变化来调整实际生命和魔法
 				health = Mathf.RoundToInt(healthRecord * (float)maxHealth / maxHealthRecord);
 				mana = Mathf.RoundToInt(manaRecord * (float)maxMana / maxManaRecord);
 			}
 
+            // 计算属性变化
 			int maxHealthChange = maxHealth - maxHealthRecord;
 			int maxManaChange = maxMana - maxManaRecord;
 
@@ -866,23 +889,24 @@ namespace WordJourney
 		/// 角色卸下装备
 		/// </summary>
 		/// <param name="equipment">Equipment.</param>
-		/// <param name="equipmentIndexInPanel">Equipment index in panel.</param>
+		/// <param name="equipmentIndexInPanel">装备卸下后放置的位置，如果-1，则放在背包尾部</param>
 		public PropertyChange UnloadEquipment(Equipment equipment,int equipmentIndexInPanel,int indexInBag = -1){
 
 			GameManager.Instance.soundManager.PlayAudioClip (CommonData.equipmentAudioName);
 
+            // 标记装备的状态为未装备
 			equipment.equiped = false;
-
-//			Debug.LogFormat ("卸下装备{0}/{1}", equipmentIndexInPanel,allEquipedEquipments.Length);
 
 			BattlePlayerController bpCtr = battleAgentCtr as BattlePlayerController;
 
-			if (indexInBag == -1) {
+            // 装备放置到指定位置
+			if (indexInBag == -1) {// -1放置到背包尾部
 				allItemsInBag.Add (equipment);
 			} else {
 				allItemsInBag.Insert (indexInBag, equipment);
 			}
 
+            // 装备槽内使用空的装备来占位
 			allEquipedEquipments [equipmentIndexInPanel] = new Equipment();
 
 			PropertyChange pc = ResetBattleAgentProperties (false);
@@ -917,14 +941,14 @@ namespace WordJourney
 
 			GameManager.Instance.soundManager.PlayAudioClip (CommonData.equipmentAudioName);
 
+            // 标记装备状态为已装备
 			equipment.equiped = true;
-
-//			Debug.LogFormat ("穿上装备{0}", equipmentIndexInPanel);
 
 			allEquipedEquipments [equipmentIndexInPanel] = equipment;
 
 			BattlePlayerController bpCtr = battleAgentCtr as BattlePlayerController;
                      
+            // 从背包物品中移除装备
 			allItemsInBag.Remove (equipment);
 
 			PropertyChange pc = ResetBattleAgentProperties (false);
@@ -947,6 +971,10 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 添加技能
+        /// </summary>
+        /// <param name="skill">Skill.</param>
 		public void AddSkill(Skill skill){
 			switch (skill.skillType) {
 			case SkillType.Active:
@@ -978,6 +1006,10 @@ namespace WordJourney
 			skill.transform.localScale = Vector3.one;
 		}
 
+        /// <summary>
+        /// 移除技能
+        /// </summary>
+        /// <param name="skill">Skill.</param>
 		public void RemoveSkill(Skill skill){
 			switch (skill.skillType) {
     			case SkillType.Active:
@@ -993,22 +1025,12 @@ namespace WordJourney
 			}
 		}
 
-		public Equipment GetEquipedEquipment(int itemId){
-			Equipment equipedEquipment = null;
-			for (int i = 0; i < allEquipedEquipments.Length; i++) {
-				Equipment tempEqp = allEquipedEquipments [i];
-				if (tempEqp.itemId < 0) {
-					continue;
-				}
-				if (allEquipedEquipments [i].itemId == itemId) {
-					equipedEquipment = allEquipedEquipments [i];
-					return  equipedEquipment;
-				}
-			}
-			return equipedEquipment;
-		}
-
-
+      
+        /// <summary>
+        /// 检查指定物品在背包内是否存在
+        /// </summary>
+        /// <returns><c>true</c>, if item exist in bag was checked, <c>false</c> otherwise.</returns>
+        /// <param name="item">Item.</param>
 		public bool CheckItemExistInBag(Item item){
 
 			bool exist = false;
@@ -1031,6 +1053,11 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 获取指定物品在背包内的序号
+        /// </summary>
+        /// <returns>The item index in bag.</returns>
+        /// <param name="item">Item.</param>
 		public int GetItemIndexInBag(Item item){
 
 			int index = -1;
@@ -1055,9 +1082,6 @@ namespace WordJourney
 			Skill newSkill = SkillGenerator.GenerateSkill(skillId, 1);
 
 			PropertyChange propertyChange = new PropertyChange();
-
-   //         // 已学习技能id列表中记录技能id
-			//allLearnedSkills.Add(skill);
 
 			SkillModel skillModel = new SkillModel(skillId, 1);
 
@@ -1112,6 +1136,11 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 升级指定技能
+        /// </summary>
+        /// <returns>The skill.</returns>
+        /// <param name="skill">Skill.</param>
 		public PropertyChange UpgradeSkill(Skill skill){
 
 			PropertyChange propertyChange = new PropertyChange();
@@ -1167,6 +1196,11 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 检查指定id的技能是否已经学习过了
+        /// </summary>
+        /// <returns><c>true</c>, if skill has learned was checked, <c>false</c> otherwise.</returns>
+        /// <param name="skillId">Skill identifier.</param>
 		public bool CheckSkillHasLearned(int skillId){
 
 			bool SkillLearned = false;
@@ -1206,8 +1240,10 @@ namespace WordJourney
 
 			bool levelUp = false;
 
+            // 升级
 			if (experience >= upgradeExprience) {
-            
+                
+                // 一些属性上的自动变化
 				int maxHealthRecord = maxHealth;
 				originalMaxHealth += 10;
 				maxHealth += 10;
@@ -1232,15 +1268,19 @@ namespace WordJourney
 		}
 
       
-
-
-
-
+      
+        /// <summary>
+        /// 检查背包是否已经满了
+        /// </summary>
+        /// <returns><c>true</c>, if bag full was checked, <c>false</c> otherwise.</returns>
+        /// <param name="item">想要添加的物品</param>
 		public bool CheckBagFull(Item item){
-
+            //如果想要添加的是装备，直接检查背包中的物品数量是否达到了最大装备数量
 			if (item.itemType == ItemType.Equipment) {
 				return allItemsInBag.Count >= maxBagCount * CommonData.singleBagItemVolume;
-			} else {
+			} 
+            // 其他的物品都可以合并，检查想要添加的物品是否在背包中已经存在
+			else {
 
 				Item itemInBag = allItemsInBag.Find (delegate (Item obj) {
 					return obj.itemId == item.itemId;
@@ -1249,7 +1289,7 @@ namespace WordJourney
 				if (itemInBag == null) {
 					return allItemsInBag.Count >= maxBagCount * CommonData.singleBagItemVolume;
 				} 
-
+                //如果有相同物品，则背包没满
 				return false;
 			}
 		}
@@ -1360,6 +1400,7 @@ namespace WordJourney
 
 			bool totallyRemoveFromBag = false;
 
+            // 根据物品类型从不同的物品表中移除
 			switch (item.itemType)
 			{
 				case ItemType.Equipment:
@@ -1386,8 +1427,9 @@ namespace WordJourney
 						}
 					}
 
+                    //从背包中的已装备列表中移除
 					allEquipmentsInBag.Remove(equipment);
-
+					//从背包中所有物品中移除               
 					allItemsInBag.Remove(equipment);
 
 					totallyRemoveFromBag = true;
@@ -1474,7 +1516,9 @@ namespace WordJourney
 			return totallyRemoveFromBag;
 		}
 
-
+        /// <summary>
+        /// 整理背包物品【按照物品id重新排序】
+        /// </summary>
 		public void ArrangeBagItems(){
 
 			for (int i = 0; i < allItemsInBag.Count - 1; i++) {
@@ -1527,44 +1571,8 @@ namespace WordJourney
 
 		}
 
-
-
-
-		/// <summary>
-		/// Checks the unsufficient characters.
-		/// </summary>
-		/// <returns>The unsufficient characters.</returns>
-		/// <param name="itemNameInEnglish">Item name in english.</param>
-		public List<char> CheckUnsufficientCharacters(string itemNameInEnglish){
-
-			char[] charactersArray = itemNameInEnglish.ToCharArray ();
-
-			int[] charactersNeed = new int[26];
-
-			List<char> unsufficientCharacters = new List<char> ();
-
-			foreach (char c in charactersArray) {
-				int index = (int)c - CommonData.aInASCII;
-				charactersNeed [index]++;
-			}
-
-//			// 判断玩家字母碎片是否足够
-//			for(int i = 0;i<charactersNeed.Length;i++){
-//
-//				if (charactersNeed [i] > Player.mainPlayer.charactersCount[i]) {
-//
-//					char c = (char)(i + CommonData.aInASCII);
-//
-//					unsufficientCharacters.Add (c);
-//
-//				}
-//
-//			}
-
-			return unsufficientCharacters;
-
-		}
-			
+      
+		/// 获取所有已装备的装备	
 		public List<Equipment> GetAllEquipedEquipment(){
 
 			List<Equipment> equipedEquipments = new List<Equipment> ();
@@ -1620,12 +1628,12 @@ namespace WordJourney
 	}
 
 
-
+    /// <summary>
+    /// 玩家数据模型【用于存储和读取】
+    /// </summary>
 	[System.Serializable]
 	public class PlayerData{
-
-		//// 记录当前版本信息,用于版本比对【格式：x.xx  例如：1.01 代表1.01版，  版本更新时版本号需比上一版大】
-        //public float currentVersion;
+    
 
 		public string agentName;
 

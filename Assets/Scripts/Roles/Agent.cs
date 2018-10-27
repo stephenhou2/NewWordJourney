@@ -8,6 +8,9 @@ using DG.Tweening;
 namespace WordJourney
 {
 
+    /// <summary>
+    /// 属性枚举
+    /// </summary>
 	public enum PropertyType{
 		MaxHealth,
 		MaxMana,
@@ -31,7 +34,9 @@ namespace WordJourney
         Mana
 	}
 		
-
+    /// <summary>
+    /// 攻速枚举
+    /// </summary>
 	public enum AttackSpeed{
 		Slow,
 		Medium,
@@ -39,15 +44,20 @@ namespace WordJourney
 		VeryFast,
         NoInterval
 	}
-
+    
+    /// <summary>
+    /// 角色数据类
+    /// </summary>
 	public abstract class Agent : MonoBehaviour {
 
+        //角色名称
 		public string agentName;
-
+        // 角色等级
 		public int agentLevel;
 
 		//[HideInInspector]public bool isDead;
 
+        //角色战斗控制器
 		protected BattleAgentController mBattleAgentController;
 		protected BattleAgentController battleAgentCtr{
 			get{
@@ -130,6 +140,7 @@ namespace WordJourney
 		//********人物最终的实际属性信息*********//
 
 
+		//******** 角色实际属性 *********//
 		public int maxHealth{
 			get{ return mMaxHealth; }
 			set{ mMaxHealth = value > 0 ? value : 0;}
@@ -268,35 +279,32 @@ namespace WordJourney
 		public int magicRecovery{
 			get{ return mMagicRecovery; }
 			set{ mMagicRecovery = value > 0 ? value : 0; }
-		}
-			
-
-		public int shenLuTuTengScaler = 0;
-		//public int extraPoisonHurt = 0;
-
+		}      
+		//******** 角色实际属性 *********//
+        
+        // 对敌方的物理伤害
 		public int physicalHurtToEnemy;
+        // 对敌方的魔法上海
 		public int magicalHurtToEnemy;
-//		public float dodgeFixScaler;//闪避修正系数
-//		public float critFixScaler;//暴击修正系数
 
-
+        // 技能容器
 		public Transform skillsContainer;
 			
-
+        // 背包中的所有装备
 		public List<Equipment> allEquipmentsInBag = new List<Equipment> ();
 
-
+        // 所有已装备的装备
 		public Equipment[] allEquipedEquipments;
 
 
-
+        // 所有学习过的主动技能
 		public List<ActiveSkill> attachedActiveSkills = new List<ActiveSkill> ();
+        // 所有学习过的被动永久型技能
 		public List<PermanentPassiveSkill> attachedPermanentPassiveSkills = new List<PermanentPassiveSkill> ();
+        // 所有学习过的被动触发型技能
 		public List<TriggeredPassiveSkill> attachedTriggeredSkills = new List<TriggeredPassiveSkill>();
 
-		public List<string> allStatus = new List<string> ();
-
-
+      
 
 		// 攻击间隔
 		public virtual float attackInterval{get;set;}
@@ -309,6 +317,9 @@ namespace WordJourney
 		}
 			
 
+        /// <summary>
+        /// 清除技能引起的属性变化
+        /// </summary>
         public void ClearPropertyChangesFromSkill()
         {
             maxHealthChangeFromSkill = 0;

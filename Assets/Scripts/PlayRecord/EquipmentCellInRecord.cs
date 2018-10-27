@@ -7,7 +7,10 @@ namespace WordJourney
 {
 
 	using UnityEngine.UI;
-
+    
+    /// <summary>
+    /// 通关记录中的装备槽模型
+    /// </summary>
 	public class EquipmentCellInRecord : MonoBehaviour
     {
 
@@ -27,13 +30,20 @@ namespace WordJourney
 
 		public Sprite purpleSlotSprite;
 
+        /// <summary>
+        /// 重置装备槽
+        /// </summary>
 		public void Reset()
 		{
 			equipmentBackground.sprite = emptySlotSprite;
 			equipmentIcon.enabled = false;
 			equipmentName.text = string.Empty;
 		}
-
+        
+        /// <summary>
+        /// 初始化装备槽
+        /// </summary>
+        /// <param name="equipment">Equipment.</param>
 		public void SetUpEquipmentCellInRecord(Equipment equipment){
 
 			switch(equipment.quality){

@@ -251,10 +251,6 @@ namespace WordJourney
             // 使用原始角色数据作为重置数据源
 			PlayerData resetPd = DataHandler.LoadDataToSingleModelWithPath<PlayerData> (sourcePlayerDataPath);
                  
-			//PlayerData oriPd = DataHandler.LoadDataToSingleModelWithPath<PlayerData> (targetPlayerDataPath);
-
-   //         // 读取当前角色数据中的新玩家标记
-			//resetPd.isNewPlayer = oriPd.isNewPlayer;
 
             // 学习数据更新进新数据中
 			resetPd.totalLearnedWordCount = LearningInfo.Instance.learnedWordCount;
@@ -309,26 +305,35 @@ namespace WordJourney
         /// <summary>
         /// 角色死亡时重置数据
         /// </summary>
-		public void ResetDataWhenPlayerDie(){
+		public void ResetDataWhenPlayerDie(BattlePlayerController baCtr){
 
-            // 加载本地存档
-			PlayerData playerData = LoadPlayerData();
-            // 初始化
-			Player.mainPlayer.SetUpPlayerWithPlayerData(playerData);
-            // 掉落装备，损失经验和金钱作为死亡惩罚
-			Player.mainPlayer.LoseEquipmentsAndExperienceAndGoldWhenDie();
+			// 加载本地存档
+			//PlayerData playerData = LoadPlayerData();
+			//         // 初始化
+			//Player.mainPlayer.SetUpPlayerWithPlayerData(playerData);
+
+			Player.mainPlayer.health = Mathf.RoundToInt(0.1f * Player.mainPlayer.maxHealth);
+			Player.mainPlayer.mana = Mathf.RoundToInt(0.1f * Player.mainPlayer.maxMana);
+
+			Player.mainPlayer.savePosition = baCtr.transform.position;
+			Player.mainPlayer.saveTowards = baCtr.towards;
+
+			// 掉落装备，损失经验和金钱作为死亡惩罚
+            Player.mainPlayer.LoseEquipmentsAndExperienceAndGoldWhenDie();
             // 重算角色属性
-			Player.mainPlayer.ResetBattleAgentProperties(false);
+            Player.mainPlayer.ResetBattleAgentProperties(false);
             // 保存玩家数据
-			SaveCompletePlayerData();
-            // 重置小地图数据
-			ResetMiniMapEventsRecord();
-            // 重置当前关卡地图事件记录
-			GameManager.Instance.gameDataCenter.currentMapEventsRecord.Reset();
-            // 保存特殊地图事件记录
-			SaveMapEventsRecord();
+            SaveCompletePlayerData();
 
-			GameManager.Instance.gameDataCenter.currentMapEventsRecord = DataHandler.LoadDataToSingleModelWithPath<CurrentMapEventsRecord>(CommonData.currentMapEventsRecordFilePath);
+         
+            GameManager.Instance.persistDataManager.SaveGameSettings();
+            GameManager.Instance.persistDataManager.SaveMapEventsRecord();
+            GameManager.Instance.persistDataManager.SaveCurrentMapMiniMapRecord();
+            GameManager.Instance.persistDataManager.SaveCurrentMapEventsRecords();
+            GameManager.Instance.persistDataManager.SaveChatRecords();
+            GameManager.Instance.persistDataManager.SaveCurrentMapWordsRecords();
+
+			//GameManager.Instance.gameDataCenter.currentMapEventsRecord = DataHandler.LoadDataToSingleModelWithPath<CurrentMapEventsRecord>(CommonData.currentMapEventsRecordFilePath);
 		}
 
              

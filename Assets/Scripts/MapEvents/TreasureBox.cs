@@ -7,6 +7,7 @@ namespace WordJourney
 
 	public class TreasureBox: Treasure {
 
+        // 标记是否是金色宝箱【开出金色或紫色物品】
 		public bool isGoldTreasureBox;
 
 		public Sprite normalTbSprite;
@@ -38,6 +39,7 @@ namespace WordJourney
 
 			isGoldTreasureBox = false;
 
+            
 			if (KVPair.ContainsKey ("type",attachedInfo.properties)) {
 				string type = KVPair.GetPropertyStringWithKey ("type", attachedInfo.properties);
 				isGoldTreasureBox = type == "1";
@@ -80,6 +82,7 @@ namespace WordJourney
 				int graySeed = 0;
 				int blueSeed = 0;
 
+                // 物品品质概率
 				switch(Player.mainPlayer.luckInOpenTreasure){
 					case 0:
 						graySeed = 65 - Player.mainPlayer.extraLuckInOpenTreasure;
@@ -93,6 +96,7 @@ namespace WordJourney
 
 				EquipmentQuality quality = EquipmentQuality.Gray;
 
+                // 如果不是金色宝箱，则随机一种品质
 				if (!isGoldTreasureBox) {
 					if (randomSeed < graySeed) {
 						quality = EquipmentQuality.Gray;

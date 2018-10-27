@@ -5,13 +5,18 @@ using UnityEngine;
 
 namespace WordJourney
 {
-
+    /// <summary>
+    /// 陷阱类型
+    /// </summary>
 	public enum TrapType{
 		Thorn,
         Fire,
         Poison
 	}
 
+    /// <summary>
+    /// 陷阱类
+    /// </summary>
 	public class Trap : TriggeredGear {
                   
         // 陷阱打开状态的图片
@@ -25,6 +30,7 @@ namespace WordJourney
 
         private TrapType trapType;
 
+        // 陷阱造成伤害的协程
 		private IEnumerator trapHurtCoroutine;
 
         public override bool IsPlayerNeedToStopWhenEntered()
@@ -42,6 +48,8 @@ namespace WordJourney
 			bc2d.enabled = false;
 		}
 
+
+        // 添加到缓存池中
 		public override void AddToPool(InstancePool pool)
         {
             bc2d.enabled = false;
@@ -49,6 +57,10 @@ namespace WordJourney
         }
 
 
+        /// <summary>
+        /// 当有trigger进入到包围盒中
+        /// </summary>
+        /// <param name="col">Col.</param>
         public void OnTriggerEnter2D(Collider2D col)
         {
             BattlePlayerController bp = col.GetComponent<BattlePlayerController>();
@@ -64,24 +76,20 @@ namespace WordJourney
 
         }
 
+        /// <summary>
+        /// 尖刺陷阱延迟一段事件后将尖刺收回
+        /// </summary>
+        /// <returns>The trap off.</returns>
 		private IEnumerator ThornTrapOff(){
 			yield return new WaitForSeconds(0.5f);
 			mapItemRenderer.sprite = thornTrapOffSprite;
 		}
-
-		//public void OnTriggerExit2D(Collider2D collision)
-		//{
-		//	switch(trapType){
-		//		case TrapType.Thorn:
-		//			mapItemRenderer.sprite = thornTrapOffSprite;
-		//			break;
-		//		case TrapType.Fire:
-		//		case TrapType.Poison:               
-		//			break;
-		//	}
-		//}
-
-
+      
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="mapIndex">Map index.</param>
+        /// <param name="attachedInfo">Attached info.</param>
 		public override void InitializeWithAttachedInfo(int mapIndex, MapAttachedInfoTile attachedInfo)
         {
             transform.position = attachedInfo.position;
@@ -149,7 +157,10 @@ namespace WordJourney
 			}
         }
 
-
+        /// <summary>
+		/// 触发尖刺陷阱
+        /// </summary>
+        /// <param name="battlePlayer">Battle player.</param>
 		private void ThornTrapTriggered(BattlePlayerController battlePlayer){
 			mapItemRenderer.sprite = thornTrapOnSprite;
 			MyTowards towards = battlePlayer.GetReversedTowards();
@@ -163,6 +174,11 @@ namespace WordJourney
 			ExploreManager.Instance.expUICtr.UpdatePlayerStatusBar();
 		}
 
+        /// <summary>
+        /// 触发火陷阱
+        /// </summary>
+        /// <returns>The trap triggered.</returns>
+        /// <param name="battlePlayer">Battle player.</param>
 		private IEnumerator FireTrapTriggered(BattlePlayerController battlePlayer){
 			int count = 0;
 			battlePlayer.SetEffectAnim(CommonData.burnedEffectName,null,0,3f);
@@ -187,6 +203,13 @@ namespace WordJourney
 			}
 		}
 
+
+
+        /// <summary>
+        /// 触发毒陷阱
+        /// </summary>
+        /// <returns>The trap triggered.</returns>
+        /// <param name="battlePlayer">Battle player.</param>
 		private IEnumerator PoisonTrapTriggered(BattlePlayerController battlePlayer){
 			int count = 0;
 			battlePlayer.SetEffectAnim(CommonData.poisonedEffectName,null,0,3f);

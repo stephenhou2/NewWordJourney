@@ -5,11 +5,12 @@ using UnityEngine;
 
 namespace WordJourney
 {
- 
+
+    /// <summary>
+    /// 触发型被动技能
+    /// </summary>
 	public abstract class TriggeredPassiveSkill : Skill {
-    
-
-
+          
 		public bool beforeFightTrigger;
 		public bool attackTrigger;
 		public bool hitTrigger;
@@ -69,7 +70,9 @@ namespace WordJourney
 
 		}
 
+        
 
+		//******************** 对应不同触发时机的触发函数 ********************//
 
 		protected virtual void BeforeFightTriggerCallBack(BattleAgentController self,BattleAgentController enemy){
 
@@ -90,6 +93,7 @@ namespace WordJourney
 		protected virtual void BeHitTriggerCallBack(BattleAgentController self,BattleAgentController enemy){
 
 		}
+		//******************** 对应不同触发时机的触发函数 ********************//
 
 		/// <summary>
 		/// 战斗结束后的逻辑回调
@@ -113,17 +117,12 @@ namespace WordJourney
 		protected virtual void ExcuteTriggeredSkillLogic(BattleAgentController self,BattleAgentController enemy){
 
 		}
-
-		/// <summary>
-		/// 强制取消技能效果
-		/// </summary>
-		/// <returns><c>true</c> if this instance cancel skill effect; otherwise, <c>false</c>.</returns>
-		public virtual void CancelSkillEffect (bool removeSkill){
-
-		}
-
-
-
+        
+        /// <summary>
+        /// 播放技能对应的特效动画
+        /// </summary>
+        /// <param name="self">Self.</param>
+        /// <param name="enemy">Enemy.</param>
 		protected void SetEffectAnims(BattleAgentController self,BattleAgentController enemy){
 
 			if (selfEffectAnimName != string.Empty) {

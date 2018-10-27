@@ -7,68 +7,49 @@ namespace WordJourney
 {
 	using UnityEngine.UI;
    
+    /// <summary>
+    /// 通关记录详细界面
+    /// </summary>
 	public class PlayRecordDetailHUD : ZoomHUD
     {
-		//public Text recordIndexText;
-
+        // 通关文本
 		public Text exploreEndAt;
-
+        // 最大探索关卡数
         public Text exploreMaxLevelText;
-              
+        // 学习单词总数文本      
         public Text totalLearnedWordCountText;
-
+        // 探索时长文本
 		public Text totalExploreTimeText;
-
+        // 正确率文本
 		public Text correctPercentageText;
-
+        // 共计击败怪物数量文本
 		public Text totalDefeatMonsterCount;
-
+        // 通关评级文本
 		public Text evaluateStringText;
-
+        // 属性文本
 		public Text maxHealtRecordText;
-
-		public Text maxManaRecordText;
-
-		public Text attackRecordText;
-
-		public Text magicAttackRecordText;
-
-		public Text armorRecordText;
-
-		public Text magicResistRecordText;
-
-		public Text armorDecreaseRecordText;
-
-		public Text magicResistDecreaseRecordText;
-
-		public Text dodgeRecordText;
-
-		public Text critRecordText;
-
-		public Text extraGoldRecordText;
-
-		public Text extraExperienceRecordText;
-
-		public Text healthRecoveryRecordText;
-
+		public Text maxManaRecordText;      
+		public Text attackRecordText;      
+		public Text magicAttackRecordText;      
+		public Text armorRecordText;      
+		public Text magicResistRecordText;      
+		public Text armorDecreaseRecordText;      
+		public Text magicResistDecreaseRecordText;      
+		public Text dodgeRecordText;      
+		public Text critRecordText;      
+		public Text extraGoldRecordText;      
+		public Text extraExperienceRecordText;      
+		public Text healthRecoveryRecordText;      
 		public Text magicRecoveryRecordText;
-
+        // 所有装备槽
 		public EquipmentCellInRecord[] equipmentCells;
-
+        // 所有技能槽
 		public SkillCellInRecord[] skillCells;
 
-		//public EquipmentCellInRecord equipmentCellModel;
-
-		//public InstancePool equipmentCellPool;
-
-		//public Transform equipmentCellContainer;
-
-		//public SkillCellInRecord skillCellModel;
-
-		//public InstancePool skillCellPool;
-
-		//public Transform skillCellContainer;
-
+        /// <summary>
+        /// 初始化通关记录详细页面
+        /// </summary>
+        /// <param name="playRecord">Play record.</param>
 		public void SetUpPlayRecordDetailHUD(PlayRecord playRecord)
 		{         
          
@@ -118,10 +99,10 @@ namespace WordJourney
 
 			magicRecoveryRecordText.text = playRecord.magicRecovery.ToString();
 
-			//equipmentCellPool.AddChildInstancesToPool(equipmentCellContainer);
-
 			int equipmentCellIndex = 0;
 
+
+            // 重置所有装备槽
 			for (int i = 0; i < equipmentCells.Length;i++){
 				
 				EquipmentCellInRecord cellInRecord = equipmentCells[i];
@@ -130,7 +111,7 @@ namespace WordJourney
 
 			}
 
-
+            // 根据通关时的装备创建装备槽
 			if(playRecord.equipedEquipments != null){
 
 				for (int i = 0; i < playRecord.equipedEquipments.Count; i++)
@@ -143,18 +124,22 @@ namespace WordJourney
 
 					EquipmentCellInRecord cellInRecord = equipmentCells[equipmentCellIndex];
 
+                    // 初始化装备槽
 					cellInRecord.SetUpEquipmentCellInRecord(equipment);
 
 					equipmentCellIndex++;
                
                 }            
 			}
+            
 
+            // 重置所有的技能槽
 			for (int i = 0; i < skillCells.Length;i++){
 				SkillCellInRecord cellInRecord = skillCells[i];
 				cellInRecord.Reset();
 			}
 
+            // 根据通关时的技能创建技能槽
 			if(playRecord.learnedSkillRecords != null){
 
 				for (int i = 0; i < playRecord.learnedSkillRecords.Count;i++){
@@ -172,8 +157,9 @@ namespace WordJourney
 						continue;
 					}
 
-					SkillCellInRecord cellInRecord = skillCells[i];
 
+					SkillCellInRecord cellInRecord = skillCells[i];
+                    // 初始化技能槽
 					cellInRecord.SetUpSkillCellInRecord(skill,skillLevel);
 
 				}
@@ -193,7 +179,9 @@ namespace WordJourney
          
 		}
 
-
+        /// <summary>
+        /// 退出通关记录界面
+        /// </summary>
 		public void QuitPlayRecordDetailView(){
 
 			if (inZoomingOut)

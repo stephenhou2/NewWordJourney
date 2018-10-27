@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	//宝箱类型
 	public enum TreasureType{
 		Pot,
 		Bucket,
@@ -12,6 +13,9 @@ namespace WordJourney
         GoldTreasureBox
 	}
 
+    /// <summary>
+    /// 宝箱类
+    /// </summary>
 	public class Treasure : MapEvent {
 
 		public TreasureType treasureType;
@@ -20,14 +24,7 @@ namespace WordJourney
 		public Item rewardItem;
 
 		protected int mapIndex;       
-
-		//public Animator mapItemAnimator;
-
-		//public float dropItemOffsetY;
-
-		//protected void SetAnimationSortingOrder(int order){
-		//	mapItemAnimator.GetComponent<SpriteRenderer> ().sortingOrder = order;
-		//}
+        
 
 		public override void AddToPool (InstancePool pool)
 		{
@@ -57,54 +54,9 @@ namespace WordJourney
 			if(cb != null){
 				cb();
 			}
-
-
-			//mapItemAnimator.gameObject.SetActive (true);
-
-			//mapItemAnimator.SetTrigger ("Play");
-
-			//StartCoroutine ("ResetMapItemOnAnimFinished");
-
+         
 		}
-
-		///// <summary>
-		///// 动画结束后重置地图物品
-		///// </summary>
-		///// <returns>The map item on animation finished.</returns>
-		//protected IEnumerator ResetMapItemOnAnimFinished(){
-
-		//	yield return null;
-
-		//	AnimatorStateInfo stateInfo = mapItemAnimator.GetCurrentAnimatorStateInfo (0);
-
-		//	while (stateInfo.normalizedTime < 1) {
-
-		//		yield return null;
-
-		//		stateInfo = mapItemAnimator.GetCurrentAnimatorStateInfo (0);
-
-		//	}
-
-		//	// 瓦罐和木桶解锁之后在图层内层级下调一级低层级（防止人物在上面走的时候遮挡住人物）
-		//	int sortingOrder = mapItemRenderer.sortingOrder - 1;
-		//	SetSortingOrder (sortingOrder);
-		//	SetAnimationSortingOrder (sortingOrder);
-		//	bc2d.enabled = false;
-
-
-		//	AnimEnd ();
-
-		//}
-
-		//protected virtual void AnimEnd (){
-
-		//	mapItemAnimator.ResetTrigger("Play");
-
-		//	if (animEndCallBack != null) {
-		//		animEndCallBack ();
-		//	}
-		//}
-
+  
 		public override void InitializeWithAttachedInfo(int mapIndex,MapAttachedInfoTile attachedInfo)
 		{
 			transform.position = attachedInfo.position;
@@ -127,8 +79,11 @@ namespace WordJourney
 
 		}
 
-
-
+        
+        /// <summary>
+        /// 从本层地图数据中随机读取出一个物品id
+        /// </summary>
+        /// <returns>The random item identifier from game level data.</returns>
 		protected int GetRandomItemIdFromGameLevelData(){
 
 			HLHGameLevelData levelData = GameManager.Instance.gameDataCenter.gameLevelDatas [Player.mainPlayer.currentLevelIndex];

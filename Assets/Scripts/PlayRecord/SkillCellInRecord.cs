@@ -7,6 +7,9 @@ namespace WordJourney
 {
 	using UnityEngine.UI;
 
+    /// <summary>
+    /// 技能槽模型
+    /// </summary>
 	public class SkillCellInRecord : MonoBehaviour
     {
 
@@ -16,6 +19,9 @@ namespace WordJourney
 
 		public Text skillLevelText;
 
+        /// <summary>
+        /// 重置技能槽
+        /// </summary>
 		public void Reset()
 		{
 			skillIcon.enabled = false;
@@ -23,6 +29,11 @@ namespace WordJourney
 			skillLevelText.text = string.Empty;
 		}
 
+        /// <summary>
+        /// 初始化通关记录中的技能槽
+        /// </summary>
+        /// <param name="skill">Skill.</param>
+        /// <param name="skillLevel">Skill level.</param>
 		public void SetUpSkillCellInRecord(Skill skill,int skillLevel){
 
 			Sprite skillSprite = GameManager.Instance.gameDataCenter.allSkillSprites.Find(delegate (Sprite obj)

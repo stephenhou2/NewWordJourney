@@ -8,6 +8,9 @@ namespace WordJourney
 	using DragonBones;
 	using Transform = UnityEngine.Transform;
 
+    /// <summary>
+    /// 存档点【verisn 1.1.2已废弃】
+    /// </summary>
 	public class SavePoint : MapEvent
 	{
 		public UnityArmatureComponent baseAnim;

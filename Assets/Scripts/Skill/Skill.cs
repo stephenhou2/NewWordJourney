@@ -5,44 +5,51 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	// 技能类型
 	public enum SkillType{
 		Active,
 		PermanentPassive,
 		TriggeredPassive
 	}
 
+    // 伤害类型
 	public enum HurtType{
 		Physical,
 		Magical
 	}
 
+
+    /// <summary>
+    /// 技能类
+    /// </summary>
 	public abstract class Skill:MonoBehaviour {
 
 		public string skillName;// 技能名称
 
 		public string sfxName;//音效名称
 
-		public int skillId;
+		public int skillId;//技能id
 
-		public string skillDescription;
+		public string skillDescription;//技能描述
 
-		public string skillIconName;
+		public string skillIconName;//技能图片名称
 
 		public string selfEffectAnimName;
 		public string enemyEffectAnimName;
 
 
-		public SkillType skillType;
+		public SkillType skillType;//技能类型
 
-		public int skillLevel = 1;
+		public int skillLevel = 1;//技能等级
 
-		public int wordCountToLearn;
+		public int wordCountToLearn;//学习技能所需单词数量
 
         // 在npc处学习技能的价格
 		//public int price;
 
-		[HideInInspector] public bool hasTriggered;
+		[HideInInspector] public bool hasTriggered;//是否已经触发过了
 
+        // 升级所需技能点
 		public int upgradeNum{
 			get{
 				return skillLevel;
@@ -59,14 +66,14 @@ namespace WordJourney
 		/// <param name="skillLevel">Skill level.</param>
 		public abstract void AffectAgents (BattleAgentController self, BattleAgentController enemy);
 			
+        /// <summary>
+        /// 升级技能
+        /// </summary>
 		public void SkillLevelUp(){
 			skillLevel++;
 		}
 
-
-		public void DestroySelf(){
-			Destroy (this.gameObject);
-		}
+        
 
 		// 判断概率性技能是否生效
 		protected virtual bool isEffective(float chance){
@@ -91,6 +98,9 @@ namespace WordJourney
 	}
 
 
+    /// <summary>
+    /// 技能数据模型
+    /// </summary>
 	[System.Serializable]
 	public class SkillModel{
 		public int skillId;

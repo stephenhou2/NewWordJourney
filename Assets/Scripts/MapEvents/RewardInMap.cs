@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	/// <summary>
+    /// 地图奖励物品类【打怪掉的装备，开宝箱开出的物品都是地图奖励物品】
+    /// </summary>
 	public class RewardInMap : MapEvent {
 
 		private Transform mBattlePlayerTrans;
@@ -34,6 +37,12 @@ namespace WordJourney
 			
 		}
 
+        /// <summary>
+        /// 在地图上生成奖励物品
+        /// </summary>
+        /// <param name="reward">Reward.</param>
+        /// <param name="rewardPosition">Reward position.</param>
+        /// <param name="rewardPool">Reward pool.</param>
 		public void SetUpRewardInMap(Item reward, Vector3 rewardPosition,InstancePool rewardPool){
 
 			this.reward = reward;
@@ -49,6 +58,7 @@ namespace WordJourney
 
 			gameObject.SetActive (true);
 
+            // 检查人物背包是否已经满了
 			bool bagFull = Player.mainPlayer.CheckBagFull(reward);
 
 			bool npcCanvasOnTop = false;
@@ -57,8 +67,10 @@ namespace WordJourney
 
             npcCanvasOnTop = npcCanvas.enabled;
          
+            // 背包满了
 			if(bagFull){
-				
+
+                // 提示背包已满
 				if(npcCanvasOnTop){
 					npcCanvas.GetComponent<NPCViewController>().tintHUD.SetUpSingleTextTintHUD("背包已满");
 				}else{
@@ -66,6 +78,7 @@ namespace WordJourney
 				}
 
 				bc2d.enabled = true;
+                // 奖励物品在地图上漂浮
 				if(rewardFloatCoroutine != null){
 					StopCoroutine(rewardFloatCoroutine);
 				}
@@ -74,12 +87,14 @@ namespace WordJourney
 				ExploreManager.Instance.newMapGenerator.mapWalkableInfoArray[Mathf.RoundToInt(rewardPosition.x), Mathf.RoundToInt(rewardPosition.y)] = 2;
 			}else{
                 
+                // 玩家获得物品
 				if(!npcCanvasOnTop){
 					ExploreManager.Instance.ObtainReward(reward);               
 				}
 
 				bc2d.enabled = false;
 
+                // 物品飞向玩家
 				RewardFlyToPlayer(delegate
 				{
 					AddToPool(rewardPool);

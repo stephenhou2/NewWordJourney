@@ -7,19 +7,20 @@ using UnityEngine.EventSystems;
 
 namespace WordJourney
 {
-	[System.Serializable]
-	public struct SkillWithProbability{
-		public Skill skill;
-		public float probability;
-	}
 
+
+    /// <summary>
+    /// 怪物数据类
+    /// </summary>
 	public class Monster : Agent{
 
+        // 怪物id
 		public int monsterId;
 
 		public int rewardExperience;//奖励的经验值
 		public int rewardGold;//奖励的金钱
 
+        // 攻击间隔
 		public float mAttackInterval;
 		public override float attackInterval{
 			get { return mAttackInterval; }
@@ -28,17 +29,12 @@ namespace WordJourney
 			}
 		}
 
-        // 奖励的物品id范围，如果数组为null或者数组长度为0，代表随机生成奖励，否则在id数组内随机生成奖励物品
-        //public int[] rewardItemIds;
-
+      
         // 标记怪物是否是boss
         public bool isBoss;
 
+        // 怪物说的话
 		public string[] monsterSays = new string[3];
-
-		//public PropertySet puzzleRightDecrease;
-
-		//public PropertySet puzzleWrongIncrease;
 
 		public override void Awake ()
 		{
@@ -46,14 +42,16 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 使用怪物数据初始化
+        /// </summary>
+        /// <param name="monsterData">Monster data.</param>
 		public void InitializeWithMonsterData(MonsterData monsterData){
 
 			this.agentName = monsterData.monsterName;
 			this.agentLevel = 1;
 			this.monsterId = monsterData.monsterId;
-
-			//int index = Player.mainPlayer.currentLevelIndex / 5;
-			//MonsterPropertyGain mpg = monsterData.monsterPropertyGainList [index];
+            
 
 			this.originalMaxHealth = monsterData.originalMaxHealth;//基础最大生命值
 			this.originalAttack = monsterData.originalAttack;//基础物理伤害
@@ -65,8 +63,6 @@ namespace WordJourney
 			this.originalMoveSpeed = monsterData.originalMoveSpeed;//基础地图行走速度
 			this.originalCrit = monsterData.originalCrit;//基础暴击率
 			this.originalDodge = monsterData.originalDodge;//基础闪避率
-			//this.originalExtraGold = monsterData.originalExtraGold;//基础额外金币
-			//this.originalExtraExperience = monsterData.originalExtraExperience;//基础额外经验
 			this.originalPhysicalHurtScaler = 1f;//基础物理伤害系数
 			this.originalMagicalHurtScaler = 1f;//基础魔法伤害系数
 			this.originalCritHurtScaler = monsterData.originalCritHurtScaler;//基础暴击系数
@@ -96,10 +92,15 @@ namespace WordJourney
 		}
 
 
-
+        /// <summary>
+        /// 重算角色属性
+        /// </summary>
+        /// <returns>The battle agent properties.</returns>
+        /// <param name="toOriginalState">If set to <c>true</c> to original state.</param>
 		public override PropertyChange ResetBattleAgentProperties (bool toOriginalState = false)
 		{
 
+            // 记录重算前的属性
 			int maxHealthRecord = maxHealth;
 			int healthRecord = health;
 			int maxManaRecord = maxMana;
@@ -112,11 +113,8 @@ namespace WordJourney
 			int magicResistDecreaseRecord = magicResistDecrease;
 			float dodgeRecord = dodge;
 			float critRecord = crit;
-			//int healthRecoveryRecord = healthRecovery;
-			//int magicRecoveryRecord = magicRecovery;
-			//int extraGoldRecord = extraGold;
-			//int extraExperienceRecord = extraExperience;
 
+            // 使用原始属性计算叠加技能影响后的属性值
             maxHealth = originalMaxHealth + maxHealthChangeFromSkill;
             maxMana = originalMaxMana + maxManaChangeFromSkill;
 
@@ -143,19 +141,21 @@ namespace WordJourney
 
             healthRecovery = originalHealthRecovery + healthRecoveryChangeFromSkill;
             magicRecovery = originalMagicRecovery + magicRecoveryChangeFromSkill;
-
-			//shenLuTuTengScaler = 0;
-			//extraPoisonHurt = 0;
-
+            
+            // 如果血量魔法恢复到原始状态
 			if (toOriginalState) {
+				// 满血满蓝
 				health = maxHealth;
-				mana = maxMana;
-				//isDead = false;
-			} else {
+				mana = maxMana;            
+			} 
+            // 否则按照最大生命和最大魔法值的变化来更新血量和魔法
+			else {
+				
 				health = (int)(healthRecord * (float)maxHealth / maxHealthRecord);
 				mana = (int)(manaRecord * (float)maxMana / maxManaRecord);
 			}
 
+            // 计算属性变化
 			int maxHealthChange = maxHealth - maxHealthRecord;
 			int maxManaChange = maxMana - maxManaRecord;
 
@@ -170,12 +170,7 @@ namespace WordJourney
 
 			float dodgeChange = dodge - dodgeRecord;
 			float critChange = crit - critRecord;
-
-			//int healthRecoveryChange = healthRecovery - healthRecoveryRecord;
-			//int magicRecoveryChange = magicRecovery - magicRecoveryRecord;
-
-			//int extraGoldChange = extraGold - extraGoldRecord;
-			//int extraExperienceChange = extraExperience - extraExperienceRecord;
+            
 
 			return new PropertyChange (maxHealthChange, maxManaChange, attackChange, magicAttackChange,
 				armorChange, magicResistChange,armorDecreaseChange,magicResistDecreaseChange,

@@ -7,6 +7,10 @@ using DG.Tweening;
 
 namespace WordJourney
 {
+
+    /// <summary>
+    /// 学习记录显示界面
+    /// </summary>
 	public class RecordView : MonoBehaviour {
 
 
@@ -38,22 +42,28 @@ namespace WordJourney
 		// 复用缓存池
 		public InstancePool wordPool;
 
+        // 单词cell容器
 		public Transform wordContainer;
 
+        // 页面操作容器【如果没有单词记录时需要整体隐藏，下级物体包括页面文本，上一页按钮和下一页按钮】
 		public Transform pageOperationContainer;
 
+        // 学习信息
 		private LearningInfo learnInfo;
 
+        // 单词详细记录界面
 		public WordRecordDetailHUD wordDetail;
-              
+        
+        // 更改单词状态回调
 		private CallBackWithWord changeWordStatusCallBack;
 
+        // 更改单词状态询问界面
 		public ChangeWordStatusQueryView changeWordStatusQueryHUD;
 
-		//private int totalWordsCountOfCurrentType;
 
+        // 当前词库的已学习单词数
 		private int learnedWordsCountOfCurrentType;
-
+        // 当前单词的错误单词数
 		private int wrongWordsCountOfCurrentType;
 
 
@@ -65,8 +75,6 @@ namespace WordJourney
 		public void SetUpRecordView(LearningInfo learnInfo,CallBackWithWord changeStatusCallBack,CallBackWithInt nextWordDetailClickCallBack,CallBackWithInt lastWordDetailClickCallBack){
 
 			this.learnInfo = learnInfo;
-
-			//totalWordsCountOfCurrentType = learnInfo.totalWordCount;
 
 			learnedWordsCountOfCurrentType = learnInfo.learnedWordCount;
 
@@ -81,10 +89,14 @@ namespace WordJourney
 			GetComponent<Canvas>().enabled = true;
 
 		}
-
+        
+        /// <summary>
+        /// 从学习信息中获取难度信息和词源文本
+        /// </summary>
+        /// <returns>The word type and details.</returns>
 		private string[] GetWordTypeAndDetails()
         {
-
+            
             string[] wordTypeAndDetailsArray = new string[4];
 
 			switch (learnInfo.currentWordType)
@@ -151,78 +163,17 @@ namespace WordJourney
 			GetComponent<Canvas> ().enabled = true;
             
 		}
-
+        
+        /// <summary>
+        /// 显示指定单词的详细信息界面
+        /// </summary>
+        /// <param name="word">Word.</param>
+        /// <param name="wordIndexInList">Word index in list.</param>
 		public void ShowWordDetail(HLHWord word,int wordIndexInList){         
 			wordDetail.SetUpWordDetailHUD(word,wordIndexInList);         
 		}
         
-		//public void SetUpGraspWords(List<HLHWord> words, int currentPageIndex,int totalPage){
-
-		//	int minWordIndexOfCurrentPage = currentPageIndex * CommonData.singleWordsRecordsPageVolume;
-		//	int maxWordIndexOfCurrentPage = (currentPageIndex + 1) * CommonData.singleWordsRecordsPageVolume - 1;
-
-  //          maxWordIndexOfCurrentPage = maxWordIndexOfCurrentPage > words.Count ? words.Count : maxWordIndexOfCurrentPage;
-
-
-		//	for (int j = minWordIndexOfCurrentPage; j <= maxWordIndexOfCurrentPage; j++)
-  //          {
-                
-  //              HLHWord word = words[j];
-
-		//		WordItemView wordItem = wordPool.GetInstance<WordItemView>(wordModel.gameObject, wordContainer);
-
-		//		int indexInCurrentPage = j;
-
-		//		wordItem.InitWordItemView(ShowChangeWordStatusQueruHUD, delegate {               
-		//			ShowWordDetail(word, minWordIndexOfCurrentPage + indexInCurrentPage);
-		//		}, wordPool);
-  //              wordItem.SetUpCellDetailView(word);            
-
-  //          }
-
-		//	wordPageText.text = string.Format("{0}/{1}", currentPageIndex + 1, totalPage);
-         
-  //          generalInfoPlane.gameObject.SetActive(false);
-  //          wordsPlane.gameObject.SetActive(true);
-            
-		//	UpdateTabStatus(1);
-
-  //          GetComponent<Canvas>().enabled = true;         
-		//}
-
-		//public void SetUpUngraspWords(List<HLHWord> words,int currentPageIndex, int totalPage){
-                 
-		//	int minWordIndexOfCurrentPage = currentPageIndex * CommonData.singleWordsRecordsPageVolume;
-		//	int maxWordIndexOfCurrentPage = (currentPageIndex + 1) * CommonData.singleWordsRecordsPageVolume - 1;
-
-		//	maxWordIndexOfCurrentPage = maxWordIndexOfCurrentPage > words.Count ? words.Count : maxWordIndexOfCurrentPage;
-
-		//	for (int j = minWordIndexOfCurrentPage; j <= maxWordIndexOfCurrentPage; j++)
-  //          {
-
-		//		HLHWord word = words[j];
-
-		//		WordItemView wordItem = wordPool.GetInstance<WordItemView>(wordModel.gameObject, wordContainer);
-
-		//		int indexInCurrentPage = j;
-
-		//		wordItem.InitWordItemView(ShowChangeWordStatusQueruHUD,delegate {               
-		//			ShowWordDetail(word, minWordIndexOfCurrentPage + indexInCurrentPage);
-		//		}, wordPool);
-  //              wordItem.SetUpCellDetailView(word);            
-  //          }
-
-		//	wordPageText.text = string.Format("{0}/{1}", currentPageIndex + 1, totalPage);
-                       
-  //          generalInfoPlane.gameObject.SetActive(false);
-  //          wordsPlane.gameObject.SetActive(true);
-
-		//	UpdateTabStatus(2);
-         
-  //          GetComponent<Canvas>().enabled = true;
-
-		//}
-
+      
         /// <summary>
         /// 当某个单词列表内没有单词时，将页数显示
         /// </summary>
@@ -230,11 +181,17 @@ namespace WordJourney
 			pageOperationContainer.gameObject.SetActive(false);
 		}
 
+        /// <summary>
+        /// 显示页数
+        /// </summary>
 		public void ShowPageDisplay(){
 			pageOperationContainer.gameObject.SetActive(true);
 		}
         
-
+        /// <summary>
+        /// 显示单词切换单词本的询问界面
+        /// </summary>
+        /// <param name="word">Word.</param>
 		private void ShowChangeWordStatusQueruHUD(HLHWord word){
 			changeWordStatusQueryHUD.SetUpChangeWordStatusQueryHUD(word,changeWordStatusCallBack);
 		}
@@ -273,6 +230,10 @@ namespace WordJourney
 			GetComponent<Canvas>().enabled = true;
 		}
       
+        /// <summary>
+        /// 更新底部tab button
+        /// </summary>
+        /// <param name="tabIndex">Tab index.</param>
 		public void UpdateTabStatus(int tabIndex){
 		
 			switch (tabIndex)

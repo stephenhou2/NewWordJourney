@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace WordJourney
 {
+	/// <summary>
+    /// 属性变化模型
+    /// </summary>
 	public struct PropertyChange {
 		
 		public int maxHealthChange;
@@ -22,6 +25,9 @@ namespace WordJourney
 		public int extraGoldChange;
 		public int extraExperienceChange;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
 		public PropertyChange(int maxHealthChange,int maxManaChange,int attackChange,
 			int magicAttackChange,int armorChange,int magicResistChange,int armorDecreaseChange,
 			int magicResistDecreaseChange,float dodgeChage,float critChange,int healthRecoveryChange,
@@ -44,6 +50,12 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 合并两个属性变化
+        /// </summary>
+        /// <returns>The two property change.</returns>
+        /// <param name="arg1">Arg1.</param>
+        /// <param name="arg2">Arg2.</param>
 		public static PropertyChange MergeTwoPropertyChange(PropertyChange arg1,PropertyChange arg2){
 			PropertyChange mergedPropertyChange = new PropertyChange ();
 			mergedPropertyChange.maxHealthChange= arg1.maxHealthChange + arg2.maxHealthChange;

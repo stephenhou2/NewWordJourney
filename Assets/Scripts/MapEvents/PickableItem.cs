@@ -7,17 +7,23 @@ namespace WordJourney
 {
 	using DG.Tweening;
 
+    /// <summary>
+    /// 可拾取物品类
+    /// </summary>
 	public class PickableItem : MapEvent {
 
+        // 实际对应的物品
 		public Item item;
-
+        // 图片渲染器
 		public SpriteRenderer itemIcon;
 
+        // 浮动间隔
 		public float floatingInterval = 2f;
+        // 浮动距离
 		public float floatingDistance = 0.1f;
-
+        // 飞向玩家角色的事件
 		public float flyToPlayerDuration = 0.3f;
-
+        
 		private float oriIconPosY;
 
 		private float oriPosY;
@@ -29,7 +35,10 @@ namespace WordJourney
 
 		private int mapIndex;
 
-
+        /// <summary>
+        /// 加入缓存池
+        /// </summary>
+        /// <param name="pool">Pool.</param>
 		public override void AddToPool (InstancePool pool)
 		{
 			StopFloating ();
@@ -37,8 +46,12 @@ namespace WordJourney
 			pool.AddInstanceToPool (this.gameObject);
 		}
         
-
-
+        
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="mapIndex">Map index.</param>
+        /// <param name="attachedInfo">Attached info.</param>
 		public override void InitializeWithAttachedInfo(int mapIndex,MapAttachedInfoTile attachedInfo)
 		{
 			this.mapIndex = mapIndex;
@@ -71,6 +84,9 @@ namespace WordJourney
 
 		}
 
+        /// <summary>
+        /// 开始漂浮动画
+        /// </summary>
 		private void BeginFloating(){
 			
 			floatingSequence = DOTween.Sequence ();
@@ -85,6 +101,10 @@ namespace WordJourney
 			floatingSequence.Play ();
 		}
 
+
+        /// <summary>
+        /// 停止漂浮动画
+        /// </summary>
 		private void StopFloating(){
 
 			floatingSequence.Kill (false);
@@ -94,6 +114,11 @@ namespace WordJourney
 		}
 			
 
+        /// <summary>
+        /// 从物品id范围字符串中随机出一个物品id
+        /// </summary>
+        /// <returns>The random item identifier from range string.</returns>
+        /// <param name="itemIdRangeString">Item identifier range string.</param>
 		private int GetRandomItemIdFromRangeString(string itemIdRangeString){
 
 			string[] idStringArray = itemIdRangeString.Split (new char[]{ '_' }, System.StringSplitOptions.RemoveEmptyEntries);
@@ -110,7 +135,10 @@ namespace WordJourney
 
 		}
 
-
+        /// <summary>
+        /// 进入地图事件
+        /// </summary>
+        /// <param name="bp">Bp.</param>
 		public override void EnterMapEvent(BattlePlayerController bp)
 		{
 			if (isWordTriggered) {
@@ -120,6 +148,11 @@ namespace WordJourney
 			}
 		}
 
+        /// <summary>
+        /// 地图事件触发
+        /// </summary>
+        /// <param name="isSuccess">If set to <c>true</c> is success.</param>
+        /// <param name="bp">Bp.</param>
 		public override void MapEventTriggered (bool isSuccess, BattlePlayerController bp)
 		{
 

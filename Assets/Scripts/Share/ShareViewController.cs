@@ -10,12 +10,14 @@ namespace WordJourney
 	using System.IO;
 	using System;
 
+    // 分享类型【目前只有微信朋友圈分享通道】
 	public enum ShareType
 	{
 		Weibo,
 		WeChat
 	}
 
+    //分享结果
 	public enum ShareResult
 	{
 		Succeed,
@@ -23,6 +25,10 @@ namespace WordJourney
 		Canceled
 	}
 
+
+    /// <summary>
+    /// 分享控制器
+    /// </summary>
 	public class ShareViewController : ZoomHUD
 	{
 
@@ -45,22 +51,23 @@ namespace WordJourney
 
 		private ShareType shareType;
 
-		//定义分享对象
+		// share sdk
 		private ShareSDK ssdk;
 
-		//public TintHUD tintHUD;
-
+        // 分享截图截取的范围
 		public Transform shareShotcutRect;
-
+        // 分享成功的回调
 		private CallBack shareSucceedCallBack;
-
+        // 分享失败的回调
 		private CallBack shareFailedCallBack;
-
+        // 退出分享的回调
 		private CallBack quitShareCallBack;
-
+        // 分享结果
 		private ShareResult shareResult;
 
-		// Use this for initialization
+        /// <summary>
+        /// 一些初始化设置
+        /// </summary>
 		void Start()
 		{
 			ssdk = Camera.main.GetComponent<ShareSDK>();
@@ -80,11 +87,13 @@ namespace WordJourney
 		/// </summary>
 		public void SetUpShareView(ShareType shareType, CallBack shareSucceedCallBack, CallBack shareFailedCallBack, CallBack quitShareCallBack)
 		{
+			// 更新单词数据库，确保分享数据是正确的
 			if (ExploreManager.Instance != null)
 			{
 				ExploreManager.Instance.UpdateWordDataBase();
 			}
 
+            // 初始化分享类型和分享回调
 			this.shareType = shareType;
 
 			shareResult = ShareResult.Canceled;
@@ -95,6 +104,8 @@ namespace WordJourney
 
 			this.quitShareCallBack = quitShareCallBack;
 
+            // 初始化UI
+            // 计算学习天数
 			DateTime now = DateTime.Now;
 
 			DateTime installDate = Convert.ToDateTime(GameManager.Instance.gameDataCenter.gameSettings.installDateString);
@@ -113,10 +124,7 @@ namespace WordJourney
 
 			int correctPercentageMultiply100 = learnedWordCountOfCurrentType == 0 ? 0 : (learnedWordCountOfCurrentType - wrongWordCountOfCurrentType) * 100 / learnedWordCountOfCurrentType;
 
-			//correctPercentageText.text = string.Format("<size=60>{0}</size>  %", correctPercentageMultiply100);
-
-			//exploredLevelCountText.text = string.Format("<size=60>{0}</size>  层", Player.mainPlayer.maxUnlockLevelIndex + 1 > 50 ? 50 : Player.mainPlayer.maxUnlockLevelIndex + 1);
-
+         
 			switch (shareType)
 			{
 				case ShareType.WeChat:
@@ -158,11 +166,15 @@ namespace WordJourney
 				StopCoroutine(zoomCoroutine);
 			}
 
+            // 
 			zoomCoroutine = HUDZoomIn();
 
 			StartCoroutine(zoomCoroutine);
 		}
 
+        /// <summary>
+        /// 点击了分享按钮
+        /// </summary>
 		public void OnShareButtonClick()
 		{
 
@@ -198,19 +210,24 @@ namespace WordJourney
 
 			QuitShareView();
 		}
-
-
+        
+        /// <summary>
+        /// 截屏并截取分享部分的图片
+        /// </summary>
+        /// <returns>The screen shot and share.</returns>
 		private IEnumerator TrimScreenShotAndShare()
 		{
                  
 			yield return new WaitForEndOfFrame();
            
+            // 截屏
 			Texture2D texture = ScreenCapture.CaptureScreenshotAsTexture();
 
 			Debug.LogFormat("截屏图片大小[{0},{1}]", texture.width, texture.height);
 
 			float transferScaler = 1f;
 
+            // 按照分辨率来确认转换系数
 			if(Camera.main.pixelWidth < 1080f){
 				if(CommonData.HWScalerOfCurrentScreen < 1.7f){
 					transferScaler = CommonData.scalerToPresetH;
@@ -220,21 +237,25 @@ namespace WordJourney
 
 			}
 
+            // 获取分享区域的大小
 			int shareHUDWidth = (int)((shareShotcutRect.transform as RectTransform).rect.width * transferScaler);
 			int shareHUDHeight = (int)((shareShotcutRect.transform as RectTransform).rect.height * transferScaler);
 
 
 			Debug.LogFormat("实际图片大小：[{0},{1}]", shareHUDWidth, shareHUDHeight);
 
-
+            // 分享区域在y方向的偏移
 			int sharePlaneFixY = (int)(sharePlane.localPosition.y * transferScaler);
 
 			Debug.LogFormat("3y:{0}",sharePlane.localPosition.y);
 
+            // 分享区域的X方向offset和Y方向offset
 			int offsetYFix = (int)(shareShotcutRect.localPosition.y * transferScaler);         
 			int offsetX = (texture.width - shareHUDWidth) / 2;
 
+            // 实际分享区域的最小y值
 			int offsetYMin = (texture.height - shareHUDHeight) / 2 + offsetYFix + sharePlaneFixY;
+			// 实际分享区域的最大y值
 			int offsetYMax = (texture.height + shareHUDHeight) / 2 + offsetYFix + sharePlaneFixY;
 
 
@@ -243,8 +264,10 @@ namespace WordJourney
 
 			Debug.LogFormat("实际最小y{0},最大y{1}", offsetYMin, offsetYMax);
 
+            // 按照分享图片的大小创建新的空纹理
 			Texture2D newT2d = new Texture2D(shareHUDWidth, shareHUDHeight);
 
+            // 像素处理
 			for (int i = offsetX; i < texture.width - offsetX; i++)
 			{
 				for (int j = offsetYMin; j < offsetYMax; j++)
@@ -258,22 +281,25 @@ namespace WordJourney
 			}
          
 
-
+            // 纹理应用
 			newT2d.Apply();
 
-
+            // 纹理转化为jpg格式二进制数据
 			byte[] trimImgData = newT2d.EncodeToJPG();
 
-
+            // 检查临时分享文件夹是否存在，不存在创建文件夹
 			if (!DataHandler.DirectoryExist(Application.persistentDataPath + "/tempPics"))
 			{
 				DataHandler.CreateDirectory(Application.persistentDataPath + "/tempPics");
 			}
 
+            // 临时图片保存位置
 			string trimImgPath = Application.persistentDataPath + "/tempPics/shareImage.jpg";
 
+            // 保存图片
 			File.WriteAllBytes(trimImgPath, trimImgData);
 
+            // 清理工作
 			Destroy(texture);
 			Destroy(newT2d);
 
@@ -292,25 +318,10 @@ namespace WordJourney
 #endif
 
 		}
-
-		//private Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
-		//{
-		//	Texture2D result = new Texture2D(targetWidth, targetHeight, source.format, false);
-
-		//	for (int i = 0; i < result.height; ++i)
-		//	{
-		//		for (int j = 0; j < result.width; ++j)
-		//		{
-		//			Color newColor = source.GetPixelBilinear((float)j / (float)result.width, (float)i / (float)result.height);
-		//			result.SetPixel(j, i, newColor);
-		//		}
-		//	}
-
-		//	result.Apply();
-		//	return result;
-		//}
-
-
+      
+        /// <summary>
+        /// 分享逻辑
+        /// </summary>
 		private void Share()
 		{
 
@@ -348,6 +359,9 @@ namespace WordJourney
 
         }
 
+        /// <summary>
+        /// 退出分享界面
+        /// </summary>
 		public void QuitShareView(){
 
 			if(inZoomingOut){
